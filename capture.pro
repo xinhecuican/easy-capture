@@ -16,16 +16,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    button_action/src/test_button.cpp \
+    Widgets/capture_area.cpp \
+    Window_manager.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    new_capture/Capture_button_action.cpp \
+    new_capture/capture_window.cpp
 
 HEADERS += \
-    button_action/headers/base_button.h \
-    mainwindow.h
+    Widgets/capture_area.h \
+    mainwindow.h \
+    new_capture/Capture_button_action.h \
+    new_capture/capture_window.h \
+    window_manager.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    new_capture/capture_window.ui
 
 TRANSLATIONS += \
     capture_zh_CN.ts

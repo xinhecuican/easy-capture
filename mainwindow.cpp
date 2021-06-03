@@ -2,14 +2,18 @@
 #include "ui_mainwindow.h"
 #include<QtWidgets>
 #include<QMessageBox>
-#include "button_action/headers/base_button.h"
+#include "new_capture/capture_button_action.h"
+#include "window_manager.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    button_action* test_button = new button_action(ui->pushButton, this);
+    Capture_button_action* new_button = new Capture_button_action(ui->pushButton, this);
+    Window_manager::push_window("main", this);
+    Window_manager::change_window("main");
 }
 
 MainWindow::~MainWindow()
