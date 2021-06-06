@@ -16,15 +16,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Helper/my_math.cpp \
     Widgets/capture_area.cpp \
     Window_manager.cpp \
+    config.cpp \
     main.cpp \
     mainwindow.cpp \
     new_capture/Capture_button_action.cpp \
     new_capture/capture_window.cpp
 
 HEADERS += \
+    Base/Window_base.h \
+    Helper/my_math.h \
     Widgets/capture_area.h \
+    config.h \
     mainwindow.h \
     new_capture/Capture_button_action.h \
     new_capture/capture_window.h \

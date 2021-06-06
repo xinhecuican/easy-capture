@@ -4,10 +4,11 @@
 #include<QMessageBox>
 #include "new_capture/capture_button_action.h"
 #include "window_manager.h"
+#include "config.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : Window_base(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -24,5 +25,10 @@ MainWindow::~MainWindow()
 void MainWindow::on_button_click ()
 {
     QMessageBox::information(this, "送餐", "送达");
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    Config::save_to_config();
 }
 

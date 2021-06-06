@@ -12,7 +12,7 @@ Capture_button_action::Capture_button_action(QAbstractButton* source, QWidget* p
 
 void Capture_button_action::on_button_click()
 {
-    if(m_window == NULL)
+    if(m_window == NULL )
     {
         m_window = new Capture_window(parent);
     }
