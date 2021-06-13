@@ -5,7 +5,7 @@
 #include<QKeyEvent>
 #include<QMouseEvent>
 #include<QPushButton>
-#include "Widgets/capture_area.h"
+#include "Widgets/Capture_widgets/capture_area.h"
 #include "Base/Window_base.h"
 
 
@@ -18,7 +18,7 @@ class Capture_window : public Window_base
     Q_OBJECT
 
 public:
-    explicit Capture_window(QWidget *parent = nullptr);
+    Q_INVOKABLE explicit Capture_window(QWidget *parent = nullptr);
     ~Capture_window();
     void paintEvent(QPaintEvent*) override;
     void mousePressEvent(QMouseEvent* event) override;
@@ -30,7 +30,6 @@ public:
 
 private:
     Ui::Capture_window *ui;
-    QVector<QPoint> points;
     Capture_area* captured;
     QRegion total_region;
     bool button_click;

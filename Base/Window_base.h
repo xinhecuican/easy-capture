@@ -1,6 +1,8 @@
 #ifndef WINDOW_BASE_H
 #define WINDOW_BASE_H
 #include<QMainWindow>
+#include<QDebug>
+#include "Helper/Reflect.h"
 
 class Window_base : public QMainWindow
 {
@@ -9,6 +11,7 @@ public:
     {
 
     }
+
 
     Window_base(QWidget* parent):QMainWindow(parent)
     {

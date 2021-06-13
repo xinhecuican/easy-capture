@@ -1,10 +1,11 @@
 #include "capture_window.h"
 #include "ui_capture_window.h"
-#include "window_manager.h"
+#include "Manager/window_manager.h"
 #include<QDebug>
 #include<QPainter>
 #include<QPen>
 #include<QDesktopWidget>
+#include "Manager/config.h"
 
 
 Capture_window::Capture_window(QWidget *parent) :
@@ -12,19 +13,18 @@ Capture_window::Capture_window(QWidget *parent) :
     ui(new Ui::Capture_window)
 {
     ui->setupUi(this);
-    this->points = QVector<QPoint>();
-    this->captured = new Capture_area(this);
     button_click = false;
 
     QDesktopWidget* desktop = QApplication::desktop();
     total_region = QRegion(desktop->screenGeometry());
 
-    Window_manager::push_window("capture", this);
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     showFullScreen();
     this->setMouseTracking(true);
     this->ui->centralwidget->setMouseTracking(true);
+    this->captured = new Capture_area(this);
+
 }
 
 Capture_window::~Capture_window()
@@ -45,12 +45,17 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
                          QColor(0, 0, 0, 0x1));
     }
     QPainterPath path;
-    QPen pen(QColor(0, 0, 0, 0));
+    QPen pen(QColor(123, 123, 233));
     painter.setPen(pen);
-    foreach(QRegion region, captured->get_region())
+    QList<Capture_area::Capture_region> list = captured->get_region();
+    for(int i=0; i<list.size(); i++)
     {
-        path.addRegion(region);
+        QPolygon temp_polygon = list[i].get_polygon();
+        qDebug() <<  temp_polygon;
+        path.addPolygon(temp_polygon);
+        path = path.simplified();//防止绘制环形时有一条回到原点的线
     }
+
     painter.setBrush(QBrush(QColor(0, 0, 0, 1)));
     painter.drawPath(path);
 }
@@ -65,9 +70,8 @@ void Capture_window::keyPressEvent(QKeyEvent *event)
 
 void Capture_window::mouseMoveEvent(QMouseEvent *event)
 {
-    if(!button_click)//设置鼠标样式，必须要在ui中设置mous
+    if(!button_click)//设置鼠标样式,必须先要设置mousetracking = true
     {
-        qDebug() << event->globalPos();
         if(captured->region_contain(event->globalPos()))
         {
             setCursor(Qt::OpenHandCursor);
@@ -80,7 +84,10 @@ void Capture_window::mouseMoveEvent(QMouseEvent *event)
     }
     else
     {
-        setCursor(Qt::ClosedHandCursor);
+        if(captured->is_press_region())
+        {
+            setCursor(Qt::ClosedHandCursor);
+        }
         captured->mouseMoveEvent(event);
     }
     update();
@@ -107,7 +114,8 @@ void Capture_window::mouseReleaseEvent(QMouseEvent *event)
 
 void Capture_window::on_window_cancal()
 {
-
+    button_click = false;
+    captured->reset();
 }
 
 void Capture_window::on_window_select()

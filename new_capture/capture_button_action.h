@@ -16,7 +16,6 @@ public slots:
 private:
     QAbstractButton* source_button;
     QWidget* parent;
-    Capture_window* m_window;
 };
 
 #endif // CAPTURE_BUTTON_ACTION_H

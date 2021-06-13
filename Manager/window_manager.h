@@ -15,10 +15,12 @@ public:
     static QString get_now_window();
     static void pop_window();
     static bool contains(QString name);
+    static Window_base* get_window(QString name);
 private:
     static map<QString, Window_base*> window_list;
     static QString active_window;
     static QString previous_window;
+    static void create_window(QString name);
 };
 
 

@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>capture.png</file>
+        <file alias="setting.svg">设 置.svg</file>
+    </qresource>
+    <qresource prefix="/qss"/>
+    <qresource prefix="/qss/button"/>
+    <qresource prefix="/qss/button/capture_window_button">
+        <file>custom_button.qss</file>
+    </qresource>
+</RCC>

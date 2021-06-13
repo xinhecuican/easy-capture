@@ -6,21 +6,21 @@
 #include<QDebug>
 
 
-const QString Config::setting_name[] =
+const QString Config::bool_setting_name[] =
 {
     "capture_one_window",
     "capture_multi_window_separate",//不同窗口之间不结合
-    "capture_multi_window_combine"//多个窗口碰到自动结合
+    "capture_multi_window_combine",//多个窗口碰到自动结合
 };
 
-const bool Config::default_settings[] =
+const bool Config::default_bool_settings[] =
 {
     true,
     false,
     false
 };
 
-QMap<int, bool> Config::all_settings = QMap<int, bool>();
+QMap<int, bool> Config::all_bool_settings = QMap<int, bool>();
 
 Config::Config()
 {
@@ -39,7 +39,7 @@ void Config::save_to_config()
     QJsonObject jsonObject;
     try
     {
-        file.open(QIODevice::ReadWrite);
+        file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate);
     }
     catch (...)
     {
@@ -51,7 +51,7 @@ void Config::save_to_config()
     {
         for(int i=0; i<num_of_config; i++)
         {
-            jsonObject.insert(setting_name[i], default_settings[i]);
+            jsonObject.insert(bool_setting_name[i], default_bool_settings[i]);
         }
     }
     else
@@ -59,7 +59,7 @@ void Config::save_to_config()
 
         for(int i=0; i<num_of_config; i++)
         {
-            jsonObject.insert(setting_name[i], all_settings[i]);
+            jsonObject.insert(bool_setting_name[i], all_bool_settings[i]);
         }
 
     }
@@ -77,7 +77,7 @@ void Config::load_config()
     {
         for(int i=0; i<num_of_config; i++)
         {
-            all_settings[i] = default_settings[i];
+            all_bool_settings[i] = default_bool_settings[i];
         }
         return;
     }
@@ -85,7 +85,7 @@ void Config::load_config()
     {
         try
         {
-            file.open(QIODevice::ReadOnly);
+            file.open(QIODevice::ReadOnly | QIODevice::Text);
         } catch (...) {
             QMessageBox::critical(NULL, "错误", "配置文件打开错误",
                                   QMessageBox::Yes, QMessageBox::Yes);
@@ -107,14 +107,50 @@ void Config::load_config()
         QJsonObject rootObj = jsonDoc.object();
         for(int i=0; i<num_of_config; i++)
         {
-            all_settings[i] = rootObj[setting_name[i]].toBool();
+            all_bool_settings[i] = rootObj[bool_setting_name[i]].toBool();
         }
     }
 }
 
 bool Config::get_config(setting type)
 {
-    return all_settings[type];
+    return all_bool_settings[type];
+}
+
+bool Config::get_config(QString type)
+{
+    for(int i=0; i<bool_setting_name->size(); i++)
+    {
+        if(bool_setting_name[i] == type)
+        {
+            return all_bool_settings[i];
+        }
+    }
+    return false;
+}
+
+bool Config::get_config(int type)
+{
+    return all_bool_settings[type];
+}
+void Config::set_config(setting type, bool data)
+{
+    all_bool_settings[type] = data;
+}
+
+void Config::set_config(int type, bool data)
+{
+    all_bool_settings[type] = data;
+}
+
+QString Config::get_config_name(setting type)
+{
+    return bool_setting_name[type];
+}
+
+QString Config::get_config_name(int type)
+{
+    return bool_setting_name[type];
 }
 
 

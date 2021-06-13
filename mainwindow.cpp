@@ -1,10 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include<QtWidgets>
-#include<QMessageBox>
-#include "new_capture/capture_button_action.h"
-#include "window_manager.h"
-#include "config.h"
+#include "Panel/setting.h"
+#include "Manager/window_manager.h"
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -12,19 +10,31 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    Capture_button_action* new_button = new Capture_button_action(ui->pushButton, this);
-    Window_manager::push_window("main", this);
-    Window_manager::change_window("main");
+    setWindowTitle("简截");
+
+    toolbar = new QToolBar();
+    toolbar->setMovable(false);     // 设置工具栏不可移动,默认是可移动
+    addToolBar(toolbar);
+
+    new_button = new QToolButton(this);
+    new_button_action = new Capture_button_action(new_button, this);
+    new_button->setText("新建");
+    new_button->setIcon(QIcon(":/image/capture.png"));
+    new_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolbar->addWidget(new_button);
+
+    QToolButton* setting_button = new QToolButton(this);
+    setting_button->setIcon(QIcon(":/image/setting.svg"));
+    connect(setting_button, &QToolButton::clicked, this, [=](){
+        Window_manager::change_window("Setting");
+    });
+    toolbar->addWidget(setting_button);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::on_button_click ()
-{
-    QMessageBox::information(this, "送餐", "送达");
+    delete new_button_action;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -32,3 +42,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
     Config::save_to_config();
 }
 
+bool MainWindow::eventFilter(QObject *o, QEvent *e)
+{
+    if(e->type() == QEvent::KeyPress)
+    {
+        QKeyEvent* event = static_cast<QKeyEvent*>(e);
+    }
+    return false;
+}
