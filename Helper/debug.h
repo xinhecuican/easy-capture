@@ -7,6 +7,7 @@ class Debug
 public:
     Debug();
     static void show_error_message(QString message);
+    static void debug_print_warning(QString message);
 };
 
 #endif // DEBUG_H

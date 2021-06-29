@@ -2,7 +2,7 @@
 #define SETTING_H
 
 #include <QMainWindow>
-#include "Widgets/Setting_widgets/tab_widget.h"
+#include "Panel/Widgets/tab_widget.h"
 #include<QMap>
 #include "Base/Window_base.h"
 #include<QCloseEvent>

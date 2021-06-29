@@ -21,8 +21,8 @@ class MainWindow : public Window_base
 public:
     Q_INVOKABLE MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void closeEvent(QCloseEvent* event);
-    bool eventFilter(QObject* o, QEvent* e);
+    void closeEvent(QCloseEvent* event)override;
+    bool eventFilter(QObject* o, QEvent* e)override;
 
 private:
     Ui::MainWindow *ui;

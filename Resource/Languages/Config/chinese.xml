@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings language="chinese">
+    <string id="capture_one_window" text="只允许一个捕获窗口"/>
+    <string id="capture_multi_window_separate" text="允许多个独立的捕获窗口"/>
+    <string id="capture_multi_window_combine" text="允许多个可合并的捕获窗口"/>
+</strings>

@@ -5,7 +5,7 @@
 #include<QComboBox>
 #include "Base/Tab_base.h"
 
-class Combo_tab : public QComboBox, Tab_base
+class Combo_tab : public QComboBox, public Tab_base
 {
 public:
     Combo_tab();
@@ -17,7 +17,6 @@ public:
     void reset() override;
 private:
     QString tab_name;
-    QString text;
     int default_index;
     int begin_index;
     int end_index;

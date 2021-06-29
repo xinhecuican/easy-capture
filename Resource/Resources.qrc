@@ -2,10 +2,18 @@
     <qresource prefix="/image">
         <file>capture.png</file>
         <file alias="setting.svg">设 置.svg</file>
+        <file>avator.png</file>
+        <file>cancel.svg</file>
+        <file>ok.svg</file>
     </qresource>
-    <qresource prefix="/qss"/>
-    <qresource prefix="/qss/button"/>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>
+    </qresource>
+    <qresource prefix="/Data">
+        <file>Languages/Config/chinese.xml</file>
+        <file>Languages/MainWIndow/chinese.xml</file>
+    </qresource>
+    <qresource prefix="/qss">
+        <file>capture_ok_button.qss</file>
     </qresource>
 </RCC>

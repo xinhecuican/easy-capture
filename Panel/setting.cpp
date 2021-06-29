@@ -9,13 +9,12 @@
 #include <QDialogButtonBox>
 
 Setting::Setting(QWidget *parent) :
-    Window_base(parent),
+    Window_base(parent, this, "Setting"),
     ui(new Ui::Setting)
 {
     ui->setupUi(this);
     ready_setting = QList<data>();
     all_setting = PList<Tab_widget*>();
-    setWindowTitle("设置");
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);//右下角按钮设置
     QPushButton* ok = new QPushButton(this);
@@ -50,15 +49,18 @@ Setting::Setting(QWidget *parent) :
 
     Tab_widget* capture_setting = new Tab_widget("捕获", this);
     QVector<QString> capture_type_name = QVector<QString>();
-    capture_type_name << "只允许一个捕获窗口" << "允许多个独立的捕获窗口" << "允许多个可合并的捕获窗口";
-    capture_setting->add_combo_option("capture_type", "捕获窗口数量设置", capture_type_name, 0, 2, [=](int index){
-        int before_index = capture_setting->get_default_index(Tab_widget::COMBO, "capture_type");
+    capture_type_name << Config::get_config_name(Config::capture_one_window)
+                      << Config::get_config_name(Config::capture_multi_window_separate)
+                      << Config::get_config_name(Config::capture_multi_window_combine);
+    capture_setting->add_combo_option("capture_type", "{biSbDKXbuW}捕获窗口数量设置", capture_type_name,
+                                      Config::capture_window_num_begin, Config::capture_window_num_end, [=](int index){
+        int before_index = capture_setting->get_default_index("capture_type");
         ready_setting.append(data(before_index, false));
-        ready_setting.append(data(index+capture_setting->get_begin_index(Tab_widget::COMBO, "capture_type"), true));
+        ready_setting.append(data(index+capture_setting->get_begin_index("capture_type"), true));
         capture_setting->set_dirty(true);
     });
     all_setting.append(capture_setting);
-    ui->tabWidget->addTab(capture_setting, "捕获");
+    ui->tabWidget->addTab(capture_setting, MString::search("{23ih0Dr8Na}捕获"));
 }
 
 Setting::~Setting()
@@ -87,4 +89,5 @@ void Setting::on_window_cancal()
 void Setting::on_window_select()
 {
     ui->tabWidget->setCurrentIndex(0);
+    update();
 }

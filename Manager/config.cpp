@@ -3,154 +3,112 @@
 #include<QMessageBox>
 #include<QJsonObject>
 #include<QJsonDocument>
+#include<QDomDocument>
 #include<QDebug>
+#include "Helper/Serialize.h"
+#include "Helper/mstring.h"
 
-
-const QString Config::bool_setting_name[] =
+const int Config::default_settings[] =
 {
-    "capture_one_window",
-    "capture_multi_window_separate",//不同窗口之间不结合
-    "capture_multi_window_combine",//多个窗口碰到自动结合
-};
-
-const bool Config::default_bool_settings[] =
-{
-    true,
+    true,//capture_one_window
     false,
+    false,
+    true,//chinese
     false
 };
 
-QMap<int, bool> Config::all_bool_settings = QMap<int, bool>();
+DEFINE_STRING(Config);
+
+QMap<int, int> Config::all_settings = QMap<int, int>();
+Config* Config::_instance = NULL;
 
 Config::Config()
 {
+    is_loading_translate = false;
+}
 
+QString Config::read_translate(int type)
+{
+    if(!is_loading_translate)
+    {
+        MString::load_from_file(":/Data/Languages/Config/");
+        is_loading_translate = true;
+    }
+    return MString::search("{" + eto_string((setting)type) + "}");
+}
+
+void Config::serialized(QJsonObject* json)
+{
+    for(setting i=capture_one_window; i<setting::COUNT; i = setting(i + 1))
+    {
+        json->insert(eto_string((setting)i), all_settings[i]);
+    }
+}
+
+void Config::deserialized(QJsonObject* json)
+{
+    for(int i=0; i<COUNT; i++)
+    {
+        all_settings[i] = (*json)[eto_string((setting)i)].toInt();
+    }
 }
 
 void Config::save_to_config()
 {
-    QDir base_dir = QDir("Data");
-    if(!base_dir.exists())
-    {
-        QDir dir;
-        dir.mkdir("Data");
-    }
-    QFile file(base_dir.path() + "/config.json");
-    QJsonObject jsonObject;
-    try
-    {
-        file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate);
-    }
-    catch (...)
-    {
-        QMessageBox::critical(NULL, "错误", "配置文件打开错误",
-                              QMessageBox::Yes, QMessageBox::Yes);
-        file.close();
-    }
-    if(!file.exists())
-    {
-        for(int i=0; i<num_of_config; i++)
-        {
-            jsonObject.insert(bool_setting_name[i], default_bool_settings[i]);
-        }
-    }
-    else
-    {
-
-        for(int i=0; i<num_of_config; i++)
-        {
-            jsonObject.insert(bool_setting_name[i], all_bool_settings[i]);
-        }
-
-    }
-    QJsonDocument jsonDoc;
-    jsonDoc.setObject(jsonObject);
-    file.write(jsonDoc.toJson());
-    file.close();
-
+    Serialize::serialize("Data/config.json", instance());
 }
 
 void Config::load_config()
 {
-    QFile file("Data/config.json");
-    if(!file.exists())
+    if(!Serialize::deserialize("Data/config.json", instance()))
     {
-        for(int i=0; i<num_of_config; i++)
+        for(int i=0; i<COUNT; i++)
         {
-            all_bool_settings[i] = default_bool_settings[i];
+            all_settings[i] = default_settings[i];
         }
-        return;
-    }
-    else
-    {
-        try
-        {
-            file.open(QIODevice::ReadOnly | QIODevice::Text);
-        } catch (...) {
-            QMessageBox::critical(NULL, "错误", "配置文件打开错误",
-                                  QMessageBox::Yes, QMessageBox::Yes);
-            file.close();
-        }
-
-        QByteArray allData = file.readAll();
-        file.close();
-
-        QJsonParseError json_error;
-           QJsonDocument jsonDoc(QJsonDocument::fromJson(allData, &json_error));
-        if(json_error.error != QJsonParseError::NoError)
-        {
-            QMessageBox::critical(NULL, "错误", "配置文件打开错误",
-                                  QMessageBox::Yes, QMessageBox::Yes);
-            return;
-        }
-
-        QJsonObject rootObj = jsonDoc.object();
-        for(int i=0; i<num_of_config; i++)
-        {
-            all_bool_settings[i] = rootObj[bool_setting_name[i]].toBool();
-        }
+        save_to_config();
     }
 }
 
-bool Config::get_config(setting type)
+int Config::get_config(setting type)
 {
-    return all_bool_settings[type];
+    return all_settings[type];
 }
 
-bool Config::get_config(QString type)
+int Config::get_config(QString type)
 {
-    for(int i=0; i<bool_setting_name->size(); i++)
+    for(int i=0; i<COUNT; i++)
     {
-        if(bool_setting_name[i] == type)
+        if(eto_string((setting)(i)) == type)
         {
-            return all_bool_settings[i];
+            return all_settings[i];
         }
     }
-    return false;
+    return 0;
 }
 
-bool Config::get_config(int type)
+int Config::get_config(int type)
 {
-    return all_bool_settings[type];
+    return all_settings[type];
 }
-void Config::set_config(setting type, bool data)
+void Config::set_config(setting type, int data)
 {
-    all_bool_settings[type] = data;
+    all_settings[type] = data;
 }
 
-void Config::set_config(int type, bool data)
+void Config::set_config(int type, int data)
 {
-    all_bool_settings[type] = data;
+    all_settings[type] = data;
 }
 
 QString Config::get_config_name(setting type)
 {
-    return bool_setting_name[type];
+    return instance()->read_translate(type);
 }
 
 QString Config::get_config_name(int type)
 {
-    return bool_setting_name[type];
+    return instance()->read_translate(type);
 }
 
 

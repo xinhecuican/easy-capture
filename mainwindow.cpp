@@ -2,15 +2,17 @@
 #include "ui_mainwindow.h"
 #include "Panel/setting.h"
 #include "Manager/window_manager.h"
+#include "Manager/key_manager.h"
+#include "Helper/mstring.h"
 
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : Window_base(parent)
+    : Window_base(parent, this, "MainWindow")
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setWindowTitle("简截");
+
 
     toolbar = new QToolBar();
     toolbar->setMovable(false);     // 设置工具栏不可移动,默认是可移动
@@ -18,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     new_button = new QToolButton(this);
     new_button_action = new Capture_button_action(new_button, this);
-    new_button->setText("新建");
+    new_button->setText(MString::search("{cR3jOHb9Qw}新建"));
     new_button->setIcon(QIcon(":/image/capture.png"));
     new_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolbar->addWidget(new_button);
@@ -39,7 +41,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    Config::save_to_config();
+    Key_manager::save();
 }
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e)
@@ -47,6 +49,20 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
     if(e->type() == QEvent::KeyPress)
     {
         QKeyEvent* event = static_cast<QKeyEvent*>(e);
+        if(!event->isAutoRepeat())
+        {
+            Key_manager::key_enter(event->key());
+        }
+        return true;
+    }
+    else if(e->type() == QEvent::KeyRelease)
+    {
+        QKeyEvent* event = static_cast<QKeyEvent*>(e);
+        if(!event->isAutoRepeat())
+        {
+            Key_manager::key_release(event->key());
+        }
+        return true;
     }
     return false;
 }

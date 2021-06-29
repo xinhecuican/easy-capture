@@ -6,7 +6,7 @@
 #include<functional>
 #include "Base/Tab_base.h"
 
-class Bool_tab : public QRadioButton, Tab_base
+class Bool_tab : public QRadioButton, public Tab_base
 {
 public:
     Bool_tab();

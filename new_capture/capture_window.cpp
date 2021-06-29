@@ -6,10 +6,11 @@
 #include<QPen>
 #include<QDesktopWidget>
 #include "Manager/config.h"
+#include "Manager/key_manager.h"
 
 
 Capture_window::Capture_window(QWidget *parent) :
-    Window_base(parent),
+    Window_base(parent, this, "Capture_window"),
     ui(new Ui::Capture_window)
 {
     ui->setupUi(this);
@@ -25,6 +26,7 @@ Capture_window::Capture_window(QWidget *parent) :
     this->ui->centralwidget->setMouseTracking(true);
     this->captured = new Capture_area(this);
 
+    load_key_event("Capture_window");
 }
 
 Capture_window::~Capture_window()
@@ -47,11 +49,10 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
     QPainterPath path;
     QPen pen(QColor(123, 123, 233));
     painter.setPen(pen);
-    QList<Capture_area::Capture_region> list = captured->get_region();
+    QList<Capture_region> list = captured->get_region();
     for(int i=0; i<list.size(); i++)
     {
         QPolygon temp_polygon = list[i].get_polygon();
-        qDebug() <<  temp_polygon;
         path.addPolygon(temp_polygon);
         path = path.simplified();//防止绘制环形时有一条回到原点的线
     }
@@ -60,6 +61,58 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
     painter.drawPath(path);
 }
 
+void Capture_window::load_key_event(QString name)
+{
+    if(!Key_manager::is_contains_window(name))
+    {
+        Key_manager::add_func(name, "leave", [=](bool is_enter){
+            if(is_enter)
+            {
+                Window_manager::pop_window();
+            }
+        });
+        Key_manager::add_func(name, "one_window", [=](bool is_enter){
+            if(is_enter)
+            {
+                for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
+                {
+                    Config::set_config((Config::setting)i, 0);
+                }
+                Config::set_config(Config::capture_one_window, 1);
+            }
+        });
+        Key_manager::add_func(name, "multi_window_separate", [=](bool is_enter){
+           if(is_enter)
+           {
+               for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
+               {
+                   Config::set_config((Config::setting)i, 0);
+               }
+               Config::set_config(Config::capture_multi_window_separate, 1);
+           }
+        });
+        Key_manager::add_func(name, "multi_window_combine", [=](bool is_enter){
+            if(is_enter)
+            {
+                for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
+                {
+                    Config::set_config((Config::setting)i, 0);
+                }
+                Config::set_config(Config::capture_multi_window_combine, 1);
+            }
+        });
+        Key_manager::add_func(name, "move_all", [=](bool is_enter)
+        {
+            if(is_enter)
+            {
+                captured->key_press = true;
+            }
+            else
+                captured->key_press = false;
+        });
+    }
+}
+/*
 void Capture_window::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Escape)
@@ -67,7 +120,7 @@ void Capture_window::keyPressEvent(QKeyEvent *event)
         Window_manager::pop_window();
     }
 }
-
+*/
 void Capture_window::mouseMoveEvent(QMouseEvent *event)
 {
     if(!button_click)//设置鼠标样式,必须先要设置mousetracking = true

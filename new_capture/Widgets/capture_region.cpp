@@ -1,4 +1,5 @@
 #include "capture_region.h"
+#include "Helper/stackdumper.h"
 
 Capture_region::Capture_region()
 {
@@ -14,18 +15,19 @@ Capture_region::Capture_region(QWidget* parent)
     free_points = PList<Stretch_point*>();
 }
 
-Capture_region::Capture_region(QWidget* parent, Capture_region region)
+Capture_region::Capture_region(Ipoint_position_change* region, QWidget* parent)
 {
     this->parent = parent;
-    polygon = QPolygon(region.polygon);
+    this->region = region;
+    polygon = QPolygon();
     points = PList<Stretch_point*>();
     free_points = PList<Stretch_point*>();
-    set_nodes();
 }
 
-Capture_region::Capture_region(QWidget* parent, QRect rect)
+Capture_region::Capture_region(Ipoint_position_change* region, QWidget* parent, QRect rect)
 {
     this->parent = parent;
+    this->region = region;
     polygon = QPolygon();
     points = PList<Stretch_point*>();
     free_points = PList<Stretch_point*>();
@@ -36,10 +38,12 @@ void Capture_region::clear()
 {
     polygon.clear();
     points.clear_all();
+    free_points.clear_all();
 }
 
 Capture_region::~Capture_region()
 {
+
 }
 
 void Capture_region::unit(Capture_region &region)
@@ -79,8 +83,14 @@ void Capture_region::move(int dx, int dy)
     }
 }
 
-void Capture_region::point_move(int index, int x, int y)
-{}
+void Capture_region::point_move(QList<int> position, int dx, int dy)
+{
+    for(int i=0; i<position.size(); i++)
+    {
+        polygon[position[i]].setX(polygon[position[i]].x() + dx);
+        polygon[position[i]].setY(polygon[position[i]].y() + dy);
+    }
+}
 
 bool Capture_region::contains(QPoint point)
 {
@@ -100,7 +110,7 @@ void Capture_region::set_nodes()
         return;
     }
     int len1 = list.size();
-    int points_len = len1;
+    int points_len = 1;
 
 
     QPoint point = list[0];
@@ -112,34 +122,37 @@ void Capture_region::set_nodes()
 
     for(int i=1; i<len1; i++)
     {
-
         if(point == list[i])
         {
             now->set_neigh(points[i-1]);
             points[i-1]->set_neigh(now);
             now->set_neigh(points[i-1]);
             now->set_index(i);
-            points_len--;
             if(i+1 < len1)
             {
-                now = points[i+1];
+                create_point(points_len);
+                now = points[points_len];
                 now->set_node(QPoint(-1, -1));
-            }
-            if(i+2 >= len1)
-            {
-                if(now != points[0])
-                    points[0]->set_index(i+1);
-                break;
+                points_len++;
+                if(i+2 >= len1)
+                {
+                    if(list[i] != points[0]->get_node())
+                    {
+                        points[0]->set_index(i+1);
+                        break;
+                    }
+                }
             }
         }
         else
         {
-            create_point(i);
-            points[i]->show();
-            points[i]->set_node(list[i]);
-            points[i]->set_neigh(points[i-1]);
-            points[i]->set_index(i);
-            points[i-1]->set_neigh(points[i]);
+            create_point(points_len);
+            points[points_len]->show();
+            points[points_len]->set_node(list[i]);
+            points[points_len]->set_neigh(points[points_len-1]);
+            points[points_len]->set_index(i);
+            points[points_len-1]->set_neigh(points[points_len]);
+            points_len++;
         }
     }
     //多余节点转换为空闲节点
@@ -147,9 +160,8 @@ void Capture_region::set_nodes()
     {
         free_points.append(points[i]);
         points[i]->hide();
+        points.removeAt(i);
     }
-    points.remove_range(points_len, points.size()-1);
-
 }
 
 void Capture_region::create_point(int index)
@@ -165,8 +177,8 @@ void Capture_region::create_point(int index)
     }
     else
     {
-        //Stretch_point* temp_point = new Stretch_point(this, parent);
-        //this->points.append(temp_point);
+        Stretch_point* temp_point = new Stretch_point(region, parent);
+        this->points.append(temp_point);
     }
 }
 

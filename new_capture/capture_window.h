@@ -5,7 +5,7 @@
 #include<QKeyEvent>
 #include<QMouseEvent>
 #include<QPushButton>
-#include "Widgets/Capture_widgets/capture_area.h"
+#include "new_capture/Widgets/capture_area.h"
 #include "Base/Window_base.h"
 
 
@@ -24,9 +24,10 @@ public:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-    void keyPressEvent(QKeyEvent* event) override;
+    //void keyPressEvent(QKeyEvent* event) override;
     void on_window_cancal() override;
     void on_window_select() override;
+    void load_key_event(QString name) override;
 
 private:
     Ui::Capture_window *ui;

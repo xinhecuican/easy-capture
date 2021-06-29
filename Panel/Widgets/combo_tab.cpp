@@ -14,13 +14,13 @@ Combo_tab::Combo_tab(QString tab_name, QVector<QString> name, int begin_index, i
     this->tab_name = tab_name;
     this->begin_index = begin_index;
     this->end_index = end_index;
-    this->text = text;
-    reset();
+
     setEditable(false);
     for(int i=0; i<name.size(); i++)
     {
         addItem(name[i]);
     }
+    reset();
     connect(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, f);
 }
 
@@ -47,7 +47,6 @@ void Combo_tab::reset()
         {
             default_index = i - begin_index;
             setCurrentIndex(default_index);
-            qDebug() << default_index;
             return;
         }
     }

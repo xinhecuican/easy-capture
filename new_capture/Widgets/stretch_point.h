@@ -4,15 +4,15 @@
 #include <QWidget>
 #include<QPushButton>
 #include<functional>
+#include "Ipoint_position_change.h"
 
-class Capture_area;
 class Stretch_point : public QPushButton
 {
 public:
     Stretch_point();
-    explicit Stretch_point(Capture_area* region, QPoint point);
-    explicit Stretch_point(Capture_area* region, QWidget* parent, QPoint point);
-    Stretch_point(Capture_area* region, QWidget* parent);
+    explicit Stretch_point(Ipoint_position_change* region, QPoint point);
+    explicit Stretch_point(Ipoint_position_change* region, QWidget* parent, QPoint point);
+    Stretch_point(Ipoint_position_change* region, QWidget* parent);
     ~Stretch_point();
     //void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
@@ -37,7 +37,7 @@ protected:
     QPoint get_angle_point();//获得对角线上的点，不能超过对角线
 private:
     int position;
-    Capture_area* region;
+    Ipoint_position_change* region;
     QWidget* parent;
     int index[7];//在polygon中的位置
     int index_count;

@@ -3,6 +3,7 @@
 #include "combo_tab.h"
 #include<QLabel>
 #include<QDebug>
+#include "Helper/mstring.h"
 
 Tab_widget::Tab_widget()
 {
@@ -44,7 +45,9 @@ void Tab_widget::add_bool_option(QString tab_name, QString name, int index, std:
 {
     Bool_tab* temp = new Bool_tab(tab_name, name, index, f, base);
     bool_widgets.push_back(temp);
+    widgets.push_back(temp);
     layout->addWidget(temp);
+    update();
 }
 
 void Tab_widget::add_combo_option(QString tab_name, QString text, QVector<QString> name, int begin_index, int end_index,
@@ -52,12 +55,14 @@ void Tab_widget::add_combo_option(QString tab_name, QString text, QVector<QStrin
 {
     Combo_tab* temp = new Combo_tab(tab_name, name, begin_index, end_index, f,  base);
     combo_option_widgets.push_back(temp);
+    widgets.push_back(temp);
     QHBoxLayout* hlayout = new QHBoxLayout(base);
     QLabel* label = new QLabel(base);
-    label->setText(text);
+    label->setText(MString::search(text));
     hlayout->addWidget(label);
     hlayout->addWidget(temp);
     layout->addLayout(hlayout);
+    update();
 }
 
 void Tab_widget::add_spacer(QString text)
@@ -65,9 +70,16 @@ void Tab_widget::add_spacer(QString text)
     layout->addSpacing(1);
 }
 
-int Tab_widget::get_default_index(Type type, QString name)
+int Tab_widget::get_default_index(QString name)
 {
-    switch(type)
+    for(int i=0; i<widgets.size(); i++)
+    {
+        if(widgets[i]->get_name() == name)
+        {
+            return widgets[i]->get_default_index();
+        }
+    }
+    /*switch(type)
     {
     case BOOL:
         for(int i=0; i<bool_widgets.size(); i++)
@@ -87,13 +99,20 @@ int Tab_widget::get_default_index(Type type, QString name)
             }
         }
         break;
-    }
+    }*/
     return 0;
 }
 
-int Tab_widget::get_begin_index(Type type, QString name)
+int Tab_widget::get_begin_index(QString name)
 {
-    switch(type)
+    for(int i=0; i<widgets.size(); i++)
+    {
+        if(widgets[i]->get_name() == name)
+        {
+            return widgets[i]->get_begin_index();
+        }
+    }
+    /*switch(type)
     {
     case BOOL:
         for(int i=0; i<bool_widgets.size(); i++)
@@ -113,14 +132,18 @@ int Tab_widget::get_begin_index(Type type, QString name)
             }
         }
         break;
-    }
+    }*/
     return 0;
 }
 
 void Tab_widget::reset()
 {
     dirty = false;
-    for(int i=0; i<combo_option_widgets.size(); i++)
+    for(int i=0; i<widgets.size(); i++)
+    {
+        widgets[i]->reset();
+    }
+    /*for(int i=0; i<combo_option_widgets.size(); i++)
     {
         combo_option_widgets[i]->reset();
     }
@@ -128,7 +151,8 @@ void Tab_widget::reset()
     for(int i=0; i<bool_widgets.size(); i++)
     {
         bool_widgets[i]->reset();
-    }
+    }*/
+    update();
 }
 
 bool Tab_widget::is_dirty()

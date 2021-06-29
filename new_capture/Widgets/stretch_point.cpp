@@ -1,4 +1,4 @@
-#include "capture_area.h"
+#include "stretch_point.h"
 #include<QPainter>
 #include "Manager/config.h"
 #include<QDebug>
@@ -17,7 +17,7 @@ Stretch_point::~Stretch_point()
     this->v_neigh = NULL;
 }
 
-Stretch_point::Stretch_point(Capture_area* region, QPoint point)
+Stretch_point::Stretch_point(Ipoint_position_change* region, QPoint point)
 {
     //this->point = point;
     this->region = region;
@@ -25,7 +25,7 @@ Stretch_point::Stretch_point(Capture_area* region, QPoint point)
     move(point.x()-OFFSET, point.y()-OFFSET);
 }
 
-Stretch_point::Stretch_point(Capture_area* region, QWidget* parent, QPoint point) : QPushButton(parent)
+Stretch_point::Stretch_point(Ipoint_position_change* region, QWidget* parent, QPoint point) : QPushButton(parent)
 {
     //this->point = point;
     this->parent = parent;
@@ -34,7 +34,7 @@ Stretch_point::Stretch_point(Capture_area* region, QWidget* parent, QPoint point
     move(point.x()-OFFSET, point.y()-OFFSET);
 }
 
-Stretch_point::Stretch_point(Capture_area* region, QWidget* parent):QPushButton(parent)
+Stretch_point::Stretch_point(Ipoint_position_change* region, QWidget* parent):QPushButton(parent)
 {
     this->parent = parent;
     this->region = region;
@@ -49,6 +49,7 @@ void Stretch_point::set_style(QString name)
     file.open(QFile::ReadOnly);
     QString str = file.readAll();
     this->setStyleSheet(str);
+    file.close();
 }
 
 //void Stretch_point::paintEvent(QPaintEvent *event)

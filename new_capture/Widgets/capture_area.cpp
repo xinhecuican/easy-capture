@@ -5,7 +5,9 @@
 #include<QPainter>
 #include<QDesktopWidget>
 #include<QApplication>
+#include<QScreen>
 #include "Manager/config.h"
+#include "Manager/window_manager.h"
 
 Capture_area::Capture_area(QWidget* parent):QWidget(parent)
 {
@@ -16,6 +18,7 @@ Capture_area::Capture_area(QWidget* parent):QWidget(parent)
     regions = QList<Capture_region>();
     key_press = false;
     begin_draw = false;
+    button_box = new QDialogButtonBox(parent);
 
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setMouseTracking(true);
@@ -35,6 +38,10 @@ void Capture_area::reset()
     begin_draw = false;
     key_press = false;
     _is_press_region = false;
+    button_box->removeButton(ok);
+    button_box->removeButton(cancel);
+    delete ok;
+    delete cancel;
 }
 
 
@@ -63,7 +70,6 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
     }
     else
     {
-
         end_point = event->globalPos();
         int w = end_point.x() - begin_point.x();
         int h = end_point.y() - begin_point.y();
@@ -83,7 +89,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
             }
             combine_region(temp_region);
         }
-        else if(Config::get_config(Config::capture_multi_window_separate))
+        else if(Config::get_config(Config::capture_multi_window_separate) && now_index != -1)
         {
             regions[now_index].move(w, h);
         }
@@ -93,6 +99,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
 void Capture_area::mousePressEvent(QMouseEvent *event)
 {
     event->accept();
+    button_box->hide();
     if(!region_contain(event->globalPos()))
     {
         _is_press_region = false;
@@ -112,6 +119,7 @@ void Capture_area::mousePressEvent(QMouseEvent *event)
         _is_press_region = true;
         begin_point = event->globalPos();
         end_point = begin_point;
+        now_index = -1;
         if(Config::get_config(Config::capture_multi_window_separate))
         {
             for(int i=0; i<regions.count(); i++)
@@ -133,7 +141,73 @@ void Capture_area::mouseReleaseEvent(QMouseEvent *event)
     {
         begin_draw = false;
         QRect rect = QRect(get_x(), get_y(), get_w(), get_h());
-        combine_region(rect);
+        if(rect.width() > 10 && rect.height() > 10)
+            combine_region(rect);
+    }
+    if(button_box->children().size() == 1)//默认有一个Layout组件
+    {
+        ok = new QPushButton(parent);
+        ok->setIcon(QIcon(":/image/ok.svg"));
+        QFile file(":/qss/capture_ok_button.qss");
+        file.open(QFile::ReadOnly);
+        QString str = file.readAll();
+        file.close();
+        ok->setStyleSheet(str);
+        ok->connect(ok, &QPushButton::clicked, this, [=](){
+            parent->hide();
+            QScreen * screen = QGuiApplication::primaryScreen();
+            QPixmap p = screen->grabWindow(0);
+            QPixmap temp = p.copy();
+            temp.fill(Qt::transparent);
+            //p.fill(Qt::transparent);
+            QPainter painter(&temp);
+            painter.setCompositionMode(QPainter::CompositionMode_Source);
+            painter.drawPixmap(0, 0, p);
+            painter.setCompositionMode( QPainter::CompositionMode_DestinationIn );
+            painter.setBackgroundMode(Qt::OpaqueMode);
+            QPainterPath path;
+            for(int i=0; i<regions.size(); i++)
+            {
+                QPolygon temp_polygon = regions[i].get_polygon();
+                path.addPolygon(temp_polygon);
+                path = path.simplified();//防止绘制环形时有一条回到原点的线
+            }
+            QPainterPath temp_path = QPainterPath();
+            temp_path.addRect(p.rect());
+            temp_path = temp_path.subtracted(path);
+            painter.fillPath(temp_path, QColor(0, 0, 0, 0));
+            //painter.drawPath(temp_path);
+            temp.save("D:/test.png");
+            parent->show();
+        });
+        cancel = new QPushButton(parent);
+        cancel->setIcon(QIcon(":/image/cancel.svg"));
+        cancel->setStyleSheet(str);
+        cancel->connect(cancel, &QPushButton::clicked, this, [=](){Window_manager::pop_window();});
+        button_box->addButton(ok, QDialogButtonBox::AcceptRole);
+        button_box->addButton(cancel, QDialogButtonBox::RejectRole);
+        button_box->setFixedSize(100, 50);
+    }
+    cal_button_pos();
+    button_box->show();
+}
+
+void Capture_area::cal_button_pos()
+{
+    QRect bound = bounded_rect();
+    QDesktopWidget* desktop = QApplication::desktop();
+    QRect total = desktop->screenGeometry();
+    if(bound.right()+100 < total.right() && bound.bottom() + 30 < total.bottom())
+    {
+        button_box->move(bound.bottomRight());
+    }
+    else if(bound.left() - 100 > total.left() &&  bound.top() - 30 > total.top())
+    {
+        button_box->move(bound.topLeft() - QPoint(100, 30));
+    }
+    else
+    {
+        button_box->move(bound.bottomRight() - QPoint(100, 30));
     }
 }
 
@@ -214,20 +288,21 @@ void Capture_area::combine_region(Capture_region region)
     add_region(region);
 }
 
-void Capture_area::keyPressEvent(QKeyEvent *event)
+QRect Capture_area::bounded_rect()
 {
-    if(event->key() == Qt::Key_Control)
+    int tx = 0x3f3f3f3f;
+    int ty = -10000;
+    int bx = -10000;
+    int by = 0x3f3f3f3f;
+    for(int i=0; i<regions.size(); i++)
     {
-        key_press = true;
+        QRect temp = regions[i].get_polygon().boundingRect();
+        tx = temp.x() < tx ? temp.x() : tx;
+        ty = temp.y() > ty ? temp.y() : ty;
+        bx = temp.right() > bx ? temp.right() : bx;
+        by = temp.bottom() < by ? temp.bottom() : by;
     }
-}
-
-void Capture_area::keyReleaseEvent(QKeyEvent *event)
-{
-    if(event->key() == Qt::Key_Control)
-    {
-        key_press = false;
-    }
+    return QRect(tx, ty, bx-tx, by - ty);
 }
 
 int Capture_area::get_x()
@@ -265,7 +340,7 @@ bool Capture_area::is_press_region()
     return _is_press_region;
 }
 
-QList<Capture_area::Capture_region> Capture_area::get_region()
+QList<Capture_region> Capture_area::get_region()
 {
     return regions;
 }
@@ -285,4 +360,5 @@ bool Capture_area::region_contain(QPoint p)
 void Capture_area::control_point_position_change(int index, QList<int> position, int dx, int dy)
 {
     regions[index].point_move(position, dx, dy);
+    cal_button_pos();
 }

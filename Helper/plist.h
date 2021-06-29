@@ -2,6 +2,7 @@
 #define PLIST_H
 #include<QList>
 #include "qlist.h"
+#include<QDebug>
 
 /*
  * 存储指针的列表，删除时会释放内存

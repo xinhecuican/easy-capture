@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -17,44 +17,59 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Helper/debug.cpp \
+    Helper/mstring.cpp \
     Helper/my_math.cpp \
+    Helper/stackdumper.cpp \
     Manager/config.cpp \
     Manager/key_manager.cpp \
     Manager/window_manager.cpp \
+    Paint/Widgets/paint_area.cpp \
+    Paint/Widgets/paint_setting_panel.cpp \
+    Paint/paint_window.cpp \
+    Panel/Widgets/combo_tab.cpp \
+    Panel/Widgets/tab_widget.cpp \
+    Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
-    Widgets/Capture_widgets/capture_area.cpp \
-    Widgets/Capture_widgets/capture_region.cpp \
-    Widgets/Capture_widgets/stretch_point.cpp \
-    Widgets/Setting_widgets/bool_tab.cpp \
-    Widgets/Setting_widgets/combo_tab.cpp \
-    Widgets/Setting_widgets/tab_widget.cpp \
     main.cpp \
     mainwindow.cpp \
     new_capture/Capture_button_action.cpp \
+    new_capture/Widgets/capture_area.cpp \
+    new_capture/Widgets/capture_region.cpp \
+    new_capture/Widgets/stretch_point.cpp \
     new_capture/capture_window.cpp
 
 HEADERS += \
+    Base/Serializable.h \
     Base/Tab_base.h \
     Base/Window_base.h \
+    Helper/EnumReflect.h \
     Helper/Reflect.h \
+    Helper/Serialize.h \
     Helper/debug.h \
+    Helper/mstring.h \
     Helper/my_math.h \
     Helper/plist.h \
+    Helper/stackdumper.h \
     Manager/config.h \
     Manager/key_manager.h \
     Manager/window_manager.h \
+    Paint/Widgets/paint_area.h \
+    Paint/Widgets/paint_setting_panel.h \
+    Paint/paint_window.h \
+    Panel/Widgets/bool_tab.h \
+    Panel/Widgets/combo_tab.h \
+    Panel/Widgets/tab_widget.h \
     Panel/setting.h \
-    Widgets/Capture_widgets/capture_area.h \
-    Widgets/Capture_widgets/capture_region.h \
-    Widgets/Capture_widgets/stretch_point.h \
-    Widgets/Setting_widgets/bool_tab.h \
-    Widgets/Setting_widgets/combo_tab.h \
-    Widgets/Setting_widgets/tab_widget.h \
     mainwindow.h \
     new_capture/Capture_button_action.h \
+    new_capture/Widgets/Ipoint_position_change.h \
+    new_capture/Widgets/capture_area.h \
+    new_capture/Widgets/capture_region.h \
+    new_capture/Widgets/stretch_point.h \
     new_capture/capture_window.h
 
 FORMS += \
+    Paint/paint_window.ui \
     Panel/setting.ui \
     mainwindow.ui \
     new_capture/capture_window.ui
