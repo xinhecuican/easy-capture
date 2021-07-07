@@ -8,6 +8,7 @@ public:
     virtual int get_begin_index()=0;
     virtual int get_default_index()=0;
     virtual void reset()=0;
+    virtual ~Tab_base(){};
 };
 
 #endif // TAB_BASE_H

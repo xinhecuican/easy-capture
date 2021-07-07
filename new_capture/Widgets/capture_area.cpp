@@ -15,7 +15,7 @@ Capture_area::Capture_area(QWidget* parent):QWidget(parent)
     setFixedSize(0, 0);
     begin_point = QPoint(0, 0);
     end_point = QPoint(0, 0);
-    regions = QList<Capture_region>();
+    regions = PList<Capture_region*>();
     key_press = false;
     begin_draw = false;
     button_box = new QDialogButtonBox(parent);
@@ -30,11 +30,7 @@ void Capture_area::reset()
     begin_point.setY(0);
     end_point.setX(0);
     end_point.setY(0);
-    for(int i=0; i<regions.size(); i++)
-    {
-        regions[i].clear();
-    }
-    regions.clear();
+    regions.clear_all();
     begin_draw = false;
     key_press = false;
     _is_press_region = false;
@@ -65,7 +61,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
         begin_point = end_point;
         for(int i=0; i<regions.count(); i++)
         {
-            regions[i].move(w, h);
+            regions[i]->move(w, h);
         }
     }
     else
@@ -76,12 +72,12 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
         begin_point = end_point;
         if(Config::get_config(Config::capture_multi_window_combine))
         {
-            Capture_region temp_region ;
+            Capture_region* temp_region ;
             for(int i=0; i<regions.count(); i++)
             {
-                if(regions[i].contains(QPoint(event->globalX(), event->globalY())))
+                if(regions[i]->contains(QPoint(event->globalX(), event->globalY())))
                 {
-                    regions[i].move(w, h);
+                    regions[i]->move(w, h);
                     temp_region = regions[i];
                     regions.removeAt(i);
                     break;
@@ -91,7 +87,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
         }
         else if(Config::get_config(Config::capture_multi_window_separate) && now_index != -1)
         {
-            regions[now_index].move(w, h);
+            regions[now_index]->move(w, h);
         }
     }
 }
@@ -124,7 +120,7 @@ void Capture_area::mousePressEvent(QMouseEvent *event)
         {
             for(int i=0; i<regions.count(); i++)
             {
-                if(regions[i].contains(event->globalPos()))
+                if(regions[i]->contains(event->globalPos()))
                 {
                     now_index = i;
                 }
@@ -153,33 +149,7 @@ void Capture_area::mouseReleaseEvent(QMouseEvent *event)
         QString str = file.readAll();
         file.close();
         ok->setStyleSheet(str);
-        ok->connect(ok, &QPushButton::clicked, this, [=](){
-            parent->hide();
-            QScreen * screen = QGuiApplication::primaryScreen();
-            QPixmap p = screen->grabWindow(0);
-            QPixmap temp = p.copy();
-            temp.fill(Qt::transparent);
-            //p.fill(Qt::transparent);
-            QPainter painter(&temp);
-            painter.setCompositionMode(QPainter::CompositionMode_Source);
-            painter.drawPixmap(0, 0, p);
-            painter.setCompositionMode( QPainter::CompositionMode_DestinationIn );
-            painter.setBackgroundMode(Qt::OpaqueMode);
-            QPainterPath path;
-            for(int i=0; i<regions.size(); i++)
-            {
-                QPolygon temp_polygon = regions[i].get_polygon();
-                path.addPolygon(temp_polygon);
-                path = path.simplified();//防止绘制环形时有一条回到原点的线
-            }
-            QPainterPath temp_path = QPainterPath();
-            temp_path.addRect(p.rect());
-            temp_path = temp_path.subtracted(path);
-            painter.fillPath(temp_path, QColor(0, 0, 0, 0));
-            //painter.drawPath(temp_path);
-            temp.save("D:/test.png");
-            parent->show();
-        });
+        ok->connect(ok, &QPushButton::clicked, this, &Capture_area::on_click_ok);
         cancel = new QPushButton(parent);
         cancel->setIcon(QIcon(":/image/cancel.svg"));
         cancel->setStyleSheet(str);
@@ -216,27 +186,27 @@ void Capture_area::paintEvent(QPaintEvent *event)
 
 }
 
-void Capture_area::add_region(Capture_region &region)
+void Capture_area::add_region(Capture_region* region)
 {
     regions.append(region);
 }
 
-void Capture_area::on_region_remove(Capture_region &region)
+void Capture_area::on_region_remove(Capture_region* region)
 {
-    region.clear();
+    region->clear();
 }
 
 
 void Capture_area::combine_region(QRect rect)
 {
-    QList<Capture_region> temp;
-    QList<Capture_region>::iterator iter = regions.begin();
+    PList<Capture_region*> temp;
+    PList<Capture_region*>::iterator iter = regions.begin();
     while(iter != regions.end())
     {
-        if(iter->intersected(rect))
+
+        if((*iter)->intersected(rect))
         {
             temp.append(*iter);
-            on_region_remove(*iter);
             iter = regions.erase(iter);
         }
         else
@@ -245,31 +215,31 @@ void Capture_area::combine_region(QRect rect)
         }
     }
 
-    Capture_region temp_region = Capture_region(this, parent, rect);
+    Capture_region* temp_region = new Capture_region(this, parent, rect);
     if(!temp.isEmpty())
     {
-        foreach(Capture_region region, temp)
+        foreach(Capture_region* region, temp)
         {
-            temp_region.unit(region);
+            temp_region->unit(*region);
         }
     }
     add_region(temp_region);
+    temp.clear_all();
     for(int i=0; i<regions.size(); i++)
     {
-        regions[i].on_pos_change(i);
+        regions[i]->on_pos_change(i);
     }
 }
 
-void Capture_area::combine_region(Capture_region region)
+void Capture_area::combine_region(Capture_region* region)
 {
-    QList<Capture_region> temp;
-    QList<Capture_region>::iterator iter = regions.begin();
+    PList<Capture_region*> temp;
+    PList<Capture_region*>::iterator iter = regions.begin();
     while(iter != regions.end())
     {
-        if(iter->intersected(region))
+        if((*iter)->intersected(*region))
         {
             temp.append(*iter);
-            on_region_remove(*iter);
             iter = regions.erase(iter);
         }
         else
@@ -280,12 +250,13 @@ void Capture_area::combine_region(Capture_region region)
 
     if(!temp.isEmpty())
     {
-        foreach(Capture_region cregion, temp)
+        foreach(Capture_region* cregion, temp)
         {
-            region.unit(cregion);
+            region->unit(*cregion);
         }
     }
     add_region(region);
+    temp.clear_all();
 }
 
 QRect Capture_area::bounded_rect()
@@ -296,7 +267,7 @@ QRect Capture_area::bounded_rect()
     int by = 0x3f3f3f3f;
     for(int i=0; i<regions.size(); i++)
     {
-        QRect temp = regions[i].get_polygon().boundingRect();
+        QRect temp = regions[i]->get_polygon().boundingRect();
         tx = temp.x() < tx ? temp.x() : tx;
         ty = temp.y() > ty ? temp.y() : ty;
         bx = temp.right() > bx ? temp.right() : bx;
@@ -340,16 +311,16 @@ bool Capture_area::is_press_region()
     return _is_press_region;
 }
 
-QList<Capture_region> Capture_area::get_region()
+QList<Capture_region*>& Capture_area::get_region()
 {
     return regions;
 }
 
 bool Capture_area::region_contain(QPoint p)
 {
-    foreach(Capture_region region, regions)
+    foreach(Capture_region* region, regions)
     {
-        if(region.contains(p))
+        if(region->contains(p))
         {
             return true;
         }
@@ -359,6 +330,41 @@ bool Capture_area::region_contain(QPoint p)
 
 void Capture_area::control_point_position_change(int index, QList<int> position, int dx, int dy)
 {
-    regions[index].point_move(position, dx, dy);
+    regions[index]->point_move(position, dx, dy);
     cal_button_pos();
+}
+
+void Capture_area::on_click_ok()
+{
+    parent->hide();
+    QScreen * screen = QGuiApplication::primaryScreen();
+    QPixmap p = screen->grabWindow(0);
+    QPixmap temp = p.copy();
+    temp.fill(Qt::transparent);
+    //p.fill(Qt::transparent);
+    QPainter painter(&temp);
+    painter.setCompositionMode(QPainter::CompositionMode_Source);
+    painter.drawPixmap(0, 0, p);
+    painter.setCompositionMode( QPainter::CompositionMode_DestinationIn );
+    painter.setBackgroundMode(Qt::OpaqueMode);
+    QPainterPath path;
+    QPolygon transmit_polygon = QPolygon();
+    for(int i=0; i<regions.size(); i++)
+    {
+        QPolygon temp_polygon = regions[i]->get_polygon();
+        path.addPolygon(temp_polygon);
+        transmit_polygon = transmit_polygon.united(temp_polygon);
+        path = path.simplified();//防止绘制环形时有一条回到原点的线
+    }
+    QPainterPath temp_path = QPainterPath();
+    temp_path.addRect(p.rect());
+    temp_path = temp_path.subtracted(path);
+    painter.fillPath(temp_path, QColor(0, 0, 0, 0));
+    QRect rect = transmit_polygon.boundingRect();
+    temp.copy(rect).save("D:/temp.png");
+    QPixmap temp_copy = temp.copy(rect);
+    rect.moveTo(0, 0);
+    Window_manager::change_window("Paint_window");
+    Window_manager::get_window("Paint_window")->
+            set_pic(temp_copy, rect);
 }

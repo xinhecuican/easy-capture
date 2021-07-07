@@ -16,6 +16,7 @@ public:
     Capture_region(QWidget* parent);
     Capture_region(Ipoint_position_change* region, QWidget* parent);
     Capture_region(Ipoint_position_change* region, QWidget* parent, QRect rect);
+    Capture_region(Ipoint_position_change* region, QWidget* parent, QPolygon polygon);
     ~Capture_region();
     void unit(QRect &rect);
     void unit(Capture_region &region);
@@ -27,6 +28,7 @@ public:
     void clear();
     inline int get_size(){return points.size();}
     void on_pos_change(int pos);//当在capture_area中的位置改变时触发
+    void set_constraint(int minx, int miny, int maxx, int maxy);
     QPolygon get_polygon();
 private:
     QWidget* parent;
@@ -36,7 +38,6 @@ private:
     PList<Stretch_point*> free_points;
     void set_nodes();
     void create_point(int index);
-
 };
 
 #endif // CAPTURE_REGION_H

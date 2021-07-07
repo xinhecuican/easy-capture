@@ -24,7 +24,11 @@ SOURCES += \
     Manager/key_manager.cpp \
     Manager/window_manager.cpp \
     Paint/Widgets/paint_area.cpp \
+    Paint/Widgets/paint_layer.cpp \
     Paint/Widgets/paint_setting_panel.cpp \
+    Paint/Widgets/picture_layer.cpp \
+    Paint/Widgets/recoder.cpp \
+    Paint/Widgets/style_manager.cpp \
     Paint/paint_window.cpp \
     Panel/Widgets/combo_tab.cpp \
     Panel/Widgets/tab_widget.cpp \
@@ -39,6 +43,7 @@ SOURCES += \
     new_capture/capture_window.cpp
 
 HEADERS += \
+    Base/Record_element.h \
     Base/Serializable.h \
     Base/Tab_base.h \
     Base/Window_base.h \
@@ -53,8 +58,12 @@ HEADERS += \
     Manager/config.h \
     Manager/key_manager.h \
     Manager/window_manager.h \
+    Paint/Data/paint_data.h \
     Paint/Widgets/paint_area.h \
     Paint/Widgets/paint_setting_panel.h \
+    Paint/Widgets/picture_layer.h \
+    Paint/Widgets/recoder.h \
+    Paint/Widgets/style_manager.h \
     Paint/paint_window.h \
     Panel/Widgets/bool_tab.h \
     Panel/Widgets/combo_tab.h \

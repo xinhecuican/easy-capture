@@ -19,6 +19,7 @@ public:
     {
 
     }
+    virtual ~Window_base(){};
     /*
      * 载入键盘输入时触发的事件
      * 注意如果要持续触发需要自己设置一个key进行检测
@@ -28,6 +29,8 @@ public:
     {
 
     }
+
+    virtual void set_pic(QPixmap pix, QRect rect){};
 
 
 

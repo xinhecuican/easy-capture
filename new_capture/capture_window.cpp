@@ -49,10 +49,10 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
     QPainterPath path;
     QPen pen(QColor(123, 123, 233));
     painter.setPen(pen);
-    QList<Capture_region> list = captured->get_region();
+    QList<Capture_region*> list = captured->get_region();
     for(int i=0; i<list.size(); i++)
     {
-        QPolygon temp_polygon = list[i].get_polygon();
+        QPolygon temp_polygon = list[i]->get_polygon();
         path.addPolygon(temp_polygon);
         path = path.simplified();//防止绘制环形时有一条回到原点的线
     }
@@ -148,6 +148,15 @@ void Capture_window::mouseMoveEvent(QMouseEvent *event)
 
 void Capture_window::mousePressEvent(QMouseEvent *event)
 {
+    if(event->button() == Qt::MidButton)
+    {
+        captured->on_click_ok();
+        return;
+    }
+    else if(event->button() == Qt::RightButton)
+    {
+        return;
+    }
     button_click = true;
     captured->mousePressEvent(event);
     update();

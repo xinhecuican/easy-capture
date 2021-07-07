@@ -34,6 +34,16 @@ Capture_region::Capture_region(Ipoint_position_change* region, QWidget* parent, 
     unit(rect);
 }
 
+Capture_region::Capture_region(Ipoint_position_change* region, QWidget* parent, QPolygon polygon)
+{
+    this->parent = parent;
+    this->region = region;
+    this->polygon = polygon;
+    points = PList<Stretch_point*>();
+    free_points = PList<Stretch_point*>();
+    set_nodes();
+}
+
 void Capture_region::clear()
 {
     polygon.clear();
@@ -43,7 +53,7 @@ void Capture_region::clear()
 
 Capture_region::~Capture_region()
 {
-
+    clear();
 }
 
 void Capture_region::unit(Capture_region &region)
@@ -102,6 +112,7 @@ QPolygon Capture_region::get_polygon()
     return polygon;
 }
 
+///每次区域变化之后调用这个函数重新设置Stretch_point
 void Capture_region::set_nodes()
 {
     QList<QPoint> list = polygon.toList();
@@ -112,36 +123,38 @@ void Capture_region::set_nodes()
     int len1 = list.size();
     int points_len = 1;
 
-
-    QPoint point = list[0];
     create_point(0);
-    points[0]->set_node(point);
+    points[0]->set_node(list[0]);
     points[0]->show();
     points[0]->set_index(0);
     Stretch_point* now = points[0];
 
     for(int i=1; i<len1; i++)
     {
-        if(point == list[i])
+        if(now->get_node().x() + OFFSET == list[i].x() && now->get_node().y()  + OFFSET== list[i].y())
         {
-            now->set_neigh(points[i-1]);
-            points[i-1]->set_neigh(now);
-            now->set_neigh(points[i-1]);
+            now->set_neigh(points[points_len-1]);
+            points[points_len-1]->set_neigh(now);
             now->set_index(i);
-            if(i+1 < len1)
+            if(i+2 < len1)
             {
                 create_point(points_len);
                 now = points[points_len];
-                now->set_node(QPoint(-1, -1));
+                now->set_node(list[i+1]);
+                now->show();
+                now->set_index(i+1);
                 points_len++;
-                if(i+2 >= len1)
-                {
-                    if(list[i] != points[0]->get_node())
-                    {
-                        points[0]->set_index(i+1);
-                        break;
-                    }
-                }
+                i++;
+            }
+            else if(list[i].x() != points[0]->get_node().x() + OFFSET
+                    || list[i].y() != points[0]->get_node().y() + OFFSET)
+            {
+                points[0]->set_index(i+1);
+                break;
+            }
+            else
+            {
+                break;
             }
         }
         else
@@ -187,6 +200,18 @@ void Capture_region::on_pos_change(int pos)
     for(int i=0; i<points.size(); i++)
     {
         points[i]->set_pos(pos);
+    }
+}
+
+/*
+ * 对每个点设置限制，并且更新的节点需要重新设置，目前只在paint中使用
+ * 因为paint中的节点不会更新
+ */
+void Capture_region::set_constraint(int minx, int miny, int maxx, int maxy)
+{
+    for(int i=0; i<points.size(); i++)
+    {
+        points[i]->set_constraints(minx, miny, maxx, maxy);
     }
 }
 

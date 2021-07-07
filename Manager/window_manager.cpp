@@ -101,3 +101,8 @@ void Window_manager::create_window(QString name)
         }
     }
 }
+
+void Window_manager::close()
+{
+    window_list["MainWindow"]->close();
+}

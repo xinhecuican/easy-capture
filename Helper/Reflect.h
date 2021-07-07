@@ -6,6 +6,10 @@
 class Reflect
 {
 public:
+    ///使用方法：
+    /// 继承QWidget为基础的类并且添加Q_OBJECT
+    /// 构造函数前添加Q_INVOKABLE
+    /// 调用registerClass
     template<typename T>
     static void registerClass()
     {

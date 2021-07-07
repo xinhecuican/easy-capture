@@ -5,6 +5,7 @@
 #include<QPushButton>
 #include<functional>
 #include "Ipoint_position_change.h"
+#define OFFSET 7
 
 class Stretch_point : public QPushButton
 {
@@ -25,6 +26,7 @@ public:
     void set_node(QPoint point);
     void set_index(int index);
     void set_pos(int pos);
+    void set_constraints(int minx, int miny, int maxx, int maxy);
 
     QList<int> get_index();
     int getx();
@@ -46,6 +48,8 @@ private:
     QPoint point;
     QPoint begin_point;
     void set_style(QString name="custom_button.qss");
+    bool is_constraints_effect;
+    int constraints[4];
 };
 
 #endif // STRETCH_POINT_H

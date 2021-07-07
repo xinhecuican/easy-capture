@@ -31,6 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
         Window_manager::change_window("Setting");
     });
     toolbar->addWidget(setting_button);
+    setWindowFlag(Qt::WindowMinimizeButtonHint);
+    setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
 MainWindow::~MainWindow()

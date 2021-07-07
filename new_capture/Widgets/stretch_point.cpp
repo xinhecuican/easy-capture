@@ -4,7 +4,7 @@
 #include<QDebug>
 #include <iostream>
 #include "Helper/debug.h"
-#define OFFSET 7
+
 
 Stretch_point::Stretch_point()
 {
@@ -45,6 +45,7 @@ void Stretch_point::set_style(QString name)
 {
 
     index_count = 0;
+    is_constraints_effect = false;
     QFile file(":/qss/button/capture_window_button/" + name);
     file.open(QFile::ReadOnly);
     QString str = file.readAll();
@@ -82,12 +83,27 @@ void Stretch_point::mouseMoveEvent(QMouseEvent *event)
     int dx = event->globalX() - begin_point.x();
     int dy = event->globalY() - begin_point.y();
     //QPoint angle_point = get_angle_point();
-    /*if((angle_point.x() > this->pos().x() != angle_point.x() > this->pos().x() + dx) ||
-            (angle_point.y() > pos().y() != angle_point.y() > pos().y() + dy))//超过边界
+    if(is_constraints_effect)
     {
-        return;
-    }*/
-    translate(event->globalX() - begin_point.x(), event->globalY() - begin_point.y());
+        if(dx + this->pos().x() < constraints[0] - OFFSET)
+        {
+            dx = constraints[0] - this->pos().x() - OFFSET;
+        }
+        if(dx + this->pos().x() > constraints[2] + OFFSET)
+        {
+            dx = constraints[2] - this->pos().x() + OFFSET;
+        }
+        if(dy + this->pos().y() < constraints[1] - OFFSET)
+        {
+            dy = constraints[1] - this->pos().y() - OFFSET;
+        }
+        if(dy + this->pos().y() > constraints[3] + OFFSET)
+        {
+            dy = constraints[3] - this->pos().y() + OFFSET;
+        }
+    }
+
+    translate(dx, dy);
     begin_point = event->globalPos();
     if(dx != 0)
     {
@@ -146,7 +162,7 @@ void Stretch_point::set_node(QPoint point)
 
 void Stretch_point::set_index(int index)
 {
-    if(index_count >= 7)
+    if(index_count >= 10)
     {
         Debug::show_error_message("重复节点数量达到上限\n位置: Stretch_point::set_index");
         return;
@@ -192,4 +208,13 @@ QPoint Stretch_point::get_node()
 QPoint Stretch_point::get_angle_point()
 {
     return QPoint(v_neigh->getx(), h_neigh->gety());
+}
+
+void Stretch_point::set_constraints(int minx, int miny, int maxx, int maxy)
+{
+    is_constraints_effect = true;
+    constraints[0] = minx;
+    constraints[1] = miny;
+    constraints[2] = maxx;
+    constraints[3] = maxy;
 }

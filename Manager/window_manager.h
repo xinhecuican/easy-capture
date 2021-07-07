@@ -16,6 +16,7 @@ public:
     static void pop_window();
     static bool contains(QString name);
     static Window_base* get_window(QString name);
+    static void close();
 private:
     static map<QString, Window_base*> window_list;
     static QString active_window;
