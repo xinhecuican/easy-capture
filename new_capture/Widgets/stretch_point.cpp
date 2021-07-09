@@ -70,7 +70,7 @@ void Stretch_point::mousePressEvent(QMouseEvent* event)
 {
     event->accept();
     begin_point = event->globalPos();
-
+    region->position_change_begin(m_pos, begin_point);
 }
 
 void Stretch_point::mouseMoveEvent(QMouseEvent *event)
@@ -119,7 +119,7 @@ void Stretch_point::mouseMoveEvent(QMouseEvent *event)
 
 void Stretch_point::mouseReleaseEvent(QMouseEvent* event)
 {
-
+    region->position_change_end(event->globalPos());
 }
 
 void Stretch_point::on_neigh_move(bool is_hneigh, int sum)
@@ -217,4 +217,19 @@ void Stretch_point::set_constraints(int minx, int miny, int maxx, int maxy)
     constraints[1] = miny;
     constraints[2] = maxx;
     constraints[3] = maxy;
+}
+
+void Stretch_point::region_move(int dx, int dy)
+{
+    translate(dx, dy);
+    if(dx != 0)
+    {
+        h_neigh->on_neigh_move(true, dx);
+    }
+    if(dy != 0)
+    {
+        v_neigh->on_neigh_move(false, dy);
+    }
+    region->control_point_position_change(position, get_index(), dx, dy);
+    parent->update();//不能删去，否则不会绘制边界
 }

@@ -17,7 +17,9 @@ public:
               languages_begin,
               chinese = languages_begin,
               english,
-              languages_end = english
+              languages_end = english,
+              clear_interval,
+              history_num
               );
     Config();
     static Config*& instance()

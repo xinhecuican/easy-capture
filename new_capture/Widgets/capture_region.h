@@ -23,12 +23,13 @@ public:
     bool intersected(Capture_region &region);
     bool intersected(QRect &rect);
     void move(int dx, int dy);
-    void point_move(QList<int> position, int x, int y);
+    void point_move(QList<int> position, int x, int y);//polygon中的点移动
+    void stretch_point_move(int index, int dx, int dy);//points中的点移动，前提是不能进行合并，不然index会改变
     bool contains(QPoint point);
     void clear();
     inline int get_size(){return points.size();}
     void on_pos_change(int pos);//当在capture_area中的位置改变时触发
-    void set_constraint(int minx, int miny, int maxx, int maxy);
+    void set_constraint(int minx, int miny, int maxx, int maxy);//设置最大区域
     QPolygon get_polygon();
 private:
     QWidget* parent;

@@ -3,8 +3,9 @@
 class Record_element
 {
 public:
-    virtual void undo(int index=0)=0;
-    virtual void redo(int index=0)=0;
+    //undo操作成功返回true
+    virtual bool undo(int index=0)=0;
+    virtual bool redo(int index=0)=0;
     virtual ~Record_element(){};
 };
 

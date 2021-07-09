@@ -6,18 +6,21 @@
 #include<QPainterPath>
 #include "Base/Record_element.h"
 #include "Paint/Data/paint_data.h"
+#include "Paint/Data/Ilayer.h"
 
-class Paint_layer : public Record_element
+class Paint_layer : public Ilayer
 {
 public:
     Paint_layer();
     Paint_layer(QWidget* parent, QString name);
-    void paint(QImage& image);
-    void save();
-    int add_data(Paint_data* style, QPainterPath path);
-    void set_name(QString name);
-    void redo(int index = 0) override;
-    void undo(int index = 0) override;
+    void paint(QImage& image)override;
+    void erase_and_paint(QPoint point, QImage& image)override;
+    int add_data(Paint_data* style, QPainterPath path)override;
+    void set_name(QString name)override;
+    QString get_name();
+    QRect bounded_rect()override;
+    bool redo(int index = 0) override;
+    bool undo(int index = 0) override;
     QPoint begin;
 private:
     struct paint_info

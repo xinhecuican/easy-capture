@@ -5,6 +5,7 @@
 #include<QBoxLayout>
 #include<QVector>
 #include "paint_layer.h"
+#include "Paint/Data/Ilayer.h"
 
 class Paint_area : public QWidget
 {
@@ -20,20 +21,30 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
     void remove_layer(Paint_layer* layer);
     void remove_layer(int index);
-    void create_layer();
-    void raise_layer(Paint_layer* layer);//提升一层
-    void drop_layer(Paint_layer* layer);//下降一层
+    QString create_layer();
+    QStringList layers_name();
+    void set_name(int index, QString text);
+    void raise_layer(int index);//提升一层
+    void drop_layer(int index);//下降一层
     void reset();
+    void save(QString path);//不可编辑，直接输出图片
+    void save_temp();//可供下次编辑，保存了paint_layer
+    void using_erase(bool is_using_eraser);
+    bool contain_picture();
+    QRect bounded_rect();
+    bool pic_save;
 private:
     QWidget* parent;
     Picture_layer* pic_layer;
     QVBoxLayout* layout;
     QImage image;
-    QVector<Paint_layer*> layers;
+    QVector<Ilayer*> layers;
     int layer_num;
     bool is_draw;
+    bool is_eraser;
     QPainterPath now_path;
     Paint_data now_data;
+    QPoint point;
 };
 
 #endif // PAINT_AREA_H

@@ -34,10 +34,13 @@ void Capture_area::reset()
     begin_draw = false;
     key_press = false;
     _is_press_region = false;
-    button_box->removeButton(ok);
-    button_box->removeButton(cancel);
-    delete ok;
-    delete cancel;
+    if(button_box->children().size() != 1)
+    {
+        delete ok;
+        delete cancel;
+        button_box->clear();
+    }
+
 }
 
 
@@ -95,7 +98,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
 void Capture_area::mousePressEvent(QMouseEvent *event)
 {
     event->accept();
-    button_box->hide();
+
     if(!region_contain(event->globalPos()))
     {
         _is_press_region = false;
@@ -112,6 +115,7 @@ void Capture_area::mousePressEvent(QMouseEvent *event)
     }
     else
     {
+        button_box->hide();
         _is_press_region = true;
         begin_point = event->globalPos();
         end_point = begin_point;
@@ -156,7 +160,6 @@ void Capture_area::mouseReleaseEvent(QMouseEvent *event)
         cancel->connect(cancel, &QPushButton::clicked, this, [=](){Window_manager::pop_window();});
         button_box->addButton(ok, QDialogButtonBox::AcceptRole);
         button_box->addButton(cancel, QDialogButtonBox::RejectRole);
-        button_box->setFixedSize(100, 50);
     }
     cal_button_pos();
     button_box->show();

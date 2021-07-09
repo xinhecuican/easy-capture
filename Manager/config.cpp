@@ -14,7 +14,9 @@ const int Config::default_settings[] =
     false,
     false,
     true,//chinese
-    false
+    false,
+    30,//clear_interval,
+    3//history_num
 };
 
 DEFINE_STRING(Config);

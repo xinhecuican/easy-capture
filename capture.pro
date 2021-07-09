@@ -23,17 +23,21 @@ SOURCES += \
     Manager/config.cpp \
     Manager/key_manager.cpp \
     Manager/window_manager.cpp \
+    Paint/Widgets/Layer_list/list_item.cpp \
+    Paint/Widgets/Layer_list/list_widget.cpp \
+    Paint/Widgets/history.cpp \
     Paint/Widgets/paint_area.cpp \
     Paint/Widgets/paint_layer.cpp \
     Paint/Widgets/paint_setting_panel.cpp \
     Paint/Widgets/picture_layer.cpp \
-    Paint/Widgets/recoder.cpp \
+    Paint/Widgets/recorder.cpp \
     Paint/Widgets/style_manager.cpp \
     Paint/paint_window.cpp \
     Panel/Widgets/combo_tab.cpp \
     Panel/Widgets/tab_widget.cpp \
     Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
+    Style_widget/spacer.cpp \
     main.cpp \
     mainwindow.cpp \
     new_capture/Capture_button_action.cpp \
@@ -58,17 +62,24 @@ HEADERS += \
     Manager/config.h \
     Manager/key_manager.h \
     Manager/window_manager.h \
+    Paint/Data/History_data.h \
+    Paint/Data/Ilayer.h \
     Paint/Data/paint_data.h \
+    Paint/Widgets/IControl_layer_change.h \
+    Paint/Widgets/Layer_list/list_item.h \
+    Paint/Widgets/Layer_list/list_widget.h \
+    Paint/Widgets/history.h \
     Paint/Widgets/paint_area.h \
     Paint/Widgets/paint_setting_panel.h \
     Paint/Widgets/picture_layer.h \
-    Paint/Widgets/recoder.h \
+    Paint/Widgets/recorder.h \
     Paint/Widgets/style_manager.h \
     Paint/paint_window.h \
     Panel/Widgets/bool_tab.h \
     Panel/Widgets/combo_tab.h \
     Panel/Widgets/tab_widget.h \
     Panel/setting.h \
+    Style_widget/spacer.h \
     mainwindow.h \
     new_capture/Capture_button_action.h \
     new_capture/Widgets/Ipoint_position_change.h \

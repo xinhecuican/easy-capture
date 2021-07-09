@@ -24,6 +24,9 @@ public:
     void closeEvent(QCloseEvent* event)override;
     bool eventFilter(QObject* o, QEvent* e)override;
 
+public slots:
+    void window_manager_thread();
+
 private:
     Ui::MainWindow *ui;
     QLabel* m_label;

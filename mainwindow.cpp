@@ -33,6 +33,13 @@ MainWindow::MainWindow(QWidget *parent)
     toolbar->addWidget(setting_button);
     setWindowFlag(Qt::WindowMinimizeButtonHint);
     setAttribute(Qt::WA_DeleteOnClose, true);
+
+    //只是延时执行，不是新的线程，相当于回调，因此不用加锁
+    //定时删除不使用的Window
+    QTimer* timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(window_manager_thread()));
+    int time = Config::get_config(Config::clear_interval);
+    timer->start(time * 1000);
 }
 
 MainWindow::~MainWindow()
@@ -67,4 +74,9 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         return true;
     }
     return false;
+}
+
+void MainWindow::window_manager_thread()
+{
+    Window_manager::control_window_close();
 }

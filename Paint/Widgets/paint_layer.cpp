@@ -3,6 +3,7 @@
 #include<QPainter>
 #include<QDebug>
 #include<QWidget>
+#include "recorder.h"
 
 Paint_layer::Paint_layer()
 {
@@ -22,24 +23,50 @@ Paint_layer::Paint_layer(QWidget* parent, QString name)
 void Paint_layer::paint(QImage &image)
 {
     QPainter painter(&image);
+    painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
     for(paint_info path : data)
     {
         QPen pen;
         pen.setColor(path.style_info->color);
         pen.setWidth(path.style_info->width);
+        pen.setCapStyle(path.style_info->cap_style);
+        pen.setJoinStyle(path.style_info->join_style);
         painter.setPen(pen);
         painter.drawPath(path.path);
     }
 }
 
-void Paint_layer::save()
+void Paint_layer::erase_and_paint(QPoint point, QImage &image)
 {
-    QDir base_dir = QDir("Data/Temp");
-    if(!base_dir.exists())
+    QPainter painter;
+    QImage temp = image.copy();
+    temp.fill(Qt::transparent);
+    QImage prototype = temp.copy();
+    QRgb rgb = temp.pixel(point.x(), point.y());
+    for(auto iter=data.begin(); iter!=data.end();)
     {
-        QDir dir;
-        dir.mkdir("Data/Temp");
+        painter.begin(&temp);
+        QPen pen;
+        pen.setColor(iter->style_info->color);
+        pen.setWidth(iter->style_info->width);
+        pen.setCapStyle(iter->style_info->cap_style);
+        pen.setJoinStyle(iter->style_info->join_style);
+        painter.setPen(pen);
+        painter.drawPath(iter->path);
+        painter.end();
+        if(temp.pixel(point.x(), point.y()) != rgb)
+        {
+            delete_data[iter.key()] = iter.value();
+            Recorder::instance()->record(iter.key(), this);
+            iter = data.erase(iter);
+        }
+        else
+        {
+            iter++;
+        }
+        temp = prototype.copy();
     }
+    paint(image);
 }
 
 void Paint_layer::set_name(QString name)
@@ -53,32 +80,61 @@ int Paint_layer::add_data(Paint_data* style, QPainterPath path)
     return now_index-1;
 }
 
-void Paint_layer::undo(int index)
+bool Paint_layer::undo(int index)
 {
-    if(data.find(index) == data.end())
-    {
-        data[index] = delete_data[index];
-        delete_data.remove(index);
-    }
-    else
+    if(data.find(index) != data.end())
     {
         delete_data[index] = data[index];
         data.remove(index);
+        parent->update();
+        return true;
     }
-    parent->update();
+    else if(delete_data.find(index) != delete_data.end())
+    {
+        data[index] = delete_data[index];
+        delete_data.remove(index);
+        parent->update();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
-void Paint_layer::redo(int index)
+bool Paint_layer::redo(int index)
 {
-    if(data.find(index) == data.end())
-    {
-        data[index] = delete_data[index];
-        delete_data.remove(index);
-    }
-    else
+    if(data.find(index) != data.end())
     {
         delete_data[index] = data[index];
         data.remove(index);
+        parent->update();
+        return true;
     }
-    parent->update();
+    else if(delete_data.find(index) != delete_data.end())
+    {
+        data[index] = delete_data[index];
+        delete_data.remove(index);
+        parent->update();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+QRect Paint_layer::bounded_rect()
+{
+    QRect rect;
+    for(auto info : data)
+    {
+        rect = rect.united(info.path.boundingRect().toRect());
+    }
+    return rect;
+}
+
+QString Paint_layer::get_name()
+{
+    return name;
 }

@@ -19,7 +19,7 @@ class Setting : public Window_base
 public:
     Q_INVOKABLE explicit Setting(QWidget *parent = nullptr);
     ~Setting();
-    void closeEvent(QCloseEvent* event) override;
+    void closeEvent(QCloseEvent* event)override;
     void on_window_cancal() override;
     void on_window_select() override;
 

@@ -4,6 +4,10 @@
 #include<iostream>
 #include<QWidget>
 #include "Base/Window_base.h"
+
+#include<QMutex>
+#include<QTime>
+#include<QDateTime>
 using namespace std;
 
 class Window_manager
@@ -16,12 +20,20 @@ public:
     static void pop_window();
     static bool contains(QString name);
     static Window_base* get_window(QString name);
+    static Window_base* create_and_get_window(QString name);
     static void close();
+    static void control_window_close();
 private:
-    static map<QString, Window_base*> window_list;
+    struct Window_data
+    {
+        qint64 time;
+        Window_base* window;
+    };
+    static map<QString, Window_data> window_list;
     static QString active_window;
     static QString previous_window;
     static void create_window(QString name);
+    static Window_data create_data(Window_base* window);
 };
 
 

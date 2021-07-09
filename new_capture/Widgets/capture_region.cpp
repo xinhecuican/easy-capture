@@ -127,6 +127,7 @@ void Capture_region::set_nodes()
     points[0]->set_node(list[0]);
     points[0]->show();
     points[0]->set_index(0);
+    points[0]->m_pos = 0;
     Stretch_point* now = points[0];
 
     for(int i=1; i<len1; i++)
@@ -143,6 +144,7 @@ void Capture_region::set_nodes()
                 now->set_node(list[i+1]);
                 now->show();
                 now->set_index(i+1);
+                now->m_pos = points_len;
                 points_len++;
                 i++;
             }
@@ -165,6 +167,7 @@ void Capture_region::set_nodes()
             points[points_len]->set_neigh(points[points_len-1]);
             points[points_len]->set_index(i);
             points[points_len-1]->set_neigh(points[points_len]);
+            points[points_len]->m_pos = points_len;
             points_len++;
         }
     }
@@ -215,3 +218,7 @@ void Capture_region::set_constraint(int minx, int miny, int maxx, int maxy)
     }
 }
 
+void Capture_region::stretch_point_move(int index, int dx, int dy)
+{
+    points[index]->region_move(dx, dy);
+}

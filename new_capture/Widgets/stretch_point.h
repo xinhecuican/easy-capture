@@ -20,6 +20,7 @@ public:
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void change_to_position(QPoint &point);
+    void region_move(int dx, int dy);//不仅自己移动，还让关联的region移动
     void translate(int dx, int dy);//移动
 
     void set_neigh(Stretch_point* point);
@@ -32,8 +33,7 @@ public:
     int getx();
     int gety();
     QPoint get_node();
-    Stretch_point* next;
-
+    int m_pos;
 protected:
     void on_neigh_move(bool is_hneigh, int sum);
     QPoint get_angle_point();//获得对角线上的点，不能超过对角线

@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     Reflect::registerClass<Capture_window>();
     Reflect::registerClass<Paint_window>();
     Window_manager::change_window("MainWindow");
-    a.installEventFilter(Window_manager::get_window("MainWindow"));//使用mainwindow上的eventfliter
+    a.installEventFilter(Window_manager::create_and_get_window("MainWindow"));//使用mainwindow上的eventfliter
 
     return a.exec();
 }

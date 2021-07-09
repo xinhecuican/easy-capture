@@ -8,6 +8,18 @@
         <file>undo.png</file>
         <file>redo.png</file>
         <file>more.png</file>
+        <file>clean.svg</file>
+        <file>custom_button.qss</file>
+        <file>pencil.png</file>
+        <file>highlighter.png</file>
+        <file>eraser.png</file>
+        <file>highlighter_cursor.png</file>
+        <file>save.png</file>
+        <file>down.png</file>
+        <file>up.png</file>
+        <file>add.svg</file>
+        <file>hide.png</file>
+        <file>show.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

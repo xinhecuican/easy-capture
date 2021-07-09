@@ -1,16 +1,18 @@
-#ifndef RECODER_H
-#define RECODER_H
+#ifndef Recorder_H
+#define Recorder_H
 #include<QVector>
 #include "Base/Record_element.h"
 #include<iostream>
 #include "Helper/debug.h"
 
-class Recoder
+class Recorder
 {
 public:
-    Recoder();
-    static Recoder* instance();
+    Recorder();
+    ~Recorder();
+    static Recorder* instance();
     void record(int index, Record_element* element);
+    void reset();
     void back();
     void forward();
     void remove_record(Record_element* element);
@@ -56,6 +58,21 @@ private:
             }
         }
 
+        void clear()
+        {
+            delete [] data;
+        }
+
+        void reset()
+        {
+            Record_data* temp = new Record_data[10];
+            capacity = 10;
+            limit = 0;
+            point = 0;
+            delete [] data;
+            data = temp;
+        }
+
         void push_back(Record_data record_data)
         {
             ensure_capacity();
@@ -69,7 +86,7 @@ private:
             {
                 return data[--point];
             }
-            Debug::debug_print_warning("下标过小\n位置Recoder::MVector::pop()");
+            Debug::debug_print_warning("下标过小\n位置Recorder::MVector::pop()");
             return data[0];
         }
 
@@ -100,7 +117,7 @@ private:
         {
             if(i > limit-1)
             {
-                Debug::debug_print_warning("数组下标超界\n位置Recoder::MVector::get()");
+                Debug::debug_print_warning("数组下标超界\n位置Recorder::MVector::get()");
                 return data[0];
             }
             return data[i];
@@ -114,8 +131,8 @@ private:
         inline Record_data& forward(){point++;return data[point-1];};
     };
 
-    static Recoder* _instance;
+    static Recorder* _instance;
     MVector data;
 };
 
-#endif // RECODER_H
+#endif // Recorder_H
