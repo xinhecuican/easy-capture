@@ -53,19 +53,9 @@ void Paint_area::set_picture(QPixmap pixmap, QRect rect)
 
 void Paint_area::paintEvent(QPaintEvent *event)
 {
-    QColor backColor = qRgb(255,255,255);
-    image.fill(backColor);
     QPainter painter(this);
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
-    for(int i=0; i<layers.size(); i++)
-    {
-        if(is_eraser)
-        {
-            layers[i]->erase_and_paint(point, image);
-        }
-        else
-            layers[i]->paint(image);
-    }
+    paint();
     painter.drawImage(0, 0, image);
     if(!is_eraser)
     {
@@ -74,13 +64,40 @@ void Paint_area::paintEvent(QPaintEvent *event)
         pen.setColor(now_data.color);
         pen.setCapStyle(now_data.cap_style);
         pen.setJoinStyle(now_data.join_style);
+
         painter.setPen(pen);
         painter.drawPath(now_path);
     }
 }
 
+void Paint_area::paint()
+{
+    QColor backColor = qRgb(255,255,255);
+    image.fill(backColor);
+    for(int i=0; i<layers.size(); i++)//各层绘制
+    {
+        if(is_eraser)
+        {
+            layers[i]->erase_and_paint(point, image);
+        }
+        else
+            layers[i]->paint(image);
+    }
+    for(int i=0; i<disable_color.size(); i++)//设置透明色
+    {
+        QImage mask = image.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+        image.setAlphaChannel(mask);
+    }
+}
+
 void Paint_area::mouseMoveEvent(QMouseEvent *event)
 {
+    if(is_base_drag)
+    {
+        pic_layer->point_move(event->pos());
+        update();
+        return;
+    }
     if(!is_draw)
     {
         return;
@@ -94,6 +111,10 @@ void Paint_area::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
     {
+        if(pic_layer->test_drag(event->pos()))
+        {
+            is_base_drag = true;
+        }
         is_draw = true;
     }
     point = event->pos();
@@ -104,6 +125,11 @@ void Paint_area::mousePressEvent(QMouseEvent *event)
 
 void Paint_area::mouseReleaseEvent(QMouseEvent* event)
 {
+    if(is_base_drag)
+    {
+        is_base_drag = false;
+        pic_layer->point_end(event->pos());
+    }
     if(!is_eraser)
     {
         now_path.lineTo(event->pos());
@@ -178,12 +204,7 @@ QRect Paint_area::bounded_rect()
 void Paint_area::save(QString path)
 {
     pic_save = true;
-    QColor backColor = qRgb(255,255,255);
-    image.fill(backColor);
-    for(int i=0; i<layers.size(); i++)
-    {
-        layers[i]->paint(image);
-    }
+    paint();
     image.copy(bounded_rect()).save(path);
     History::instance()->log(History_data::Persist, path);
 }
@@ -195,12 +216,7 @@ void Paint_area::save_temp()
     {
         dir.mkpath("Data/Temp");
     }
-    QColor backColor = qRgb(255,255,255);
-    image.fill(backColor);
-    for(int i=0; i<layers.size(); i++)
-    {
-        layers[i]->paint(image);
-    }
+    paint();
     QDateTime time = QDateTime::currentDateTime();
     QString path = "Data/Temp/" + time.toString("dd_mm_yyyy_hh_mm_ss") + "/";
     if(!dir.exists(path))
@@ -231,4 +247,17 @@ QStringList Paint_area::layers_name()
 void Paint_area::set_name(int index, QString text)
 {
     layers[index]->set_name(text);
+}
+
+void Paint_area::set_disable_color(int index, QColor color)
+{
+    if(index == -1)
+    {
+        disable_color.append(color);
+    }
+    else
+    {
+        disable_color.removeAt(index);
+    }
+    update();
 }

@@ -7,7 +7,8 @@
 #include<QDesktopWidget>
 #include "Manager/config.h"
 #include "Manager/key_manager.h"
-
+#include "windows.h"
+#include<QScreen>
 
 Capture_window::Capture_window(QWidget *parent) :
     Window_base(parent, this, "Capture_window"),
@@ -15,9 +16,6 @@ Capture_window::Capture_window(QWidget *parent) :
 {
     ui->setupUi(this);
     button_click = false;
-
-    QDesktopWidget* desktop = QApplication::desktop();
-    total_region = QRegion(desktop->screenGeometry());
 
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -41,6 +39,16 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
 
     painter.fillRect(this->rect(), QColor(0, 0, 0, 0x20)); // 设置透明颜色
     painter.setCompositionMode( QPainter::CompositionMode_Source );
+    if(Config::get_config(Config::free_capture) && button_click)
+    {
+        QPen pen;
+        pen.setStyle(Qt::DashLine);
+        pen.setColor(QColor(123, 123, 233));
+        pen.setWidth(3);
+        painter.setPen(pen);
+        painter.drawPath(free_paint_path);
+        return;
+    }
     if(captured->is_begin_draw())
     {
         painter.fillRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h(),
@@ -123,6 +131,12 @@ void Capture_window::keyPressEvent(QKeyEvent *event)
 */
 void Capture_window::mouseMoveEvent(QMouseEvent *event)
 {
+    if(Config::get_config(Config::free_capture))
+    {
+        free_paint_path.lineTo(event->pos());
+        update();
+        return;
+    }
     if(!button_click)//设置鼠标样式,必须先要设置mousetracking = true
     {
         if(captured->region_contain(event->globalPos()))
@@ -157,6 +171,41 @@ void Capture_window::mousePressEvent(QMouseEvent *event)
     {
         return;
     }
+    else if(Config::get_config(Config::active_window_capture))
+    {
+        update();
+        Window_manager::hide_now();
+        QScreen *screen = QGuiApplication::primaryScreen();
+        QPixmap map = screen->grabWindow(0);
+        POINT point;
+        POINT point2;
+        point2.x = 0;
+        point2.y = 0;
+        GetCursorPos(&point);
+        HWND hwnd = WindowFromPoint(point);
+        RECT rect2;
+        GetClientRect(hwnd, &rect2);
+        ClientToScreen(hwnd, &point2);
+
+        QRect qrect = QRect(QPoint(point2.x, point2.y), QSize(rect2.right, rect2.bottom));
+        QRect temp = qrect;
+        temp.moveTo(0, 0);
+        Window_manager::show_now();
+
+        Window_manager::change_window("Paint_window");
+        Window_manager::get_window("Paint_window")->
+                    set_pic(map.copy(qrect), temp);
+        Window_manager::close_window("Capture_window");
+        close();
+        return;
+    }
+    else if(Config::get_config(Config::free_capture))
+    {
+        button_click = true;
+        free_paint_path = QPainterPath();
+        free_paint_path.moveTo(event->pos());
+        return;
+    }
     button_click = true;
     captured->mousePressEvent(event);
     update();
@@ -165,6 +214,34 @@ void Capture_window::mousePressEvent(QMouseEvent *event)
 
 void Capture_window::mouseReleaseEvent(QMouseEvent *event)
 {
+    if(Config::get_config(Config::free_capture))
+    {
+        button_click = false;
+        Config::set_config(Config::free_capture, false);
+        hide();
+        QScreen * screen = QGuiApplication::primaryScreen();
+        QPixmap p = screen->grabWindow(0);
+        QPixmap temp = p.copy();
+        temp.fill(Qt::transparent);
+        //p.fill(Qt::transparent);
+        QPainter painter(&temp);
+        painter.setCompositionMode(QPainter::CompositionMode_Source);
+        painter.drawPixmap(0, 0, p);
+        painter.setCompositionMode( QPainter::CompositionMode_DestinationIn );
+        painter.setBackgroundMode(Qt::OpaqueMode);
+        QPainterPath temp_path = QPainterPath();
+        temp_path.addRect(p.rect());
+        temp_path = temp_path.subtracted(free_paint_path.simplified());
+        painter.fillPath(temp_path, QColor(0, 0, 0, 0));
+        QRect rect = free_paint_path.boundingRect().toRect();
+        QPixmap temp_copy = temp.copy(rect);
+        rect.moveTo(0, 0);
+        Window_manager::change_window("Paint_window");
+        Window_manager::get_window("Paint_window")->
+                set_pic(temp_copy, rect);
+
+        return;
+    }
     button_click = false;
     bool is_begin = captured->is_begin_draw();
     captured->mouseReleaseEvent(event);
@@ -178,6 +255,7 @@ void Capture_window::on_window_cancal()
 {
     button_click = false;
     captured->reset();
+    free_paint_path = QPainterPath();
 }
 
 void Capture_window::on_window_select()

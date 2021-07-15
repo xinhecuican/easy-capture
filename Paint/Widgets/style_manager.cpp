@@ -20,7 +20,7 @@ Style_manager* Style_manager::_instance = NULL;
 
 Paint_data Style_manager::default_pencil = Paint_data(QColor(150, 50, 50), 3);
 Paint_data Style_manager::default_highlighter = Paint_data(
-            QColor(255, 255, 0, 100), 12, Qt::RoundCap, Qt::RoundJoin);
+            QColor(255, 255, 0, 100), 12, QColor(255, 255, 255), Qt::RoundCap, Qt::RoundJoin);
 
 
 Style_manager* Style_manager::instance()
@@ -46,7 +46,12 @@ void Style_manager::change_color(QColor color)
 {
     now_data.color = color;
     is_change = true;
+}
 
+void Style_manager::change_back_color(QColor color)
+{
+    now_data.back_color = color;
+    is_change = true;
 }
 
 void Style_manager::change_width(double width)

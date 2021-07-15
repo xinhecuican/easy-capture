@@ -7,6 +7,7 @@
 #include<QPushButton>
 #include "new_capture/Widgets/capture_area.h"
 #include "Base/Window_base.h"
+#include<QTimer>
 
 
 namespace Ui {
@@ -32,8 +33,8 @@ public:
 private:
     Ui::Capture_window *ui;
     Capture_area* captured;
-    QRegion total_region;
     bool button_click;
+    QPainterPath free_paint_path;
 };
 
 #endif // CAPTURE_WINDOW_H

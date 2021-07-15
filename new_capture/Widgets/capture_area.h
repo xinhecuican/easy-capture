@@ -5,7 +5,6 @@
 #include<QMouseEvent>
 #include<QPoint>
 #include<QRegion>
-#include<Helper/my_math.h>
 #include<QList>
 #include<QDialogButtonBox>
 #include"stretch_point.h"

@@ -13,8 +13,7 @@ Stretch_point::Stretch_point()
 
 Stretch_point::~Stretch_point()
 {
-    this->h_neigh = NULL;
-    this->v_neigh = NULL;
+
 }
 
 Stretch_point::Stretch_point(Ipoint_position_change* region, QPoint point)

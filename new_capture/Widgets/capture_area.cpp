@@ -364,7 +364,6 @@ void Capture_area::on_click_ok()
     temp_path = temp_path.subtracted(path);
     painter.fillPath(temp_path, QColor(0, 0, 0, 0));
     QRect rect = transmit_polygon.boundingRect();
-    temp.copy(rect).save("D:/temp.png");
     QPixmap temp_copy = temp.copy(rect);
     rect.moveTo(0, 0);
     Window_manager::change_window("Paint_window");

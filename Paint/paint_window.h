@@ -26,6 +26,7 @@ public:
     void set_menubar();
     void set_toolbar();
     void reset();
+    void changeEvent(QEvent* event)override;
     void set_pic(QPixmap pix, QRect rect)override;
     void on_window_cancal() override;
     void closeEvent(QCloseEvent* event)override;

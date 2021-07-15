@@ -30,6 +30,7 @@ public:
     void save(QString path);//不可编辑，直接输出图片
     void save_temp();//可供下次编辑，保存了paint_layer
     void using_erase(bool is_using_eraser);
+    void set_disable_color(int index, QColor color = QColor());
     bool contain_picture();
     QRect bounded_rect();
     bool pic_save;
@@ -39,12 +40,15 @@ private:
     QVBoxLayout* layout;
     QImage image;
     QVector<Ilayer*> layers;
+    QList<QColor> disable_color;
     int layer_num;
     bool is_draw;
     bool is_eraser;
     QPainterPath now_path;
     Paint_data now_data;
     QPoint point;
+    bool is_base_drag;
+    void paint();
 };
 
 #endif // PAINT_AREA_H

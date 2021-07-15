@@ -18,13 +18,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Helper/debug.cpp \
     Helper/mstring.cpp \
-    Helper/my_math.cpp \
     Helper/stackdumper.cpp \
     Manager/config.cpp \
     Manager/key_manager.cpp \
     Manager/window_manager.cpp \
     Paint/Widgets/Layer_list/list_item.cpp \
     Paint/Widgets/Layer_list/list_widget.cpp \
+    Paint/Widgets/color_selector.cpp \
     Paint/Widgets/history.cpp \
     Paint/Widgets/paint_area.cpp \
     Paint/Widgets/paint_layer.cpp \
@@ -38,6 +38,7 @@ SOURCES += \
     Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
     Style_widget/spacer.cpp \
+    Style_widget/tray.cpp \
     main.cpp \
     mainwindow.cpp \
     new_capture/Capture_button_action.cpp \
@@ -56,7 +57,6 @@ HEADERS += \
     Helper/Serialize.h \
     Helper/debug.h \
     Helper/mstring.h \
-    Helper/my_math.h \
     Helper/plist.h \
     Helper/stackdumper.h \
     Manager/config.h \
@@ -68,6 +68,7 @@ HEADERS += \
     Paint/Widgets/IControl_layer_change.h \
     Paint/Widgets/Layer_list/list_item.h \
     Paint/Widgets/Layer_list/list_widget.h \
+    Paint/Widgets/color_selector.h \
     Paint/Widgets/history.h \
     Paint/Widgets/paint_area.h \
     Paint/Widgets/paint_setting_panel.h \
@@ -80,6 +81,7 @@ HEADERS += \
     Panel/Widgets/tab_widget.h \
     Panel/setting.h \
     Style_widget/spacer.h \
+    Style_widget/tray.h \
     mainwindow.h \
     new_capture/Capture_button_action.h \
     new_capture/Widgets/Ipoint_position_change.h \
@@ -104,3 +106,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Resource/Resources.qrc\
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Debug/release/ -lHook
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Debug/debug/ -lHook
+else:unix: LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Debug/ -lHook
+
+INCLUDEPATH += $$PWD/../HOOK
+DEPENDPATH += $$PWD/../HOOK

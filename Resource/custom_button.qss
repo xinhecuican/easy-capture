@@ -1,21 +1,19 @@
-QPushButton {
-    min-width: 14px;
-    max-width: 14px;
-    max-height: 14px;
-    min-height: 14px;
-    border-radius: 8px;
-    color: white;
+.QPushButton {
+    min-width: 12px;
+    max-width: 12px;
+    max-height: 12px;
+    min-height: 12px;
+    border-radius: 7px;
     border: 2px solid #555;
     border-style: outset;
     background: rgb(255, 255, 255);
 }
 
-QPushButton:hover {
+.QPushButton:hover {
     font-size: 18px;
-    color: white;
     background: #d5d5d5; /* 悬停颜色 */
 }
 
-QPushButton:pressed {
+.QPushButton:pressed {
     background: #f2f2f2 /* 按下颜色 */
 }

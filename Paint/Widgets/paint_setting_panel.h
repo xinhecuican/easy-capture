@@ -10,6 +10,7 @@
 
 class Paint_setting_panel : public QDockWidget
 {
+    Q_OBJECT
 public:
     Paint_setting_panel();
     Paint_setting_panel(IControl_layer_change* layer_control, QWidget* parent = nullptr);
@@ -17,6 +18,8 @@ public:
     void init();
     void closeEvent(QCloseEvent *event) override;
     void set_style();
+signals:
+    void disable_color_change(int index, QColor color=QColor());
 private:
     IControl_layer_change* layer_control;
     QWidget* parent;
@@ -24,9 +27,11 @@ private:
     QScrollArea* area;
     QVBoxLayout* layout;
     QPushButton* color_button;
+    QPushButton* back_button;
     QComboBox* width_button;
     void init_pen_setting();
     void init_layer_setting();
+    void init_disable_color_setting();
 };
 
 #endif // PAINT_SETTING_PANEL_H

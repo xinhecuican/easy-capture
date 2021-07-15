@@ -4,6 +4,7 @@
 #include<QAbstractButton>
 #include "capture_window.h"
 #include<QPalette>
+#include<QTimer>
 
 class Capture_button_action : QWidget
 {
@@ -16,6 +17,9 @@ public slots:
 private:
     QAbstractButton* source_button;
     QWidget* parent;
+    QPixmap whole_screen;
+    bool is_capture;
+    QRect qrect;
 };
 
 #endif // CAPTURE_BUTTON_ACTION_H

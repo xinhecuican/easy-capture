@@ -16,6 +16,7 @@ public:
     void change_cap_style(Qt::PenCapStyle style);
     void change_join_style(Qt::PenJoinStyle style);
     void change_pen(Paint_data data);
+    void change_back_color(QColor color);
     Paint_data* get();
     Paint_data get_now();
     static Paint_data default_pencil;

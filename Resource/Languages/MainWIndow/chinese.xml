@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <strings language="chinese">
     <string id="cR3jOHb9Qw" text="新建"/>
+    <string id="7yUWnx82jI" text="模式"/>
+    <string id="OBwjJUhTkh" text="矩形窗口"/>
+    <string id="fnGapBU4vo" text="自由截图"/>
+    <string id="ETY295cnab" text="滚动截图"/>
+    <string id="rzdUgOw26Y" text="活动窗口截屏"/>
+    <string id="FHFzLMcLYa" text="全屏"/>
 </strings>

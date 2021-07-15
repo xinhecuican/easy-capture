@@ -23,6 +23,9 @@ public:
     static Window_base* create_and_get_window(QString name);
     static void close();
     static void control_window_close();
+    static void close_window(QString name);
+    static void show_now();
+    static void hide_now();
 private:
     struct Window_data
     {

@@ -37,6 +37,14 @@ void Window_manager::control_window_close()
     }
 }
 
+void Window_manager::close_window(QString name)
+{
+    if(window_list.find(name) != window_list.end() && name != active_window && name != "MainWindow")
+    {
+        window_list.erase(window_list.find(name));
+    }
+}
+
 void Window_manager::push_window(QString name, Window_base *widget)
 {
     window_list[name] = create_data(widget);
@@ -146,4 +154,26 @@ Window_manager::Window_data Window_manager::create_data(Window_base *window)
     data.time = QDateTime::currentDateTime().currentSecsSinceEpoch();
     data.window = window;
     return data;
+}
+
+void Window_manager::show_now()
+{
+    if(active_window == "MainWindow")
+    {
+        window_list["MainWindow"].window->setWindowOpacity(1);
+    }
+    window_list[active_window].window->showNormal();
+    window_list["MainWindow"].window->setWindowFlag(Qt::WindowSystemMenuHint, true);
+    window_list["MainWindow"].window->show();
+    //window_list["MainWindow"].window->hide();
+}
+
+void Window_manager::hide_now()
+{
+    if(active_window == "MainWindow")
+    {
+        window_list["MainWindow"].window->setWindowOpacity(0);
+    }
+    window_list[active_window].window->hide();
+    window_list["MainWindow"].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
 }

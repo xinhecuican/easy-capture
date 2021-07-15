@@ -5,7 +5,7 @@
 #include<QPushButton>
 #include<functional>
 #include "Ipoint_position_change.h"
-#define OFFSET 7
+#define OFFSET 6
 
 class Stretch_point : public QPushButton
 {

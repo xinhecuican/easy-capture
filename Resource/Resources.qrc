@@ -20,6 +20,9 @@
         <file>add.svg</file>
         <file>hide.png</file>
         <file>show.png</file>
+        <file>color_dropper.png</file>
+        <file>delete.svg</file>
+        <file>mode.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

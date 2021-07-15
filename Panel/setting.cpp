@@ -70,7 +70,6 @@ Setting::~Setting()
 
 void Setting::closeEvent(QCloseEvent *event)
 {
-    qDebug() << "setting panel close";
     Window_manager::pop_window();
     event->accept();
 }

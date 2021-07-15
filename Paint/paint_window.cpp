@@ -13,12 +13,14 @@
 #include "Widgets/history.h"
 #include<QMessageBox>
 #include<QListWidget>
+#include "Manager/config.h"
 
 Paint_window::Paint_window(QWidget *parent) :
     Window_base(parent, this, "Paint_window"),
     ui(new Ui::Paint_window)
 {
     ui->setupUi(this);
+
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->area = new Paint_area(this);
@@ -130,6 +132,34 @@ void Paint_window::set_toolbar()
     new_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui->toolBar->addWidget(new_button);
 
+    QToolButton* mode_button = new QToolButton(this);
+    mode_button->setText(MString::search(MString::search("{7yUWnx82jI}模式")));
+    mode_button->setIcon(QIcon(":/image/mode.png"));
+    mode_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    mode_button->setPopupMode(QToolButton::InstantPopup);
+    QMenu* mode_menu = new QMenu(this);
+    mode_menu->addAction(MString::search("{OBwjJUhTkh}矩形窗口"));
+    mode_menu->addAction(MString::search("{FHFzLMcLYa}全屏"));
+    mode_menu->addAction(MString::search("{fnGapBU4vo}自由截图"));
+    mode_menu->addAction(MString::search("{ETY295cnab}滚动截屏"));
+    mode_menu->addAction(MString::search("活动窗口截屏"));
+    QList<QAction*> actions = mode_menu->actions();
+    for(int i=0; i<actions.size(); i++)
+    {
+        actions[i]->setData(QVariant(i));
+    }
+    connect(mode_menu, &QMenu::triggered, this, [=](QAction* action){
+        QVariant index_var = action->data();
+        int index = index_var.toInt();
+        for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
+        {
+            Config::set_config(i, false);
+        }
+        Config::set_config(Config::capture_mode_begin+index, true);
+    });
+    mode_button->setMenu(mode_menu);
+    ui->toolBar->addWidget(mode_button);
+
     QToolButton* save_button = new QToolButton(this);
     save_button->setIcon(QIcon(":/image/save.png"));
     save_button->setToolTip("保存");
@@ -216,6 +246,10 @@ void Paint_window::set_toolbar()
         if(paint_setting_panel == NULL)
         {
             paint_setting_panel = new Paint_setting_panel(this);
+            connect(paint_setting_panel, &Paint_setting_panel::disable_color_change, this,
+                    [=](int index, QColor color=QColor()){
+                area->set_disable_color(index, color);
+            });
             addDockWidget(Qt::RightDockWidgetArea, paint_setting_panel);
         }
         else
@@ -230,6 +264,8 @@ void Paint_window::set_toolbar()
 void Paint_window::set_pic(QPixmap pix, QRect rect)
 {
     reset();
+    area->resize(rect.width() * 2, rect.height() * 2);
+    area->update();
     area->set_picture(pix, rect);//在这个函数中还设置了paint_panel的大小
     resize(rect.width()+100, rect.height()+140);//设置主窗口大小，否则窗口大小不会变化
     QDesktopWidget* desktop = QApplication::desktop();
@@ -238,8 +274,8 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
                         ?1:rect.width()/(double)desktop->screenGeometry().width()
     )), pos().y() * (1 - (rect.height()/(double)desktop->screenGeometry().height()>1
                          ?1:rect.height()/(double)desktop->screenGeometry().height())));
-    paint_panel->verticalScrollBar()->setSliderPosition(140);
-    paint_panel->horizontalScrollBar()->setSliderPosition(140);
+    paint_panel->verticalScrollBar()->setSliderPosition(rect.height() / 2);
+    paint_panel->horizontalScrollBar()->setSliderPosition(rect.width() / 2);
 
 }
 
@@ -257,10 +293,12 @@ void Paint_window::closeEvent(QCloseEvent *event)
                                                          History::instance()->get_last_directory(),
                                                          "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
         area->save(file_name);
+        hide();
         Window_manager::close();
     }
     else if(ans == QMessageBox::No)
     {
+        hide();
         Window_manager::close();
     }
     else
@@ -327,4 +365,13 @@ void Paint_window::change_layer_position(int before_index, int after_index)
 QStringList Paint_window::get_layer_name()
 {
     return area->layers_name();
+}
+
+void Paint_window::changeEvent(QEvent *event)
+{
+    if ((event->type() == QEvent::WindowStateChange) && isMinimized())
+    {
+        Window_manager::hide_now();
+        event->ignore();
+    }
 }

@@ -19,7 +19,14 @@ public:
               english,
               languages_end = english,
               clear_interval,
-              history_num
+              history_num,
+              capture_mode_begin,
+              rect_capture = capture_mode_begin,
+              total_capture,//在Capture_button_action中
+              free_capture,//在Capture_window中
+              scroll_capture,
+              active_window_capture,//在Capture_window中
+              capture_mode_end = active_window_capture
               );
     Config();
     static Config*& instance()
