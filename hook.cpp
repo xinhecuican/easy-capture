@@ -111,25 +111,15 @@ void XGlobalHook::onKeyEvent(PKBDLLHOOKSTRUCT pKeyHookStruct)
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     int type;
-    if(wParam == WM_LBUTTONDOWN)
+    switch (wParam)
     {
-        type = 0;
-    }
-    else if(wParam == WM_RBUTTONDOWN)
-    {
-        type = 1;
-    }
-    else if(wParam == WM_MBUTTONDOWN)
-    {
-        type = 2;
-    }
-    else if(wParam == WM_MOUSEMOVE)
-    {
-        type = 3;
-    }
-    else
-    {
-        type = -1;
+    case WM_LBUTTONDOWN: type=0;break;
+    case WM_RBUTTONDOWN: type=1;break;
+    case WM_NCMBUTTONDOWN: type=2;break;
+    case WM_MOUSEMOVE: type=3;break;
+    case WM_LBUTTONUP: type=4;break;
+    case WM_RBUTTONUP: type=5;break;
+    default: type=-1;break;
     }
     PMOUSEHOOKSTRUCT pmshs = reinterpret_cast<PMOUSEHOOKSTRUCT>(lParam);
     xHook->onMouseEvent(type, pmshs);
