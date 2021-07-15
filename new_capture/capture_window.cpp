@@ -9,6 +9,7 @@
 #include "Manager/key_manager.h"
 #include "windows.h"
 #include<QScreen>
+#include "hook.h"
 
 Capture_window::Capture_window(QWidget *parent) :
     Window_base(parent, this, "Capture_window"),
@@ -23,6 +24,7 @@ Capture_window::Capture_window(QWidget *parent) :
     this->setMouseTracking(true);
     this->ui->centralwidget->setMouseTracking(true);
     this->captured = new Capture_area(this);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
     load_key_event("Capture_window");
 }
@@ -37,8 +39,6 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
 {
     QPainter painter(this);
 
-    painter.fillRect(this->rect(), QColor(0, 0, 0, 0x20)); // 设置透明颜色
-    painter.setCompositionMode( QPainter::CompositionMode_Source );
     if(Config::get_config(Config::free_capture) && button_click)
     {
         QPen pen;
@@ -49,6 +49,18 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
         painter.drawPath(free_paint_path);
         return;
     }
+    else if(Config::get_config(Config::active_window_capture))//活动窗口截屏
+    {
+        QPen pen;
+        pen.setColor(QColor(255, 0, 0));
+        pen.setWidth(3);
+        painter.setPen(pen);
+        painter.drawRect(active_window_bound);
+        return;
+    }
+
+    painter.fillRect(this->rect(), QColor(0, 0, 0, 0x20)); // 设置透明颜色
+    painter.setCompositionMode( QPainter::CompositionMode_Source );
     if(captured->is_begin_draw())
     {
         painter.fillRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h(),
@@ -145,7 +157,6 @@ void Capture_window::mouseMoveEvent(QMouseEvent *event)
         }
         else
         {
-
             setCursor(Qt::ArrowCursor);
         }
     }
@@ -169,34 +180,6 @@ void Capture_window::mousePressEvent(QMouseEvent *event)
     }
     else if(event->button() == Qt::RightButton)
     {
-        return;
-    }
-    else if(Config::get_config(Config::active_window_capture))
-    {
-        update();
-        Window_manager::hide_now();
-        QScreen *screen = QGuiApplication::primaryScreen();
-        QPixmap map = screen->grabWindow(0);
-        POINT point;
-        POINT point2;
-        point2.x = 0;
-        point2.y = 0;
-        GetCursorPos(&point);
-        HWND hwnd = WindowFromPoint(point);
-        RECT rect2;
-        GetClientRect(hwnd, &rect2);
-        ClientToScreen(hwnd, &point2);
-
-        QRect qrect = QRect(QPoint(point2.x, point2.y), QSize(rect2.right, rect2.bottom));
-        QRect temp = qrect;
-        temp.moveTo(0, 0);
-        Window_manager::show_now();
-
-        Window_manager::change_window("Paint_window");
-        Window_manager::get_window("Paint_window")->
-                    set_pic(map.copy(qrect), temp);
-        Window_manager::close_window("Capture_window");
-        close();
         return;
     }
     else if(Config::get_config(Config::free_capture))
@@ -260,6 +243,69 @@ void Capture_window::on_window_cancal()
 
 void Capture_window::on_window_select()
 {
+    if(Config::get_config(Config::active_window_capture))
+    {
+        is_enter = false;
+        if(xHook->installMouseHook())
+        {
+            connect(xHook, &XGlobalHook::mouseEvent, this,
+                    [=](XGlobalHook::button_type type, PMOUSEHOOKSTRUCT pMouseHookStruct){
+                if(type == XGlobalHook::MOUSE_MOVE)
+                {
+                    QScreen *screen = QGuiApplication::primaryScreen();
+                    QPixmap map = screen->grabWindow(0);
+                    POINT point;
+                    POINT point2;
+                    point2.x = 0;
+                    point2.y = 0;
+                    GetCursorPos(&point);
+                    HWND hwnd = WindowFromPoint(point);
+                    RECT rect2;
+                    GetClientRect(hwnd, &rect2);
+                    ClientToScreen(hwnd, &point2);
 
+                    active_window_bound = QRect(QPoint(point2.x, point2.y), QSize(rect2.right, rect2.bottom));
+                    update();
+                }
+                else if(type == XGlobalHook::LBUTTON && !is_enter)
+                {
+                    is_enter = true;
+
+                    Window_manager::hide_now();
+                    QScreen *screen = QGuiApplication::primaryScreen();
+                    QPixmap map = screen->grabWindow(0);
+                    Window_manager::show_now();
+                    POINT point;
+                    POINT point2;
+                    point2.x = 0;
+                    point2.y = 0;
+                    GetCursorPos(&point);
+                    HWND hwnd = WindowFromPoint(point);
+                    RECT rect2;
+                    GetClientRect(hwnd, &rect2);
+                    ClientToScreen(hwnd, &point2);
+
+                    QRect qrect = QRect(QPoint(point2.x, point2.y), QSize(rect2.right, rect2.bottom));
+                    QRect temp = qrect;
+                    temp.moveTo(0, 0);
+
+                    Window_manager::change_window("Paint_window");
+                    Window_manager::get_window("Paint_window")->
+                                set_pic(map.copy(qrect), temp);
+                    Window_manager::close_window("Capture_window");
+                    close();
+                }
+                else if(type == XGlobalHook::LBUTTON_UP)
+                {
+                    xHook->uninstallMouseHook();
+                }
+                else if(type == XGlobalHook::RBUTTON)
+                {
+                    xHook->uninstallMouseHook();
+                    Window_manager::pop_window();
+                }
+            });
+        }
+    }
 }
 

@@ -35,6 +35,8 @@ private:
     Capture_area* captured;
     bool button_click;
     QPainterPath free_paint_path;
+    QRect active_window_bound;
+    bool is_enter;
 };
 
 #endif // CAPTURE_WINDOW_H
