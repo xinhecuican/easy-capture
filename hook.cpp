@@ -123,6 +123,10 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
     {
         type = 2;
     }
+    else if(wParam == WM_MOUSEMOVE)
+    {
+        type = 3;
+    }
     else
     {
         type = -1;

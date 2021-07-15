@@ -19,7 +19,7 @@ private:
    XGlobalHook& operator==(const XGlobalHook&) = delete;
 
 public:
-   enum button_type{LBUTTON, RBUTTON, MBUTTON};
+   enum button_type{LBUTTON, RBUTTON, MBUTTON, MOUSE_MOVE};
    virtual ~XGlobalHook() final;
    static QSharedPointer<XGlobalHook>& instance();
 
