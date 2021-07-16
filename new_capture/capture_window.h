@@ -37,6 +37,7 @@ private:
     QPainterPath free_paint_path;
     QRect active_window_bound;
     bool is_enter;
+    QTimer* timer;
 };
 
 #endif // CAPTURE_WINDOW_H

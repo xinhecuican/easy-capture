@@ -42,6 +42,8 @@ private:
     Ui::Setting *ui;
     PList<Tab_widget*> all_setting;
     QList<data> ready_setting;
+    void capture_settings();
+    void key_settings();
 };
 
 #endif // SETTING_H

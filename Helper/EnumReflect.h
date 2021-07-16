@@ -4,13 +4,29 @@
 #include <sstream>
 #include<QString>
 #include<QDebug>
+
 // Search and remove whitespace from both ends of the string
 static std::string TrimEnumString(const std::string &s)
 {
     std::string::const_iterator it = s.begin();
     while (it != s.end() && isspace(*it)) { it++; }
     std::string::const_reverse_iterator rit = s.rbegin();
-    while (rit.base() != it && isspace(*rit)) { rit++; }
+    if(s.find('=') != s.npos)//排除等号和后面的干扰
+    {
+        bool meet_equal = false;
+        while(rit.base() != it && (isspace(*rit) || !meet_equal))
+        {
+            if(*rit == '=')
+            {
+                meet_equal = true;
+            }
+            rit++;
+        }
+    }
+    else
+    {
+        while (rit.base() != it && isspace(*rit)) { rit++; }
+    }
     return std::string(it, rit.base());
 }
 

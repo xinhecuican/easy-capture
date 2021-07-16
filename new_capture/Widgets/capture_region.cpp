@@ -132,7 +132,8 @@ void Capture_region::set_nodes()
 
     for(int i=1; i<len1; i++)
     {
-        if(now->get_node().x() + OFFSET == list[i].x() && now->get_node().y()  + OFFSET== list[i].y())
+        if(now->get_node().x() + Stretch_point::OFFSET == list[i].x() && now->get_node().y()  +
+                Stretch_point::OFFSET == list[i].y())
         {
             now->set_neigh(points[points_len-1]);
             points[points_len-1]->set_neigh(now);
@@ -148,8 +149,8 @@ void Capture_region::set_nodes()
                 points_len++;
                 i++;
             }
-            else if(list[i].x() != points[0]->get_node().x() + OFFSET
-                    || list[i].y() != points[0]->get_node().y() + OFFSET)
+            else if(list[i].x() != points[0]->get_node().x() + Stretch_point::OFFSET
+                    || list[i].y() != points[0]->get_node().y() + Stretch_point::OFFSET)
             {
                 points[0]->set_index(i+1);
                 break;

@@ -10,7 +10,7 @@ Paint_layer::Paint_layer()
 
 }
 
-Paint_layer::Paint_layer(QWidget* parent, QString name)
+Paint_layer::Paint_layer(QWidget* parent, QString name) : QWidget(parent)
 {
     this->parent = parent;
     this->name = name;
@@ -18,11 +18,16 @@ Paint_layer::Paint_layer(QWidget* parent, QString name)
     now_index = 0;
     data = QHash<int, paint_info>();
     delete_data = QHash<int, paint_info>();
+    show();
 }
 
-void Paint_layer::paint(QImage &image)
+void Paint_layer::paint(QImage& image, QRect rect)
 {
     QPainter painter(&image);
+    if(rect.left() != -1 || rect.top() != -1)
+    {
+        painter.setClipRect(rect);
+    }
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
     for(paint_info path : data)
     {
@@ -36,7 +41,7 @@ void Paint_layer::paint(QImage &image)
     }
 }
 
-void Paint_layer::erase_and_paint(QPoint point, QImage &image)
+void Paint_layer::erase_and_paint(QPoint point, QImage& image, QRect rect)
 {
     QPainter painter;
     QImage temp = image.copy();

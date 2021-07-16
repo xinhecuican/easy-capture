@@ -21,17 +21,20 @@ const int Config::default_settings[] =
     false,
     false,
     false,
-    false
+    false,
+    false,//need_update
+    -1,//update_interval
+    0
 };
 
 DEFINE_STRING(Config);
-
 QMap<int, int> Config::all_settings = QMap<int, int>();
 Config* Config::_instance = NULL;
 
 Config::Config()
 {
     is_loading_translate = false;
+    is_update_config = false;
 }
 
 QString Config::read_translate(int type)
@@ -46,9 +49,16 @@ QString Config::read_translate(int type)
 
 void Config::serialized(QJsonObject* json)
 {
-    for(setting i=capture_one_window; i<setting::COUNT; i = setting(i + 1))
+    if(is_update_config)
     {
-        json->insert(eto_string((setting)i), all_settings[i]);
+        (*json)[eto_string(update_setting)] = all_settings[update_setting];
+    }
+    else
+    {
+        for(setting i=capture_one_window; i<setting::COUNT; i = setting(i + 1))
+        {
+            json->insert(eto_string((setting)i), all_settings[i]);
+        }
     }
 }
 
@@ -62,6 +72,7 @@ void Config::deserialized(QJsonObject* json)
 
 void Config::save_to_config()
 {
+    instance()->is_update_config = false;
     Serialize::serialize("Data/config.json", instance());
 }
 
@@ -74,6 +85,24 @@ void Config::load_config()
             all_settings[i] = default_settings[i];
         }
         save_to_config();
+    }
+}
+
+void Config::update_config(setting type)
+{
+    instance()->update_setting = type;
+    instance()->is_update_config = true;
+    Serialize::append("Data/config.json", instance());
+}
+
+void Config::update_all()
+{
+    for(int i=0; i<COUNT; i++)
+    {
+        if(all_settings.find(i) == all_settings.end())
+        {
+            all_settings[i] = default_settings[i];
+        }
     }
 }
 

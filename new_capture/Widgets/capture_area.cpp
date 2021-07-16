@@ -75,7 +75,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
         begin_point = end_point;
         if(Config::get_config(Config::capture_multi_window_combine))
         {
-            Capture_region* temp_region ;
+            Capture_region* temp_region = NULL;
             for(int i=0; i<regions.count(); i++)
             {
                 if(regions[i]->contains(QPoint(event->globalX(), event->globalY())))
@@ -236,6 +236,11 @@ void Capture_area::combine_region(QRect rect)
 
 void Capture_area::combine_region(Capture_region* region)
 {
+    if(region == NULL)
+    {
+        return;
+    }
+
     PList<Capture_region*> temp;
     PList<Capture_region*>::iterator iter = regions.begin();
     while(iter != regions.end())
@@ -251,15 +256,14 @@ void Capture_area::combine_region(Capture_region* region)
         }
     }
 
-    if(!temp.isEmpty())
+
+    foreach(Capture_region* cregion, temp)
     {
-        foreach(Capture_region* cregion, temp)
-        {
-            region->unit(*cregion);
-        }
+        region->unit(*cregion);
     }
     add_region(region);
     temp.clear_all();
+
 }
 
 QRect Capture_area::bounded_rect()

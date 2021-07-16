@@ -39,13 +39,13 @@ public:
    bool isKeyHookRunning() const;    // 运行状态
 
 signals:
-   void mouseEvent(button_type type, PMOUSEHOOKSTRUCT pMouseHookStruct);
+   void mouseEvent(button_type type, PMOUSEHOOKSTRUCT pMouseHookStruct, bool* is_shield);
    void keyEvent(PKBDLLHOOKSTRUCT pKeyHookStruct);
 
       /// DLL 钩子接口
 #if defined HOOK_LIBRARY
 public:
-   void onMouseEvent(int type, PMOUSEHOOKSTRUCT pMouseHookStruct);
+   void onMouseEvent(int type, PMOUSEHOOKSTRUCT pMouseHookStruct, bool* is_shield);
    void onKeyEvent(PKBDLLHOOKSTRUCT pKeyHookStruct);
 #endif
 };

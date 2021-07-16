@@ -26,7 +26,10 @@ public:
               free_capture,//在Capture_window中
               scroll_capture,
               active_window_capture,//在Capture_window中
-              capture_mode_end = active_window_capture
+              capture_mode_end = active_window_capture,
+              need_update,//需要更新
+              update_interval,//更新检查时间间隔，-1表示永不更新
+              last_update_time//上次更新时间,注意以分钟为单位（秒为单位太小了，会超界）
               );
     Config();
     static Config*& instance()
@@ -41,6 +44,8 @@ public:
     void serialized(QJsonObject* json) override;
     static void load_config();
     static void save_to_config();
+    static void update_config(setting type);
+    static void update_all();
     static int get_config(setting type);
     static int get_config(QString type);
     static int get_config(int type);
@@ -53,6 +58,8 @@ private:
     static Config* _instance;
     static QMap<int, int> all_settings;
     static const int default_settings[];
+    bool is_update_config;
+    setting update_setting;
     QString read_translate(int type);
 };
 

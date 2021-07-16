@@ -54,8 +54,13 @@ void Paint_area::set_picture(QPixmap pixmap, QRect rect)
 void Paint_area::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
+
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
-    paint();
+    if(!is_update)
+    {
+        paint();
+    }
+    is_update = false;
     painter.drawImage(0, 0, image);
     if(!is_eraser)
     {
@@ -90,31 +95,71 @@ void Paint_area::paint()
     }
 }
 
+void Paint_area::paint_rect(QRect rect)
+{
+    is_update = true;
+    //QColor backColor = qRgb(255,255,255);
+    //image.fill(backColor);
+    /*for(int i=0; i<layers.size(); i++)//各层绘制
+    {
+        if(is_eraser)
+        {
+            layers[i]->erase_and_paint(point, image, rect);
+        }
+        else
+            layers[i]->paint(image, rect);
+    }
+    QPainter painter(&image);*/
+    for(int i=0; i<disable_color.size(); i++)//设置透明色
+    {
+        QImage mask = image.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+        image.setAlphaChannel(mask);
+    }
+    update(rect);
+}
+
 void Paint_area::mouseMoveEvent(QMouseEvent *event)
 {
-    if(is_base_drag)
-    {
-        pic_layer->point_move(event->pos());
-        update();
-        return;
-    }
     if(!is_draw)
     {
         return;
     }
     point = event->pos();
+    QPainterPath::Element ele = now_path.elementAt(now_path.elementCount()-1);
     now_path.lineTo(event->pos());
-    update();
+    int x, y, w, h;
+    QPoint global_point = event->pos();
+    if(ele.x < global_point.x())
+    {
+        x = ele.x;
+        w = global_point.x() - ele.x;
+    }
+    else
+    {
+        x = global_point.x();
+        w = ele.x - global_point.x();
+    }
+    if(ele.y < global_point.y())
+    {
+        y = ele.y;
+        h = global_point.y() - ele.y;
+    }
+    else
+    {
+        y = global_point.y();
+        h = ele.y - global_point.y();
+    }
+    x -= now_data.width+3;
+    y -= now_data.width+3;
+    w += now_data.width+6;
+    h += now_data.width+6;
+    paint_rect(QRect(x, y, w, h));
 }
 
 void Paint_area::mousePressEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton)
     {
-        if(pic_layer->test_drag(event->pos()))
-        {
-            is_base_drag = true;
-        }
         is_draw = true;
     }
     point = event->pos();
@@ -125,11 +170,6 @@ void Paint_area::mousePressEvent(QMouseEvent *event)
 
 void Paint_area::mouseReleaseEvent(QMouseEvent* event)
 {
-    if(is_base_drag)
-    {
-        is_base_drag = false;
-        pic_layer->point_end(event->pos());
-    }
     if(!is_eraser)
     {
         now_path.lineTo(event->pos());
@@ -138,6 +178,7 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
         Recorder::instance()->record(index, layers[layers.size()-1]);
         now_path = QPainterPath();
     }
+    is_update = false;
     update();
 }
 

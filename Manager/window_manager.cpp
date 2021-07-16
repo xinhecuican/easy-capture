@@ -43,6 +43,10 @@ void Window_manager::close_window(QString name)
     {
         window_list.erase(window_list.find(name));
     }
+    if(name != active_window)
+    {
+        Debug::debug_print_warning("未关闭窗口调用close_window\n位置：Window_manager::close_window");
+    }
 }
 
 void Window_manager::push_window(QString name, Window_base *widget)

@@ -7,6 +7,7 @@
 #include "Manager/window_manager.h"
 #include <QDebug>
 #include <QDialogButtonBox>
+#include "Manager/key_manager.h"
 
 Setting::Setting(QWidget *parent) :
     Window_base(parent, this, "Setting"),
@@ -46,7 +47,17 @@ Setting::Setting(QWidget *parent) :
     button_layout->setDirection(QBoxLayout::RightToLeft);
     button_layout->addWidget(buttonBox);
     card_layout->addWidget(ui->tabWidget);
+    capture_settings();
+    key_settings();
+}
 
+Setting::~Setting()
+{
+    delete ui;
+}
+
+void Setting::capture_settings()
+{
     Tab_widget* capture_setting = new Tab_widget("捕获", this);
     QVector<QString> capture_type_name = QVector<QString>();
     capture_type_name << Config::get_config_name(Config::capture_one_window)
@@ -63,9 +74,23 @@ Setting::Setting(QWidget *parent) :
     ui->tabWidget->addTab(capture_setting, MString::search("{23ih0Dr8Na}捕获"));
 }
 
-Setting::~Setting()
+void Setting::key_settings()
 {
-    delete ui;
+    Tab_widget* key_setting = new Tab_widget("快捷键", this);
+    QList<QString> window_name = Key_manager::get_window_names();
+    for(int i=0; i<window_name.size(); i++)
+    {
+        QList<QString> key_name = Key_manager::get_key_names(window_name[i]);
+        key_setting->add_spacer("{" + window_name[i] + "}" + window_name[i]);
+        int size = key_name.size();
+        for(int k=0; k<size; k++)
+        {
+            key_setting->add_key_option(i * size + k, "{" + key_name[k] + "}" + key_name[k],
+                                        window_name[i], key_name[k]);
+        }
+    }
+    all_setting.append(key_setting);
+    ui->tabWidget->addTab(key_setting, MString::search("快捷键"));
 }
 
 void Setting::closeEvent(QCloseEvent *event)

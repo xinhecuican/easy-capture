@@ -1,4 +1,4 @@
-QT       += core gui xml
+QT       += core gui xml network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,9 +19,13 @@ SOURCES += \
     Helper/debug.cpp \
     Helper/mstring.cpp \
     Helper/stackdumper.cpp \
+    Manager/Data/update_data.cpp \
+    Manager/Data/update_dialog.cpp \
     Manager/config.cpp \
     Manager/key_manager.cpp \
+    Manager/update.cpp \
     Manager/window_manager.cpp \
+    Paint/Data/stretch_button.cpp \
     Paint/Widgets/Layer_list/list_item.cpp \
     Paint/Widgets/Layer_list/list_widget.cpp \
     Paint/Widgets/color_selector.cpp \
@@ -34,6 +38,7 @@ SOURCES += \
     Paint/Widgets/style_manager.cpp \
     Paint/paint_window.cpp \
     Panel/Widgets/combo_tab.cpp \
+    Panel/Widgets/key_tab.cpp \
     Panel/Widgets/tab_widget.cpp \
     Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
@@ -59,12 +64,17 @@ HEADERS += \
     Helper/mstring.h \
     Helper/plist.h \
     Helper/stackdumper.h \
+    Manager/Data/update_data.h \
+    Manager/Data/update_dialog.h \
+    Manager/IKey_listener.h \
     Manager/config.h \
     Manager/key_manager.h \
+    Manager/update.h \
     Manager/window_manager.h \
     Paint/Data/History_data.h \
     Paint/Data/Ilayer.h \
     Paint/Data/paint_data.h \
+    Paint/Data/stretch_button.h \
     Paint/Widgets/IControl_layer_change.h \
     Paint/Widgets/Layer_list/list_item.h \
     Paint/Widgets/Layer_list/list_widget.h \
@@ -78,6 +88,7 @@ HEADERS += \
     Paint/paint_window.h \
     Panel/Widgets/bool_tab.h \
     Panel/Widgets/combo_tab.h \
+    Panel/Widgets/key_tab.h \
     Panel/Widgets/tab_widget.h \
     Panel/setting.h \
     Style_widget/spacer.h \
@@ -107,9 +118,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     Resource/Resources.qrc\
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Debug/release/ -lHook
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Release/release/ -lHook
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Debug/debug/ -lHook
 else:unix: LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Debug/ -lHook
 
 INCLUDEPATH += $$PWD/../HOOK
 DEPENDPATH += $$PWD/../HOOK
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_9_9_MinGW_32bit-Release/quazip/release/ -lquazip
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_9_9_MinGW_32bit-Debug/quazip/debug/ -lquazipd
+else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_9_9_MinGW_32bit-Debug/quazip/ -lquazipd
+
+INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
+DEPENDPATH += $$PWD/../quazip-0.7.3/quazip

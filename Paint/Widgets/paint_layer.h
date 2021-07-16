@@ -7,14 +7,14 @@
 #include "Base/Record_element.h"
 #include "Paint/Data/paint_data.h"
 #include "Paint/Data/Ilayer.h"
-
-class Paint_layer : public Ilayer
+#include<QWidget>
+class Paint_layer : public QWidget, public Ilayer
 {
 public:
     Paint_layer();
     Paint_layer(QWidget* parent, QString name);
-    void paint(QImage& image)override;
-    void erase_and_paint(QPoint point, QImage& image)override;
+    void paint(QImage &image, QRect rect =QRect(-1, -1, 1, 1)) override;
+    void erase_and_paint(QPoint point, QImage& image, QRect rect =QRect(-1, -1, 1, 1))override;
     int add_data(Paint_data* style, QPainterPath path)override;
     void set_name(QString name)override;
     QString get_name();
@@ -37,6 +37,7 @@ private:
     QWidget* parent;
     QString name;
     QPicture pic;
+    QRect last_rect;
     QHash<int, paint_info> data;
     QHash<int, paint_info> delete_data;
     int now_index;

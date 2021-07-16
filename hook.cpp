@@ -96,9 +96,9 @@ bool XGlobalHook::isKeyHookRunning() const
 }
  /// DLL 钩子接口
 #if defined HOOK_LIBRARY
-void XGlobalHook::onMouseEvent(int type, PMOUSEHOOKSTRUCT pMouseHookStruct)
+void XGlobalHook::onMouseEvent(int type, PMOUSEHOOKSTRUCT pMouseHookStruct, bool* is_shield)
 {
-   emit mouseEvent((button_type)type, pMouseHookStruct);
+   emit mouseEvent((button_type)type, pMouseHookStruct, is_shield);
 }
 
 void XGlobalHook::onKeyEvent(PKBDLLHOOKSTRUCT pKeyHookStruct)
@@ -122,7 +122,12 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
     default: type=-1;break;
     }
     PMOUSEHOOKSTRUCT pmshs = reinterpret_cast<PMOUSEHOOKSTRUCT>(lParam);
-    xHook->onMouseEvent(type, pmshs);
+    bool is_shield = false;
+    xHook->onMouseEvent(type, pmshs, &is_shield);
+    if(is_shield)//屏蔽鼠标事件
+    {
+        return 1;
+    }
     return CallNextHookEx(g_hMouseHook,nCode,wParam,lParam);
 }
 

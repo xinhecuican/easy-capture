@@ -26,7 +26,7 @@ public:
         }
         catch (...)
         {
-            Debug::show_error_message("配置文件打开错误");
+            Debug::show_error_message("配置文件打开错误\n位置： Serialize::serialize");
             file.close();
         }
         point->serialized(&jsonObject);
@@ -49,7 +49,7 @@ public:
             {
                 file.open(QIODevice::ReadOnly | QIODevice::Text);
             } catch (...) {
-                Debug::show_error_message("配置文件打开错误");
+                Debug::show_error_message("配置文件打开错误\n位置：Serialize::deserialize");
                 file.close();
                 return false;
             }
@@ -61,14 +61,72 @@ public:
                QJsonDocument jsonDoc(QJsonDocument::fromJson(allData, &json_error));
             if(json_error.error != QJsonParseError::NoError)
             {
-                Debug::show_error_message("配置文件打开错误");
+                Debug::show_error_message("配置文件打开错误\n位置：Serialize::deserialize");
                 return false;
             }
-
             QJsonObject rootObj = jsonDoc.object();
             point->deserialized(&rootObj);
         }
         return true;
+    }
+
+    static bool deserialize_data(QByteArray data, Serializable* point)
+    {
+
+        QJsonParseError json_error;
+           QJsonDocument jsonDoc(QJsonDocument::fromJson(data, &json_error));
+        if(json_error.error != QJsonParseError::NoError)
+        {
+            Debug::show_error_message("配置文件打开错误\n位置: Serailize::deserialize_data");
+            return false;
+        }
+        QJsonObject rootObj = jsonDoc.object();
+        point->deserialized(&rootObj);
+        return true;
+    }
+
+    static void append(QString path, Serializable* point)
+    {
+        QString dir_path = path.mid(0, path.lastIndexOf("/")+1);
+        QDir base_dir = QDir(dir_path);
+        if(!base_dir.exists())
+        {
+            QDir dir;
+            dir.mkdir(dir_path);
+        }
+        QFile file(path);
+        try
+        {
+            file.open(QIODevice::ReadWrite | QIODevice::Text);
+        }
+        catch (...)
+        {
+            Debug::show_error_message("配置文件打开错误\n位置Serialize::append");
+            file.close();
+        }
+        QByteArray allData = file.readAll();
+        file.close();
+
+        QJsonParseError json_error;
+        QJsonDocument jsonDoc(QJsonDocument::fromJson(allData, &json_error));
+        if(json_error.error != QJsonParseError::NoError)
+        {
+            Debug::show_error_message("配置文件打开错误\n位置Serialize::append");
+        }
+        QJsonObject rootObj = jsonDoc.object();
+        point->serialized(&rootObj);
+        jsonDoc.setObject(rootObj);
+        try
+        {
+            file.open(QIODevice::ReadWrite | QIODevice::Text);
+        }
+        catch (...)
+        {
+            Debug::show_error_message("配置文件打开错误\n位置Serialize::append");
+            file.close();
+        }
+        file.write(jsonDoc.toJson());
+        file.close();
     }
 };
 

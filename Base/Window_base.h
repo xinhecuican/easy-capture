@@ -51,7 +51,7 @@ public:
         super_window->setWindowTitle("简截");
         super_window->setWindowIcon(QIcon(":/image/avator.png"));
         MString::load_from_file(":/Data/Languages/" + type_name + "/");
-        super_window->setAttribute(Qt::WA_DeleteOnClose);
+        //super_window->setAttribute(Qt::WA_DeleteOnClose);
     }
 
 

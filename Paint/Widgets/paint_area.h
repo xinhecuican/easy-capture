@@ -27,6 +27,7 @@ public:
     void raise_layer(int index);//提升一层
     void drop_layer(int index);//下降一层
     void reset();
+    void paint_rect(QRect rect);
     void save(QString path);//不可编辑，直接输出图片
     void save_temp();//可供下次编辑，保存了paint_layer
     void using_erase(bool is_using_eraser);
@@ -48,6 +49,7 @@ private:
     Paint_data now_data;
     QPoint point;
     bool is_base_drag;
+    bool is_update;
     void paint();
 };
 

@@ -5,13 +5,18 @@
 #include "Manager/key_manager.h"
 #include "Helper/mstring.h"
 #include "Style_widget/tray.h"
-
+#include "Manager/update.h"
+#include "JlCompress.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : Window_base(parent, this, "MainWindow")
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    global_key_id = GlobalAddAtomA("awake_capture");
+    RegisterHotKey((HWND)this->winId(), global_key_id, MOD_CONTROL, VK_F1);
+    setAttribute(Qt::WA_DeleteOnClose, true);
 
 
     toolbar = new QToolBar();
@@ -61,6 +66,28 @@ MainWindow::MainWindow(QWidget *parent)
     toolbar->addWidget(setting_button);
     setWindowFlag(Qt::WindowMinimizeButtonHint);
     setAttribute(Qt::WA_DeleteOnClose, true);
+    if(Config::get_config(Config::need_update) == 1)
+    {
+        int ans = QMessageBox::question(this, "更新提示", "是否进行更新");
+        if(ans == QMessageBox::Yes)
+        {
+            Config::set_config(Config::need_update, 2);//表示更新完成，需要检查设置
+            Config::update_config(Config::need_update);
+
+            QProcess::startDetached("updater.exe");//开启更新程序
+            close();
+        }
+    }
+    else if(Config::get_config(Config::need_update) == 2)
+    {
+        Config::update_all();
+        Key_manager::update_all();
+    }
+    if(Config::get_config(Config::last_update_time) + Config::get_config(Config::update_interval) <
+            QDateTime::currentSecsSinceEpoch())
+    {
+        Update::instance()->check_update();
+    }
 
     //只是延时执行，不是新的线程，相当于回调，因此不用加锁
     //定时删除不使用的Window
@@ -83,6 +110,8 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     Key_manager::save();
+    UnregisterHotKey((HWND)this->winId(), global_key_id);
+    GlobalDeleteAtom( global_key_id );
 }
 
 bool MainWindow::eventFilter(QObject *o, QEvent *e)
@@ -111,4 +140,19 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
 void MainWindow::window_manager_thread()
 {
     Window_manager::control_window_close();
+}
+
+bool MainWindow::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+{
+    MSG* pMsg = reinterpret_cast<MSG*>(message);
+    if(pMsg->message == WM_HOTKEY && pMsg->wParam == global_key_id)
+    {
+        if(Window_manager::get_window(Window_manager::get_now_window())->isHidden())
+        {
+            Window_manager::show_now();
+            Window_manager::change_window("Capture_window");
+            return true;
+        }
+    }
+    return false;
 }

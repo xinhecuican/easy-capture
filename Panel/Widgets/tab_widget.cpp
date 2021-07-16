@@ -4,6 +4,9 @@
 #include<QLabel>
 #include<QDebug>
 #include "Helper/mstring.h"
+#include "key_tab.h"
+#include "Style_widget/spacer.h"
+#include<QMessageBox>
 
 Tab_widget::Tab_widget()
 {
@@ -24,8 +27,6 @@ Tab_widget::Tab_widget(QWidget* parent) : QScrollArea(parent)
 void Tab_widget::init()
 {
     dirty = false;
-    bool_widgets = QVector<Bool_tab*>();
-    combo_option_widgets = QVector<Combo_tab*>();
     setWidgetResizable(true);
     base = new QWidget(this);
     layout = new QVBoxLayout(base);
@@ -44,7 +45,6 @@ Tab_widget::~Tab_widget()
 void Tab_widget::add_bool_option(QString tab_name, QString name, int index, std::function<void (bool)> const  &f)
 {
     Bool_tab* temp = new Bool_tab(tab_name, name, index, f, base);
-    bool_widgets.push_back(temp);
     widgets.push_back(temp);
     layout->addWidget(temp);
     update();
@@ -54,7 +54,6 @@ void Tab_widget::add_combo_option(QString tab_name, QString text, QVector<QStrin
                                   const std::function<void (int)> &f)
 {
     Combo_tab* temp = new Combo_tab(tab_name, name, begin_index, end_index, f,  base);
-    combo_option_widgets.push_back(temp);
     widgets.push_back(temp);
     QHBoxLayout* hlayout = new QHBoxLayout(base);
     QLabel* label = new QLabel(base);
@@ -65,9 +64,29 @@ void Tab_widget::add_combo_option(QString tab_name, QString text, QVector<QStrin
     update();
 }
 
+void Tab_widget::add_key_option(int index, QString tab_name, QString window_name, QString key_name)
+{
+    Key_tab* element = new Key_tab(index, window_name, key_name, this);
+    widgets.push_back(element);
+    connect(element, &Key_tab::key_conflict, this, [=](QList<QString> key_names){
+        QString temp_list;
+        for(int i=0; i<key_names.size(); i++)
+        {
+            temp_list.append(MString::search(key_names[i]) + "\n");
+        }
+        QMessageBox::information(this, "冲突", temp_list);
+    });
+    QLabel* label = new QLabel(MString::search(tab_name), this);
+    QHBoxLayout*  hlayout = new QHBoxLayout(this);
+    hlayout->addWidget(label);
+    hlayout->addWidget(element);
+    layout->addLayout(hlayout);
+}
+
 void Tab_widget::add_spacer(QString text)
 {
-    layout->addSpacing(1);
+    Spacer* spacer = new Spacer(MString::search(text), true, this);
+    layout->addWidget(spacer);
 }
 
 int Tab_widget::get_default_index(QString name)
