@@ -21,7 +21,7 @@ Paint_layer::Paint_layer(QWidget* parent, QString name) : QWidget(parent)
     show();
 }
 
-void Paint_layer::paint(QImage& image, QRect rect)
+void Paint_layer::paint(QImage& image, bool is_save, QRect rect)
 {
     QPainter painter(&image);
     if(rect.left() != -1 || rect.top() != -1)
@@ -72,6 +72,7 @@ void Paint_layer::erase_and_paint(QPoint point, QImage& image, QRect rect)
         temp = prototype.copy();
     }
     paint(image);
+    parent->update();
 }
 
 void Paint_layer::set_name(QString name)

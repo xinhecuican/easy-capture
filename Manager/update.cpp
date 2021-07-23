@@ -6,17 +6,28 @@
 #include "Data/update_dialog.h"
 #include "Helper/debug.h"
 #include "config.h"
+#include "Data/Reply_timeout.h"
+#include<QTextCodec>
+#include<QMessageBox>
+#include "key_manager.h"
+#include "window_manager.h"
 
 Update::Update()
 {
     newest_data = Update_data();
+    manager = new QNetworkAccessManager(this);
+}
+
+Update::~Update()
+{
+    _instance = NULL;
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.0.1",
-"https://raw.githubusercontent.com/xinhecuican/Resources/master/easy_capture_version/0.0.1.zip",
+Update_data Update::now_version = Update_data("0.1.0",
+"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.1.0.zip",
                                               "",
-                                              "更新测试");
+                                              "");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
@@ -31,23 +42,26 @@ void Update::deserialized(QJsonObject *json)
 {
     QJsonObject newest_version =
             (*json)[QString::number((*json)["update_sum"].toInt()-1)].toObject();
-    newest_data.serialized(&newest_version);
+    newest_data.deserialized(&newest_version);
 }
 
 void Update::check_update()
 {
     Config::set_config(Config::last_update_time, QDateTime::currentSecsSinceEpoch() / 60);
-    start_request(QUrl(""));
+    start_request(QUrl("https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/update.json"));
 }
 
 void Update::start_request(const QUrl &url)
 {
-    QNetworkAccessManager manager;
     request.setUrl(url);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     request.setRawHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
-    reply = manager.get(request);
+    reply = manager->get(request);
+    Reply_timeout* timeout = new Reply_timeout(reply, 10000);
+    connect(timeout, &Reply_timeout::timeout, this, [=](){
+        qDebug() << "timeout";
+    });
     connect(reply, &QNetworkReply::finished, this, [=](){
         if (reply->error())
         {
@@ -59,7 +73,23 @@ void Update::start_request(const QUrl &url)
         // <3>判断是否需要重定向
         if (statusCode >= 200 && statusCode <300)
         {
-            Serialize::deserialize_data(reply->readAll(), this);
+            QTextCodec *codec = QTextCodec::codecForName("utf8");
+            QDir dir("Data/Temp");
+            if(!dir.exists())
+            {
+                dir.mkpath(dir.absolutePath());
+            }
+            QFile file("Data/Temp/update_msg.json");
+            if (!file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate))
+            {
+                qDebug() << "file open error!";
+                return ;
+            }
+            QTextStream out(&file);
+            out.setCodec("UTF-8");
+            out<< codec->toUnicode(reply->readAll());
+            file.close();
+            Serialize::deserialize("Data/Temp/update_msg.json", this);
             if(newest_data > now_version)
             {
                 ///TODO: 更新提示面板
@@ -81,6 +111,40 @@ void Update::start_request(const QUrl &url)
             }
         }
     });
+}
+
+void Update::update()
+{
+    QTimer::singleShot(1000, this, SLOT(on_update()));
+}
+
+void Update::on_update()
+{
+    QFile file("Data/update_res.txt");
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        return;
+    }
+    int ans = file.readAll().toInt();
+    if(file.exists() && ans)
+    {
+        Config::update_all();
+        Key_manager::update_all();
+        Config::set_config(Config::need_update, 0);
+        Config::update_config(Config::need_update);
+        file.remove();
+    }
+    if(Config::get_config(Config::need_update) == 1)
+    {
+        int ans = QMessageBox::question(this, "更新提示", "是否进行更新");
+        if(ans == QMessageBox::Yes)
+        {
+            if(QProcess::startDetached("Upgrate.exe"))//开启更新程序
+                Window_manager::close();
+            else
+                Debug::debug_print_warning("更新程序未启动");
+        }
+    }
 }
 
 void Update::save()

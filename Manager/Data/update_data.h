@@ -2,6 +2,7 @@
 #define UPDATE_DATA_H
 #include "Base/Serializable.h"
 #include<QDateTime>
+#include<QDebug>
 
 class Update_data : Serializable
 {

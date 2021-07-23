@@ -50,7 +50,7 @@ private:
     QPoint point;
     bool is_base_drag;
     bool is_update;
-    void paint();
+    void paint(bool is_save=false);
 };
 
 #endif // PAINT_AREA_H

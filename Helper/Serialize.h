@@ -6,6 +6,7 @@
 #include<QJsonObject>
 #include<QJsonDocument>
 #include "debug.h"
+#include<QDebug>
 class Serialize
 {
 public:
@@ -74,7 +75,7 @@ public:
     {
 
         QJsonParseError json_error;
-           QJsonDocument jsonDoc(QJsonDocument::fromJson(data, &json_error));
+        QJsonDocument jsonDoc(QJsonDocument::fromJson(data, &json_error));
         if(json_error.error != QJsonParseError::NoError)
         {
             Debug::show_error_message("配置文件打开错误\n位置: Serailize::deserialize_data");

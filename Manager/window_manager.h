@@ -16,6 +16,7 @@ public:
     Window_manager();
     static void push_window(QString name, Window_base* widget);
     static void change_window(QString name);
+    static void open_window(QString name);
     static QString get_now_window();
     static void pop_window();
     static bool contains(QString name);

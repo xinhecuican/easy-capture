@@ -73,6 +73,8 @@ void Update_data::decompress_version(int *sum)
         ans += version.mid(begin, temp-begin).toInt();
         begin = temp + 1;
     }
+    ans *= 10;
+    ans += version.mid(begin).toInt();
     *sum = ans;
 }
 

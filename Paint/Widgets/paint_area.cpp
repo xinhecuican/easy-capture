@@ -4,6 +4,7 @@
 #include<QDir>
 #include<QDateTime>
 #include "history.h"
+#include<QTimer>
 
 Paint_area::Paint_area()
 {
@@ -49,6 +50,9 @@ void Paint_area::set_picture(QPixmap pixmap, QRect rect)
     pic_layer = new Picture_layer("第0层", pixmap, rect, this);
     layer_num++;
     layers.push_back(pic_layer);
+    QTimer::singleShot(50, this, [=](){
+        this->update();
+    });
 }
 
 void Paint_area::paintEvent(QPaintEvent *event)
@@ -75,7 +79,7 @@ void Paint_area::paintEvent(QPaintEvent *event)
     }
 }
 
-void Paint_area::paint()
+void Paint_area::paint(bool is_save)
 {
     QColor backColor = qRgb(255,255,255);
     image.fill(backColor);
@@ -86,7 +90,7 @@ void Paint_area::paint()
             layers[i]->erase_and_paint(point, image);
         }
         else
-            layers[i]->paint(image);
+            layers[i]->paint(image, is_save);
     }
     for(int i=0; i<disable_color.size(); i++)//设置透明色
     {
@@ -98,18 +102,16 @@ void Paint_area::paint()
 void Paint_area::paint_rect(QRect rect)
 {
     is_update = true;
-    //QColor backColor = qRgb(255,255,255);
-    //image.fill(backColor);
-    /*for(int i=0; i<layers.size(); i++)//各层绘制
+    if(is_eraser)
     {
-        if(is_eraser)
+        QColor backColor = qRgb(255,255,255);
+        image.fill(backColor);
+        for(int i=0; i<layers.size(); i++)//各层绘制
         {
-            layers[i]->erase_and_paint(point, image, rect);
+            layers[i]->erase_and_paint(point, image);
         }
-        else
-            layers[i]->paint(image, rect);
     }
-    QPainter painter(&image);*/
+    QPainter painter(&image);
     for(int i=0; i<disable_color.size(); i++)//设置透明色
     {
         QImage mask = image.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
@@ -245,7 +247,7 @@ QRect Paint_area::bounded_rect()
 void Paint_area::save(QString path)
 {
     pic_save = true;
-    paint();
+    paint(true);
     image.copy(bounded_rect()).save(path);
     History::instance()->log(History_data::Persist, path);
 }
@@ -257,7 +259,7 @@ void Paint_area::save_temp()
     {
         dir.mkpath("Data/Temp");
     }
-    paint();
+    paint(true);
     QDateTime time = QDateTime::currentDateTime();
     QString path = "Data/Temp/" + time.toString("dd_mm_yyyy_hh_mm_ss") + "/";
     if(!dir.exists(path))

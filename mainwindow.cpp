@@ -17,7 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     global_key_id = GlobalAddAtomA("awake_capture");
     RegisterHotKey((HWND)this->winId(), global_key_id, MOD_CONTROL, VK_F1);
     setAttribute(Qt::WA_DeleteOnClose, true);
-
+    setWindowIcon(QIcon(":/image/avator.png"));
+    load_key_event("MainWindow");
 
     toolbar = new QToolBar();
     toolbar->setMovable(false);     // 设置工具栏不可移动,默认是可移动
@@ -40,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     mode_menu->addAction(MString::search("{FHFzLMcLYa}全屏"));
     mode_menu->addAction(MString::search("{fnGapBU4vo}自由截图"));
     mode_menu->addAction(MString::search("{ETY295cnab}滚动截屏"));
-    mode_menu->addAction(MString::search("活动窗口截屏"));
+    mode_menu->addAction(MString::search("{rzdUgOw26Y}活动窗口截屏"));
     QList<QAction*> actions = mode_menu->actions();
     for(int i=0; i<actions.size(); i++)
     {
@@ -66,25 +67,22 @@ MainWindow::MainWindow(QWidget *parent)
     toolbar->addWidget(setting_button);
     setWindowFlag(Qt::WindowMinimizeButtonHint);
     setAttribute(Qt::WA_DeleteOnClose, true);
-    if(Config::get_config(Config::need_update) == 1)
+    QSettings reg("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
+    QString appName = QApplication::applicationName();
+    if(Config::get_config(Config::start_instantly))
     {
-        int ans = QMessageBox::question(this, "更新提示", "是否进行更新");
-        if(ans == QMessageBox::Yes)
-        {
-            Config::set_config(Config::need_update, 2);//表示更新完成，需要检查设置
-            Config::update_config(Config::need_update);
+        QString strAppPath=QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
+        reg.setValue(appName,strAppPath+ tr(" autoStart"));
+    }
+    else
+    {
+        reg.remove(appName);
+    }
 
-            QProcess::startDetached("updater.exe");//开启更新程序
-            close();
-        }
-    }
-    else if(Config::get_config(Config::need_update) == 2)
-    {
-        Config::update_all();
-        Key_manager::update_all();
-    }
-    if(Config::get_config(Config::last_update_time) + Config::get_config(Config::update_interval) <
-            QDateTime::currentSecsSinceEpoch())
+    Update::instance()->update();
+    if(!Config::get_config(Config::need_update) && Config::get_config(Config::update_interval) != -1 &&
+            Config::get_config(Config::last_update_time) + Config::get_config(Config::update_interval) <
+            QDateTime::currentSecsSinceEpoch()/60)
     {
         Update::instance()->check_update();
     }
@@ -155,4 +153,14 @@ bool MainWindow::nativeEventFilter(const QByteArray &eventType, void *message, l
         }
     }
     return false;
+}
+
+void MainWindow::load_key_event(QString name)
+{
+    Key_manager::add_func(name, "main_capture", [=](bool is_enter){
+        if(is_enter)
+        {
+            new_button_action->on_button_click();
+        }
+    });
 }

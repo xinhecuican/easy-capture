@@ -25,6 +25,7 @@ public:
     void closeEvent(QCloseEvent* event)override;
     bool eventFilter(QObject* o, QEvent* e)override;
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *result)override;
+    void load_key_event(QString name) override;
 
 public slots:
     void window_manager_thread();

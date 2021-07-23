@@ -1,6 +1,7 @@
 #include "spacer.h"
 #include<QLabel>
 #include<QFrame>
+#include "Helper/mstring.h"
 
 Spacer::Spacer()
 {
@@ -9,7 +10,7 @@ Spacer::Spacer()
 
 Spacer::Spacer(QString name, bool need_hide_button, QWidget* parent) : QWidget(parent)
 {
-    this->name = name;
+    this->name = MString::search(name);
     this->parent = parent;
     widgets = PList<QWidget*>();
     show_icon = QIcon(":/image/show.png");
@@ -40,7 +41,7 @@ Spacer::Spacer(QString name, bool need_hide_button, QWidget* parent) : QWidget(p
     {
         line_layout->addWidget(hide_button);
     }
-    QLabel* name_label = new QLabel(name, this);
+    QLabel* name_label = new QLabel(this->name, this);
     QFrame *line = new QFrame(this);
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Plain);

@@ -57,15 +57,15 @@ void Paint_setting_panel::init()
 
 void Paint_setting_panel::init_pen_setting()
 {
-    Spacer* spacer = new Spacer("画笔设置", false, this);
-    QHBoxLayout* color_chooser = new QHBoxLayout(this);
-    QLabel* color_label = new QLabel("画笔颜色: ", this);
+    Spacer* spacer = new Spacer("{l1DkNbzL1T}画笔设置", false, this);
+    QHBoxLayout* color_chooser = new QHBoxLayout();
+    QLabel* color_label = new QLabel(MString::search("{fYXepa9pHx}画笔颜色: "), this);
     color_chooser->addWidget(color_label);
     color_button = new QPushButton(this);
     connect(color_button, &QPushButton::clicked, this, [=](){
         QColorDialog dialog;
         QColor begin_color = Style_manager::instance()->get_now().color;
-        QColor color = dialog.getColor(begin_color, this, "选择字体颜色", QColorDialog::ShowAlphaChannel);
+        QColor color = dialog.getColor(begin_color, this, MString::search("{6Of41PN3eL}选择字体颜色"), QColorDialog::ShowAlphaChannel);
         if(begin_color != color)
         {
             Style_manager::instance()->change_color(color);
@@ -76,13 +76,14 @@ void Paint_setting_panel::init_pen_setting()
     color_chooser->addWidget(color_button);
     spacer->add_layout(color_chooser);
     //layout->addLayout(color_chooser);
-    QHBoxLayout* back_chooser = new QHBoxLayout(this);
-    QLabel* back_label = new QLabel("背景颜色");
+    /*
+    QHBoxLayout* back_chooser = new QHBoxLayout();
+    QLabel* back_label = new QLabel(MString::search("{jEFblEjzoU}背景颜色"));
     back_button = new QPushButton(this);
     connect(back_button, &QPushButton::clicked, this, [=](){
         QColorDialog dialog;
         QColor begin_color = Style_manager::instance()->get_now().back_color;
-        QColor color = dialog.getColor(begin_color, this, "选择字体颜色", QColorDialog::ShowAlphaChannel);
+        QColor color = dialog.getColor(begin_color, this, MString::search("{6Of41PN3eL}选择字体颜色"), QColorDialog::ShowAlphaChannel);
         if(begin_color != color)
         {
             Style_manager::instance()->change_back_color(color);
@@ -94,7 +95,7 @@ void Paint_setting_panel::init_pen_setting()
     spacer->add_layout(back_chooser);
 
     QHBoxLayout* alpha_chooser = new QHBoxLayout(this);
-    QLabel* alpha_label = new QLabel("背景透明度", this);
+    QLabel* alpha_label = new QLabel(MString::search("{VfVCbcOMjR}背景透明度"), this);
     QSpinBox* alpha_box = new QSpinBox(this);
     alpha_box->setRange(0, 255);
     alpha_box->setSingleStep(1);
@@ -119,9 +120,9 @@ void Paint_setting_panel::init_pen_setting()
     alpha_chooser->addWidget(alpha_label);
     alpha_chooser->addWidget(alpha_box);
     alpha_chooser->addWidget(alpha_slider);
-    spacer->add_layout(alpha_chooser);
+    spacer->add_layout(alpha_chooser);*/
 
-    QLabel* width_label = new QLabel("画笔宽度: ", this);
+    QLabel* width_label = new QLabel(MString::search("{zW4GVylzEh}画笔宽度: "), this);
     width_button = new QComboBox(this);
     QList<QString> width_text = {"2", "3", "4", "6", "8", "10", "12", "14", "16", "18", "20"};
     width_button->addItems(width_text);
@@ -146,9 +147,9 @@ void Paint_setting_panel::init_pen_setting()
 
 void Paint_setting_panel::init_disable_color_setting()
 {
-    Spacer* spacer = new Spacer("透明颜色设置", false, this);
-    QHBoxLayout* combo_layout = new QHBoxLayout(this);
-    QLabel* combo_label = new QLabel("透明颜色", this);
+    Spacer* spacer = new Spacer("{pnbWkrTVVw}透明颜色设置", false, this);
+    QHBoxLayout* combo_layout = new QHBoxLayout();
+    QLabel* combo_label = new QLabel(MString::search("{8RK1prjHf0}透明颜色"), this);
     QComboBox* combo = new QComboBox(this);
     combo->setEditable(false);
     combo->setAutoFillBackground(true);
@@ -208,7 +209,7 @@ void Paint_setting_panel::init_disable_color_setting()
 
 void Paint_setting_panel::init_layer_setting()
 {
-    Spacer* spacer = new Spacer("层次管理", false, this);
+    Spacer* spacer = new Spacer("{i4yFQ5UXBc}层次管理", false, this);
     List_widget* widget = new List_widget(this);
     connect(widget, &List_widget::text_change, this, [=](int index, QString text){
         layer_control->layer_rename(index, text);
@@ -260,6 +261,6 @@ void Paint_setting_panel::set_style()
     int a = 0;
     color = Style_manager::instance()->get_now().back_color;
     color.getRgb(&r, &g, &b, &a);
-    back_button->setStyleSheet(QString("background-color: rgba(%1, %2, %3, %4)").arg(r).arg(g).arg(b).arg(a));
+    //back_button->setStyleSheet(QString("background-color: rgba(%1, %2, %3, %4)").arg(r).arg(g).arg(b).arg(a));
     width_button->setEditText(QString::number(Style_manager::instance()->get_now().width));
 }

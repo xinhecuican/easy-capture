@@ -19,7 +19,7 @@ void Window_manager::control_window_close()
     QList<Window_base*> temp_list = QList<Window_base*>();
     for(auto iter=window_list.begin(); iter!=window_list.end();)
     {
-        if(current_time-iter->second.time >= time &&
+        if(current_time-iter->second.time >= time && iter->second.window->isHidden() &&
                 iter->first != active_window && iter->first != "MainWindow")
         {
             temp_list.append(iter->second.window);
@@ -93,6 +93,15 @@ void Window_manager::change_window(QString name)
             window_list[name].window->show();
         }
     }
+}
+
+void Window_manager::open_window(QString name)
+{
+    create_window(name);
+    previous_window = active_window;
+    active_window = name;
+    window_list[name].window->show();
+
 }
 
 QString Window_manager::get_now_window()

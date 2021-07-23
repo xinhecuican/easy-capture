@@ -2,4 +2,26 @@
 <strings language="chinese">
     <string id="biSbDKXbuW" text="捕获窗口数量设置"/>
     <string id="23ih0Dr8Na" text="捕获"/>
+    <string id="1cSo8BaCHq" text="更新时间"/>
+    <string id="6m2deulC6q" text="通用"/>
+    <string id="YRHJ1nexv6" text="快捷键"/>
+    <string id="leave" text="退出"/>
+    <string id="one_window" text="只允许一个矩形"/>
+    <string id="Capture_window" text="捕获窗口"/>
+    <string id="E33TP7yq9G" text="语言"/>
+    <string id="VwuLzPpyI3" text="历史记录数量"/>
+    <string id="3BIidMbkAm" text="开机启动"/>
+    <string id="ZflcWUcIX8" text="隐藏到托盘"/>
+    <string id="YycWGmFDhU" text="显示关闭对话框"/>
+    <string id="LvA0JggRsZ" text="全局快捷键"/>
+    <string id="iy3cIujuw5" text="打开截屏窗口"/>
+    <string id="dcvOkViWtX" text="内存清理检查时间"/>
+    <string id="MainWindow" text="主窗口"/>
+    <string id="Paint_window" text="绘图窗口"/>
+    <string id="main_capture" text="打开截图窗口"/>
+    <string id="undo" text="撤销"/>
+    <string id="redo" text="恢复"/>
+    <string id="save" text="保存"/>
+    <string id="new_capture" text="打开截图窗口"/>
+    <string id="enter_capture" text="确认截图"/>
 </strings>

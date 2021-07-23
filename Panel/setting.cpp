@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <QDialogButtonBox>
 #include "Manager/key_manager.h"
+#include<QLabel>
+#include<QMessageBox>
 
 Setting::Setting(QWidget *parent) :
     Window_base(parent, this, "Setting"),
@@ -35,6 +37,19 @@ Setting::Setting(QWidget *parent) :
         Window_manager::pop_window();
     });
     close->connect(close, &QPushButton::clicked, this, [=](){
+        if(ready_setting.size() > 0)
+        {
+            int ans = QMessageBox::warning(this, "简截", "有设置未保存，是否保存",
+                                 QMessageBox::No| QMessageBox::Ok);
+            if(ans == QMessageBox::Ok)
+            {
+                for(int i=0; i<ready_setting.size(); i++)
+                {
+                    Config::set_config(ready_setting[i].type, ready_setting[i].sum);
+                }
+                Config::save_to_config();
+            }
+        }
         Window_manager::pop_window();
     });
     QVBoxLayout* base_layout = new QVBoxLayout(this);
@@ -47,6 +62,7 @@ Setting::Setting(QWidget *parent) :
     button_layout->setDirection(QBoxLayout::RightToLeft);
     button_layout->addWidget(buttonBox);
     card_layout->addWidget(ui->tabWidget);
+    normal_settings();
     capture_settings();
     key_settings();
 }
@@ -54,6 +70,72 @@ Setting::Setting(QWidget *parent) :
 Setting::~Setting()
 {
     delete ui;
+}
+
+void Setting::normal_settings()
+{
+    Tab_widget* normal_setting = new Tab_widget("通用", this);
+    QVector<QString> update_name = QVector<QString>();
+    for(int i=Config::update_checktime_begin; i<=Config::update_checktime_end; i++)
+    {
+        update_name.push_back(Config::get_config_name(Config::setting(i)));
+    }
+    normal_setting->add_combo_option("update_type", "{1cSo8BaCHq}更新时间", update_name,
+                                     Config::update_checktime_begin, Config::update_checktime_end, [=](int index){
+        int before_index = normal_setting->get_default_index("update_type");
+        ready_setting.append(data(before_index, false));
+        ready_setting.append(data(index+normal_setting->get_begin_index("update_type"), true));
+        data temp_data;
+        temp_data.type = Config::update_interval;
+        switch(index)
+        {
+        case 0:temp_data.sum = -1;break;
+        case 1:temp_data.sum = 60 * 24;break;
+        case 2:temp_data.sum = 0;break;
+        case 3:temp_data.sum = 60 * 24 * 7;break;
+        }
+        ready_setting.append(temp_data);
+        normal_setting->set_dirty(true);
+    });
+    QVector<QString> language_name = QVector<QString>();
+    for(int i=Config::languages_begin; i<=Config::languages_end; i++)
+    {
+        language_name.push_back(Config::get_config_name(Config::setting(i)));
+    }
+    normal_setting->add_combo_option("language_type", "{E33TP7yq9G}语言", language_name,
+                                     Config::languages_begin, Config::languages_end, [=](int index){
+        int before_index = normal_setting->get_default_index("language_type");
+        ready_setting.append(data(before_index, false));
+        ready_setting.append(data(index+normal_setting->get_begin_index("language_type"), true));
+        normal_setting->set_dirty(true);
+    });
+    normal_setting->add_num_option("history_num", Config::history_num, "{VwuLzPpyI3}历史记录数量", 0, 500,[=](int index){
+        ready_setting.append(data(Config::history_num, index));
+        normal_setting->set_dirty(true);
+    });
+    normal_setting->add_num_option("check_time", Config::clear_interval, "{dcvOkViWtX}内存清理检查时间", 5, 120, [=](int index){
+        ready_setting.append(data(Config::clear_interval, index));
+        normal_setting->set_dirty(true);
+    });
+    normal_setting->add_bool_option("start_now", "{3BIidMbkAm}开机启动", Config::start_instantly, [=](bool ans){
+        ready_setting.append(data(Config::start_instantly, ans));
+        normal_setting->set_dirty(true);
+    });
+    normal_setting->add_bool_option("hide_tray", "{ZflcWUcIX8}隐藏到托盘", Config::hide_to_tray, [=](bool ans){
+        ready_setting.append(data(Config::hide_to_tray, ans));
+        normal_setting->set_dirty(true);
+    });
+    normal_setting->add_bool_option("show_close", "{YycWGmFDhU}显示关闭对话框", Config::show_close_dialog, [=](bool ans){
+        ready_setting.append(data(Config::show_close_dialog, ans));
+        normal_setting->set_dirty(true);
+    });
+    normal_setting->add_bool_option("copy_clipboard", "自动复制到剪切板", Config::auto_copy_to_clipboard, [=](bool ans){
+        ready_setting.append(data(Config::auto_copy_to_clipboard, ans));
+        normal_setting->set_dirty(true);
+    });
+    normal_setting->done();
+    all_setting.append(normal_setting);
+    ui->tabWidget->addTab(normal_setting, MString::search("{6m2deulC6q}通用"));
 }
 
 void Setting::capture_settings()
@@ -70,6 +152,7 @@ void Setting::capture_settings()
         ready_setting.append(data(index+capture_setting->get_begin_index("capture_type"), true));
         capture_setting->set_dirty(true);
     });
+    capture_setting->done();
     all_setting.append(capture_setting);
     ui->tabWidget->addTab(capture_setting, MString::search("{23ih0Dr8Na}捕获"));
 }
@@ -77,6 +160,13 @@ void Setting::capture_settings()
 void Setting::key_settings()
 {
     Tab_widget* key_setting = new Tab_widget("快捷键", this);
+    key_setting->add_spacer("{LvA0JggRsZ}全局快捷键");
+    QHBoxLayout* hlayout = new QHBoxLayout();
+    QLabel* label1 = new QLabel(MString::search("{iy3cIujuw5}打开截屏窗口"), key_setting);
+    QLabel* label2 = new QLabel("Ctrl+F1", key_setting);
+    hlayout->addWidget(label1);
+    hlayout->addWidget(label2);
+    key_setting->add_layout(hlayout);
     QList<QString> window_name = Key_manager::get_window_names();
     for(int i=0; i<window_name.size(); i++)
     {
@@ -89,8 +179,9 @@ void Setting::key_settings()
                                         window_name[i], key_name[k]);
         }
     }
+    key_setting->done();
     all_setting.append(key_setting);
-    ui->tabWidget->addTab(key_setting, MString::search("快捷键"));
+    ui->tabWidget->addTab(key_setting, MString::search("{YRHJ1nexv6}快捷键"));
 }
 
 void Setting::closeEvent(QCloseEvent *event)

@@ -20,7 +20,6 @@ void Capture_button_action::on_button_click()
 {
     if(Config::get_config(Config::total_capture))
     {
-        Config::set_config(Config::total_capture, false);
         Window_manager::change_window("Paint_window");
         QScreen *screen = QGuiApplication::primaryScreen();
         QPixmap map = screen->grabWindow(0);
@@ -32,7 +31,6 @@ void Capture_button_action::on_button_click()
     {
         Window_manager::change_window("Capture_window");
     }
-    Config::set_config(Config::rect_capture, true);
 }
 
 Capture_button_action::~Capture_button_action()

@@ -6,11 +6,14 @@ Bool_tab::Bool_tab()
 
 }
 
-Bool_tab::Bool_tab(QString tab_name, QString name, int index, std::function<void (bool)> const  &f, QWidget* parent)
-    :QRadioButton(name, parent)
+Bool_tab::Bool_tab(QString tab_name, int index, std::function<void (bool)> const  &f, QWidget* parent)
+    :QRadioButton(parent)
 {
     this->tab_name = tab_name;
     this->index = index;
+    setChecked(Config::get_config(Config::setting(index)));
+    setCheckable(true);
+    setAutoExclusive(false);
     connect(this, &QRadioButton::toggled, this, f);
 }
 

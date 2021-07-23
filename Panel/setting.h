@@ -27,8 +27,8 @@ private:
     struct data
     {
         int type;
-        bool sum;
-        data(int t, bool s)
+        int sum;
+        data(int t, int s)
         {
             type = t;
             sum = s;
@@ -42,6 +42,7 @@ private:
     Ui::Setting *ui;
     PList<Tab_widget*> all_setting;
     QList<data> ready_setting;
+    void normal_settings();
     void capture_settings();
     void key_settings();
 };

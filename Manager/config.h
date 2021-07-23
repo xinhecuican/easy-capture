@@ -29,7 +29,17 @@ public:
               capture_mode_end = active_window_capture,
               need_update,//需要更新
               update_interval,//更新检查时间间隔，-1表示永不更新
-              last_update_time//上次更新时间,注意以分钟为单位（秒为单位太小了，会超界）
+              update_checktime_begin,
+              never_update = update_checktime_begin,
+              update_day,
+              update_everytime,
+              update_week,
+              update_checktime_end = update_week,
+              last_update_time,//上次更新时间,注意以分钟为单位（秒为单位太小了，会超界）
+              start_instantly,//开机启动
+              hide_to_tray,
+              show_close_dialog,
+              auto_copy_to_clipboard//自动复制到剪切板
               );
     Config();
     static Config*& instance()

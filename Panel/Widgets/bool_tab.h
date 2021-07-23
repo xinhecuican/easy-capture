@@ -10,7 +10,7 @@ class Bool_tab : public QRadioButton, public Tab_base
 {
 public:
     Bool_tab();
-    Bool_tab(QString tab_name, QString name, int index,
+    Bool_tab(QString tab_name, int index,
              std::function<void (bool)> const  &f, QWidget* parent);
     QString get_name() override;
     int get_begin_index() override;

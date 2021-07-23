@@ -25,6 +25,7 @@ public:
     ~Paint_window();
     void set_menubar();
     void set_toolbar();
+    void load_key_event(QString name) override;
     void reset();
     void changeEvent(QEvent* event)override;
     void set_pic(QPixmap pix, QRect rect)override;

@@ -3,4 +3,15 @@
     <string id="capture_one_window" text="只允许一个捕获窗口"/>
     <string id="capture_multi_window_separate" text="允许多个独立的捕获窗口"/>
     <string id="capture_multi_window_combine" text="允许多个可合并的捕获窗口"/>
+    <string id="chinese" text="中文"/>
+    <string id="english" text="英文"/>
+    <string id="clear_interval" text="内存清理检查间隔"/>
+    <string id="history_num" text="历史记录最大数量"/>
+    <string id="never_update" text="永不更新"/>
+    <string id="update_day" text="每日检查更新"/>
+    <string id="update_week" text="每周检查更新"/>
+    <string id="update_everytime" text="每次启动检查更新"/>
+    <string id="multi_window_separate" text="允许多个分离的矩形"/>
+    <string id="multi_window_combine" text="允许多个可合并的矩形"/>
+    <string id="move_all" text="移动所有"/>
 </strings>

@@ -7,8 +7,10 @@
 
 class Update : QWidget, Serializable
 {
+    Q_OBJECT
 public:
     Update();
+    ~Update();
     static Update* instance()
     {
         if(_instance == NULL)
@@ -20,15 +22,19 @@ public:
     void check_update();
     void save();
     void load();
+    void update();
     void serialized(QJsonObject *json) override;
     void deserialized(QJsonObject *json) override;
     static Update_data now_version;
+private slots:
+    void on_update();
 private:
     static Update* _instance;
     Update_data newest_data;
     QNetworkReply* reply;
     QNetworkRequest request;
     void start_request(const QUrl& url);
+    QNetworkAccessManager* manager;
 };
 
 #endif // UPDATE_H

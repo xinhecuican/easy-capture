@@ -15,11 +15,17 @@ QList<int> Key_manager::availiable_key = QList<int>();
 QSet<QString> Key_manager::using_window_set = QSet<QString>();
 QList<Key_manager::listener_data> Key_manager::listeners = QList<listener_data>();
 QList<QString> Key_manager::key_settings = {
+    "MainWindow:main_capture;16777249,78",
     "Capture_window:leave;16777216",//Escape,可以通过Qt::Key_Escape查看键值
     "Capture_window:one_window;49",
     "Capture_window:multi_window_separate;50",
     "Capture_window:multi_window_combine;51",
-    "Capture_window:move_all;16777249"//ctrl
+    "Capture_window:move_all;16777249",//ctrl
+    "Capture_window:enter_capture;16777221",//enter
+    "Paint_window:undo;16777249,90",
+    "Paint_window:redo;16777249,88",
+    "Paint_window:save;16777249,83",
+    "Paint_window:new_capture;16777249,78"
 };
 
 void Key_manager::add_key(QString window_name, QString obj_name, QList<int> keys)

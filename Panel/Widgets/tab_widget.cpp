@@ -7,6 +7,7 @@
 #include "key_tab.h"
 #include "Style_widget/spacer.h"
 #include<QMessageBox>
+#include "num_tab.h"
 
 Tab_widget::Tab_widget()
 {
@@ -29,9 +30,9 @@ void Tab_widget::init()
     dirty = false;
     setWidgetResizable(true);
     base = new QWidget(this);
-    layout = new QVBoxLayout(base);
-    layout->addSpacing(20);
+    layout = new QVBoxLayout();
     layout->setContentsMargins(10, 0, 10, 0);
+    layout->setSpacing(10);
     layout->setAlignment(Qt::AlignTop);
     base->setLayout(layout);
     setWidget(base);
@@ -42,11 +43,20 @@ Tab_widget::~Tab_widget()
 
 }
 
+void Tab_widget::done()
+{
+
+}
+
 void Tab_widget::add_bool_option(QString tab_name, QString name, int index, std::function<void (bool)> const  &f)
 {
-    Bool_tab* temp = new Bool_tab(tab_name, name, index, f, base);
+    Bool_tab* temp = new Bool_tab(tab_name, index, f, base);
+    QLabel* label = new QLabel(MString::search(name), this);
     widgets.push_back(temp);
-    layout->addWidget(temp);
+    QHBoxLayout* hlayout = new QHBoxLayout();
+    hlayout->addWidget(label);
+    hlayout->addWidget(temp);
+    layout->addLayout(hlayout);
     update();
 }
 
@@ -55,7 +65,7 @@ void Tab_widget::add_combo_option(QString tab_name, QString text, QVector<QStrin
 {
     Combo_tab* temp = new Combo_tab(tab_name, name, begin_index, end_index, f,  base);
     widgets.push_back(temp);
-    QHBoxLayout* hlayout = new QHBoxLayout(base);
+    QHBoxLayout* hlayout = new QHBoxLayout();
     QLabel* label = new QLabel(base);
     label->setText(MString::search(text));
     hlayout->addWidget(label);
@@ -77,7 +87,19 @@ void Tab_widget::add_key_option(int index, QString tab_name, QString window_name
         QMessageBox::information(this, "冲突", temp_list);
     });
     QLabel* label = new QLabel(MString::search(tab_name), this);
-    QHBoxLayout*  hlayout = new QHBoxLayout(this);
+    QHBoxLayout*  hlayout = new QHBoxLayout();
+    hlayout->addWidget(label);
+    hlayout->addWidget(element);
+    layout->addLayout(hlayout);
+}
+
+void Tab_widget::add_num_option(QString tab_name, int index, QString name,
+                                int min, int max, const std::function<void (int)> &f)
+{
+    Num_tab* element = new Num_tab(tab_name, index, min, max, f, this);
+    widgets.push_back(element);
+    QLabel* label = new QLabel(MString::search(name), this);
+    QHBoxLayout* hlayout = new QHBoxLayout();
     hlayout->addWidget(label);
     hlayout->addWidget(element);
     layout->addLayout(hlayout);
@@ -85,7 +107,7 @@ void Tab_widget::add_key_option(int index, QString tab_name, QString window_name
 
 void Tab_widget::add_spacer(QString text)
 {
-    Spacer* spacer = new Spacer(MString::search(text), true, this);
+    Spacer* spacer = new Spacer(text, true, this);
     layout->addWidget(spacer);
 }
 
@@ -98,27 +120,6 @@ int Tab_widget::get_default_index(QString name)
             return widgets[i]->get_default_index();
         }
     }
-    /*switch(type)
-    {
-    case BOOL:
-        for(int i=0; i<bool_widgets.size(); i++)
-        {
-            if(bool_widgets[i]->get_name() == name)
-            {
-                return bool_widgets[i]->get_default_index();
-            }
-        }
-        break;
-    case COMBO:
-        for(int i=0; i<combo_option_widgets.size(); i++)
-        {
-            if(combo_option_widgets[i]->get_name() == name)
-            {
-                return combo_option_widgets[i]->get_default_index();
-            }
-        }
-        break;
-    }*/
     return 0;
 }
 
@@ -131,27 +132,6 @@ int Tab_widget::get_begin_index(QString name)
             return widgets[i]->get_begin_index();
         }
     }
-    /*switch(type)
-    {
-    case BOOL:
-        for(int i=0; i<bool_widgets.size(); i++)
-        {
-            if(bool_widgets[i]->get_name() == name)
-            {
-                return bool_widgets[i]->get_begin_index();
-            }
-        }
-        break;
-    case COMBO:
-        for(int i=0; i<combo_option_widgets.size(); i++)
-        {
-            if(combo_option_widgets[i]->get_name() == name)
-            {
-                return combo_option_widgets[i]->get_begin_index();
-            }
-        }
-        break;
-    }*/
     return 0;
 }
 
@@ -162,15 +142,6 @@ void Tab_widget::reset()
     {
         widgets[i]->reset();
     }
-    /*for(int i=0; i<combo_option_widgets.size(); i++)
-    {
-        combo_option_widgets[i]->reset();
-    }
-
-    for(int i=0; i<bool_widgets.size(); i++)
-    {
-        bool_widgets[i]->reset();
-    }*/
     update();
 }
 
@@ -182,4 +153,9 @@ bool Tab_widget::is_dirty()
 void Tab_widget::set_dirty(bool dirty)
 {
     this->dirty = dirty;
+}
+
+void Tab_widget::add_layout(QLayout *hlayout)
+{
+    layout->addLayout(hlayout);
 }

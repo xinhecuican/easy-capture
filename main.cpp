@@ -26,6 +26,9 @@ int main(int argc, char *argv[])
     a.installEventFilter(main_window);//使用mainwindow上的eventfliter
     a.installNativeEventFilter(main_window);
     QApplication::mouseButtons();
-    Update::instance()->save();
+    if(argc > 1 && argv[1] == MainWindow::tr("autoStart"))
+    {
+        Window_manager::hide_now();
+    }
     return a.exec();
 }

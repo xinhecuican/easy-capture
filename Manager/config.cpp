@@ -16,7 +16,7 @@ const int Config::default_settings[] =
     true,//chinese
     false,
     30,//clear_interval,
-    3,//history_num
+    30,//history_num
     true,//rect_capture
     false,
     false,
@@ -24,7 +24,15 @@ const int Config::default_settings[] =
     false,
     false,//need_update
     -1,//update_interval
-    0
+    true,
+    false,
+    false,
+    false,
+    0,
+    false,//start_instantly
+    true,
+    true,//show_close_dialog
+    true
 };
 
 DEFINE_STRING(Config);

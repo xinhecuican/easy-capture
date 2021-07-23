@@ -28,6 +28,7 @@ SOURCES += \
     Paint/Data/stretch_button.cpp \
     Paint/Widgets/Layer_list/list_item.cpp \
     Paint/Widgets/Layer_list/list_widget.cpp \
+    Paint/Widgets/close_dialog.cpp \
     Paint/Widgets/color_selector.cpp \
     Paint/Widgets/history.cpp \
     Paint/Widgets/paint_area.cpp \
@@ -39,6 +40,7 @@ SOURCES += \
     Paint/paint_window.cpp \
     Panel/Widgets/combo_tab.cpp \
     Panel/Widgets/key_tab.cpp \
+    Panel/Widgets/num_tab.cpp \
     Panel/Widgets/tab_widget.cpp \
     Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
@@ -64,6 +66,7 @@ HEADERS += \
     Helper/mstring.h \
     Helper/plist.h \
     Helper/stackdumper.h \
+    Manager/Data/Reply_timeout.h \
     Manager/Data/update_data.h \
     Manager/Data/update_dialog.h \
     Manager/IKey_listener.h \
@@ -78,6 +81,7 @@ HEADERS += \
     Paint/Widgets/IControl_layer_change.h \
     Paint/Widgets/Layer_list/list_item.h \
     Paint/Widgets/Layer_list/list_widget.h \
+    Paint/Widgets/close_dialog.h \
     Paint/Widgets/color_selector.h \
     Paint/Widgets/history.h \
     Paint/Widgets/paint_area.h \
@@ -89,6 +93,7 @@ HEADERS += \
     Panel/Widgets/bool_tab.h \
     Panel/Widgets/combo_tab.h \
     Panel/Widgets/key_tab.h \
+    Panel/Widgets/num_tab.h \
     Panel/Widgets/tab_widget.h \
     Panel/setting.h \
     Style_widget/spacer.h \
@@ -131,3 +136,5 @@ else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_9_9_MinGW_32bit-Debug/qu
 
 INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
 DEPENDPATH += $$PWD/../quazip-0.7.3/quazip
+
+RC_FILE = logo.rc

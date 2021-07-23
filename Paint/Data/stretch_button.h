@@ -6,7 +6,7 @@ class Stretch_button : public QPushButton
 {
     Q_OBJECT
 public:
-    static const int OFFSET = 4;
+    static const int OFFSET = 5;
     enum direction{NW, NE, SE, SW};
     Stretch_button();
     Stretch_button(direction dir, QWidget* parent);

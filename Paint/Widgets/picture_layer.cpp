@@ -28,7 +28,16 @@ Picture_layer::Picture_layer(QString name, QPixmap picture, QRect rect, QWidget*
                 now.index = i;
                 now.dx = dx;
                 now.dy = dy;
+                int list_size = pos_change_list.size();
+                if(now_pos != list_size)
+                {
+                    for(int i=now_pos; i<list_size; i++)
+                    {
+                        pos_change_list.removeLast();
+                    }
+                }
                 pos_change_list.append(now);
+                now_pos++;
                 Recorder::instance()->record(-1, this);
                 parent->update();
             }
@@ -45,19 +54,19 @@ Picture_layer::~Picture_layer()
     buttons.clear_all();
 }
 
-void Picture_layer::paint(QImage& image, QRect rect)
+void Picture_layer::paint(QImage& image, bool is_save, QRect rect)
 {
-    paint_pic(image, rect);
-    paint_layer->paint(image, rect);
+    paint_pic(image, is_save, rect);
+    paint_layer->paint(image, is_save, rect);
 }
 
 void Picture_layer::erase_and_paint(QPoint point, QImage& image, QRect rect)
 {
-    paint_pic(image, rect);
+    paint_pic(image, false, rect);
     paint_layer->erase_and_paint(point, image, rect);
 }
 
-void Picture_layer::paint_pic(QImage& image, QRect rect)
+void Picture_layer::paint_pic(QImage& image, bool is_save, QRect rect)
 {
     QPainter painter(&image);
     if(rect.left() != -1 || rect.top() != -1)
@@ -66,6 +75,13 @@ void Picture_layer::paint_pic(QImage& image, QRect rect)
     }
     QPixmap temp = picture.copy(pic_rect);
     painter.drawPixmap(bound.topLeft() + pic_rect.topLeft(), temp);
+    if(!is_save)
+    {
+        QPen pen(QColor(100, 100, 255));
+        painter.setPen(pen);
+        painter.drawRect(QRect(bound.topLeft()+pic_rect.topLeft(),
+                               QSize(pic_rect.width(), pic_rect.height())));
+    }
     painter.end();
 }
 
@@ -100,6 +116,7 @@ bool Picture_layer::undo(int index)
         {
             node now = pos_change_list[now_pos-1];
             now_pos--;
+            buttons[Stretch_button::direction(now.index)]->translate(-now.dx, -now.dy);
             on_button_move(Stretch_button::direction(now.index), -now.dx, -now.dy);
         }
     }
@@ -116,8 +133,9 @@ bool Picture_layer::redo(int index)
     {
         if(now_pos < pos_change_list.size())
         {
-            node now = pos_change_list[now_pos-1];
+            node now = pos_change_list[now_pos];
             now_pos++;
+            buttons[Stretch_button::direction(now.index)]->translate(now.dx, now.dy);
             on_button_move(Stretch_button::direction(now.index), now.dx, now.dy);
         }
     }

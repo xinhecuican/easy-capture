@@ -13,7 +13,7 @@ class Paint_layer : public QWidget, public Ilayer
 public:
     Paint_layer();
     Paint_layer(QWidget* parent, QString name);
-    void paint(QImage &image, QRect rect =QRect(-1, -1, 1, 1)) override;
+    void paint(QImage &image, bool is_save=false, QRect rect =QRect(-1, -1, 1, 1)) override;
     void erase_and_paint(QPoint point, QImage& image, QRect rect =QRect(-1, -1, 1, 1))override;
     int add_data(Paint_data* style, QPainterPath path)override;
     void set_name(QString name)override;

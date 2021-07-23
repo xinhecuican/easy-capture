@@ -23,15 +23,18 @@
         <file>color_dropper.png</file>
         <file>delete.svg</file>
         <file>mode.png</file>
+        <file>warning.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>
     </qresource>
-    <qresource prefix="/Data">
-        <file>Languages/Config/chinese.xml</file>
-        <file>Languages/MainWIndow/chinese.xml</file>
-    </qresource>
     <qresource prefix="/qss">
         <file>capture_ok_button.qss</file>
+    </qresource>
+    <qresource prefix="/Data">
+        <file>Languages/Config/chinese.xml</file>
+        <file>Languages/MainWindow/chinese.xml</file>
+        <file>Languages/Paint_window/chinese.json</file>
+        <file>Languages/Setting/chinese.xml</file>
     </qresource>
 </RCC>

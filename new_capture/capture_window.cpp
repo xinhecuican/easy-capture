@@ -158,6 +158,11 @@ void Capture_window::load_key_event(QString name)
                 captured->key_press = false;
             }
         });
+        Key_manager::add_func(name, "enter_capture", [=](bool is_enter)
+        {
+            if(is_enter)
+                captured->on_click_ok();
+        });
     }
 }
 /*
@@ -263,7 +268,6 @@ void Capture_window::mouseReleaseEvent(QMouseEvent *event)
     if(Config::get_config(Config::free_capture))
     {
         button_click = false;
-        Config::set_config(Config::free_capture, false);
         hide();
         QScreen * screen = QGuiApplication::primaryScreen();
         QPixmap p = screen->grabWindow(0);

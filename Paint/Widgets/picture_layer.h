@@ -20,7 +20,7 @@ public:
     Picture_layer();
     Picture_layer(QString name, QPixmap picture, QRect rect, QWidget* parent=nullptr);
     ~Picture_layer();
-    void paint(QImage& image, QRect rect =QRect(-1, -1, 1, 1))override;
+    void paint(QImage& image, bool is_save=false, QRect rect =QRect(-1, -1, 1, 1))override;
     void erase_and_paint(QPoint point, QImage& image, QRect rect =QRect(-1, -1, 1, 1)) override;
     void set_name(QString name) override;
     int add_data(Paint_data *style, QPainterPath path) override;
@@ -49,7 +49,7 @@ private:
     Paint_layer* paint_layer;
     DragPos drag_pos;
     PList<Stretch_button*> buttons;
-    void paint_pic(QImage& image, QRect rect);
+    void paint_pic(QImage& image, bool is_save=false, QRect rect=QRect(-1, -1, 1, 1));
 };
 
 #endif // PICTURE_LAYER_H
