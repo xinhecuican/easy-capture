@@ -72,7 +72,6 @@ void Paint_layer::erase_and_paint(QPoint point, QImage& image, QRect rect)
         temp = prototype.copy();
     }
     paint(image);
-    parent->update();
 }
 
 void Paint_layer::set_name(QString name)

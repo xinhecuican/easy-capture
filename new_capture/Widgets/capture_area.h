@@ -32,11 +32,13 @@ public:
     int get_y();
     int get_w();
     int get_h();
+    void set_captured_rect(QRect rect);
     QList<Capture_region*>& get_region();
     int get_region_count();
     bool is_begin_draw();
     bool is_press_region();
     void cal_button_pos();
+    void combine_region(QRect rect);
 
     QPoint begin_point;
     QPoint end_point;
@@ -48,7 +50,7 @@ private:
     //QList<QRegion> regions;
     bool begin_draw;
     QRect all_rect;
-    void combine_region(QRect rect);
+
     void combine_region(Capture_region* region);
 
     bool _is_press_region;

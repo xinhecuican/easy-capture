@@ -49,7 +49,6 @@ Update_dialog::Update_dialog(Update_data data, QWidget* parent) : QDialog(parent
         reply = manager.get(request);
         timeout = new Reply_timeout(reply, 1000);
         connect(timeout, &Reply_timeout::deadline, this, [=](){
-            qDebug() << 123;
             this->close();
         });
         connect(reply, &QNetworkReply::finished, this, [=](){

@@ -113,6 +113,7 @@ void Stretch_point::mouseMoveEvent(QMouseEvent *event)
         v_neigh->on_neigh_move(false, dy);
     }
     region->control_point_position_change(position, get_index(), dx, dy);
+
     parent->update();//不能删去，否则不会绘制边界
 }
 

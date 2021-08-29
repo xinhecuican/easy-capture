@@ -49,6 +49,7 @@ Paint_window::~Paint_window()
 {
     delete ui;
     delete new_button_action;
+    base_image = QPixmap();
 }
 
 void Paint_window::load_key_event(QString name)
@@ -278,6 +279,7 @@ void Paint_window::set_toolbar()
         {
             paint_setting_panel->set_style();
         }
+        area->update();
     });
 
     QToolButton* more_button = new QToolButton(this);
@@ -313,6 +315,7 @@ void Paint_window::set_toolbar()
 void Paint_window::set_pic(QPixmap pix, QRect rect)
 {
     reset();
+    base_image = pix;
     area->resize(rect.width() * 2, rect.height() * 2);
     area->set_picture(pix, rect);//在这个函数中还设置了paint_panel的大小
     if(Config::get_config(Config::auto_copy_to_clipboard))
@@ -320,13 +323,24 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
         QClipboard *clip=QApplication::clipboard();
         clip->setPixmap(pix);
     }
-    resize(rect.width()+100, rect.height()+140);//设置主窗口大小，否则窗口大小不会变化
+
     QDesktopWidget* desktop = QApplication::desktop();
-    //左上角移动到指定位置，截图越大越向(0, 0)点接近
-    move(pos().x() * (1-(rect.width()/(double)desktop->screenGeometry().width()>1
-                        ?1:rect.width()/(double)desktop->screenGeometry().width()
-    )), pos().y() * (1 - (rect.height()/(double)desktop->screenGeometry().height()>1
-                         ?1:rect.height()/(double)desktop->screenGeometry().height())));
+    if(rect.width()+100 >= (double)desktop->screenGeometry().width()
+            || rect.height()+140 >= (double)desktop->screenGeometry().height())
+    {
+        showMaximized();
+    }
+    else
+    {
+        resize(rect.width()+100, rect.height()+140);//设置主窗口大小，否则窗口大小不会变化
+        //左上角移动到指定位置，截图越大越向(0, 0)点接近
+        move(pos().x() * (1-(rect.width()/(double)desktop->screenGeometry().width()>1
+                            ?1:rect.width()/(double)desktop->screenGeometry().width()
+        )), pos().y() * (1 - (rect.height()/(double)desktop->screenGeometry().height()>1
+                             ?1:rect.height()/(double)desktop->screenGeometry().height())));
+    }
+
+
     paint_panel->verticalScrollBar()->setSliderPosition(rect.height() / 2);
     paint_panel->horizontalScrollBar()->setSliderPosition(rect.width() / 2);
 
@@ -339,7 +353,7 @@ void Paint_window::closeEvent(QCloseEvent *event)
         Close_dialog* close_dialog = new Close_dialog(area, this);
         event->ignore();
         connect(close_dialog, &Close_dialog::hide_paint, this, [=](){
-            QTimer::singleShot(100, this, [=](){
+            QTimer::singleShot(140, this, [=](){
                 Window_manager::change_window("MainWindow");
                 Window_manager::hide_now();
             });
@@ -348,7 +362,7 @@ void Paint_window::closeEvent(QCloseEvent *event)
     }
     else if(Config::get_config(Config::hide_to_tray))
     {
-        QTimer::singleShot(100, this, [=](){
+        QTimer::singleShot(140, this, [=](){
             Window_manager::change_window("MainWindow");
             Window_manager::hide_now();
         });

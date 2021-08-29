@@ -19,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     setAttribute(Qt::WA_DeleteOnClose, true);
     setWindowIcon(QIcon(":/image/avator.png"));
     load_key_event("MainWindow");
-
     toolbar = new QToolBar();
     toolbar->setMovable(false);     // 设置工具栏不可移动,默认是可移动
     addToolBar(toolbar);
@@ -97,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
     //显示托盘图标
     Tray* tray = new Tray(this);
     tray->show();
+
 }
 
 MainWindow::~MainWindow()
@@ -145,12 +145,12 @@ bool MainWindow::nativeEventFilter(const QByteArray &eventType, void *message, l
     MSG* pMsg = reinterpret_cast<MSG*>(message);
     if(pMsg->message == WM_HOTKEY && pMsg->wParam == global_key_id)
     {
-        if(Window_manager::get_window(Window_manager::get_now_window())->isHidden())
-        {
-            Window_manager::show_now();
+        //if(Window_manager::get_window(Window_manager::get_now_window())->isHidden())
+        //{
+           // Window_manager::show_now();
             Window_manager::change_window("Capture_window");
             return true;
-        }
+        //}
     }
     return false;
 }

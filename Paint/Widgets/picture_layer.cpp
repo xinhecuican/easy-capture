@@ -52,6 +52,7 @@ Picture_layer::~Picture_layer()
 {
     delete paint_layer;
     buttons.clear_all();
+    picture = QPixmap();
 }
 
 void Picture_layer::paint(QImage& image, bool is_save, QRect rect)
@@ -95,9 +96,9 @@ int Picture_layer::add_data(Paint_data *style, QPainterPath path)
     return paint_layer->add_data(style, path);
 }
 
-QPixmap* Picture_layer::get_pic()
+QPixmap Picture_layer::get_pic()
 {
-    return &picture;
+    return picture;
 }
 
 QRect Picture_layer::bounded_rect()

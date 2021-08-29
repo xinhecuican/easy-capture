@@ -24,10 +24,10 @@ const int Config::default_settings[] =
     false,
     false,//need_update
     -1,//update_interval
+    false,
+    false,
+    false,
     true,
-    false,
-    false,
-    false,
     0,
     false,//start_instantly
     true,

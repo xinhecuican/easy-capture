@@ -303,6 +303,12 @@ int Capture_area::get_h()
     return abs(end_point.y() - begin_point.y());
 }
 
+void Capture_area::set_captured_rect(QRect rect)
+{
+    begin_point = rect.topLeft();
+    end_point = rect.bottomRight();
+}
+
 int Capture_area::get_region_count()
 {
     return regions.count();

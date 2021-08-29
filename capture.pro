@@ -17,6 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Helper/debug.cpp \
+    Helper/image_helper.cpp \
     Helper/mstring.cpp \
     Helper/stackdumper.cpp \
     Manager/Data/update_data.cpp \
@@ -49,9 +50,14 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     new_capture/Capture_button_action.cpp \
+    new_capture/Widgets/Scroll_handler/dispatcher_worker.cpp \
+    new_capture/Widgets/Scroll_handler/scroll_dispatcher.cpp \
+    new_capture/Widgets/Scroll_handler/scroll_handle.cpp \
+    new_capture/Widgets/Scroll_handler/scroll_worker.cpp \
     new_capture/Widgets/capture_area.cpp \
     new_capture/Widgets/capture_region.cpp \
     new_capture/Widgets/stretch_point.cpp \
+    new_capture/Window_fliter.cpp \
     new_capture/capture_window.cpp
 
 HEADERS += \
@@ -60,9 +66,11 @@ HEADERS += \
     Base/Tab_base.h \
     Base/Window_base.h \
     Helper/EnumReflect.h \
+    Helper/Pool/mpool.h \
     Helper/Reflect.h \
     Helper/Serialize.h \
     Helper/debug.h \
+    Helper/image_helper.h \
     Helper/mstring.h \
     Helper/plist.h \
     Helper/stackdumper.h \
@@ -101,10 +109,15 @@ HEADERS += \
     mainwindow.h \
     new_capture/Capture_button_action.h \
     new_capture/Widgets/Ipoint_position_change.h \
+    new_capture/Widgets/Scroll_handler/dispatcher_worker.h \
+    new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
+    new_capture/Widgets/Scroll_handler/scroll_handle.h \
+    new_capture/Widgets/Scroll_handler/scroll_worker.h \
     new_capture/Widgets/capture_area.h \
     new_capture/Widgets/capture_region.h \
     new_capture/Widgets/stretch_point.h \
-    new_capture/capture_window.h
+    new_capture/capture_window.h \
+    new_capture/window_fliter.h
 
 FORMS += \
     Paint/paint_window.ui \
@@ -137,4 +150,11 @@ else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_9_9_MinGW_32bit-Debug/qu
 INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
 DEPENDPATH += $$PWD/../quazip-0.7.3/quazip
 
+LIBS += -lGdi32 -loleacc
+
 RC_FILE = logo.rc
+
+INCLUDEPATH += F:/capture/opencv/opencv4.5.1/include \
+    F:/capture/opencv/opencv4.5.1/include/opencv2
+
+LIBS += F:/capture/opencv/opencv4.5.1/x64/mingw/lib/libopencv_*

@@ -33,7 +33,7 @@ private:
         qint64 time;
         Window_base* window;
     };
-    static map<QString, Window_data> window_list;
+    static QMap<QString, Window_data> window_list;
     static QString active_window;
     static QString previous_window;
     static void create_window(QString name);

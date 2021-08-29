@@ -24,7 +24,7 @@ public:
     void erase_and_paint(QPoint point, QImage& image, QRect rect =QRect(-1, -1, 1, 1)) override;
     void set_name(QString name) override;
     int add_data(Paint_data *style, QPainterPath path) override;
-    QPixmap* get_pic();
+    QPixmap get_pic();
     QRect bounded_rect()override;
     bool redo(int index = 0) override;
     bool undo(int index = 0) override;

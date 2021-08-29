@@ -3,8 +3,8 @@
 #include "Helper/debug.h"
 #include "config.h"
 
-map<QString, Window_manager::Window_data> Window_manager::window_list =
-        map<QString, Window_manager::Window_data>();
+QMap<QString, Window_manager::Window_data> Window_manager::window_list =
+        QMap<QString, Window_manager::Window_data>();
 QString Window_manager::active_window = NULL;
 QString Window_manager::previous_window = NULL;
 
@@ -19,10 +19,11 @@ void Window_manager::control_window_close()
     QList<Window_base*> temp_list = QList<Window_base*>();
     for(auto iter=window_list.begin(); iter!=window_list.end();)
     {
-        if(current_time-iter->second.time >= time && iter->second.window->isHidden() &&
-                iter->first != active_window && iter->first != "MainWindow")
+        if(current_time-iter.value().time >= time && iter->window->isHidden() &&
+                iter.key() != active_window && iter.key() != "MainWindow")
         {
-            temp_list.append(iter->second.window);
+            temp_list.append(iter.value().window);
+            qDebug() << iter.key();
             iter = window_list.erase(iter);
         }
         else
@@ -41,9 +42,11 @@ void Window_manager::close_window(QString name)
 {
     if(window_list.find(name) != window_list.end() && name != active_window && name != "MainWindow")
     {
-        window_list.erase(window_list.find(name));
+        window_list[name].window->on_window_close();
+        window_list[name].window->deleteLater();
+        window_list.remove(name);
     }
-    if(name != active_window)
+    if(name == active_window)
     {
         Debug::debug_print_warning("未关闭窗口调用close_window\n位置：Window_manager::close_window");
     }
@@ -82,6 +85,7 @@ void Window_manager::change_window(QString name)
 
         previous_window = active_window;
         active_window = name;
+        window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
         window_list[active_window].window->on_window_select();
         if(name == "MainWindow")
         {

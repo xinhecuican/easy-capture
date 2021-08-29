@@ -40,6 +40,7 @@ private:
     Picture_layer* pic_layer;
     QVBoxLayout* layout;
     QImage image;
+    QRect image_bound;
     QVector<Ilayer*> layers;
     QList<QColor> disable_color;
     int layer_num;
@@ -51,6 +52,7 @@ private:
     bool is_base_drag;
     bool is_update;
     void paint(bool is_save=false);
+    void update_image(QRect bound_rect);
 };
 
 #endif // PAINT_AREA_H

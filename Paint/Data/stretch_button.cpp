@@ -28,8 +28,8 @@ void Stretch_button::mouseMoveEvent(QMouseEvent *event)
     int sum2 = this->pos().y() + dy;
     bool larger_x = sum1 > constraint.right() - OFFSET ? true : false;
     bool larger_y = sum2 > constraint.bottom() - OFFSET? true : false;
-    bool small_x = sum1 < constraint.left() + OFFSET? true : false;
-    bool small_y = sum2 < constraint.top() + OFFSET? true : false;
+    bool small_x = sum1 < constraint.left() - OFFSET? true : false;
+    bool small_y = sum2 < constraint.top() - OFFSET? true : false;
     if(is_set_constraint)
     {
         if(larger_x)
@@ -42,11 +42,11 @@ void Stretch_button::mouseMoveEvent(QMouseEvent *event)
         }
         if(small_x)
         {
-            dx = constraint.left() - pos().x() + OFFSET;
+            dx = constraint.left() - pos().x() - OFFSET;
         }
         if(small_y)
         {
-            dy = constraint.top() - pos().y() + OFFSET;
+            dy = constraint.top() - pos().y() - OFFSET;
         }
     }
     deltax += dx;

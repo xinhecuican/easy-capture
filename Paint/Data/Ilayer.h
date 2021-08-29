@@ -3,6 +3,7 @@
 #include<QImage>
 #include "paint_data.h"
 #include "Base/Record_element.h"
+#include<QPixmap>
 class Ilayer : public Record_element
 {
 public:

@@ -15,6 +15,6 @@ void Debug::show_error_message(QString message)
 
 void Debug::debug_print_warning(QString message)
 {
-    qDebug() <<  "\033[32m" << message;
+    qDebug() <<  "\033[32m" << message << "\033[0m";
     TraceStack();
 }

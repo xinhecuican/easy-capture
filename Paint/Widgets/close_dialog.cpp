@@ -118,7 +118,8 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     next_show_button->setAutoExclusive(false);
     next_show_button->setChecked(!Config::get_config(Config::show_close_dialog));
     connect(next_show_button, &QRadioButton::toggled, this, [=](bool clicked){
-        Config::set_config(Config::show_close_dialog, clicked);
+        Config::set_config(Config::show_close_dialog, !clicked);
+        Config::update_config(Config::show_close_dialog);
     });
     button_layout->addWidget(next_show_label);
     button_layout->addWidget(next_show_button);

@@ -47,6 +47,7 @@ private:
     QHBoxLayout* layout;
     QToolButton* pencil_button;
     Paint_setting_panel* paint_setting_panel;
+    QPixmap base_image;
 };
 
 #endif // PAINT_WINDOW_H
