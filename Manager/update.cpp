@@ -24,10 +24,16 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.1.0",
-"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.1.0.zip",
+Update_data Update::now_version = Update_data("0.2.0",
+"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.2.0.zip",
                                               "",
-                                              "");
+                                              "1. 实现了滚动截图\n"
+                                              "2. 将矩形窗口和活动窗口截图合并\n"
+                                              "3. 修复了绘图窗口复制到剪切板导致的内存泄露\n"
+                                              "4. 修复了无法自动启动的错误\n"
+                                              "5. 体验优化及bug修复\n"
+                                              "注意：由于替换为64位，所有的库文件都需要重新下载，而更新最多支持20mb文件，可能无法下载\n"
+                                              "因此推荐去https://xinhecuican.github.io/post/f0fbe9f2.html下载");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {

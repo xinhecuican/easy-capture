@@ -30,6 +30,7 @@ public:
     void paint_rect(QRect rect);
     void save(QString path);//不可编辑，直接输出图片
     void save_temp();//可供下次编辑，保存了paint_layer
+    QImage get_image();
     void using_erase(bool is_using_eraser);
     void set_disable_color(int index, QColor color = QColor());
     bool contain_picture();
@@ -46,12 +47,11 @@ private:
     int layer_num;
     bool is_draw;
     bool is_eraser;
+    bool is_save;
     QPainterPath now_path;
     Paint_data now_data;
     QPoint point;
-    bool is_base_drag;
-    bool is_update;
-    void paint(bool is_save=false);
+    void paint(QPainter* painter, QList<QColor> disable_color);
     void update_image(QRect bound_rect);
 };
 

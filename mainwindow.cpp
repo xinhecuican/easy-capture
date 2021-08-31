@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+
     global_key_id = GlobalAddAtomA("awake_capture");
     RegisterHotKey((HWND)this->winId(), global_key_id, MOD_CONTROL, VK_F1);
     setAttribute(Qt::WA_DeleteOnClose, true);
@@ -40,7 +41,6 @@ MainWindow::MainWindow(QWidget *parent)
     mode_menu->addAction(MString::search("{FHFzLMcLYa}全屏"));
     mode_menu->addAction(MString::search("{fnGapBU4vo}自由截图"));
     mode_menu->addAction(MString::search("{ETY295cnab}滚动截屏"));
-    mode_menu->addAction(MString::search("{rzdUgOw26Y}活动窗口截屏"));
     QList<QAction*> actions = mode_menu->actions();
     for(int i=0; i<actions.size(); i++)
     {
@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent)
     toolbar->addWidget(setting_button);
     setWindowFlag(Qt::WindowMinimizeButtonHint);
     setAttribute(Qt::WA_DeleteOnClose, true);
+
     QSettings reg("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
     QString appName = QApplication::applicationName();
     if(Config::get_config(Config::start_instantly))

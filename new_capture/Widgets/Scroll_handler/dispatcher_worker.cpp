@@ -65,7 +65,9 @@ void Dispatcher_worker::check_work()
             image1 = map.first();
             bool success = false;
             auto tmp_iter = map.begin();
-            for(auto iter=++map.begin(); iter!=map.end(); iter++)
+            auto tmp2_iter = map.begin();
+            tmp2_iter++;
+            for(auto iter=tmp2_iter; iter!=map.end(); iter++)
             {
                 if(iter.value().begin - image1.end == 1)
                 {

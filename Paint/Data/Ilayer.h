@@ -7,8 +7,8 @@
 class Ilayer : public Record_element
 {
 public:
-    virtual void erase_and_paint(QPoint point, QImage& image, QRect rect=QRect(-1, -1, 1, 1))=0;
-    virtual void paint(QImage& image, bool is_save=false, QRect rect=QRect(-1, -1, 1, 1))=0;
+    virtual void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)=0;
+    virtual void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)=0;
     virtual int add_data(Paint_data* style, QPainterPath path)=0;
     virtual void set_name(QString name)=0;
     virtual QRect bounded_rect()=0;

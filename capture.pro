@@ -50,6 +50,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     new_capture/Capture_button_action.cpp \
+    new_capture/Widgets/Scroll_handler/Scroll_handle_global.cpp \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.cpp \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.cpp \
     new_capture/Widgets/Scroll_handler/scroll_handle.cpp \
@@ -109,6 +110,7 @@ HEADERS += \
     mainwindow.h \
     new_capture/Capture_button_action.h \
     new_capture/Widgets/Ipoint_position_change.h \
+    new_capture/Widgets/Scroll_handler/Scroll_handler_global.h \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.h \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
     new_capture/Widgets/Scroll_handler/scroll_handle.h \
@@ -136,16 +138,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     Resource/Resources.qrc\
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Release/release/ -lHook
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Debug/debug/ -lHook
-else:unix: LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_9_9_MinGW_32bit-Debug/ -lHook
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Release/release/ -lHook
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/debug/ -lHook
+else:unix: LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/ -lHook
 
 INCLUDEPATH += $$PWD/../HOOK
 DEPENDPATH += $$PWD/../HOOK
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_9_9_MinGW_32bit-Release/quazip/release/ -lquazip
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_9_9_MinGW_32bit-Debug/quazip/debug/ -lquazipd
-else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_9_9_MinGW_32bit-Debug/quazip/ -lquazipd
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Release/quazip/release/ -lquazip
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/debug/ -lquazipd
+else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/ -lquazipd
 
 INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
 DEPENDPATH += $$PWD/../quazip-0.7.3/quazip

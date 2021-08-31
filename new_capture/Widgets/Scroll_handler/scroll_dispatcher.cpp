@@ -2,6 +2,7 @@
 #include<QColor>
 #include<QImage>
 #include<QDebug>
+#include "Scroll_handler_global.h"
 
 Scroll_dispatcher::Scroll_dispatcher(QObject* object) : QObject(object)
 {
@@ -27,6 +28,10 @@ Scroll_dispatcher::Scroll_dispatcher(QObject* object) : QObject(object)
 
 Scroll_dispatcher::~Scroll_dispatcher()
 {
+    if(Scroll_handler_global::instance() != NULL)
+    {
+        delete Scroll_handler_global::instance();
+    }
     wakeup_timer->stop();
     delete wakeup_timer;
     thread.quit();

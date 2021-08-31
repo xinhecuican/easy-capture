@@ -7,6 +7,10 @@
 #include<QTimer>
 #include "Helper/debug.h"
 #include<QFileDialog>
+#include<QMouseEvent>
+#include "opencv2/core.hpp"
+#include "opencv2/opencv.hpp"
+#include "Helper/image_helper.h"
 
 Paint_area::Paint_area()
 {
@@ -15,10 +19,6 @@ Paint_area::Paint_area()
 
 Paint_area::~Paint_area()
 {
-    for(int i=0; i<layers.size(); i++)
-    {
-        delete layers[i];
-    }
 }
 
 void Paint_area::reset()
@@ -28,7 +28,6 @@ void Paint_area::reset()
         delete layers[i];
     }
     layers.clear();
-    image = QImage();
     now_path = QPainterPath();
     is_draw = false;
     is_eraser = false;
@@ -40,7 +39,6 @@ Paint_area::Paint_area(QWidget* parent) : QWidget(parent)
 {
     this->parent = parent;
     pic_layer = NULL;
-    image = QImage();
     layers = QVector<Ilayer*>();
     is_draw = false;
     now_path = QPainterPath();
@@ -49,16 +47,11 @@ Paint_area::Paint_area(QWidget* parent) : QWidget(parent)
 
 void Paint_area::set_picture(QPixmap pixmap, QRect rect)
 {
+    is_save = false;
     pic_layer = new Picture_layer("第0层", pixmap, rect, this);
     layer_num++;
     layers.push_back(pic_layer);
-    update_image(QRect(rect.width()/2, rect.height()/2, rect.width(), rect.height()));
-    if(image.isNull())
-    {
-        Debug::show_error_message("内存不够无法编辑，可以选择保存保存图片");
-    }
     QTimer::singleShot(100, this, [=](){
-        is_update = true;
         this->update();
     });
 }
@@ -68,13 +61,9 @@ void Paint_area::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
-    if(!is_update)
-    {
-        paint();
-    }
-    is_update = false;
-    painter.drawImage(0, 0, image);
-    if(!is_eraser && !image.isNull())
+    paint(&painter, disable_color);
+    //painter.drawImage(0, 0, image);
+    if(!is_eraser)
     {
         QPen pen;
         pen.setWidth(now_data.width);
@@ -87,28 +76,20 @@ void Paint_area::paintEvent(QPaintEvent *event)
     }
 }
 
-void Paint_area::paint(bool is_save)
+void Paint_area::paint(QPainter* painter, QList<QColor> disable_color)
 {
-    if(image.isNull())
-    {
-        return;
-    }
-    QColor backColor = qRgb(255,255,255);
-    image.fill(backColor);
     for(int i=0; i<layers.size(); i++)//各层绘制
     {
         if(is_eraser && is_draw)
         {
-            layers[i]->erase_and_paint(point, image);
+            layers[i]->erase_and_paint(point, painter, disable_color);
         }
         else
-            layers[i]->paint(image, is_save);
+        {
+            layers[i]->paint(painter, disable_color, is_save);
+        }
     }
-    for(int i=0; i<disable_color.size(); i++)//设置透明色
-    {
-        QImage mask = image.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
-        image.setAlphaChannel(mask);
-    }
+
 }
 
 void Paint_area::paint_rect(QRect rect)
@@ -117,14 +98,13 @@ void Paint_area::paint_rect(QRect rect)
     {
         return;
     }
-    is_update = true;
     if(is_eraser)
     {
         QColor backColor = qRgb(255,255,255);
         image.fill(backColor);
         for(int i=0; i<layers.size(); i++)//各层绘制
         {
-            layers[i]->erase_and_paint(point, image);
+            //layers[i]->erase_and_paint(point, image, is_save);
         }
     }
     QPainter painter(&image);
@@ -178,7 +158,7 @@ void Paint_area::mouseMoveEvent(QMouseEvent *event)
     y -= now_data.width+3;
     w += now_data.width+6;
     h += now_data.width+6;
-    paint_rect(QRect(x, y, w, h));
+    update(QRect(x, y, w, h));
 }
 
 void Paint_area::mousePressEvent(QMouseEvent *event)
@@ -204,8 +184,6 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
     }
     is_draw = false;
     now_path = QPainterPath();
-    is_update = false;
-    qDebug() << bounded_rect();
     update();
 }
 
@@ -270,27 +248,32 @@ QRect Paint_area::bounded_rect()
 
 void Paint_area::save(QString path)
 {
+    is_save = true;
+    repaint();
+    is_save = false;
     pic_save = true;
-    if(!image.isNull())
+    QImage temp = grab(bounded_rect()).toImage();
+    for(int i=0; i<disable_color.size(); i++)//设置透明色
     {
-        paint(true);
-        image.copy(bounded_rect()).save(path);
+        QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+        temp.setAlphaChannel(mask);
     }
-    else
-    {
-        pic_layer->get_pic().save(path);
-    }
+    cv::Mat ans = Image_helper::QImage2Mat(temp);
+    cv::imwrite(path.toStdString(), ans);
     History::instance()->log(History_data::Persist, path);
 }
 
 void Paint_area::save_temp()
 {
+    is_save = true;
+    repaint();
+    is_save = false;
     QDir dir;
     if(!dir.exists("Data/Temp"))
     {
         dir.mkpath("Data/Temp");
     }
-    paint(true);
+    //paint(true);
     QDateTime time = QDateTime::currentDateTime();
     QString path = "Data/Temp/" + time.toString("dd_mm_yyyy_hh_mm_ss") + "/";
     if(!dir.exists(path))
@@ -298,8 +281,14 @@ void Paint_area::save_temp()
         dir.mkpath(path);
     }
     path += "main.png";
-    image = image.copy(bounded_rect());
-    image.save(path);
+    QImage temp = grab(bounded_rect()).toImage();
+    for(int i=0; i<disable_color.size(); i++)//设置透明色
+    {
+        QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+        temp.setAlphaChannel(mask);
+    }
+    cv::Mat ans = Image_helper::QImage2Mat(temp);
+    cv::imwrite(path.toStdString(), ans);
     History::instance()->log(History_data::Editable, path);
 }
 
@@ -340,4 +329,15 @@ void Paint_area::update_image(QRect bound_rect)
 {
     image_bound = bound_rect;
     image = QImage(bound_rect.width(), bound_rect.height(), QImage::Format_RGB32);
+}
+
+QImage Paint_area::get_image()
+{
+    QImage temp = grab(bounded_rect()).toImage();
+    for(int i=0; i<disable_color.size(); i++)//设置透明色
+    {
+        QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+        temp.setAlphaChannel(mask);
+    }
+    return temp;
 }

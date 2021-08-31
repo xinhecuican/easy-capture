@@ -26,6 +26,7 @@ Update_dialog::Update_dialog(Update_data data, QWidget* parent) : QDialog(parent
     label->setFont(QFont("Microsoft YaHei", 15, 4, true));
     QLabel* label1 = new QLabel("新功能:", this);
     QLabel* label2 = new QLabel(data.get_description(), this);
+    label2->setTextInteractionFlags(Qt::TextSelectableByMouse);
     QLabel* label3 = new QLabel("更新时间" + QDateTime::fromString(data.get_time()).toString("yyyy.MM.dd"), this);
     QVBoxLayout* main_area_layout = new QVBoxLayout(this);
     main_area_layout->setAlignment(Qt::AlignTop);
@@ -69,6 +70,10 @@ Update_dialog::Update_dialog(Update_data data, QWidget* parent) : QDialog(parent
                     dir.mkpath(dir.absolutePath());
                 }
                 QFile file("Data/Update/" + this->data.get_version() + ".zip");
+                if(!file.exists())
+                {
+                    file.setFileName("Data/Update/" + this->data.get_version() + ".7z");
+                }
                 if(!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
                 {
                     Debug::debug_print_warning("文件打开失败\n位置Update_dialog");

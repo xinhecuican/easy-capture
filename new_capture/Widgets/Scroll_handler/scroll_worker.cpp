@@ -6,6 +6,7 @@
 #include<QThread>
 #include "Helper/image_helper.h"
 #include "Helper/debug.h"
+#include "Scroll_handler_global.h"
 
 Scroll_worker::Scroll_worker(QObject* object) : QObject(object)
 {
@@ -14,26 +15,26 @@ Scroll_worker::Scroll_worker(QObject* object) : QObject(object)
 
 Scroll_worker::~Scroll_worker()
 {
-    qDebug() << 1;
 }
 
 void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
 {
+
     cv::Mat img1 = Image_helper::QImage2Mat(image1);
     cv::Mat img2 = Image_helper::QImage2Mat(image2);
 
-    img1 = img1(cv::Rect(0, image1.height()-img_height, image1.width(), img_height));
-    img2 = img2(cv::Rect(0, 0, image2.width(), img_height));
+    cv::Mat temp_img1 = img1(cv::Rect(0, image1.height()-img_height, image1.width(), img_height));
+    cv::Mat temp_img2 = img2(cv::Rect(0, 0, image2.width(), img_height));
     cv::Mat scroll_image1, scroll_image2;
-    cv::rotate(img1, scroll_image1, cv::ROTATE_90_COUNTERCLOCKWISE);
-    cv::rotate(img2, scroll_image2, cv::ROTATE_90_COUNTERCLOCKWISE);
-    if (img1.empty() || img2.empty())
+    cv::rotate(temp_img1, scroll_image1, cv::ROTATE_90_COUNTERCLOCKWISE);
+    cv::rotate(temp_img2, scroll_image2, cv::ROTATE_90_COUNTERCLOCKWISE);
+    if (temp_img1.empty() || temp_img2.empty())
     {
         qDebug() << "Read image failed, please check again!" << endl;
         return ;
     }
     cv::Mat image;
-    if(SURF(scroll_image1, scroll_image2, image) == -1)
+    if(SURF(scroll_image1, scroll_image2, image, img_height) == -1)
     {
         image = cv::Mat(scroll_image1.rows, scroll_image1.cols + scroll_image2.cols - img_height/2, CV_8UC3);
         cv::cvtColor(scroll_image1, scroll_image1, cv::COLOR_RGBA2RGB);
@@ -45,20 +46,32 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
 
 
     cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
-    QImage temp_image = Image_helper::Mat2QImage(image);
-    QImage ans_image = QImage(image1.width(),
-                              image1.height()+image2.height() - 2 * img_height + temp_image.height(),
-                              QImage::Format_RGB32);
-    if(ans_image.isNull())
+    cv::cvtColor(img1, img1, cv::COLOR_RGBA2RGB);
+    cv::cvtColor(img2, img2, cv::COLOR_RGBA2RGB);
+//    ans_image = QImage(image1.width(),
+//                       image1.height()+image2.height() - 2 * img_height + temp_image.height(),
+//                       QImage::Format_ARGB32_Premultiplied);
+    cv::Mat ans_image1 = cv::Mat(image1.height()+image2.height() - 2 * img_height + image.rows,
+                                image1.width(),
+                                CV_8UC3);
+    if(img1.rows - img_height  != 0)
     {
-        Debug::debug_print_warning("image is null");
+        img1(cv::Rect(0, 0, img1.cols, img1.rows-img_height))
+            .copyTo(ans_image1(cv::Rect(0, 0, img1.cols, img1.rows-img_height)));
     }
-    QImage bind_image_copy = image2.copy(0, img_height, image2.width(), image2.height()-img_height);
-    QPainter painter(&ans_image);
-    painter.drawImage(QPoint(0, 0), image1);
-    painter.drawImage(QPoint(0, image1.height()-img_height), temp_image);
-    painter.drawImage(QPoint(0, image1.height()+temp_image.height() - img_height), bind_image_copy);
-    painter.end();
+    image.copyTo(ans_image1(cv::Rect(0, img1.rows-img_height, image.cols, image.rows)));
+    if(img2.rows - img_height != 0)
+    {
+        img2(cv::Rect(0, img_height, img2.cols, img2.rows-img_height))
+            .copyTo(ans_image1(cv::Rect(0, img1.rows+image.rows - img_height, img2.cols, img2.rows-img_height)));
+    }
+    QImage ans_image = Image_helper::Mat2QImage(ans_image1);
+//    QImage bind_image_copy = image2.copy(0, img_height, image2.width(), image2.height()-img_height);
+//    QPainter painter(&ans_image);
+//    painter.drawImage(QPoint(0, 0), image1);
+//    painter.drawImage(QPoint(0, image1.height()-img_height), temp_image);
+//    painter.drawImage(QPoint(0, image1.height()+temp_image.height() - img_height), bind_image_copy);
+//    painter.end();
 //    QImage ans_image(image1.width(), image1.height() + image2.height(), QImage::Format_RGB32);
 //    QPainter painter(&ans_image);
 //    painter.drawImage(0, 0, image1);
@@ -169,7 +182,7 @@ void Scroll_worker::CalcCorners(const cv::Mat& H, const cv::Mat src)
 }
 
 
-int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans)
+int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans, int img_height)
 {
     if (imageL.empty() || imageR.empty())
     {
@@ -243,6 +256,8 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans)
 
     int process_width = 0;
     int process_sum = 0;
+    bool is_success = true;
+TEST_AGAIN:;
     // Lowe's algorithm,获取优秀匹配点
     for (int i = 0; i < matchePoints.size(); i++)
     {
@@ -256,10 +271,15 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans)
             }
             cv::Point2f point1 = keyPointL[i1].pt;
             cv::Point2f point2 = keyPointR[i2].pt;
+            bool history_influence = true;
+            if(!is_success && std::abs(point1.x - Scroll_handler_global::instance()->middle_width) > img_height * 2 / 10)
+            {
+                history_influence = false;
+            }
             //排除相同位置的干扰
             float dis = (point1.x - point2.x) * (point1.x - point2.x) + (point1.y - point2.y) * (point1.y - point2.y);
             if (dis >= 10 && std::abs(point1.y-point2.y) <= 30
-                    && matchePoints[i][0].distance < 0.33 * matchePoints[i][1].distance)
+                    && matchePoints[i][0].distance < 0.33 * matchePoints[i][1].distance && history_influence)
             {
                 process_width += keyPointL[i1].pt.x;
                 process_sum++;
@@ -269,12 +289,16 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans)
     }
     if(process_sum == 0)
     {
-        cv::Mat first_match;
-        cv::drawMatches(imageL, keyPointL, imageR, keyPointR, GoodMatchePoints, first_match,
-                       cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
-                        cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
-        cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", first_match);
-
+        if(is_success)
+        {
+            is_success = false;
+            goto TEST_AGAIN;
+        }
+//        cv::Mat first_match;
+//        cv::drawMatches(imageL, keyPointL, imageR, keyPointR, GoodMatchePoints, first_match,
+//                       cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
+//                        cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+//        cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", first_match);
         return -1;
     }
     process_width /= process_sum;
@@ -333,12 +357,16 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans)
     int dst_height = imageL.rows;
     if(dst_width <= imageR.cols)
     {
-        cv::Mat first_match;
-        cv::drawMatches(imageL, keyPointL, imageR, keyPointR, GoodMatchePoints, first_match,
-                       cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
-                        cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
-        cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", first_match);
-
+        if(is_success)
+        {
+            is_success = false;
+            goto TEST_AGAIN;
+        }
+//        cv::Mat first_match;
+//        cv::drawMatches(imageL, keyPointL, imageR, keyPointR, GoodMatchePoints, first_match,
+//                       cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
+//                        cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+//        cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", first_match);
         return -1;
     }
     cv::Mat dst(dst_height, dst_width, CV_8UC3);
@@ -352,6 +380,8 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans)
     //OptimizeSeam(imageL, imageTransformR, dst);	//优化拼接处
     //ImShow("dst", dst);
     ans = dst;
+    Scroll_handler_global::instance()->cal_middle_width(process_width);
+
     //cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", ans);
     return 0;
 }

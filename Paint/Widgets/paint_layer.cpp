@@ -21,14 +21,9 @@ Paint_layer::Paint_layer(QWidget* parent, QString name) : QWidget(parent)
     show();
 }
 
-void Paint_layer::paint(QImage& image, bool is_save, QRect rect)
+void Paint_layer::paint(QPainter* painter, QList<QColor> disable_color, bool is_save)
 {
-    QPainter painter(&image);
-    if(rect.left() != -1 || rect.top() != -1)
-    {
-        painter.setClipRect(rect);
-    }
-    painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
+    painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
     for(paint_info path : data)
     {
         QPen pen;
@@ -36,42 +31,26 @@ void Paint_layer::paint(QImage& image, bool is_save, QRect rect)
         pen.setWidth(path.style_info->width);
         pen.setCapStyle(path.style_info->cap_style);
         pen.setJoinStyle(path.style_info->join_style);
-        painter.setPen(pen);
-        painter.drawPath(path.path);
+        painter->setPen(pen);
+        painter->drawPath(path.path);
     }
 }
 
-void Paint_layer::erase_and_paint(QPoint point, QImage& image, QRect rect)
+void Paint_layer::erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)
 {
-    QPainter painter;
-    QImage temp = image.copy();
-    temp.fill(Qt::transparent);
-    QImage prototype = temp.copy();
-    QRgb rgb = temp.pixel(point.x(), point.y());
+    QRect rect = QRect(point.x()-3, point.y()-3, 6, 6);
     for(auto iter=data.begin(); iter!=data.end();)
     {
-        painter.begin(&temp);
-        QPen pen;
-        pen.setColor(iter->style_info->color);
-        pen.setWidth(iter->style_info->width);
-        pen.setCapStyle(iter->style_info->cap_style);
-        pen.setJoinStyle(iter->style_info->join_style);
-        painter.setPen(pen);
-        painter.drawPath(iter->path);
-        painter.end();
-        if(temp.pixel(point.x(), point.y()) != rgb)
+        if(iter->path.contains(rect))
         {
-            delete_data[iter.key()] = iter.value();
-            Recorder::instance()->record(iter.key(), this);
             iter = data.erase(iter);
         }
         else
         {
             iter++;
         }
-        temp = prototype.copy();
     }
-    paint(image);
+    paint(painter, disable_color, false);
 }
 
 void Paint_layer::set_name(QString name)

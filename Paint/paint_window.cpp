@@ -18,6 +18,10 @@
 #include<QClipboard>
 #include "Manager/key_manager.h"
 #include<QScreen>
+#include<QMouseEvent>
+#include<QButtonGroup>
+#include "opencv2/core.hpp"
+#include "opencv2/opencv.hpp"
 
 Paint_window::Paint_window(QWidget *parent) :
     Window_base(parent, this, "Paint_window"),
@@ -49,7 +53,6 @@ Paint_window::~Paint_window()
 {
     delete ui;
     delete new_button_action;
-    base_image = QPixmap();
 }
 
 void Paint_window::load_key_event(QString name)
@@ -184,7 +187,6 @@ void Paint_window::set_toolbar()
     mode_menu->addAction(MString::search("{FHFzLMcLYa}全屏"));
     mode_menu->addAction(MString::search("{fnGapBU4vo}自由截图"));
     mode_menu->addAction(MString::search("{ETY295cnab}滚动截屏"));
-    mode_menu->addAction(MString::search("{rzdUgOw26Y}活动窗口截屏"));
     QList<QAction*> actions = mode_menu->actions();
     for(int i=0; i<actions.size(); i++)
     {
@@ -201,6 +203,15 @@ void Paint_window::set_toolbar()
     });
     mode_button->setMenu(mode_menu);
     ui->toolBar->addWidget(mode_button);
+
+    QToolButton* clipboard_button = new QToolButton(this);
+    clipboard_button->setIcon(QIcon(":/image/clipboard.png"));
+    clipboard_button->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
+    connect(clipboard_button, &QToolButton::clicked, this, [=](){
+        QClipboard *clip=QApplication::clipboard();
+        clip->setImage(area->get_image());
+    });
+    ui->toolBar->addWidget(clipboard_button);
 
     QToolButton* save_button = new QToolButton(this);
     save_button->setIcon(QIcon(":/image/save.png"));
@@ -310,12 +321,38 @@ void Paint_window::set_toolbar()
     });
     ui->toolBar->addWidget(setting_button);
     ui->toolBar->addSeparator();
+
+//    QToolButton* test_button = new QToolButton(this);
+//    test_button->setText("test");
+//    connect(test_button, &QToolButton::clicked, this, [=](){
+//        QString file_name = QFileDialog::getOpenFileName(this,
+//                                                         "保存",
+//                                                         History::instance()->get_last_directory(),
+//                                                         "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+//        QString file_name2 = QFileDialog::getOpenFileName(this,
+//                                                          "保存",
+//                                                          History::instance()->get_last_directory(),
+//                                                          "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+//        cv::Mat image1 = cv::imread(file_name.toStdString());
+//        cv::Mat image2 = cv::imread(file_name2.toStdString());
+//        cv::resize(image1, image1, cv::Size(image2.cols, image1.rows));
+//        cv::Mat ans_image = cv::Mat(image1.rows+image2.rows, image1.cols, CV_8UC3);
+//        image1.copyTo(ans_image(cv::Rect(0, 0, image1.cols, image1.rows)));
+//        image2.copyTo(ans_image(cv::Rect(0, image1.rows, image1.cols, image2.rows)));
+
+//        vector<int> compression_params;
+//        compression_params.push_back(cv::IMWRITE_PNG_COMPRESSION);
+//        compression_params.push_back(5);    // 无压缩png.
+//        compression_params.push_back(IMWRITE_PNG_STRATEGY);
+//        compression_params.push_back(IMWRITE_PNG_STRATEGY_FILTERED);
+//        imwrite("F:/dinfo/test.png", ans_image, compression_params);
+//    });
+//    ui->toolBar->addWidget(test_button);
 }
 
 void Paint_window::set_pic(QPixmap pix, QRect rect)
 {
     reset();
-    base_image = pix;
     area->resize(rect.width() * 2, rect.height() * 2);
     area->set_picture(pix, rect);//在这个函数中还设置了paint_panel的大小
     if(Config::get_config(Config::auto_copy_to_clipboard))
@@ -323,10 +360,14 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
         QClipboard *clip=QApplication::clipboard();
         clip->setPixmap(pix);
     }
-
-    QDesktopWidget* desktop = QApplication::desktop();
-    if(rect.width()+100 >= (double)desktop->screenGeometry().width()
-            || rect.height()+140 >= (double)desktop->screenGeometry().height())
+    else
+    {
+        QClipboard *clip=QApplication::clipboard();
+        clip->clear();
+    }
+    QScreen* screen = QGuiApplication::primaryScreen();
+    if(rect.width()+100 >= (double)screen->geometry().width()
+            || rect.height()+140 >= (double)screen->geometry().height())
     {
         showMaximized();
     }
@@ -334,10 +375,10 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
     {
         resize(rect.width()+100, rect.height()+140);//设置主窗口大小，否则窗口大小不会变化
         //左上角移动到指定位置，截图越大越向(0, 0)点接近
-        move(pos().x() * (1-(rect.width()/(double)desktop->screenGeometry().width()>1
-                            ?1:rect.width()/(double)desktop->screenGeometry().width()
-        )), pos().y() * (1 - (rect.height()/(double)desktop->screenGeometry().height()>1
-                             ?1:rect.height()/(double)desktop->screenGeometry().height())));
+        move(pos().x() * (1-(rect.width()/(double)screen->geometry().width()>1
+                            ?1:rect.width()/(double)screen->geometry().width()
+        )), pos().y() * (1 - (rect.height()/(double)screen->geometry().height()>1
+                             ?1:rect.height()/(double)screen->geometry().height())));
     }
 
 
@@ -353,7 +394,7 @@ void Paint_window::closeEvent(QCloseEvent *event)
         Close_dialog* close_dialog = new Close_dialog(area, this);
         event->ignore();
         connect(close_dialog, &Close_dialog::hide_paint, this, [=](){
-            QTimer::singleShot(140, this, [=](){
+            QTimer::singleShot(200, this, [=](){
                 Window_manager::change_window("MainWindow");
                 Window_manager::hide_now();
             });
@@ -362,7 +403,7 @@ void Paint_window::closeEvent(QCloseEvent *event)
     }
     else if(Config::get_config(Config::hide_to_tray))
     {
-        QTimer::singleShot(140, this, [=](){
+        QTimer::singleShot(200, this, [=](){
             Window_manager::change_window("MainWindow");
             Window_manager::hide_now();
         });
@@ -399,6 +440,8 @@ void Paint_window::on_window_close()
     delete Style_manager::instance();
     delete Recorder::instance();
     delete History::instance();
+    QClipboard *clip=QApplication::clipboard();
+    clip->clear();
 }
 
 QString  Paint_window::append_layer()

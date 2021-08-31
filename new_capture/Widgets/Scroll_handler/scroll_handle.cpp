@@ -1,12 +1,12 @@
 #include "scroll_handle.h"
 #include<QImage>
 #include<QDebug>
+#include<QDateTime>
 
 Scroll_handle::Scroll_handle(QObject* object) : QObject(object)
 {
     worker = new Scroll_worker();
     worker->moveToThread(&thread);
-
     connect(this, &Scroll_handle::start_work, worker, &Scroll_worker::begin_work);
     connect(worker, &Scroll_worker::work_finish, this, &Scroll_handle::handle_result);
     connect(&thread, &QThread::finished, worker, &QObject::deleteLater);
@@ -21,6 +21,7 @@ Scroll_handle::~Scroll_handle()
 
 void Scroll_handle::handle_result(QImage image)
 {
+
     emit finish(this, begin, end, image);
 }
 

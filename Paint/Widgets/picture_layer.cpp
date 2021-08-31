@@ -1,5 +1,6 @@
 #include "picture_layer.h"
 #include "recorder.h"
+#include<QBitmap>
 
 Picture_layer::Picture_layer()
 {
@@ -50,40 +51,40 @@ Picture_layer::Picture_layer(QString name, QPixmap picture, QRect rect, QWidget*
 
 Picture_layer::~Picture_layer()
 {
+    qDebug() << 1;
     delete paint_layer;
     buttons.clear_all();
     picture = QPixmap();
 }
 
-void Picture_layer::paint(QImage& image, bool is_save, QRect rect)
+void Picture_layer::paint(QPainter* painter, QList<QColor> disable_color, bool is_save)
 {
-    paint_pic(image, is_save, rect);
-    paint_layer->paint(image, is_save, rect);
+    paint_pic(painter, disable_color, is_save);
+    paint_layer->paint(painter, disable_color, is_save);
 }
 
-void Picture_layer::erase_and_paint(QPoint point, QImage& image, QRect rect)
+void Picture_layer::erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)
 {
-    paint_pic(image, false, rect);
-    paint_layer->erase_and_paint(point, image, rect);
+    paint_pic(painter, disable_color, false);
+    paint_layer->erase_and_paint(point, painter, disable_color);
 }
 
-void Picture_layer::paint_pic(QImage& image, bool is_save, QRect rect)
+void Picture_layer::paint_pic(QPainter* painter, QList<QColor> disable_color, bool is_save)
 {
-    QPainter painter(&image);
-    if(rect.left() != -1 || rect.top() != -1)
+    QImage temp = picture.copy(pic_rect).toImage();
+    for(int i=0; i<disable_color.size(); i++)//设置透明色
     {
-        painter.setClipRect(rect);
+        QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+        temp.setAlphaChannel(mask);
     }
-    QPixmap temp = picture.copy(pic_rect);
-    painter.drawPixmap(bound.topLeft() + pic_rect.topLeft(), temp);
+    painter->drawPixmap(bound.topLeft() + pic_rect.topLeft(), QPixmap::fromImage(temp));
     if(!is_save)
     {
         QPen pen(QColor(100, 100, 255));
-        painter.setPen(pen);
-        painter.drawRect(QRect(bound.topLeft()+pic_rect.topLeft(),
+        painter->setPen(pen);
+        painter->drawRect(QRect(bound.topLeft()+pic_rect.topLeft(),
                                QSize(pic_rect.width(), pic_rect.height())));
     }
-    painter.end();
 }
 
 void Picture_layer::set_name(QString name)

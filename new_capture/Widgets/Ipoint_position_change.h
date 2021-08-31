@@ -1,6 +1,7 @@
 #ifndef IPOINT_POSITION_CHANGE_H
 #define IPOINT_POSITION_CHANGE_H
 #include<QList>
+#include<QPoint>
 class Ipoint_position_change
 {
 public:

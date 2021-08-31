@@ -21,9 +21,8 @@ const int Config::default_settings[] =
     false,
     false,
     false,
-    false,
     false,//need_update
-    -1,//update_interval
+    60 * 24 * 7,//update_interval
     false,
     false,
     false,
@@ -49,7 +48,8 @@ QString Config::read_translate(int type)
 {
     if(!is_loading_translate)
     {
-        MString::load_from_file(":/Data/Languages/Config/");
+        //MString::load_from_file(":/Data/Languages/Config/");
+        MString::load_from_file("Data/Languages/Config/");
         is_loading_translate = true;
     }
     return MString::search("{" + eto_string((setting)type) + "}");

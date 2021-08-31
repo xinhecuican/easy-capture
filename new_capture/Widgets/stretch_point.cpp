@@ -4,6 +4,8 @@
 #include<QDebug>
 #include <iostream>
 #include "Helper/debug.h"
+#include<QFile>
+#include<QMouseEvent>
 
 
 Stretch_point::Stretch_point()

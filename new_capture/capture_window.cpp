@@ -571,7 +571,7 @@ void Capture_window::on_window_select()
                     height_char = tm.tmHeight + tm.tmExternalLeading;
                     ReleaseDC(scroll_hwnd, hdc);*/
                     update();
-                    scroll_timer->start(300);
+                    scroll_timer->start(270);
                 }
                 else if(type == XGlobalHook::RBUTTON && !is_enter)
                 {
@@ -590,7 +590,6 @@ void Capture_window::set_scroll_info()
     {
         dispatcher = new Scroll_dispatcher(this);
         connect(dispatcher, &Scroll_dispatcher::finish, this, [=](QImage image){
-            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
             Window_manager::change_window("Paint_window");
             QPixmap pixmap;
             pixmap.convertFromImage(image);
@@ -632,7 +631,7 @@ void Capture_window::set_scroll_info()
                window_point = mainWindow->framePosition();
             }
 
-            PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -240), MAKELPARAM(window_point.x()+cursor_point.x(),
+            PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -300), MAKELPARAM(window_point.x()+cursor_point.x(),
                                                                                    window_point.y()+cursor_point.y()));
         });
     }

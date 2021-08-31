@@ -25,8 +25,7 @@ public:
               total_capture,//在Capture_button_action中
               free_capture,//在Capture_window中
               scroll_capture,
-              active_window_capture,//在Capture_window中
-              capture_mode_end = active_window_capture,
+              capture_mode_end = scroll_capture,
               need_update,//需要更新
               update_interval,//更新检查时间间隔，-1表示永不更新
               update_checktime_begin,

@@ -8,6 +8,7 @@
 #include "opencv2/xfeatures2d.hpp"
 #include<QObject>
 #include<QImage>
+#include<QMutex>
 
 
 class Scroll_worker : public QObject
@@ -38,8 +39,8 @@ public:
         cv::resizeWindow(name, cv::Size(img.cols / n, img.rows / n));
         cv::imshow(name, img);
     }
-
-    int SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans);
+    QImage ans_image;
+    int SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans, int img_height);
 };
 
 #endif // SCROLL_WORKER_H

@@ -3,6 +3,7 @@
 #include "window_manager.h"
 #include "Helper/debug.h"
 #include<QDomDocument>
+#include<QFile>
 
 Key_manager::Key_manager()
 {
