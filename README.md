@@ -46,7 +46,11 @@
 
 ![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA5.gif)
 
-滚动截图暂未完成，将在下一版本展现
+滚动截图
+
+使用opencv库的图像拼接实现，并且加上了多线程，位置在Capture_window/.../Scroll_handle
+
+![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA8.gif)
 
 
 ## 绘制
