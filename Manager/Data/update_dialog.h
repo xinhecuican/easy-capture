@@ -9,9 +9,12 @@
 #include "Reply_timeout.h"
 class Update_dialog : public QDialog
 {
+    Q_OBJECT
 public:
     Update_dialog();
     Update_dialog(Update_data data, QWidget* widget);
+signals:
+    void download_finished();
 private:
     Update_data data;
     QNetworkRequest request;

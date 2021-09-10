@@ -1,5 +1,5 @@
 #include "picture_layer.h"
-#include "recorder.h"
+#include "Paint/Widgets/recorder.h"
 #include<QBitmap>
 
 Picture_layer::Picture_layer()

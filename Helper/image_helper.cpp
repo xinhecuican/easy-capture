@@ -73,6 +73,20 @@ cv::Mat Image_helper::QImage2Mat(QImage const& image)
     return mat;
 }
 
+cv::Mat Image_helper::HBitmapToMat(HBITMAP& _hBmp)
+{
+    //BITMAP操作
+    BITMAP bmp;
+    GetObject(_hBmp,sizeof(BITMAP),&bmp);
+    int nChannels = bmp.bmBitsPixel == 1 ? 1 : bmp.bmBitsPixel/8 ;
+    int depth = bmp.bmBitsPixel == 1 ? IPL_DEPTH_1U : IPL_DEPTH_8U;
+    //mat操作
+    cv::Mat v_mat;
+    v_mat.create(cvSize(bmp.bmWidth,bmp.bmHeight), CV_MAKETYPE(CV_8U,nChannels));
+    GetBitmapBits(_hBmp,bmp.bmHeight*bmp.bmWidth*nChannels,v_mat.data);
+    return v_mat;
+}
+
 bool Image_helper::is_equal(const cv::Mat &data1, const cv::Mat &data2)
 {
     bool success = true;

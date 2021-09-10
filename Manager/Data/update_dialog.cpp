@@ -9,6 +9,7 @@
 #include<QDir>
 #include "Reply_timeout.h"
 #include "JlCompress.h"
+#include<QStringList>
 
 Update_dialog::Update_dialog()
 {
@@ -69,11 +70,10 @@ Update_dialog::Update_dialog(Update_data data, QWidget* parent) : QDialog(parent
                 {
                     dir.mkpath(dir.absolutePath());
                 }
-                QFile file("Data/Update/" + this->data.get_version() + ".zip");
-                if(!file.exists())
-                {
-                    file.setFileName("Data/Update/" + this->data.get_version() + ".7z");
-                }
+                QStringList slist = this->data.get_url().split('/');
+                qDebug() << slist.last();
+                QString file_name = "Data/Update/" + slist.last();
+                QFile file(file_name);
                 if(!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
                 {
                     Debug::debug_print_warning("文件打开失败\n位置Update_dialog");
@@ -82,12 +82,13 @@ Update_dialog::Update_dialog(Update_data data, QWidget* parent) : QDialog(parent
                 }
                 file.write(reply->readAll());
                 file.close();
-                QStringList list = JlCompress::getFileList("Data/Update/" + this->data.get_version() + ".zip");
+                QStringList list = JlCompress::getFileList(file_name);
                 if(list.contains("Upgrate.exe"))
                 {
-                    JlCompress::extractFile("Data/Update/" + this->data.get_version() + ".zip",
+                    JlCompress::extractFile(file_name,
                                         "Upgrate.exe", "Upgrate.exe");
                 }
+                emit download_finished();
             }
             else if(statusCode >=300 && statusCode < 400)
             {

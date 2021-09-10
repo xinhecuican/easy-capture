@@ -38,7 +38,8 @@ public:
               start_instantly,//开机启动
               hide_to_tray,
               show_close_dialog,
-              auto_copy_to_clipboard//自动复制到剪切板
+              auto_copy_to_clipboard,//自动复制到剪切板
+              capture_interval//滚动截屏时间间隔
               );
     Config();
     static Config*& instance()

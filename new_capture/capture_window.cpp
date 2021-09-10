@@ -134,8 +134,8 @@ void Capture_window::load_key_event(QString name)
             {
                 if(Config::get_config(Config::scroll_capture))
                 {
-                    dispatcher->get_all_images();
                     scroll_timer->stop();
+                    dispatcher->get_all_images();
                     return;
                 }
                 Window_manager::pop_window();
@@ -571,7 +571,7 @@ void Capture_window::on_window_select()
                     height_char = tm.tmHeight + tm.tmExternalLeading;
                     ReleaseDC(scroll_hwnd, hdc);*/
                     update();
-                    scroll_timer->start(270);
+                    scroll_timer->start(Config::get_config(Config::capture_interval));
                 }
                 else if(type == XGlobalHook::RBUTTON && !is_enter)
                 {

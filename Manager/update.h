@@ -2,6 +2,7 @@
 #define UPDATE_H
 #include "Base/Serializable.h"
 #include "Data/update_data.h"
+#include "Data/update_dialog.h"
 #include<QNetworkReply>
 #include<QWidget>
 
@@ -35,6 +36,7 @@ private:
     QNetworkRequest request;
     void start_request(const QUrl& url);
     QNetworkAccessManager* manager;
+    Update_dialog* dialog;
 };
 
 #endif // UPDATE_H

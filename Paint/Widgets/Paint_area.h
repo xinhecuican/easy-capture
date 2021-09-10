@@ -1,10 +1,10 @@
 #ifndef PAINT_AREA_H
 #define PAINT_AREA_H
 #include<QWidget>
-#include "picture_layer.h"
+#include "Paint/Widgets/Layers/picture_layer.h"
 #include<QBoxLayout>
 #include<QVector>
-#include "paint_layer.h"
+#include "Paint/Widgets/Layers/paint_layer.h"
 #include "Paint/Data/Ilayer.h"
 
 class Paint_area : public QWidget

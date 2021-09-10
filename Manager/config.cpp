@@ -31,7 +31,8 @@ const int Config::default_settings[] =
     false,//start_instantly
     true,
     true,//show_close_dialog
-    true
+    true,
+    300
 };
 
 DEFINE_STRING(Config);

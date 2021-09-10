@@ -2,6 +2,7 @@
 #include <QDebug>
 #include "Helper/debug.h"
 #include "config.h"
+#include<QApplication>
 
 QMap<QString, Window_manager::Window_data> Window_manager::window_list =
         QMap<QString, Window_manager::Window_data>();
@@ -163,6 +164,7 @@ void Window_manager::create_window(QString name)
 void Window_manager::close()
 {
     window_list["MainWindow"].window->close();
+    QApplication::quit();
 }
 
 Window_manager::Window_data Window_manager::create_data(Window_base *window)

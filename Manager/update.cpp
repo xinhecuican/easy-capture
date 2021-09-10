@@ -3,7 +3,6 @@
 #include<QDateTime>
 #include<QNetworkAccessManager>
 #include "Helper/Serialize.h"
-#include "Data/update_dialog.h"
 #include "Helper/debug.h"
 #include "config.h"
 #include "Data/Reply_timeout.h"
@@ -24,16 +23,10 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.2.0",
-"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.2.0.zip",
+Update_data Update::now_version = Update_data("0.2.2",
+"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.2.2.zip",
                                               "",
-                                              "1. 实现了滚动截图\n"
-                                              "2. 将矩形窗口和活动窗口截图合并\n"
-                                              "3. 修复了绘图窗口复制到剪切板导致的内存泄露\n"
-                                              "4. 修复了无法自动启动的错误\n"
-                                              "5. 体验优化及bug修复\n"
-                                              "注意：由于替换为64位，所有的库文件都需要重新下载，而更新最多支持20mb文件，可能无法下载\n"
-                                              "因此推荐去https://xinhecuican.github.io/post/f0fbe9f2.html下载");
+                                              "修复了无法更新的问题");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
@@ -63,6 +56,7 @@ void Update::start_request(const QUrl &url)
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     request.setRawHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
+    manager->clearAccessCache();
     reply = manager->get(request);
     Reply_timeout* timeout = new Reply_timeout(reply, 10000);
     connect(timeout, &Reply_timeout::timeout, this, [=](){
@@ -99,7 +93,10 @@ void Update::start_request(const QUrl &url)
             if(newest_data > now_version)
             {
                 ///TODO: 更新提示面板
-                Update_dialog* dialog = new Update_dialog(newest_data, this);
+                dialog = new Update_dialog(newest_data, this);
+                connect(dialog, &Update_dialog::download_finished, this, [=](){
+                    on_update();
+                });
                 dialog->show();
             }
         }
@@ -127,19 +124,19 @@ void Update::update()
 void Update::on_update()
 {
     QFile file("Data/update_res.txt");
-    if(!file.open(QIODevice::ReadOnly))
+    if(file.open(QIODevice::ReadOnly))
     {
-        return;
+        int ans = file.readAll().toInt();
+        if(file.exists() && ans)
+        {
+            Config::update_all();
+            Key_manager::update_all();
+            Config::set_config(Config::need_update, 0);
+            Config::update_config(Config::need_update);
+            file.remove();
+        }
     }
-    int ans = file.readAll().toInt();
-    if(file.exists() && ans)
-    {
-        Config::update_all();
-        Key_manager::update_all();
-        Config::set_config(Config::need_update, 0);
-        Config::update_config(Config::need_update);
-        file.remove();
-    }
+
     if(Config::get_config(Config::need_update) == 1)
     {
         int ans = QMessageBox::question(this, "更新提示", "是否进行更新");

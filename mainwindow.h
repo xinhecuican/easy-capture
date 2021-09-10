@@ -23,6 +23,7 @@ public:
     Q_INVOKABLE MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void closeEvent(QCloseEvent* event)override;
+    void changeEvent(QEvent* event)override;
     bool eventFilter(QObject* o, QEvent* e)override;
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *result)override;
     void load_key_event(QString name) override;

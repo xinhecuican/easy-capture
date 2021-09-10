@@ -11,6 +11,10 @@
 #include "opencv2/core.hpp"
 #include "opencv2/opencv.hpp"
 #include "Helper/image_helper.h"
+#include<windows.h>
+#include<QImageWriter>
+#include "Helper/image_helper.h"
+#include<QPixmapCache>
 
 Paint_area::Paint_area()
 {
@@ -248,18 +252,44 @@ QRect Paint_area::bounded_rect()
 
 void Paint_area::save(QString path)
 {
+    if(path == "")
+    {
+        return;
+    }
     is_save = true;
     repaint();
     is_save = false;
     pic_save = true;
-    QImage temp = grab(bounded_rect()).toImage();
-    for(int i=0; i<disable_color.size(); i++)//设置透明色
+    QRect rect = bounded_rect();
+    cv::Mat ans(rect.height(), rect.width(), CV_8UC4);
+    if(rect.height() >= 32700)//图片过大需要切分
     {
-        QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
-        temp.setAlphaChannel(mask);
+        for(int i=0; i<rect.height(); i+=32700)
+        {
+            int height = rect.height() - i > 32700 ? 32700 : rect.height() - i;
+            QRect temp_rect(rect.left(), rect.top()+i, rect.width(), height);
+            QImage temp = grab(temp_rect).toImage();
+            for(int i=0; i<disable_color.size(); i++)//设置透明色
+            {
+                QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+                temp.setAlphaChannel(mask);
+            }
+            cv::Mat temp_mat = Image_helper::QImage2Mat(temp);
+            temp_mat.copyTo(ans(cv::Rect(0, i, rect.width(), height)));
+        }
     }
-    cv::Mat ans = Image_helper::QImage2Mat(temp);
-    cv::imwrite(path.toStdString(), ans);
+    else
+    {
+        QImage temp =  grab(bounded_rect()).toImage();
+        for(int i=0; i<disable_color.size(); i++)//设置透明色
+        {
+            QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+            temp.setAlphaChannel(mask);
+        }
+
+        ans = Image_helper::QImage2Mat(temp);
+    }
+    cv::imwrite(std::string(path.toLocal8Bit()), ans);
     History::instance()->log(History_data::Persist, path);
 }
 
@@ -281,14 +311,21 @@ void Paint_area::save_temp()
         dir.mkpath(path);
     }
     path += "main.png";
-    QImage temp = grab(bounded_rect()).toImage();
-    for(int i=0; i<disable_color.size(); i++)//设置透明色
+    QRect rect = bounded_rect();
+    if(rect.height() >= 32767)
     {
-        QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
-        temp.setAlphaChannel(mask);
+        return;
     }
-    cv::Mat ans = Image_helper::QImage2Mat(temp);
-    cv::imwrite(path.toStdString(), ans);
+    else
+    {
+        QImage temp = grab(rect).toImage();
+        for(int i=0; i<disable_color.size(); i++)//设置透明色
+        {
+            QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+            temp.setAlphaChannel(mask);
+        }
+        temp.save(path);
+    }
     History::instance()->log(History_data::Editable, path);
 }
 

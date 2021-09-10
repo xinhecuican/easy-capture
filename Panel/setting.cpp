@@ -11,6 +11,7 @@
 #include<QLabel>
 #include<QMessageBox>
 
+
 Setting::Setting(QWidget *parent) :
     Window_base(parent, this, "Setting"),
     ui(new Ui::Setting)
@@ -150,6 +151,10 @@ void Setting::capture_settings()
         int before_index = capture_setting->get_default_index("capture_type");
         ready_setting.append(data(before_index, false));
         ready_setting.append(data(index+capture_setting->get_begin_index("capture_type"), true));
+        capture_setting->set_dirty(true);
+    });
+    capture_setting->add_num_option("capture_interval", Config::capture_interval, "滚动时间间隔", 100, 500, [=](int index){
+        ready_setting.append(data(Config::capture_interval, index));
         capture_setting->set_dirty(true);
     });
     capture_setting->done();

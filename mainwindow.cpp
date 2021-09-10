@@ -165,3 +165,12 @@ void MainWindow::load_key_event(QString name)
         }
     });
 }
+
+void MainWindow::changeEvent(QEvent *event)
+{
+    if ((event->type() == QEvent::WindowStateChange) && isMinimized())
+    {
+        Window_manager::hide_now();
+        event->ignore();
+    }
+}

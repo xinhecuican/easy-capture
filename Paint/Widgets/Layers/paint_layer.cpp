@@ -3,7 +3,7 @@
 #include<QPainter>
 #include<QDebug>
 #include<QWidget>
-#include "recorder.h"
+#include "Paint/Widgets/recorder.h"
 
 Paint_layer::Paint_layer()
 {
