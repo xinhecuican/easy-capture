@@ -184,7 +184,11 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
         now_path.lineTo(event->pos());
         Paint_data* paint_data = Style_manager::instance()->get();
         int index = layers[layers.size()-1]->add_data(paint_data, now_path);
-        Recorder::instance()->record(index, layers[layers.size()-1]);
+        if(index != -1)
+        {
+            Paint_record* record = new Paint_record(layers[layers.size()-1], index, paint_info(paint_data, now_path));
+            Recorder::instance()->record(record);
+        }
     }
     is_draw = false;
     now_path = QPainterPath();

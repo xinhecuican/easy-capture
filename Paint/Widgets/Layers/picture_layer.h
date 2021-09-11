@@ -26,8 +26,8 @@ public:
     int add_data(Paint_data *style, QPainterPath path) override;
     QPixmap get_pic();
     QRect bounded_rect()override;
-    bool redo(int index = 0) override;
-    bool undo(int index = 0) override;
+    void on_size_change(int index, int dx, int dy) override;
+    void on_paint_change(int index, paint_info info) override;
     QString get_name() override;
 public slots:
     void on_button_move(Stretch_button::direction dir, int dx, int dy);

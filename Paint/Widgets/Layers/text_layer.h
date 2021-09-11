@@ -9,18 +9,18 @@ class Text_layer : QWidget, Ilayer
 {
 public:
     Text_layer(QRect bound_rect, QWidget* parent=nullptr);
-    virtual void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)override;
-    virtual void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)override;
-    virtual int add_data(Paint_data* style, QPainterPath path)override;
-    virtual void set_name(QString name)override;
-    virtual QRect bounded_rect()override;
-    virtual bool redo(int index = 0) override;
-    virtual bool undo(int index = 0) override;
-    virtual QString get_name()override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
+    void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)override;
+    void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)override;
+    int add_data(Paint_data* style, QPainterPath path)override;
+    void set_name(QString name)override;
+    QRect bounded_rect()override;
+    QString get_name()override;
 private:
     QString name;
     QTextEdit* edit;
     QRect bound_rect;
+    QString str;
 };
 
 #endif // TEXT_LAYER_H

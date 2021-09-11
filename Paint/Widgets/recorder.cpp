@@ -1,4 +1,5 @@
 #include "recorder.h"
+#include<QDebug>
 
 Recorder::Recorder()
 {
@@ -24,41 +25,50 @@ Recorder::~Recorder()
 
 void Recorder::back()
 {
-    Record_data element;
+    Record_base* element;
     //当没到栈底并且当前undo操作不成功时
-    while(data.can_undo() && !(element = data.pop()).element->undo(element.index)){}
+    while (data.can_undo())
+    {
+        element = data.pop();
+        if(element->undo(0))
+        {
+            break;
+        }
+    }
+
+
 }
 
 void Recorder::forward()
 {
-    Record_data element;
-    while(data.can_redo() && !(element = data.forward()).element->redo(element.index)){};
-    /*if(data.can_redo())
+    Record_base* element;
+    while (data.can_redo())
     {
-        Record_data element = data.forward();
-        element.element->redo(element.index);
-    }*/
-}
-
-void Recorder::record(int index, Record_element *element)
-{
-    Record_data record_data(index, element);
-    data.push_and_resize(record_data);
-}
-
-void Recorder::remove_record(Record_element *element)
-{
-    int i=0;
-    while(i < data.size())
-    {
-        if(data.get(i).element == element)
+        element = data.forward();
+        if(element->redo(0))
         {
-            i = data.remove(i);
-            continue;
+            break;
         }
-        i++;
     }
 }
+
+void Recorder::remove_record(Ilayer *layer)
+{
+    for(int i=0; i<data.size(); i++)
+    {
+        if(data.get(i)->layer == layer)
+        {
+            data.remove(i);
+            i--;
+        }
+    }
+}
+
+void Recorder::record(Record_base* element)
+{
+    data.push_and_resize(element);
+}
+
 
 void Recorder::reset()
 {

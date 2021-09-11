@@ -60,52 +60,9 @@ void Paint_layer::set_name(QString name)
 
 int Paint_layer::add_data(Paint_data* style, QPainterPath path)
 {
+
     data[now_index++] = paint_info(style, path);
     return now_index-1;
-}
-
-bool Paint_layer::undo(int index)
-{
-    if(data.find(index) != data.end())
-    {
-        delete_data[index] = data[index];
-        data.remove(index);
-        parent->update();
-        return true;
-    }
-    else if(delete_data.find(index) != delete_data.end())
-    {
-        data[index] = delete_data[index];
-        delete_data.remove(index);
-        parent->update();
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-bool Paint_layer::redo(int index)
-{
-    if(data.find(index) != data.end())
-    {
-        delete_data[index] = data[index];
-        data.remove(index);
-        parent->update();
-        return true;
-    }
-    else if(delete_data.find(index) != delete_data.end())
-    {
-        data[index] = delete_data[index];
-        delete_data.remove(index);
-        parent->update();
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 QRect Paint_layer::bounded_rect()
@@ -121,4 +78,18 @@ QRect Paint_layer::bounded_rect()
 QString Paint_layer::get_name()
 {
     return name;
+}
+
+void Paint_layer::on_paint_change(int index, paint_info info)
+{
+    if(data.find(index) != data.end())
+    {
+        delete_data[index] = data[index];
+        data.remove(index);
+    }
+    else
+    {
+        data[index] = info;
+    }
+    parent->update();
 }

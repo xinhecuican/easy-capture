@@ -32,6 +32,7 @@ SOURCES += \
     Paint/Widgets/Layers/paint_layer.cpp \
     Paint/Widgets/Layers/picture_layer.cpp \
     Paint/Widgets/Layers/text_layer.cpp \
+    Paint/Widgets/Recorder_element/paint_record.cpp \
     Paint/Widgets/Recorder_element/resize_record.cpp \
     Paint/Widgets/close_dialog.cpp \
     Paint/Widgets/color_selector.cpp \
@@ -85,6 +86,7 @@ HEADERS += \
     Manager/key_manager.h \
     Manager/update.h \
     Manager/window_manager.h \
+    Paint/Data/Common.h \
     Paint/Data/History_data.h \
     Paint/Data/Ilayer.h \
     Paint/Data/paint_data.h \
@@ -95,6 +97,7 @@ HEADERS += \
     Paint/Widgets/Layers/paint_layer.h \
     Paint/Widgets/Layers/picture_layer.h \
     Paint/Widgets/Layers/text_layer.h \
+    Paint/Widgets/Recorder_element/paint_record.h \
     Paint/Widgets/Recorder_element/record_base.h \
     Paint/Widgets/Recorder_element/resize_record.h \
     Paint/Widgets/close_dialog.h \

@@ -8,6 +8,9 @@
 #include "Paint/Data/paint_data.h"
 #include "Paint/Data/Ilayer.h"
 #include<QWidget>
+#include "Paint/Widgets/Recorder_element/paint_record.h"
+#include "Paint/Data/Common.h"
+
 class Paint_layer : public QWidget, public Ilayer
 {
 public:
@@ -17,23 +20,12 @@ public:
     void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)override;
     int add_data(Paint_data* style, QPainterPath path)override;
     void set_name(QString name)override;
-    QString get_name();
+    QString get_name()override;
     QRect bounded_rect()override;
-    bool redo(int index = 0) override;
-    bool undo(int index = 0) override;
+    void on_paint_change(int index, paint_info info) override;
     QPoint begin;
 private:
-    struct paint_info
-    {
-        paint_info(){};
-        paint_info(Paint_data* style, QPainterPath paint_path)
-        {
-            style_info = style;
-            path = paint_path;
-        }
-        Paint_data* style_info;
-        QPainterPath path;
-    };
+
     QWidget* parent;
     QString name;
     QPicture pic;

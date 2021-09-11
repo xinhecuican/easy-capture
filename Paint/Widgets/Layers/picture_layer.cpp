@@ -1,6 +1,7 @@
 #include "picture_layer.h"
 #include "Paint/Widgets/recorder.h"
 #include<QBitmap>
+#include "Paint/Widgets/Recorder_element/resize_record.h"
 
 Picture_layer::Picture_layer()
 {
@@ -25,21 +26,8 @@ Picture_layer::Picture_layer(QString name, QPixmap picture, QRect rect, QWidget*
         connect(button, &Stretch_button::button_click, this, [=](bool is_enter, int dx, int dy){
             if(!is_enter)
             {
-                node now;
-                now.index = i;
-                now.dx = dx;
-                now.dy = dy;
-                int list_size = pos_change_list.size();
-                if(now_pos != list_size)
-                {
-                    for(int i=now_pos; i<list_size; i++)
-                    {
-                        pos_change_list.removeLast();
-                    }
-                }
-                pos_change_list.append(now);
-                now_pos++;
-                Recorder::instance()->record(-1, this);
+                Resize_record* record = new Resize_record(this, i, dx, dy);
+                Recorder::instance()->record(record);
                 parent->update();
             }
         });
@@ -51,7 +39,6 @@ Picture_layer::Picture_layer(QString name, QPixmap picture, QRect rect, QWidget*
 
 Picture_layer::~Picture_layer()
 {
-    qDebug() << 1;
     delete paint_layer;
     buttons.clear_all();
     picture = QPixmap();
@@ -110,45 +97,6 @@ QRect Picture_layer::bounded_rect()
     return temp.united(paint_layer->bounded_rect());
 }
 
-bool Picture_layer::undo(int index)
-{
-    if(index == -1)
-    {
-        if(now_pos > 0)
-        {
-            node now = pos_change_list[now_pos-1];
-            now_pos--;
-            buttons[Stretch_button::direction(now.index)]->translate(-now.dx, -now.dy);
-            on_button_move(Stretch_button::direction(now.index), -now.dx, -now.dy);
-        }
-    }
-    else
-    {
-        paint_layer->undo(index);
-    }
-    return true;
-}
-
-bool Picture_layer::redo(int index)
-{
-    if(index == -1)
-    {
-        if(now_pos < pos_change_list.size())
-        {
-            node now = pos_change_list[now_pos];
-            now_pos++;
-            buttons[Stretch_button::direction(now.index)]->translate(now.dx, now.dy);
-            on_button_move(Stretch_button::direction(now.index), now.dx, now.dy);
-        }
-    }
-    else
-    {
-        paint_layer->redo(index);
-    }
-    return true;
-}
-
-
 QString Picture_layer::get_name()
 {
     return name;
@@ -184,4 +132,19 @@ void Picture_layer::on_button_move(Stretch_button::direction dir, int dx, int dy
         break;
     }
     parent->update(temp);
+}
+
+void Picture_layer::on_size_change(int index, int dx, int dy)
+{
+    this->buttons[index]->translate(dx, dy);
+    on_button_move((Stretch_button::direction)index, dx, dy);
+    QRect rect = bounded_rect();
+    rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
+    rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
+    parent->update(bounded_rect());
+}
+
+void Picture_layer::on_paint_change(int index, paint_info info)
+{
+    paint_layer->on_paint_change(index, info);
 }

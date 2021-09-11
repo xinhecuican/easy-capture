@@ -22,14 +22,14 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     QVBoxLayout* layout = new QVBoxLayout(this);
     QLabel* warning_icon = new QLabel(this);
     warning_icon->setPixmap(QPixmap(":/image/warning.png"));
-    QGridLayout* grid_layout = new QGridLayout(this);
+    QGridLayout* grid_layout = new QGridLayout();
 
     QButtonGroup* group = new QButtonGroup(this);
     QRadioButton* hide_button = new QRadioButton("缩小到系统托盘", this);
     hide_button->setCheckable(true);
     QRadioButton* close_button = new QRadioButton("直接关闭", this);
     close_button->setCheckable(true);
-    QHBoxLayout* hide_layout = new QHBoxLayout(this);
+    QHBoxLayout* hide_layout = new QHBoxLayout();
     group->addButton(hide_button, 0);
     group->addButton(close_button, 1);
     group->setExclusive(true);
@@ -54,13 +54,13 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     });
 
     hide_layout->addWidget(hide_button);
-    QHBoxLayout* close_layout = new QHBoxLayout(this);
+    QHBoxLayout* close_layout = new QHBoxLayout();
     close_layout->addWidget(close_button);
     grid_layout->addWidget(warning_icon, 0, 0);
     grid_layout->addLayout(hide_layout, 0, 1);
     grid_layout->addLayout(close_layout, 1, 1);
     layout->addLayout(grid_layout);
-    QHBoxLayout* button_layout = new QHBoxLayout(this);
+    QHBoxLayout* button_layout = new QHBoxLayout();
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);//右下角按钮设置
     QPushButton* ok = new QPushButton(this);
     ok->setText("确认");

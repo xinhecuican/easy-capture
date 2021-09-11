@@ -4,6 +4,7 @@
 #include "Base/Record_element.h"
 #include<iostream>
 #include "Helper/debug.h"
+#include "Paint/Widgets/Recorder_element/record_base.h"
 
 class Recorder
 {
@@ -11,11 +12,11 @@ public:
     Recorder();
     ~Recorder();
     static Recorder* instance();
-    void record(int index, Record_element* element);
+    void record(Record_base* element);
     void reset();
     void back();
     void forward();
-    void remove_record(Record_element* element);
+    void remove_record(Ilayer* layer);
 private:
     struct Record_data
     {
@@ -33,13 +34,15 @@ private:
         int capacity;
         int limit;
         int point;
-        Record_data* data;
+        int max_size;
+        Record_base** data;
         MVector()
         {
             capacity = 10;
             limit = 0;
             point = 0;
-            data = new Record_data[10];
+            max_size = 0;
+            data = new Record_base*[10];
         }
 
         void ensure_capacity()
@@ -48,7 +51,7 @@ private:
             {
                 int old_size = capacity;
                 capacity <<= 1;
-                Record_data* temp = new Record_data[capacity];
+                Record_base** temp = new Record_base*[capacity];
                 for(int i=0; i<old_size; i++)
                 {
                     temp[i] = data[i];
@@ -60,27 +63,40 @@ private:
 
         void clear()
         {
+            for(int i=0; i<max_size; i++)
+            {
+                delete data[i];
+            }
             delete [] data;
         }
 
         void reset()
         {
-            Record_data* temp = new Record_data[10];
+            for(int i=0; i<max_size; i++)
+            {
+                delete data[i];
+            }
+            Record_base** temp = new Record_base*[10];
             capacity = 10;
             limit = 0;
             point = 0;
+            max_size = 0;
             delete [] data;
             data = temp;
         }
 
-        void push_back(Record_data record_data)
+        void push_back(Record_base* record_data)
         {
             ensure_capacity();
             data[point++] = record_data;
+            if(point > max_size)
+            {
+                max_size = point;
+            }
             limit++;
         }
 
-        Record_data pop()
+        Record_base* pop()
         {
             if(point > 0)
             {
@@ -90,7 +106,7 @@ private:
             return data[0];
         }
 
-        void push_and_resize(Record_data record_data)
+        void push_and_resize(Record_base* record_data)
         {
             data[point++] = record_data;
             limit = point;
@@ -113,7 +129,7 @@ private:
             return i;
         }
 
-        Record_data get(int i)
+        Record_base* get(int i)
         {
             if(i > limit-1)
             {
@@ -128,7 +144,7 @@ private:
 
         inline int size(){return limit;};
 
-        inline Record_data& forward(){point++;return data[point-1];};
+        inline Record_base*& forward(){point++;return data[point-1];};
     };
 
     static Recorder* _instance;
