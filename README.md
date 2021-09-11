@@ -46,7 +46,11 @@
 
 ![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA5.gif)
 
-滚动截图暂未完成，将在下一版本展现
+滚动截图
+
+使用opencv库的图像拼接实现，并且加上了多线程，位置在Capture_window/.../Scroll_handle
+
+![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA8.gif)
 
 
 ## 绘制
@@ -86,7 +90,7 @@
 
 # 更新计划
 
-1. 完成滚动截屏
+1. 完成滚动截屏(完成)
 2. 修bug，重构部分代码
 3. 完善绘图区域，添加文本框，箭头和水印图片，支持旋转
 4. 完成UI_manager，可以利用qss(和css语法类似)修改样式并且提供主题
