@@ -2,6 +2,7 @@
 #define COMMON_H
 #include "paint_data.h"
 #include<QPainterPath>
+enum shape_type{TEXT};
 struct paint_info
 {
     paint_info(){};

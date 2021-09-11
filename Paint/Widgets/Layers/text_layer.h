@@ -3,24 +3,38 @@
 #include<QWidget>
 #include<QLineEdit>
 #include<QTextEdit>
+#include<QPlainTextEdit>
 #include "Paint/Data/Ilayer.h"
+#include "Helper/plist.h"
+#include "Paint/Data/stretch_button.h"
 
-class Text_layer : QWidget, Ilayer
+class Text_layer : public QWidget, public Ilayer
 {
 public:
     Text_layer(QRect bound_rect, QWidget* parent=nullptr);
-    void mouseDoubleClickEvent(QMouseEvent *event) override;
-    void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)override;
     void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)override;
-    int add_data(Paint_data* style, QPainterPath path)override;
     void set_name(QString name)override;
+    void get_focus() override;
+    void lose_focus() override;
+    void mouse_enter(int key_code) override;
+    void mouse_move(int dx, int dy) override;
     QRect bounded_rect()override;
     QString get_name()override;
+    void double_click() override;
+    void on_size_change(int index, int dx, int dy) override;
+public slots:
+    void on_button_move(Stretch_button::direction dir, int dx, int dy);
 private:
+    QWidget* parent;
     QString name;
-    QTextEdit* edit;
-    QRect bound_rect;
+    QPlainTextEdit* edit;
+    QRect bound;
     QString str;
+    bool has_focus;
+    bool has_double_click;
+    bool is_press;
+    PList<Stretch_button*> buttons;
+    void move_to_loc();
 };
 
 #endif // TEXT_LAYER_H

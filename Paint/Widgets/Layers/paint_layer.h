@@ -17,8 +17,8 @@ public:
     Paint_layer();
     Paint_layer(QWidget* parent, QString name);
     void paint(QPainter* painter, QList<QColor> disable_color, bool is_save) override;
-    void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)override;
-    int add_data(Paint_data* style, QPainterPath path)override;
+    void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color);
+    int add_data(Paint_data* style, QPainterPath path);
     void set_name(QString name)override;
     QString get_name()override;
     QRect bounded_rect()override;

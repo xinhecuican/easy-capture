@@ -244,27 +244,35 @@ void Paint_window::set_toolbar()
     ui->toolBar->addSeparator();
     QButtonGroup* paint_button_group = new QButtonGroup(this);
     paint_button_group->setExclusive(true);
+    QToolButton* cursor_button = new QToolButton(this);
+    cursor_button->setIcon(QIcon(":/image/cursor.png"));
+    cursor_button->setToolTip(MString::search("指针"));
+    cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png")));
+    cursor_button->setCheckable(true);
+    paint_button_group->addButton(cursor_button, 0);
+    ui->toolBar->addWidget(cursor_button);
+
     pencil_button = new QToolButton(this);
     pencil_button->setIcon(QIcon(":/image/pencil.png"));
     pencil_button->setToolTip(MString::search("{ndvChZ2O6z}笔"));
     pencil_button->setCheckable(true);
     pencil_button->setChecked(true);
     area->setCursor(QCursor(QPixmap(":/image/pencil.png"), 0, 24));
-    paint_button_group->addButton(pencil_button, 0);
+    paint_button_group->addButton(pencil_button, 1);
     ui->toolBar->addWidget(pencil_button);
 
     QToolButton* highlighter_button = new QToolButton(this);
     highlighter_button->setToolTip(MString::search("{j54u1kWtCx}荧光笔"));
     highlighter_button->setIcon(QIcon(":/image/highlighter.png"));
     highlighter_button->setCheckable(true);
-    paint_button_group->addButton(highlighter_button, 1);
+    paint_button_group->addButton(highlighter_button, 2);
     ui->toolBar->addWidget(highlighter_button);
 
     QToolButton* erase_button = new QToolButton(this);
     erase_button->setToolTip(MString::search("{7cwKObEhcx}擦除"));
     erase_button->setIcon(QIcon(":/image/eraser.png"));
     erase_button->setCheckable(true);
-    paint_button_group->addButton(erase_button, 2);
+    paint_button_group->addButton(erase_button, 3);
     ui->toolBar->addWidget(erase_button);
     connect(paint_button_group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
             , this, [=](int id){
@@ -272,17 +280,24 @@ void Paint_window::set_toolbar()
         switch (id)
         {
         case 0:
+            area->set_paintable(false);
+            area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
+            break;
+        case 1:
+            area->set_paintable(true);
             pencil_button->setChecked(true);
             Style_manager::instance()->change_pen(Style_manager::default_pencil);
             area->setCursor(QCursor(QPixmap(":/image/pencil.png"), 0, 24));
             break;
-        case 1:
+        case 2:
+            area->set_paintable(true);
             highlighter_button->setChecked(true);
             Style_manager::instance()->change_pen(Style_manager::default_highlighter);
             area->setCursor(QCursor(QPixmap(":/image/highlighter_cursor.png"), 0, 24));
             break;
-        case 2:
+        case 3:
             area->using_erase(true);
+            area->set_paintable(false);
             area->setCursor(QCursor(QPixmap(":/image/eraser.png"), 4, 20));
             break;
         }
@@ -303,6 +318,12 @@ void Paint_window::set_toolbar()
             connect(paint_setting_panel, &Paint_setting_panel::disable_color_change, this,
                     [=](int index, QColor color=QColor()){
                 area->set_disable_color(index, color);
+            });
+            connect(paint_setting_panel, &Paint_setting_panel::paint_shape, this,
+                    [=](shape_type type){
+                cursor_button->setChecked(true);
+                area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
+                area->paint_shape(type);
             });
             addDockWidget(Qt::RightDockWidgetArea, paint_setting_panel);
         }

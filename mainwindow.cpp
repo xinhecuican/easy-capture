@@ -122,7 +122,6 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         {
             Key_manager::key_enter(event->key());
         }
-        return true;
     }
     else if(e->type() == QEvent::KeyRelease)
     {
@@ -131,7 +130,6 @@ bool MainWindow::eventFilter(QObject *o, QEvent *e)
         {
             Key_manager::key_release(event->key());
         }
-        return true;
     }
     return false;
 }

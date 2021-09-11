@@ -21,14 +21,12 @@ public:
     Picture_layer(QString name, QPixmap picture, QRect rect, QWidget* parent=nullptr);
     ~Picture_layer();
     void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)override;
-    void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color) override;
     void set_name(QString name) override;
-    int add_data(Paint_data *style, QPainterPath path) override;
     QPixmap get_pic();
     QRect bounded_rect()override;
     void on_size_change(int index, int dx, int dy) override;
-    void on_paint_change(int index, paint_info info) override;
     QString get_name() override;
+    bool is_base_layer;
 public slots:
     void on_button_move(Stretch_button::direction dir, int dx, int dy);
 private:
@@ -38,6 +36,7 @@ private:
         int dy;
         int index;
     };
+
     QList<node> pos_change_list;
     int now_pos;
     QString name;
@@ -46,7 +45,6 @@ private:
     QRect bound;
     QRect pic_rect;
     QPoint move_begin_point;
-    Paint_layer* paint_layer;
     DragPos drag_pos;
     PList<Stretch_button*> buttons;
     void paint_pic(QPainter* painter, QList<QColor> disable_color, bool is_save);

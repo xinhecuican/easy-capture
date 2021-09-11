@@ -14,8 +14,8 @@ Picture_layer::Picture_layer(QString name, QPixmap picture, QRect rect, QWidget*
     this->picture = picture;
     this->parent = parent;
     now_pos = 0;
-    paint_layer = new Paint_layer(parent, "");
     bound = QRect(rect.width()/2, rect.height()/2, rect.width(), rect.height());
+    is_base_layer = false;
     for(int i=0; i<4; i++)
     {
         Stretch_button* button = new Stretch_button(Stretch_button::direction(i), parent);
@@ -39,7 +39,6 @@ Picture_layer::Picture_layer(QString name, QPixmap picture, QRect rect, QWidget*
 
 Picture_layer::~Picture_layer()
 {
-    delete paint_layer;
     buttons.clear_all();
     picture = QPixmap();
 }
@@ -47,13 +46,6 @@ Picture_layer::~Picture_layer()
 void Picture_layer::paint(QPainter* painter, QList<QColor> disable_color, bool is_save)
 {
     paint_pic(painter, disable_color, is_save);
-    paint_layer->paint(painter, disable_color, is_save);
-}
-
-void Picture_layer::erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)
-{
-    paint_pic(painter, disable_color, false);
-    paint_layer->erase_and_paint(point, painter, disable_color);
 }
 
 void Picture_layer::paint_pic(QPainter* painter, QList<QColor> disable_color, bool is_save)
@@ -79,11 +71,6 @@ void Picture_layer::set_name(QString name)
     this->name = name;
 }
 
-int Picture_layer::add_data(Paint_data *style, QPainterPath path)
-{
-    return paint_layer->add_data(style, path);
-}
-
 QPixmap Picture_layer::get_pic()
 {
     return picture;
@@ -94,7 +81,7 @@ QRect Picture_layer::bounded_rect()
     QRect temp = bound.translated(pic_rect.x(), pic_rect.y());
     temp.setWidth(pic_rect.width());
     temp.setHeight(pic_rect.height());
-    return temp.united(paint_layer->bounded_rect());
+    return temp;
 }
 
 QString Picture_layer::get_name()
@@ -141,10 +128,6 @@ void Picture_layer::on_size_change(int index, int dx, int dy)
     QRect rect = bounded_rect();
     rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
     rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
-    parent->update(bounded_rect());
+    parent->update(rect);
 }
 
-void Picture_layer::on_paint_change(int index, paint_info info)
-{
-    paint_layer->on_paint_change(index, info);
-}

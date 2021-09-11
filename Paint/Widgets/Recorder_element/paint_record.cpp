@@ -16,7 +16,6 @@ bool Paint_record::redo(int index)
 
 bool Paint_record::undo(int index)
 {
-    qDebug() << 132;
     layer->on_paint_change(this->index, this->info);
     return true;
 }

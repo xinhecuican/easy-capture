@@ -1,4 +1,4 @@
-#include "paint_area.h"
+#include "Paint_area.h"
 #include "recorder.h"
 #include "style_manager.h"
 #include<QDir>
@@ -15,6 +15,7 @@
 #include<QImageWriter>
 #include "Helper/image_helper.h"
 #include<QPixmapCache>
+#include "Paint/Widgets/Layers/text_layer.h"
 
 Paint_area::Paint_area()
 {
@@ -37,6 +38,8 @@ void Paint_area::reset()
     is_eraser = false;
     pic_save = false;
     layer_num = 0;
+    is_paintable = true;
+    focus_layer = NULL;
 }
 
 Paint_area::Paint_area(QWidget* parent) : QWidget(parent)
@@ -46,15 +49,17 @@ Paint_area::Paint_area(QWidget* parent) : QWidget(parent)
     layers = QVector<Ilayer*>();
     is_draw = false;
     now_path = QPainterPath();
+    paint_layer = new Paint_layer(this, "");
     layer_num = 0;
+    focus_layer = NULL;
+    is_paintable = true;
 }
 
 void Paint_area::set_picture(QPixmap pixmap, QRect rect)
 {
     is_save = false;
     pic_layer = new Picture_layer("第0层", pixmap, rect, this);
-    layer_num++;
-    layers.push_back(pic_layer);
+    pic_layer->is_base_layer = true;
     QTimer::singleShot(100, this, [=](){
         this->update();
     });
@@ -63,10 +68,11 @@ void Paint_area::set_picture(QPixmap pixmap, QRect rect)
 void Paint_area::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-
+    pic_layer->paint(&painter, disable_color, is_save);
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
     paint(&painter, disable_color);
     //painter.drawImage(0, 0, image);
+    paint_layer->paint(&painter, disable_color, is_save);
     if(!is_eraser)
     {
         QPen pen;
@@ -82,16 +88,14 @@ void Paint_area::paintEvent(QPaintEvent *event)
 
 void Paint_area::paint(QPainter* painter, QList<QColor> disable_color)
 {
+    if(is_eraser && is_draw)
+    {
+        QRect rect = QRect(point.x()-3, point.y()-3, 6, 6);
+        paint_layer->erase_and_paint(point, painter, disable_color);
+    }
     for(int i=0; i<layers.size(); i++)//各层绘制
     {
-        if(is_eraser && is_draw)
-        {
-            layers[i]->erase_and_paint(point, painter, disable_color);
-        }
-        else
-        {
-            layers[i]->paint(painter, disable_color, is_save);
-        }
+        layers[i]->paint(painter, disable_color, is_save);
     }
 
 }
@@ -133,36 +137,52 @@ void Paint_area::mouseMoveEvent(QMouseEvent *event)
     {
         return;
     }
-    point = event->pos();
-    QPainterPath::Element ele = now_path.elementAt(now_path.elementCount()-1);
-    now_path.lineTo(event->pos());
-    int x, y, w, h;
-    QPoint global_point = event->pos();
-    if(ele.x < global_point.x())
+    if(is_paintable)
     {
-        x = ele.x;
-        w = global_point.x() - ele.x;
+        point = event->pos();
+        QPainterPath::Element ele = now_path.elementAt(now_path.elementCount()-1);
+        now_path.lineTo(event->pos());
+        int x, y, w, h;
+        QPoint global_point = event->pos();
+        if(ele.x < global_point.x())
+        {
+            x = ele.x;
+            w = global_point.x() - ele.x;
+        }
+        else
+        {
+            x = global_point.x();
+            w = ele.x - global_point.x();
+        }
+        if(ele.y < global_point.y())
+        {
+            y = ele.y;
+            h = global_point.y() - ele.y;
+        }
+        else
+        {
+            y = global_point.y();
+            h = ele.y - global_point.y();
+        }
+        x -= now_data.width+3;
+        y -= now_data.width+3;
+        w += now_data.width+6;
+        h += now_data.width+6;
+        update(QRect(x, y, w, h));
+    }
+    else if(is_paint_shape)
+    {
+
     }
     else
     {
-        x = global_point.x();
-        w = ele.x - global_point.x();
+        QPoint temp_point = event->pos() - point;
+        point = event->pos();
+        if(focus_layer != NULL)
+        {
+            focus_layer->mouse_move(temp_point.x(), temp_point.y());
+        }
     }
-    if(ele.y < global_point.y())
-    {
-        y = ele.y;
-        h = global_point.y() - ele.y;
-    }
-    else
-    {
-        y = global_point.y();
-        h = ele.y - global_point.y();
-    }
-    x -= now_data.width+3;
-    y -= now_data.width+3;
-    w += now_data.width+6;
-    h += now_data.width+6;
-    update(QRect(x, y, w, h));
 }
 
 void Paint_area::mousePressEvent(QMouseEvent *event)
@@ -172,22 +192,59 @@ void Paint_area::mousePressEvent(QMouseEvent *event)
         is_draw = true;
     }
     point = event->pos();
-    now_path = QPainterPath();
-    now_path.moveTo(event->pos());
-    now_data = Style_manager::instance()->get_now();
+    if(is_paintable)
+    {
+        now_path = QPainterPath();
+        now_path.moveTo(event->pos());
+        now_data = Style_manager::instance()->get_now();
+    }
+    else
+    {
+        if(focus_layer != NULL)
+        {
+            if(focus_layer->bounded_rect().contains(event->pos()))
+            {
+                focus_layer->mouse_enter(event->button());
+            }
+            else
+            {
+                focus_layer->lose_focus();
+                focus_layer = NULL;
+                find_focus(event->pos());
+            }
+        }
+        else
+        {
+            find_focus(event->pos());
+        }
+    }
 }
 
 void Paint_area::mouseReleaseEvent(QMouseEvent* event)
 {
-    if(!is_eraser)
+    if(!is_eraser && is_paintable)
     {
         now_path.lineTo(event->pos());
         Paint_data* paint_data = Style_manager::instance()->get();
-        int index = layers[layers.size()-1]->add_data(paint_data, now_path);
-        if(index != -1)
+        int index = this->paint_layer->add_data(paint_data, now_path);
+        Paint_record* record = new Paint_record(paint_layer, index, paint_info(paint_data, now_path));
+        Recorder::instance()->record(record);
+    }
+    else if(is_paint_shape)
+    {
+        QRect shape_rect(point, event->pos());
+        switch(shape)
         {
-            Paint_record* record = new Paint_record(layers[layers.size()-1], index, paint_info(paint_data, now_path));
-            Recorder::instance()->record(record);
+        case TEXT:
+            if(shape_rect.width() < 10 && shape_rect.height()<10)
+            {
+                break;
+            }
+            Text_layer* text_layer = new Text_layer(shape_rect, this);
+            text_layer->get_focus();
+            focus_layer = text_layer;
+            append_layer(text_layer);
+            break;
         }
     }
     is_draw = false;
@@ -229,6 +286,12 @@ void Paint_area::drop_layer(int index)
         return;
     }
     layers.move(index, index-1);
+}
+
+void Paint_area::append_layer(Ilayer* layer)
+{
+    layers.push_back(layer);
+    layer_num++;
 }
 
 QString Paint_area::create_layer()
@@ -381,4 +444,46 @@ QImage Paint_area::get_image()
         temp.setAlphaChannel(mask);
     }
     return temp;
+}
+
+void Paint_area::set_paintable(bool paintable)
+{
+    this->is_paintable = paintable;
+    is_paint_shape = false;
+    if(paintable)
+    {
+        if(focus_layer != NULL)
+        {
+            focus_layer->lose_focus();
+            focus_layer = NULL;
+        }
+    }
+}
+
+void Paint_area::find_focus(QPoint point)
+{
+    for (Ilayer* layer : layers)
+    {
+        if(layer->bounded_rect().contains(point))
+        {
+            layer->get_focus();
+            focus_layer = layer;
+            break;
+        }
+    }
+}
+
+void Paint_area::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if(focus_layer != NULL && focus_layer->bounded_rect().contains(event->pos()))
+    {
+        focus_layer->double_click();
+    }
+}
+
+void Paint_area::paint_shape(shape_type type)
+{
+    is_paintable = false;
+    is_paint_shape = true;
+    shape = type;
 }

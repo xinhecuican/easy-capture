@@ -36,7 +36,7 @@ Spacer::Spacer(QString name, bool need_hide_button, QWidget* parent) : QWidget(p
         state = SHOW;
     }
     layout = new QVBoxLayout(this);
-    QHBoxLayout* line_layout = new QHBoxLayout(this);
+    QHBoxLayout* line_layout = new QHBoxLayout();
     if(!need_hide_button)
     {
         line_layout->addWidget(hide_button);

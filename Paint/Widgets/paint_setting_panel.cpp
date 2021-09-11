@@ -26,6 +26,7 @@ Paint_setting_panel::Paint_setting_panel(IControl_layer_change* layer_control, Q
     setAttribute(Qt::WA_DeleteOnClose);
     layout = new QVBoxLayout(this);//scrollarea的layout
     layout->setAlignment(Qt::AlignTop);
+    init_shape_setting();
     init_pen_setting();
     init_disable_color_setting();
     init_layer_setting();
@@ -53,6 +54,21 @@ void Paint_setting_panel::init()
     central_layout->addWidget(area);
     widget->setLayout(central_layout);
     setWidget(widget);*/
+}
+
+void Paint_setting_panel::init_shape_setting()
+{
+    Spacer* spacer = new Spacer("形状绘制", false, this);
+    QGridLayout* shape_layout = new QGridLayout();
+    QToolButton* text_button = new QToolButton(this);
+    text_button->setIcon(QIcon(":/image/text.png"));
+    connect(text_button, &QToolButton::clicked, this, [=](){
+        emit paint_shape(TEXT);
+    });
+    shape_layout->setOriginCorner(Qt::TopLeftCorner);
+    shape_layout->addWidget(text_button, 0, 0);
+    spacer->add_layout(shape_layout);
+    layout->addWidget(spacer);
 }
 
 void Paint_setting_panel::init_pen_setting()
@@ -136,7 +152,7 @@ void Paint_setting_panel::init_pen_setting()
             Style_manager::instance()->change_width(num);
         }
     });
-    QHBoxLayout* width_layout = new QHBoxLayout(this);
+    QHBoxLayout* width_layout = new QHBoxLayout();
     width_layout->addWidget(width_label);
     width_layout->addWidget(width_button);
     spacer->add_layout(width_layout);
