@@ -21,6 +21,7 @@ public:
     QRect bounded_rect()override;
     QString get_name()override;
     void double_click() override;
+    void mouse_release() override;
     void on_size_change(int index, int dx, int dy) override;
 public slots:
     void on_button_move(Stretch_button::direction dir, int dx, int dy);

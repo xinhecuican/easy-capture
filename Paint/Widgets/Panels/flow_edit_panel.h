@@ -11,6 +11,8 @@ class Flow_edit_panel : public QToolBar
 public:
     static Flow_edit_panel* instance();
     ~Flow_edit_panel();
+    QFont get_font();
+    QColor get_color();
 private:
     Flow_edit_panel();
 

@@ -11,7 +11,7 @@ Flow_edit_panel* Flow_edit_panel::_instance = NULL;
 
 Flow_edit_panel::Flow_edit_panel()
 {
-    setWindowFlag(Qt::Dialog, true);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setWindowTitle("字体样式选择");
     color = QColor(0, 0, 0);
     color_selector_button = new QToolButton(this);
@@ -23,6 +23,7 @@ Flow_edit_panel::Flow_edit_panel()
         {
             int r = 0, g = 0, b = 0;
             color.getRgb(&r,&g,&b);
+            this->color.setRgb(r, g, b);
             color_selector_button->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(r).arg(g).arg(b));
         }
     });
@@ -58,7 +59,6 @@ Flow_edit_panel::Flow_edit_panel()
     m_ComboBox->setStyleSheet("QComboBox{combobox-popup: 0;}");	//linux系统上，防止下拉框过长
     m_ComboBox->setMaxVisibleItems(10);	//下拉最大高度
     m_ComboBox->setCurrentText("宋体");
-    m_ComboBox->setFixedHeight(color_selector_button->height());
     font.setFamily("宋体");
     connect(m_ComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
             , this, [=](const QString& text){
@@ -71,16 +71,15 @@ Flow_edit_panel::Flow_edit_panel()
     QList<QString> width_text = {"2", "3", "4", "5", "6", "8", "10", "12", "14", "16", "18", "20"};
     width_button->addItems(width_text);
     width_button->setEditable(true);
-    width_button->setFixedHeight(color_selector_button->height());
-    font.setWeight(5);
-    width_button->setCurrentText(QString::number(font.weight()));
+    font.setPointSize(12);
+    width_button->setCurrentText(QString::number(font.pointSize()));
     connect(width_button, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
             , this, [=](const QString& text){
         bool success = false;
         int num = text.toInt(&success);
         if(success && num > 0)
         {
-            font.setWeight(num);
+            font.setPointSize(num);
         }
     });
     addWidget(width_button);
@@ -133,6 +132,10 @@ Flow_edit_panel::Flow_edit_panel()
             italic_button->setChecked(true);
         }
     });
+    color_selector_button->setFixedSize(m_ComboBox->height(), m_ComboBox->height());
+    bold_button->setFixedSize(m_ComboBox->height(), m_ComboBox->height());
+    italic_button->setFixedSize(m_ComboBox->height(), m_ComboBox->height());
+    underline_button->setFixedSize(m_ComboBox->height(), m_ComboBox->height());
     addWidget(underline_button);
 }
 
@@ -214,4 +217,14 @@ QList<QString> Flow_edit_panel::get_font_text()
             "华文琥珀", "华文细黑", "华文行楷", "华文隶书", "宋体", "幼圆", "微软雅黑", "微软雅黑 Light", "思源黑体",
             "新宋体", "方正姚体", "方正粗黑宋简体", "方正舒体", "楷体", "等线", "等线 Light", "隶书", "黑体"});
     return font_text;
+}
+
+QFont Flow_edit_panel::get_font()
+{
+    return font;
+}
+
+QColor Flow_edit_panel::get_color()
+{
+    return color;
 }

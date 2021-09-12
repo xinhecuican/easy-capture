@@ -3,6 +3,7 @@
 #include "Paint/Widgets/recorder.h"
 #include<QVBoxLayout>
 #include<QTextOption>
+#include "Paint/Widgets/Panels/flow_edit_panel.h"
 
 Text_layer::Text_layer(QRect bound_rect, QWidget* parent):QWidget(parent)
 {
@@ -41,6 +42,10 @@ void Text_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_s
 {
     if(!has_double_click)
     {
+        painter->setFont(Flow_edit_panel::instance()->get_font());
+        QPen pen;
+        pen.setColor(Flow_edit_panel::instance()->get_color());
+        painter->setPen(pen);
         painter->drawText(bound, Qt::AlignHCenter, str);
     }
     if(!is_save && has_focus)
@@ -69,7 +74,6 @@ QString Text_layer::get_name()
 
 void Text_layer::get_focus()
 {
-    qDebug() << "get focus";
     has_focus = true;
     for(int i=0; i<buttons.size(); i++)
     {
@@ -79,18 +83,19 @@ void Text_layer::get_focus()
 
 void Text_layer::lose_focus()
 {
-    qDebug() << "lose focus";
     has_focus = false;
     if(has_double_click)
     {
         str = edit->toPlainText();
         edit->hide();
+        parent->update();
         has_double_click = false;
     }
     for(int i=0; i<buttons.size(); i++)
     {
         buttons[i]->hide();
     }
+    Flow_edit_panel::instance()->hide();
 }
 
 void Text_layer::move_to_loc()
@@ -139,12 +144,16 @@ void Text_layer::on_button_move(Stretch_button::direction dir, int dx, int dy)
 void Text_layer::double_click()
 {
     has_double_click = true;
+    QTextCharFormat format;
+    format.setForeground(Flow_edit_panel::instance()->get_color());
+    edit->mergeCurrentCharFormat(format);
+    edit->setFont(Flow_edit_panel::instance()->get_font());
     edit->resize(bound.width(), bound.height());
     edit->move(bound.x(), bound.y());
     edit->setPlainText(str);
     edit->show();
     edit->setFocus();
-    qDebug() << "double click";
+    Flow_edit_panel::instance()->show();
 }
 
 void Text_layer::on_size_change(int index, int dx, int dy)
@@ -159,13 +168,31 @@ void Text_layer::on_size_change(int index, int dx, int dy)
 
 void Text_layer::mouse_move(int dx, int dy)
 {
-
+    if(is_press)
+    {
+        for(int i=0; i<buttons.size(); i++)
+        {
+            buttons[i]->translate(dx, dy);
+        }
+        edit->move(edit->x()+dx, edit->y()+dy);
+        QRect temp = bound;
+        bound.translate(dx, dy);
+        temp = temp.united(bound);
+        temp.setTopLeft(temp.topLeft() + QPoint(-10, -10));
+        temp.setBottomRight(temp.bottomRight()+QPoint(10, 10));
+        parent->update(temp);
+    }
 }
 
 void Text_layer::mouse_enter(int key_code)
 {
     if(key_code == Qt::LeftButton)
     {
-
+        is_press = true;
     }
+}
+
+void Text_layer::mouse_release()
+{
+    is_press = false;
 }

@@ -8,18 +8,19 @@
 #include<QDesktopWidget>
 #include<QFileDialog>
 #include "Widgets/recorder.h"
-#include "Widgets/paint_setting_panel.h"
 #include "Widgets/style_manager.h"
 #include "Widgets/history.h"
 #include<QMessageBox>
 #include<QListWidget>
 #include "Manager/config.h"
-#include "Paint/Widgets/close_dialog.h"
 #include<QClipboard>
 #include "Manager/key_manager.h"
 #include<QScreen>
 #include<QMouseEvent>
 #include<QButtonGroup>
+#include "Paint/Widgets/Panels/close_dialog.h"
+#include "Paint/Widgets/Panels/paint_setting_panel.h"
+#include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include "opencv2/core.hpp"
 #include "opencv2/opencv.hpp"
 
@@ -461,6 +462,7 @@ void Paint_window::on_window_close()
     delete Style_manager::instance();
     delete Recorder::instance();
     delete History::instance();
+    delete Flow_edit_panel::instance();
     QClipboard *clip=QApplication::clipboard();
     clip->clear();
 }

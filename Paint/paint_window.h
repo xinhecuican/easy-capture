@@ -4,12 +4,12 @@
 #include <QMainWindow>
 #include<QWidget>
 #include "Base/Window_base.h"
-#include "Widgets/paint_area.h"
+#include "Paint/Widgets/Paint_area.h"
 #include "new_capture/capture_button_action.h"
 #include<QScrollArea>
 #include<QDockWidget>
 #include<QToolButton>
-#include "Widgets/paint_setting_panel.h"
+#include "Paint/Widgets/Panels/paint_setting_panel.h"
 #include "Widgets/IControl_layer_change.h"
 
 namespace Ui {

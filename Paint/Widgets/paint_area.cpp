@@ -16,6 +16,7 @@
 #include "Helper/image_helper.h"
 #include<QPixmapCache>
 #include "Paint/Widgets/Layers/text_layer.h"
+#include <QTextCodec>//转码
 
 Paint_area::Paint_area()
 {
@@ -170,16 +171,12 @@ void Paint_area::mouseMoveEvent(QMouseEvent *event)
         h += now_data.width+6;
         update(QRect(x, y, w, h));
     }
-    else if(is_paint_shape)
-    {
-
-    }
     else
     {
-        QPoint temp_point = event->pos() - point;
-        point = event->pos();
         if(focus_layer != NULL)
         {
+            QPoint temp_point = event->pos() - point;
+            point = event->pos();
             focus_layer->mouse_move(temp_point.x(), temp_point.y());
         }
     }
@@ -242,10 +239,18 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
             }
             Text_layer* text_layer = new Text_layer(shape_rect, this);
             text_layer->get_focus();
+            if(focus_layer != NULL)
+            {
+                focus_layer->lose_focus();
+            }
             focus_layer = text_layer;
             append_layer(text_layer);
             break;
         }
+    }
+    if(focus_layer != NULL)
+    {
+        focus_layer->mouse_release();
     }
     is_draw = false;
     now_path = QPainterPath();
@@ -314,6 +319,8 @@ QRect Paint_area::bounded_rect()
     {
         rect = rect.united(layers[i]->bounded_rect());
     }
+    rect = rect.united(pic_layer->bounded_rect());
+    rect = rect.united(paint_layer->bounded_rect());
     return rect;
 }
 
@@ -325,10 +332,11 @@ void Paint_area::save(QString path)
     }
     is_save = true;
     repaint();
-    is_save = false;
+
     pic_save = true;
     QRect rect = bounded_rect();
     cv::Mat ans(rect.height(), rect.width(), CV_8UC4);
+    qDebug() << rect.height();
     if(rect.height() >= 32700)//图片过大需要切分
     {
         for(int i=0; i<rect.height(); i+=32700)
@@ -353,18 +361,18 @@ void Paint_area::save(QString path)
             QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
             temp.setAlphaChannel(mask);
         }
-
-        ans = Image_helper::QImage2Mat(temp);
+        cv::Mat temp_mat = Image_helper::QImage2Mat(temp);
+        temp_mat.copyTo(ans);
     }
-    cv::imwrite(std::string(path.toLocal8Bit()), ans);
+    cv::imwrite(path.toLocal8Bit().toStdString(), ans);
     History::instance()->log(History_data::Persist, path);
+    is_save = false;
 }
 
 void Paint_area::save_temp()
 {
     is_save = true;
     repaint();
-    is_save = false;
     QDir dir;
     if(!dir.exists("Data/Temp"))
     {
@@ -381,6 +389,7 @@ void Paint_area::save_temp()
     QRect rect = bounded_rect();
     if(rect.height() >= 32767)
     {
+        is_save = false;
         return;
     }
     else
@@ -394,6 +403,7 @@ void Paint_area::save_temp()
         temp.save(path);
     }
     History::instance()->log(History_data::Editable, path);
+    is_save = false;
 }
 
 bool Paint_area::contain_picture()

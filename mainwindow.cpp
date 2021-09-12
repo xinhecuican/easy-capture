@@ -14,7 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-
     global_key_id = GlobalAddAtomA("awake_capture");
     RegisterHotKey((HWND)this->winId(), global_key_id, MOD_CONTROL, VK_F1);
     setAttribute(Qt::WA_DeleteOnClose, true);

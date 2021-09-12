@@ -18,8 +18,10 @@ public:
     virtual ~Ilayer(){};
     virtual void get_focus(){};
     virtual void lose_focus(){};
+
     virtual void mouse_enter(int key_code){};
     virtual void mouse_move(int dx, int dy){};
+    virtual void mouse_release(){};
     virtual void double_click(){};
 
     virtual void on_size_change(int index, int dx, int dy){};

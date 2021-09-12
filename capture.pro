@@ -32,13 +32,14 @@ SOURCES += \
     Paint/Widgets/Layers/paint_layer.cpp \
     Paint/Widgets/Layers/picture_layer.cpp \
     Paint/Widgets/Layers/text_layer.cpp \
+    Paint/Widgets/Panels/close_dialog.cpp \
+    Paint/Widgets/Panels/color_selector.cpp \
+    Paint/Widgets/Panels/flow_edit_panel.cpp \
+    Paint/Widgets/Panels/paint_setting_panel.cpp \
     Paint/Widgets/Recorder_element/paint_record.cpp \
     Paint/Widgets/Recorder_element/resize_record.cpp \
-    Paint/Widgets/close_dialog.cpp \
-    Paint/Widgets/color_selector.cpp \
     Paint/Widgets/history.cpp \
     Paint/Widgets/paint_area.cpp \
-    Paint/Widgets/paint_setting_panel.cpp \
     Paint/Widgets/recorder.cpp \
     Paint/Widgets/style_manager.cpp \
     Paint/paint_window.cpp \
@@ -97,14 +98,15 @@ HEADERS += \
     Paint/Widgets/Layers/paint_layer.h \
     Paint/Widgets/Layers/picture_layer.h \
     Paint/Widgets/Layers/text_layer.h \
+    Paint/Widgets/Panels/close_dialog.h \
+    Paint/Widgets/Panels/color_selector.h \
+    Paint/Widgets/Panels/flow_edit_panel.h \
+    Paint/Widgets/Panels/paint_setting_panel.h \
     Paint/Widgets/Recorder_element/paint_record.h \
     Paint/Widgets/Recorder_element/record_base.h \
     Paint/Widgets/Recorder_element/resize_record.h \
-    Paint/Widgets/close_dialog.h \
-    Paint/Widgets/color_selector.h \
     Paint/Widgets/history.h \
     Paint/Widgets/paint_area.h \
-    Paint/Widgets/paint_setting_panel.h \
     Paint/Widgets/recorder.h \
     Paint/Widgets/style_manager.h \
     Paint/paint_window.h \

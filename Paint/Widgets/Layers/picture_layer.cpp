@@ -63,6 +63,17 @@ void Picture_layer::paint_pic(QPainter* painter, QList<QColor> disable_color, bo
         painter->setPen(pen);
         painter->drawRect(QRect(bound.topLeft()+pic_rect.topLeft(),
                                QSize(pic_rect.width(), pic_rect.height())));
+        for(int i=0; i<buttons.size(); i++)
+        {
+            buttons[i]->show();
+        }
+    }
+    else
+    {
+        for(int i=0; i<buttons.size(); i++)
+        {
+            buttons[i]->hide();
+        }
     }
 }
 
