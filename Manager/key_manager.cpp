@@ -26,7 +26,8 @@ QList<QString> Key_manager::key_settings = {
     "Paint_window:undo;16777249,90",
     "Paint_window:redo;16777249,88",
     "Paint_window:save;16777249,83",
-    "Paint_window:new_capture;16777249,78"
+    "Paint_window:new_capture;16777249,78",
+    "Paint_window:delete_shape;16777223"
 };
 
 void Key_manager::add_key(QString window_name, QString obj_name, QList<int> keys)

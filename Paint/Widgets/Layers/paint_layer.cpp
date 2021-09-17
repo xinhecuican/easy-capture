@@ -41,7 +41,12 @@ void Paint_layer::erase_and_paint(QPoint point, QPainter* painter, QList<QColor>
     QRect rect = QRect(point.x()-3, point.y()-3, 6, 6);
     for(auto iter=data.begin(); iter!=data.end();)
     {
-        if(iter->path.contains(rect))
+        if(!iter->path.controlPointRect().contains(point))
+        {
+            iter++;
+            continue;
+        }
+        if(iter->path.intersects(rect))
         {
             iter = data.erase(iter);
         }

@@ -37,6 +37,9 @@ private:
     void start_request(const QUrl& url);
     QNetworkAccessManager* manager;
     Update_dialog* dialog;
+    QList<Update_data> data_list;
+    int reconnect_times;
+    QTimer* timer;
 };
 
 #endif // UPDATE_H

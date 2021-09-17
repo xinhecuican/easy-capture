@@ -38,6 +38,14 @@ Text_layer::Text_layer(QRect bound_rect, QWidget* parent):QWidget(parent)
     }
 }
 
+Text_layer::~Text_layer()
+{
+    for(int i=0; i<buttons.size(); i++)
+    {
+        delete buttons[i];
+    }
+}
+
 void Text_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_save)
 {
     if(!has_double_click)

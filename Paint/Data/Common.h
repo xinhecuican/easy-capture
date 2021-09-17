@@ -3,6 +3,7 @@
 #include "paint_data.h"
 #include<QPainterPath>
 enum shape_type{TEXT};
+enum paint_state{PAINT, ARROW, SHAPE};
 struct paint_info
 {
     paint_info(){};

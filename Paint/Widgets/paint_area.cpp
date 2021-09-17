@@ -39,7 +39,7 @@ void Paint_area::reset()
     is_eraser = false;
     pic_save = false;
     layer_num = 0;
-    is_paintable = true;
+    state = PAINT;
     focus_layer = NULL;
 }
 
@@ -52,13 +52,14 @@ Paint_area::Paint_area(QWidget* parent) : QWidget(parent)
     now_path = QPainterPath();
     paint_layer = new Paint_layer(this, "");
     layer_num = 0;
+    state = PAINT;
     focus_layer = NULL;
-    is_paintable = true;
 }
 
 void Paint_area::set_picture(QPixmap pixmap, QRect rect)
 {
     is_save = false;
+    delete pic_layer;
     pic_layer = new Picture_layer("第0层", pixmap, rect, this);
     pic_layer->is_base_layer = true;
     QTimer::singleShot(100, this, [=](){
@@ -138,7 +139,9 @@ void Paint_area::mouseMoveEvent(QMouseEvent *event)
     {
         return;
     }
-    if(is_paintable)
+    switch(state)
+    {
+    case PAINT:
     {
         point = event->pos();
         QPainterPath::Element ele = now_path.elementAt(now_path.elementCount()-1);
@@ -170,15 +173,17 @@ void Paint_area::mouseMoveEvent(QMouseEvent *event)
         w += now_data.width+6;
         h += now_data.width+6;
         update(QRect(x, y, w, h));
+        break;
     }
-    else
-    {
+    case ARROW:
+    case SHAPE:
         if(focus_layer != NULL)
         {
             QPoint temp_point = event->pos() - point;
             point = event->pos();
             focus_layer->mouse_move(temp_point.x(), temp_point.y());
         }
+        break;
     }
 }
 
@@ -189,14 +194,17 @@ void Paint_area::mousePressEvent(QMouseEvent *event)
         is_draw = true;
     }
     point = event->pos();
-    if(is_paintable)
+    switch(state)
+    {
+    case PAINT:
     {
         now_path = QPainterPath();
         now_path.moveTo(event->pos());
         now_data = Style_manager::instance()->get_now();
+        break;
     }
-    else
-    {
+    case ARROW:
+    case SHAPE:
         if(focus_layer != NULL)
         {
             if(focus_layer->bounded_rect().contains(event->pos()))
@@ -214,20 +222,25 @@ void Paint_area::mousePressEvent(QMouseEvent *event)
         {
             find_focus(event->pos());
         }
+        break;
     }
 }
 
 void Paint_area::mouseReleaseEvent(QMouseEvent* event)
 {
-    if(!is_eraser && is_paintable)
+    switch(state)
     {
-        now_path.lineTo(event->pos());
-        Paint_data* paint_data = Style_manager::instance()->get();
-        int index = this->paint_layer->add_data(paint_data, now_path);
-        Paint_record* record = new Paint_record(paint_layer, index, paint_info(paint_data, now_path));
-        Recorder::instance()->record(record);
-    }
-    else if(is_paint_shape)
+    case PAINT:
+        if(!is_eraser)
+        {
+            now_path.lineTo(event->pos());
+            Paint_data* paint_data = Style_manager::instance()->get();
+            int index = this->paint_layer->add_data(paint_data, now_path);
+            Paint_record* record = new Paint_record(paint_layer, index, paint_info(paint_data, now_path));
+            Recorder::instance()->record(record);
+        }
+        break;
+    case SHAPE:
     {
         QRect shape_rect(point, event->pos());
         switch(shape)
@@ -248,10 +261,14 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
             break;
         }
     }
-    if(focus_layer != NULL)
-    {
-        focus_layer->mouse_release();
+    case ARROW:
+        if(focus_layer != NULL)
+        {
+            focus_layer->mouse_release();
+        }
+        break;
     }
+
     is_draw = false;
     now_path = QPainterPath();
     update();
@@ -273,6 +290,18 @@ void Paint_area::remove_layer(int index)
     Recorder::instance()->remove_record(layers[index]);
     delete layers[index];
     layers.removeAt(index);
+}
+
+void Paint_area::remove_layer(Ilayer* layer)
+{
+    for(int i=0; i<layers.size(); i++)
+    {
+        if(layers[i] == layer)
+        {
+            layers.remove(i);
+            break;
+        }
+    }
 }
 
 void Paint_area::raise_layer(int index)
@@ -332,41 +361,44 @@ void Paint_area::save(QString path)
     }
     is_save = true;
     repaint();
-
-    pic_save = true;
-    QRect rect = bounded_rect();
-    cv::Mat ans(rect.height(), rect.width(), CV_8UC4);
-    qDebug() << rect.height();
-    if(rect.height() >= 32700)//图片过大需要切分
-    {
-        for(int i=0; i<rect.height(); i+=32700)
+    QTimer::singleShot(100, this, [=](){
+        pic_save = true;
+        QRect rect = bounded_rect();
+        cv::Mat ans(rect.height(), rect.width(), CV_8UC4);
+        qDebug() << rect.height();
+        if(rect.height() >= 32700)//图片过大需要切分
         {
-            int height = rect.height() - i > 32700 ? 32700 : rect.height() - i;
-            QRect temp_rect(rect.left(), rect.top()+i, rect.width(), height);
-            QImage temp = grab(temp_rect).toImage();
+            for(int i=0; i<rect.height(); i+=32700)
+            {
+                int height = rect.height() - i > 32700 ? 32700 : rect.height() - i;
+                QRect temp_rect(rect.left(), rect.top()+i, rect.width(), height);
+                QImage temp = grab(temp_rect).toImage();
+                for(int i=0; i<disable_color.size(); i++)//设置透明色
+                {
+                    QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+                    temp.setAlphaChannel(mask);
+                }
+                cv::Mat temp_mat = Image_helper::QImage2Mat(temp);
+                temp_mat.copyTo(ans(cv::Rect(0, i, rect.width(), height)));
+            }
+        }
+        else
+        {
+            QImage temp =  grab(bounded_rect()).toImage();
             for(int i=0; i<disable_color.size(); i++)//设置透明色
             {
                 QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
                 temp.setAlphaChannel(mask);
             }
             cv::Mat temp_mat = Image_helper::QImage2Mat(temp);
-            temp_mat.copyTo(ans(cv::Rect(0, i, rect.width(), height)));
+            temp_mat.copyTo(ans);
         }
-    }
-    else
-    {
-        QImage temp =  grab(bounded_rect()).toImage();
-        for(int i=0; i<disable_color.size(); i++)//设置透明色
-        {
-            QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
-            temp.setAlphaChannel(mask);
-        }
-        cv::Mat temp_mat = Image_helper::QImage2Mat(temp);
-        temp_mat.copyTo(ans);
-    }
-    cv::imwrite(path.toLocal8Bit().toStdString(), ans);
+        cv::imwrite(path.toLocal8Bit().toStdString(), ans);
+
+        is_save = false;
+    });
     History::instance()->log(History_data::Persist, path);
-    is_save = false;
+
 }
 
 void Paint_area::save_temp()
@@ -394,13 +426,15 @@ void Paint_area::save_temp()
     }
     else
     {
-        QImage temp = grab(rect).toImage();
-        for(int i=0; i<disable_color.size(); i++)//设置透明色
-        {
-            QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
-            temp.setAlphaChannel(mask);
-        }
-        temp.save(path);
+        QTimer::singleShot(100, this, [=](){
+            QImage temp = grab(rect).toImage();
+            for(int i=0; i<disable_color.size(); i++)//设置透明色
+            {
+                QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+                temp.setAlphaChannel(mask);
+            }
+            temp.save(path);
+        });
     }
     History::instance()->log(History_data::Editable, path);
     is_save = false;
@@ -458,8 +492,14 @@ QImage Paint_area::get_image()
 
 void Paint_area::set_paintable(bool paintable)
 {
-    this->is_paintable = paintable;
-    is_paint_shape = false;
+    if(paintable)
+    {
+        state = PAINT;
+    }
+    else
+    {
+        state = ARROW;
+    }
     if(paintable)
     {
         if(focus_layer != NULL)
@@ -493,7 +533,17 @@ void Paint_area::mouseDoubleClickEvent(QMouseEvent *event)
 
 void Paint_area::paint_shape(shape_type type)
 {
-    is_paintable = false;
-    is_paint_shape = true;
+    state = SHAPE;
     shape = type;
+}
+
+void Paint_area::delete_shape()
+{
+    if(focus_layer != NULL)
+    {
+        remove_layer(focus_layer);
+        delete focus_layer;
+        focus_layer = NULL;
+        update();
+    }
 }

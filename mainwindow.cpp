@@ -35,6 +35,11 @@ MainWindow::MainWindow(QWidget *parent)
     mode_button->setIcon(QIcon(":/image/mode.png"));
     mode_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     mode_button->setPopupMode(QToolButton::InstantPopup);
+    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
+    {
+        Config::set_config(i, false);
+    }
+    Config::set_config(Config::rect_capture, true);
     QMenu* mode_menu = new QMenu(this);
     mode_menu->addAction(MString::search("{OBwjJUhTkh}矩形窗口"));
     mode_menu->addAction(MString::search("{FHFzLMcLYa}全屏"));

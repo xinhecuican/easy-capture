@@ -75,12 +75,15 @@ void Paint_window::load_key_event(QString name)
             {
                 if(Config::get_config(Config::total_capture))
                 {
-                    Config::set_config(Config::total_capture, false);
-                    Window_manager::change_window("Paint_window");
-                    QScreen *screen = QGuiApplication::primaryScreen();
-                    QPixmap map = screen->grabWindow(0);
-                    Window_manager::get_window("Paint_window")->
-                            set_pic(map, QApplication::desktop()->screenGeometry());
+                    QTimer::singleShot(200, this, [=](){
+                        Config::set_config(Config::total_capture, false);
+                        Window_manager::change_window("Paint_window");
+                        QScreen *screen = QGuiApplication::primaryScreen();
+                        QPixmap map = screen->grabWindow(0);
+                        Window_manager::get_window("Paint_window")->
+                                set_pic(map, QGuiApplication::primaryScreen()->geometry());
+                    });
+
                     return;
                 }
                 else
@@ -88,6 +91,12 @@ void Paint_window::load_key_event(QString name)
                     Window_manager::change_window("Capture_window");
                 }
                 Config::set_config(Config::rect_capture, true);
+            }
+        });
+        Key_manager::add_func(name, "delete_shape", [=](bool is_enter){
+            if(is_enter)
+            {
+                area->delete_shape();
             }
         });
     }
@@ -247,7 +256,7 @@ void Paint_window::set_toolbar()
     paint_button_group->setExclusive(true);
     QToolButton* cursor_button = new QToolButton(this);
     cursor_button->setIcon(QIcon(":/image/cursor.png"));
-    cursor_button->setToolTip(MString::search("指针"));
+    cursor_button->setToolTip(MString::search("{l4yTU9QXUd}指针"));
     cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png")));
     cursor_button->setCheckable(true);
     paint_button_group->addButton(cursor_button, 0);
@@ -298,7 +307,7 @@ void Paint_window::set_toolbar()
             break;
         case 3:
             area->using_erase(true);
-            area->set_paintable(false);
+            area->set_paintable(true);
             area->setCursor(QCursor(QPixmap(":/image/eraser.png"), 4, 20));
             break;
         }
@@ -411,24 +420,21 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
 
 void Paint_window::closeEvent(QCloseEvent *event)
 {
+    event->ignore();
     if(Config::get_config(Config::show_close_dialog))
     {
         Close_dialog* close_dialog = new Close_dialog(area, this);
-        event->ignore();
         connect(close_dialog, &Close_dialog::hide_paint, this, [=](){
-            QTimer::singleShot(200, this, [=](){
-                Window_manager::change_window("MainWindow");
-                Window_manager::hide_now();
-            });
+            Window_manager::change_window("MainWindow");
+            Window_manager::hide_now();
         });
         close_dialog->show();
     }
     else if(Config::get_config(Config::hide_to_tray))
     {
-        QTimer::singleShot(200, this, [=](){
-            Window_manager::change_window("MainWindow");
-            Window_manager::hide_now();
-        });
+        Window_manager::change_window("MainWindow");
+        Window_manager::hide_now();
+
     }
     else
     {

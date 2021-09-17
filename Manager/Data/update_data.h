@@ -36,6 +36,13 @@ public:
         data.decompress_version(&sum2);
         return sum1 > sum2;
     }
+    bool operator ==(Update_data& data)
+    {
+        int sum1, sum2;
+        decompress_version(&sum1);
+        data.decompress_version(&sum2);
+        return sum1 == sum2;
+    }
 private:
     QString version;
     QString description;

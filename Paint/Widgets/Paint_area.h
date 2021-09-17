@@ -23,6 +23,7 @@ public:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     void remove_layer(Paint_layer* layer);
     void remove_layer(int index);
+    void remove_layer(Ilayer* layer);
     QString create_layer();
     QStringList layers_name();
     void set_name(int index, QString text);
@@ -39,6 +40,7 @@ public:
     bool contain_picture();
     QRect bounded_rect();
     void paint_shape(shape_type type);
+    void delete_shape();
     void append_layer(Ilayer* layer);
     bool pic_save;
 private:
@@ -55,12 +57,11 @@ private:
     bool is_draw;
     bool is_eraser;
     bool is_save;
-    bool is_paintable;
-    bool is_paint_shape;
     shape_type shape;
     QPainterPath now_path;
     Paint_data now_data;
     QPoint point;
+    paint_state state;
 
     void paint(QPainter* painter, QList<QColor> disable_color);
     void update_image(QRect bound_rect);

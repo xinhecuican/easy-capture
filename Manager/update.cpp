@@ -15,18 +15,30 @@ Update::Update()
 {
     newest_data = Update_data();
     manager = new QNetworkAccessManager(this);
+    reconnect_times = 0;
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [=](){
+        reconnect_times++;
+        if(reconnect_times > 5)
+        {
+            timer->stop();
+            return;
+        }
+        check_update();
+    });
 }
 
 Update::~Update()
 {
+    delete timer;
     _instance = NULL;
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.2.2",
-"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.2.2.zip",
-                                              "",
-                                              "修复了无法更新的问题");
+Update_data Update::now_version = Update_data("0.2.4",
+"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.2.4.zip", "",
+                                              "1. 修复若干bug\n"
+                                              "2. 更新功能修复");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
@@ -39,9 +51,22 @@ void Update::serialized(QJsonObject *json)//append增添版本时用
 
 void Update::deserialized(QJsonObject *json)
 {
+    int newest_num = (*json)["update_sum"].toInt();
     QJsonObject newest_version =
-            (*json)[QString::number((*json)["update_sum"].toInt()-1)].toObject();
+            (*json)[QString::number(newest_num-1)].toObject();
     newest_data.deserialized(&newest_version);
+    for(int i=newest_num-1; i>=0; i--)//将所有比当前版本新的版本都记录
+    {
+        Update_data data;
+        QJsonObject version = (*json)[QString::number(i)].toObject();
+        data.deserialized(&version);
+        if(data == now_version)
+        {
+            break;
+        }
+        qDebug() << data.get_version();
+        data_list.append(data);
+    }
 }
 
 void Update::check_update()
@@ -65,7 +90,7 @@ void Update::start_request(const QUrl &url)
     connect(reply, &QNetworkReply::finished, this, [=](){
         if (reply->error())
         {
-            Debug::show_error_message("更新检测失败");
+            timer->start(2000);
             reply->deleteLater();
             return;
         }
@@ -93,11 +118,15 @@ void Update::start_request(const QUrl &url)
             if(newest_data > now_version)
             {
                 ///TODO: 更新提示面板
-                dialog = new Update_dialog(newest_data, this);
+                dialog = new Update_dialog(data_list, this);
                 connect(dialog, &Update_dialog::download_finished, this, [=](){
                     on_update();
                 });
                 dialog->show();
+            }
+            if(timer->isActive())
+            {
+                timer->stop();
             }
         }
         else if(statusCode >= 300 && statusCode < 400)

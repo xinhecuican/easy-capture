@@ -9,6 +9,7 @@ public:
     static const int OFFSET = 5;
     enum direction{NW, NE, SE, SW};
     Stretch_button();
+    ~Stretch_button();
     Stretch_button(direction dir, QWidget* parent);
     void set_constraints(QRect rect);
     void mousePressEvent(QMouseEvent* event);

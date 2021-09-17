@@ -15,6 +15,10 @@ Stretch_button::Stretch_button(direction dir, QWidget* parent):QPushButton(paren
     show();
 }
 
+Stretch_button::~Stretch_button()
+{
+}
+
 void Stretch_button::mouseMoveEvent(QMouseEvent *event)
 {
     if(!is_click)

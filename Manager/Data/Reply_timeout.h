@@ -11,13 +11,33 @@ class Reply_timeout : public QObject {
 
 public:
 
-  Reply_timeout(QNetworkReply *reply, const int timeout) : QObject(reply)
+  Reply_timeout(QNetworkReply *reply, const int time) : QObject(reply)
   {
       Q_ASSERT(reply);
+      connect(&timer, &QTimer::timeout, this, [=](){
+          // 处理超时
+          QNetworkReply *reply = static_cast<QNetworkReply*>(parent());
+          if (reply->isRunning())
+          {
+              reply->abort();
+              reply->deleteLater();
+              emit timeout();
+          }
+          emit deadline();
+      });
       if (reply && reply->isRunning())
       {
-          QTimer::singleShot(timeout, this, SLOT(onTimeout()));
+          timer.start(time);
       }
+  }
+
+  void reset(int timeout)
+  {
+      if(timer.isActive())
+      {
+          timer.stop();
+      }
+      timer.start(timeout);
   }
 signals:
   void timeout();  // 超时信号 - 供进一步处理
@@ -25,15 +45,10 @@ signals:
 private slots:
   void onTimeout()
   {
-      // 处理超时
-      QNetworkReply *reply = static_cast<QNetworkReply*>(parent());
-      if (reply->isRunning())
-      {
-          reply->abort();
-          reply->deleteLater();
-          emit timeout();
-      }
-      emit deadline();
+
   }
+private:
+  QTimer timer;
 };
+
 #endif // REPLY_TIMEOUT_H

@@ -375,13 +375,14 @@ void Capture_window::mouseReleaseEvent(QMouseEvent *event)
         return;
     }
     QRect rect = QRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h());
-    if((rect.width() <= 10 || rect.height() <= 10) && is_first_capture
+    if((rect.width() <= 3 || rect.height() <= 3) && is_first_capture
              && button_click)
     {
         is_first_capture = false;
         captured->combine_region(active_window_bound);
         captured->set_captured_rect(QRect(0, 0, 0, 0));
     }
+
     button_click = false;
     bool is_begin = captured->is_begin_draw();
     if(rect.width() > 10 && rect.height() > 10)

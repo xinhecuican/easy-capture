@@ -81,8 +81,9 @@ void History::log(History_data::save_type type, QString file_name)
         root.setAttribute("history_num", ++history_num);
         if(type == History_data::Persist)
         {
-            int index = file_name.lastIndexOf('/');
-            last_directory = file_name.mid(0, index+1);
+//            int index = file_name.lastIndexOf('/');
+//            last_directory = file_name.mid(0, index+1);
+            last_directory = file_name;
             root.setAttribute("directory", last_directory);
         }
         QTextStream out_stream(&file);
@@ -121,8 +122,9 @@ void History::log(History_data::save_type type, QString file_name)
         data.append(temp_data);
         if(type == History_data::Persist)
         {
-            int index = file_name.lastIndexOf('/');
-            last_directory = file_name.mid(0, index+1);
+//            int index = file_name.lastIndexOf('/');
+//            last_directory = file_name.mid(0, index+1);
+            last_directory = file_name;
             root.setAttribute("directory", last_directory);
         }
 
@@ -180,7 +182,7 @@ void History::load_info()
         if(root.tagName().compare("history") == 0)
         {
             history_num = root.toElement().attribute("history_num").toInt();
-            last_directory = root.toElement().attribute("history");
+            last_directory = root.toElement().attribute("directory");
             QDomNodeList childs = root.childNodes();
             for(int i=0; i<childs.size(); i++)
             {

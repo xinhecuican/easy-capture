@@ -130,7 +130,7 @@ void Setting::normal_settings()
         ready_setting.append(data(Config::show_close_dialog, ans));
         normal_setting->set_dirty(true);
     });
-    normal_setting->add_bool_option("copy_clipboard", "自动复制到剪切板", Config::auto_copy_to_clipboard, [=](bool ans){
+    normal_setting->add_bool_option("copy_clipboard", "{g2X3jHOVbU}自动复制到剪切板", Config::auto_copy_to_clipboard, [=](bool ans){
         ready_setting.append(data(Config::auto_copy_to_clipboard, ans));
         normal_setting->set_dirty(true);
     });
@@ -153,7 +153,7 @@ void Setting::capture_settings()
         ready_setting.append(data(index+capture_setting->get_begin_index("capture_type"), true));
         capture_setting->set_dirty(true);
     });
-    capture_setting->add_num_option("capture_interval", Config::capture_interval, "滚动时间间隔", 100, 500, [=](int index){
+    capture_setting->add_num_option("capture_interval", Config::capture_interval, "{FcOnYo1uUa}滚动时间间隔", 100, 500, [=](int index){
         ready_setting.append(data(Config::capture_interval, index));
         capture_setting->set_dirty(true);
     });
