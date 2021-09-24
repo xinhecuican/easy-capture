@@ -14,10 +14,8 @@ Paint_layer::Paint_layer(QWidget* parent, QString name) : QWidget(parent)
 {
     this->parent = parent;
     this->name = name;
-    this->pic = QPicture();
     now_index = 0;
     data = QHash<int, paint_info>();
-    delete_data = QHash<int, paint_info>();
     show();
 }
 
@@ -89,7 +87,6 @@ void Paint_layer::on_paint_change(int index, paint_info info)
 {
     if(data.find(index) != data.end())
     {
-        delete_data[index] = data[index];
         data.remove(index);
     }
     else
@@ -97,4 +94,9 @@ void Paint_layer::on_paint_change(int index, paint_info info)
         data[index] = info;
     }
     parent->update();
+}
+
+void Paint_layer::clear()
+{
+    data.clear();
 }

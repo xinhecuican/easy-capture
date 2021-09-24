@@ -45,9 +45,10 @@ Spacer::Spacer(QString name, bool need_hide_button, QWidget* parent) : QWidget(p
     QFrame *line = new QFrame(this);
     line->setFrameShape(QFrame::HLine);
     line->setFrameShadow(QFrame::Plain);
-    line_layout->addWidget(name_label);
-    line_layout->addWidget(line);
+    line_layout->addWidget(name_label, 3);
+    line_layout->addWidget(line, 7);
     layout->addLayout(line_layout);
+    layout->addSpacing(10);
     setLayout(layout);
 }
 

@@ -2,8 +2,20 @@
 #define COMMON_H
 #include "paint_data.h"
 #include<QPainterPath>
-enum shape_type{TEXT};
+#include<QFont>
+enum shape_type{TEXT, DELETE_SHAPE};
 enum paint_state{PAINT, ARROW, SHAPE};
+struct font_data
+{
+    QFont font;
+    QColor color;
+};
+struct paint_node
+{
+    int len;
+    font_data data;
+    paint_node* next;
+};
 struct paint_info
 {
     paint_info(){};

@@ -26,6 +26,7 @@ public:
     QRect bounded_rect()override;
     void on_size_change(int index, int dx, int dy) override;
     QString get_name() override;
+    void main_layer_paint(QPainter* painter, QList<QColor> disable_color, bool is_save, int scroll_pos);
     bool is_base_layer;
 public slots:
     void on_button_move(Stretch_button::direction dir, int dx, int dy);

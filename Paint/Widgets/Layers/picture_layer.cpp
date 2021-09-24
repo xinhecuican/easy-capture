@@ -77,6 +77,51 @@ void Picture_layer::paint_pic(QPainter* painter, QList<QColor> disable_color, bo
     }
 }
 
+void Picture_layer::main_layer_paint(QPainter *painter, QList<QColor> disable_color, bool is_save, int scroll_pos)
+{
+
+    if(!is_save)
+    {
+        int parent_height = parent->parentWidget()->height();
+        int h_pos = scroll_pos - parent_height;
+        int height = h_pos + 3 * parent_height;
+        h_pos = h_pos < bound.top() + pic_rect.top() ? bound.top() + pic_rect.top() : h_pos;
+        height = height < bound.top() + pic_rect.bottom() ? height : bound.top() + pic_rect.bottom();
+        QImage temp = picture.copy(QRect(pic_rect.left(), h_pos-bound.top(), pic_rect.width(), height-h_pos)).toImage();
+        if(height > 0 && h_pos >= bound.top() && h_pos <= bound.bottom())
+        {
+            for(int i=0; i<disable_color.size(); i++)//设置透明色
+            {
+                QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+                temp.setAlphaChannel(mask);
+            }
+            painter->drawPixmap(bound.left() + pic_rect.left(), h_pos, QPixmap::fromImage(temp));
+        }
+        QPen pen(QColor(100, 100, 255));
+        painter->setPen(pen);
+        painter->drawRect(QRect(bound.topLeft()+pic_rect.topLeft(),
+                               QSize(pic_rect.width(), pic_rect.height())));
+        for(int i=0; i<buttons.size(); i++)
+        {
+            buttons[i]->show();
+        }
+    }
+    else
+    {
+        QImage temp = picture.copy(pic_rect).toImage();
+        for(int i=0; i<disable_color.size(); i++)//设置透明色
+        {
+            QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+            temp.setAlphaChannel(mask);
+        }
+        painter->drawPixmap(bound.topLeft() + pic_rect.topLeft(), QPixmap::fromImage(temp));
+        for(int i=0; i<buttons.size(); i++)
+        {
+            buttons[i]->hide();
+        }
+    }
+}
+
 void Picture_layer::set_name(QString name)
 {
     this->name = name;

@@ -31,6 +31,7 @@ SOURCES += \
     Paint/Widgets/Layer_list/list_widget.cpp \
     Paint/Widgets/Layers/paint_layer.cpp \
     Paint/Widgets/Layers/picture_layer.cpp \
+    Paint/Widgets/Layers/text_edit.cpp \
     Paint/Widgets/Layers/text_layer.cpp \
     Paint/Widgets/Panels/close_dialog.cpp \
     Paint/Widgets/Panels/color_selector.cpp \
@@ -52,6 +53,7 @@ SOURCES += \
     Style_widget/spacer.cpp \
     Style_widget/tray.cpp \
     main.cpp \
+    main_fliter.cpp \
     mainwindow.cpp \
     new_capture/Capture_button_action.cpp \
     new_capture/Widgets/Scroll_handler/Scroll_handle_global.cpp \
@@ -97,6 +99,7 @@ HEADERS += \
     Paint/Widgets/Layer_list/list_widget.h \
     Paint/Widgets/Layers/paint_layer.h \
     Paint/Widgets/Layers/picture_layer.h \
+    Paint/Widgets/Layers/text_edit.h \
     Paint/Widgets/Layers/text_layer.h \
     Paint/Widgets/Panels/close_dialog.h \
     Paint/Widgets/Panels/color_selector.h \
@@ -118,6 +121,7 @@ HEADERS += \
     Panel/setting.h \
     Style_widget/spacer.h \
     Style_widget/tray.h \
+    main_fliter.h \
     mainwindow.h \
     new_capture/Capture_button_action.h \
     new_capture/Widgets/Ipoint_position_change.h \

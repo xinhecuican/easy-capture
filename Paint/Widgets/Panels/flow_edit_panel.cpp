@@ -6,6 +6,7 @@
 #include<QStandardItemModel>
 #include<QCompleter>
 #include<QAbstractItemView>
+#include<QDebug>
 
 Flow_edit_panel* Flow_edit_panel::_instance = NULL;
 
@@ -14,6 +15,13 @@ Flow_edit_panel::Flow_edit_panel()
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setWindowTitle("字体样式选择");
     color = QColor(0, 0, 0);
+    QToolButton* brush_button = new QToolButton(this);
+    brush_button->setIcon(QIcon(":/image/brush.png"));
+    brush_button->setToolTip("格式刷");
+    connect(brush_button, &QToolButton::clicked, this, [=](){
+        emit text_brush();
+    });
+    addWidget(brush_button);
     color_selector_button = new QToolButton(this);
     connect(color_selector_button, &QToolButton::clicked, this, [=](){
         QColorDialog dialog;
@@ -25,6 +33,7 @@ Flow_edit_panel::Flow_edit_panel()
             color.getRgb(&r,&g,&b);
             this->color.setRgb(r, g, b);
             color_selector_button->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(r).arg(g).arg(b));
+            emit font_change();
         }
     });
     int r = 0, g = 0, b = 0;
@@ -33,7 +42,7 @@ Flow_edit_panel::Flow_edit_panel()
     addWidget(color_selector_button);
     addSeparator();
 
-    QComboBox *m_ComboBox=new QComboBox(this);
+    m_ComboBox=new QComboBox(this);
     QStandardItemModel *model=new QStandardItemModel(this);    //源数据
     QList<QStandardItem *> row;
     QStandardItem *blankitem=new QStandardItem("");
@@ -63,6 +72,7 @@ Flow_edit_panel::Flow_edit_panel()
     connect(m_ComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
             , this, [=](const QString& text){
         font.setFamily(text);
+        emit font_change();
     });
     addWidget(m_ComboBox);
     addSeparator();
@@ -80,12 +90,13 @@ Flow_edit_panel::Flow_edit_panel()
         if(success && num > 0)
         {
             font.setPointSize(num);
+            emit font_change();
         }
     });
     addWidget(width_button);
     addSeparator();
 
-    QToolButton* bold_button = new QToolButton(this);
+    bold_button = new QToolButton(this);
     bold_button->setIcon(QIcon(":/image/bold.png"));
     bold_button->setCheckable(true);
     connect(bold_button, &QToolButton::clicked, this, [=](){
@@ -99,9 +110,10 @@ Flow_edit_panel::Flow_edit_panel()
             font.setBold(true);
             bold_button->setChecked(true);
         }
+        emit font_change();
     });
     addWidget(bold_button);
-    QToolButton* italic_button = new QToolButton(this);
+    italic_button = new QToolButton(this);
     italic_button->setIcon(QIcon(":/image/italic.png"));
     italic_button->setCheckable(true);
     connect(italic_button, &QToolButton::clicked, this, [=](){
@@ -115,9 +127,10 @@ Flow_edit_panel::Flow_edit_panel()
             font.setItalic(true);
             italic_button->setChecked(true);
         }
+        emit font_change();
     });
     addWidget(italic_button);
-    QToolButton* underline_button = new QToolButton(this);
+    underline_button = new QToolButton(this);
     underline_button->setIcon(QIcon(":/image/underline.png"));
     underline_button->setCheckable(true);
     connect(underline_button, &QToolButton::clicked, this, [=](){
@@ -131,12 +144,14 @@ Flow_edit_panel::Flow_edit_panel()
             font.setUnderline(true);
             italic_button->setChecked(true);
         }
+        emit font_change();
     });
     color_selector_button->setFixedSize(m_ComboBox->height(), m_ComboBox->height());
     bold_button->setFixedSize(m_ComboBox->height(), m_ComboBox->height());
     italic_button->setFixedSize(m_ComboBox->height(), m_ComboBox->height());
     underline_button->setFixedSize(m_ComboBox->height(), m_ComboBox->height());
     addWidget(underline_button);
+    emit font_change();//初始化
 }
 
 Flow_edit_panel::~Flow_edit_panel()
@@ -151,6 +166,20 @@ Flow_edit_panel* Flow_edit_panel::instance()
         _instance = new Flow_edit_panel();
     }
     return _instance;
+}
+
+void Flow_edit_panel::set_format(QFont font, QColor color)
+{
+    this->color = color;
+    this->font = font;
+    int r = 0, g = 0, b = 0;
+    color.getRgb(&r,&g,&b);
+    color_selector_button->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(r).arg(g).arg(b));
+    m_ComboBox->setCurrentText(this->font.family());
+    width_button->setCurrentText(QString::number(font.pointSize()));
+    bold_button->setChecked(font.bold());
+    italic_button->setChecked(font.italic());
+    underline_button->setChecked(font.underline());
 }
 
 QList<QString> Flow_edit_panel::get_font_text()

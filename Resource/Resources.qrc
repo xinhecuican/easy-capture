@@ -30,6 +30,7 @@
         <file>bold.png</file>
         <file>italic.png</file>
         <file>underline.png</file>
+        <file>brush.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

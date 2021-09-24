@@ -23,15 +23,13 @@ public:
     QString get_name()override;
     QRect bounded_rect()override;
     void on_paint_change(int index, paint_info info) override;
+    void clear();
     QPoint begin;
 private:
 
     QWidget* parent;
     QString name;
-    QPicture pic;
-    QRect last_rect;
     QHash<int, paint_info> data;
-    QHash<int, paint_info> delete_data;
     int now_index;
 };
 

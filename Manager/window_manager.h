@@ -38,6 +38,7 @@ private:
     static QString previous_window;
     static void create_window(QString name);
     static Window_data create_data(Window_base* window);
+    static bool is_hidden;
 };
 
 

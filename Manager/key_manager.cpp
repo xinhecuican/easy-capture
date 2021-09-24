@@ -85,13 +85,11 @@ void Key_manager::update_all()
         QString key_name = key_settings[i].mid(first_index+1, second_index-first_index-1);
         if(all_key.find(window_name) == all_key.end())
         {
-            add_key(key_settings[i].mid(0, first_index),
-                    key_settings[i].mid(first_index+1, second_index-first_index-1), using_key);
+            add_key(window_name, key_name, using_key);
         }
         else if(all_key[window_name].func.find(key_name) == all_key[window_name].func.end())
         {
-            add_key(key_settings[i].mid(0, first_index),
-                    key_settings[i].mid(first_index+1, second_index-first_index-1), using_key);
+            add_key(window_name, key_name, using_key);
         }
 
     }
@@ -106,6 +104,10 @@ void Key_manager::on_key_count_change(bool is_enter, int key)
 
 void Key_manager::key_enter(int key)
 {
+    if(availiable_key.contains(key))
+    {
+        return;
+    }
     for(int i=0; i<listeners.size(); i++)
     {
         listeners[i].is_begin = true;
@@ -116,6 +118,10 @@ void Key_manager::key_enter(int key)
 
 void Key_manager::key_release(int key)
 {
+    if(!availiable_key.contains(key))
+    {
+        return;
+    }
     on_key_count_change(false, key);
     if(availiable_key.size() == 0)
     {

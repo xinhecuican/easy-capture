@@ -20,11 +20,15 @@ void Capture_button_action::on_button_click()
 {
     if(Config::get_config(Config::total_capture))
     {
-        Window_manager::change_window("Paint_window");
-        QScreen *screen = QGuiApplication::primaryScreen();
-        QPixmap map = screen->grabWindow(0);
-        Window_manager::get_window("Paint_window")->
-                set_pic(map, QApplication::desktop()->screenGeometry());
+        Window_manager::hide_now();
+        QTimer::singleShot(200, this, [=](){
+            QScreen *screen = QGuiApplication::primaryScreen();
+            QPixmap map = screen->grabWindow(0);
+            Window_manager::show_now();
+            Window_manager::change_window("Paint_window");
+            Window_manager::get_window("Paint_window")->
+                    set_pic(map, screen->geometry());
+        });
         return;
     }
     else

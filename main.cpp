@@ -10,6 +10,10 @@
 #include "Paint/paint_window.h"
 #include "JlCompress.h"
 #include "Manager/update.h"
+#include "Style_widget/tray.h"
+#include<windows.h>
+#include "main_fliter.h"
+#include "Paint/Widgets/history.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,18 +26,25 @@ int main(int argc, char *argv[])
     Reflect::registerClass<Setting>();
     Reflect::registerClass<Capture_window>();
     Reflect::registerClass<Paint_window>();
+    Main_fliter* fliter = new Main_fliter();
+    a.installEventFilter(fliter);//使用mainwindow上的eventfliter
+    a.installNativeEventFilter(fliter);
+    a.setQuitOnLastWindowClosed(false);
     MainWindow* main_window = new MainWindow();
     Window_manager::push_window("MainWindow", main_window);
     Window_manager::change_window("MainWindow");
-    a.installEventFilter(main_window);//使用mainwindow上的eventfliter
-    a.installNativeEventFilter(main_window);
-    QApplication::mouseButtons();
+
     if(argc > 1 && argv[1] == MainWindow::tr("autoStart"))
     {
         Window_manager::hide_now();
     }
+    a.connect(&a, &QApplication::aboutToQuit, &a, [=](){
+        delete fliter;
+        Key_manager::save();
+        UnregisterHotKey((HWND)fliter->winId(), fliter->global_key_id);
+        GlobalDeleteAtom( fliter->global_key_id );
+    });
     int ans = a.exec();
-
 //    Update::instance()->save();
     return ans;
 }

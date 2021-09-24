@@ -17,6 +17,7 @@
 #include<QPixmapCache>
 #include "Paint/Widgets/Layers/text_layer.h"
 #include <QTextCodec>//转码
+#include<QScrollBar>
 
 Paint_area::Paint_area()
 {
@@ -43,7 +44,7 @@ void Paint_area::reset()
     focus_layer = NULL;
 }
 
-Paint_area::Paint_area(QWidget* parent) : QWidget(parent)
+Paint_area::Paint_area(QScrollArea* parent) : QWidget(parent)
 {
     this->parent = parent;
     pic_layer = NULL;
@@ -70,7 +71,7 @@ void Paint_area::set_picture(QPixmap pixmap, QRect rect)
 void Paint_area::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    pic_layer->paint(&painter, disable_color, is_save);
+    pic_layer->main_layer_paint(&painter, disable_color, is_save, parent->verticalScrollBar()->sliderPosition());
     painter.setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
     paint(&painter, disable_color);
     //painter.drawImage(0, 0, image);
@@ -390,6 +391,12 @@ void Paint_area::save(QString path)
                 QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
                 temp.setAlphaChannel(mask);
             }
+            QList<QColor> colors = History::instance()->get_color();
+            for(int i=0; i<colors.size(); i++)
+            {
+                QImage mask = temp.createMaskFromColor(colors[i].rgb(), Qt::MaskOutColor);
+                temp.setAlphaChannel(mask);
+            }
             cv::Mat temp_mat = Image_helper::QImage2Mat(temp);
             temp_mat.copyTo(ans);
         }
@@ -433,11 +440,17 @@ void Paint_area::save_temp()
                 QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
                 temp.setAlphaChannel(mask);
             }
+            QList<QColor> colors = History::instance()->get_color();
+            for(int i=0; i<colors.size(); i++)
+            {
+                QImage mask = temp.createMaskFromColor(colors[i].rgb(), Qt::MaskOutColor);
+                temp.setAlphaChannel(mask);
+            }
             temp.save(path);
+            is_save = false;
         });
     }
     History::instance()->log(History_data::Editable, path);
-    is_save = false;
 }
 
 bool Paint_area::contain_picture()
@@ -479,15 +492,27 @@ void Paint_area::update_image(QRect bound_rect)
     image = QImage(bound_rect.width(), bound_rect.height(), QImage::Format_RGB32);
 }
 
-QImage Paint_area::get_image()
+void Paint_area::get_image()
 {
-    QImage temp = grab(bounded_rect()).toImage();
-    for(int i=0; i<disable_color.size(); i++)//设置透明色
-    {
-        QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
-        temp.setAlphaChannel(mask);
-    }
-    return temp;
+    is_save = true;
+    repaint();
+    QTimer::singleShot(100, this, [=](){
+        QImage temp = grab(bounded_rect()).toImage();
+        for(int i=0; i<disable_color.size(); i++)//设置透明色
+        {
+            QImage mask = temp.createMaskFromColor(disable_color[i].rgb(), Qt::MaskOutColor);
+            temp.setAlphaChannel(mask);
+        }
+        QList<QColor> colors = History::instance()->get_color();
+        for(int i=0; i<colors.size(); i++)
+        {
+            QImage mask = temp.createMaskFromColor(colors[i].rgb(), Qt::MaskOutColor);
+            temp.setAlphaChannel(mask);
+        }
+        emit clip_image_ready(temp);
+        is_save = false;
+        update();
+    });
 }
 
 void Paint_area::set_paintable(bool paintable)

@@ -47,6 +47,7 @@ private:
     HWND scroll_hwnd;
     int height_char;
     QPoint cursor_point;
+    QPoint now_point;
     QImage scroll_image;
     bool begin_waiting;
     //bool combine_image(QImage image);

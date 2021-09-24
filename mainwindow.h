@@ -15,7 +15,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MainWindow : public Window_base, public QAbstractNativeEventFilter
+class MainWindow : public Window_base
 {
     Q_OBJECT
 
@@ -24,12 +24,7 @@ public:
     ~MainWindow();
     void closeEvent(QCloseEvent* event)override;
     void changeEvent(QEvent* event)override;
-    bool eventFilter(QObject* o, QEvent* e)override;
-    bool nativeEventFilter(const QByteArray &eventType, void *message, long *result)override;
     void load_key_event(QString name) override;
-
-public slots:
-    void window_manager_thread();
 
 private:
     Ui::MainWindow *ui;
@@ -38,5 +33,6 @@ private:
     QToolButton* new_button;
     Capture_button_action* new_button_action;
     ATOM global_key_id;
+    static bool is_start;
 };
 #endif // MAINWINDOW_H

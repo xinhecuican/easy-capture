@@ -10,6 +10,7 @@
 #include<QMessageBox>
 #include "key_manager.h"
 #include "window_manager.h"
+#include "Paint/Widgets/history.h"
 
 Update::Update()
 {
@@ -160,6 +161,7 @@ void Update::on_update()
         {
             Config::update_all();
             Key_manager::update_all();
+            History::instance()->update();
             Config::set_config(Config::need_update, 0);
             Config::update_config(Config::need_update);
             file.remove();

@@ -97,17 +97,23 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
         return;
     }
 
-    painter.fillRect(this->rect(), QColor(0, 0, 0, 0x20)); // 设置透明颜色
+    painter.fillRect(this->rect(), QColor(0, 0, 0, 0x40)); // 设置透明颜色
+    QPen pen;
+    pen.setColor(QColor(26, 115, 231, 127));
+    painter.setPen(pen);
+    painter.drawLine(0, now_point.y(), this->rect().width(), now_point.y());
+    painter.drawLine(now_point.x(), 0, now_point.x(), this->rect().height());
+    pen.setColor(QColor(123, 123, 233));
+    pen.setWidth(2);
+    painter.setPen(pen);
     painter.setCompositionMode( QPainter::CompositionMode_Source );
     if(captured->is_begin_draw())
     {
+        painter.drawRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h());
         painter.fillRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h(),
                          QColor(0, 0, 0, 0x1));
     }
     QPainterPath path;
-    QPen pen(QColor(123, 123, 233));
-    pen.setWidth(2);
-    painter.setPen(pen);
     if(is_first_capture && !button_click)
     {
         painter.fillRect(active_window_bound, QColor(0, 0, 0, 0x1));
@@ -263,6 +269,7 @@ bool Capture_window::combine_image(QImage image)
 
 void Capture_window::mouseMoveEvent(QMouseEvent *event)
 {
+    now_point = event->pos();
     if(Config::get_config(Config::scroll_capture))
     {
         return;
@@ -632,7 +639,7 @@ void Capture_window::set_scroll_info()
                window_point = mainWindow->framePosition();
             }
 
-            PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -300), MAKELPARAM(window_point.x()+cursor_point.x(),
+            PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -240), MAKELPARAM(window_point.x()+cursor_point.x(),
                                                                                    window_point.y()+cursor_point.y()));
         });
     }

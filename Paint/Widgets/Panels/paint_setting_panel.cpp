@@ -12,6 +12,7 @@
 #include "Paint/Widgets/Panels/color_selector.h"
 #include<QStandardItemModel>
 #include<QSpinBox>
+#include "Paint/Widgets/history.h"
 
 Paint_setting_panel::Paint_setting_panel()
 {
@@ -24,7 +25,7 @@ Paint_setting_panel::Paint_setting_panel(IControl_layer_change* layer_control, Q
     this->parent = parent;
     this->layer_control = layer_control;
     setAttribute(Qt::WA_DeleteOnClose);
-    layout = new QVBoxLayout(this);//scrollarea的layout
+    layout = new QVBoxLayout();//scrollarea的layout
     layout->setAlignment(Qt::AlignTop);
     init_shape_setting();
     init_pen_setting();
@@ -61,12 +62,20 @@ void Paint_setting_panel::init_shape_setting()
     Spacer* spacer = new Spacer("形状绘制", false, this);
     QGridLayout* shape_layout = new QGridLayout();
     QToolButton* text_button = new QToolButton(this);
+    text_button->setToolTip("文本框");
     text_button->setIcon(QIcon(":/image/text.png"));
     connect(text_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(TEXT);
     });
+    QToolButton* delete_button = new QToolButton(this);
+    delete_button->setToolTip("删除形状");
+    delete_button->setIcon(QIcon(":/image/delete.svg"));
+    connect(delete_button, &QToolButton::clicked, this, [=](){
+        emit paint_shape(DELETE_SHAPE);
+    });
     shape_layout->setOriginCorner(Qt::TopLeftCorner);
     shape_layout->addWidget(text_button, 0, 0);
+    shape_layout->addWidget(delete_button, 0, 1);
     spacer->add_layout(shape_layout);
     layout->addWidget(spacer);
 }
@@ -177,7 +186,6 @@ void Paint_setting_panel::init_disable_color_setting()
         int green = text.mid(splitter1+1, splitter2-splitter1-1).toInt();
         int blue = text.mid(splitter2+1).toInt();
         combo->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(red).arg(green).arg(blue));
-
     });
     QToolButton* add_button = new QToolButton(this);
     QToolButton* remove_button = new QToolButton(this);
@@ -218,6 +226,82 @@ void Paint_setting_panel::init_disable_color_setting()
     combo_layout->addWidget(combo);
     combo_layout->addWidget(add_button);
     combo_layout->addWidget(remove_button);
+
+    QHBoxLayout* save_layout = new QHBoxLayout();
+    QLabel* save_label = new QLabel(MString::search("保存透明颜色"), this);
+    QComboBox* save_box = new QComboBox(this);
+    save_box->setEditable(false);
+    save_box->setAutoFillBackground(true);
+    QList<QColor> colors = History::instance()->get_color();
+    for(int i=0; i<colors.size(); i++)
+    {
+        save_box->addItem(QString::number(colors[i].red())+","+QString::number(colors[i].green())
+                       +","+QString::number(colors[i].blue()));
+        QStandardItemModel* model = qobject_cast<QStandardItemModel*>(save_box->model());
+        model->item(save_box->count()-1)->setBackground(colors[i]);
+        int red, green, blue;
+        colors[i].getRgb(&red, &green, &blue);
+        red = red + (red - 127) * 0.5;
+        red = (red < 0x00) ? 0xff+red : (red > 0xff) ? red-0xff : red;
+        green = green + (green - 127) *  0.5;
+        green = (green < 0x00) ? 0xff+green : (green > 0xff) ? green - 0xff : green;
+        blue = blue + (blue - 127) * 0.5;
+        blue = (blue < 0x00) ? 0xff+blue : (blue > 0xff) ? blue - 0xff : blue;
+        model->item(save_box->count()-1)->setForeground(QColor(red, green, blue));
+        save_box->setCurrentIndex(save_box->count()-1);
+    }
+    connect(save_box, static_cast<void (QComboBox::*)(const QString &text)>(&QComboBox::currentIndexChanged),
+            this, [=](const QString &text){
+        int splitter1 = text.indexOf(',');
+        int splitter2 = text.indexOf(',', splitter1+1);
+        int red = text.mid(0, splitter1).toInt();
+        int green = text.mid(splitter1+1, splitter2-splitter1-1).toInt();
+        int blue = text.mid(splitter2+1).toInt();
+        save_box->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(red).arg(green).arg(blue));
+    });
+    QToolButton* save_add_button = new QToolButton(this);
+    QToolButton* save_remove_button = new QToolButton(this);
+    connect(save_add_button, &QToolButton::clicked, this, [=](){
+        Color_selector* selector = new Color_selector(this);
+        selector->show();
+        selector->update();
+        connect(selector, &Color_selector::color_select, this, [=](QColor color){
+            save_box->addItem(QString::number(color.red())+","+QString::number(color.green())
+                           +","+QString::number(color.blue()));
+            QStandardItemModel* model = qobject_cast<QStandardItemModel*>(save_box->model());
+            model->item(save_box->count()-1)->setBackground(color);
+            int red, green, blue;
+            color.getRgb(&red, &green, &blue);
+            red = red + (red - 127) * 0.5;
+            red = (red < 0x00) ? 0xff+red : (red > 0xff) ? red-0xff : red;
+            green = green + (green - 127) *  0.5;
+            green = (green < 0x00) ? 0xff+green : (green > 0xff) ? green - 0xff : green;
+            blue = blue + (blue - 127) * 0.5;
+            blue = (blue < 0x00) ? 0xff+blue : (blue > 0xff) ? blue - 0xff : blue;
+            model->item(save_box->count()-1)->setForeground(QColor(red, green, blue));
+            save_box->setCurrentIndex(save_box->count()-1);
+            History::instance()->log_color(color);
+        });
+    });
+    connect(save_remove_button, &QToolButton::clicked, this, [=](){
+        if(save_box->count()<=0)
+        {
+            return;
+        }
+        int index = save_box->currentIndex();
+        QString str = save_box->itemText(index);
+        save_box->removeItem(index);
+        QStringList list = str.split(',');
+        QColor color(list[0].toInt(), list[1].toInt(), list[2].toInt());
+        History::instance()->remove_color(color);
+    });
+    save_add_button->setIcon(QIcon(":/image/add.svg"));
+    save_remove_button->setIcon(QIcon(":/image/delete.svg"));
+    save_layout->addWidget(save_label);
+    save_layout->addWidget(save_box);
+    save_layout->addWidget(save_add_button);
+    save_layout->addWidget(save_remove_button);
+    spacer->add_layout(save_layout);
     spacer->add_layout(combo_layout);
     layout->addWidget(spacer);
 

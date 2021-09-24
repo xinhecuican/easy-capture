@@ -53,9 +53,9 @@ Setting::Setting(QWidget *parent) :
         }
         Window_manager::pop_window();
     });
-    QVBoxLayout* base_layout = new QVBoxLayout(this);
-    QVBoxLayout* card_layout = new QVBoxLayout(this);
-    QHBoxLayout* button_layout = new QHBoxLayout(this);
+    QVBoxLayout* base_layout = new QVBoxLayout();
+    QVBoxLayout* card_layout = new QVBoxLayout();
+    QHBoxLayout* button_layout = new QHBoxLayout();
 
     base_layout->addLayout(card_layout);
     base_layout->addLayout(button_layout);

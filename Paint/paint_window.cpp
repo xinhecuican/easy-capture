@@ -32,10 +32,16 @@ Paint_window::Paint_window(QWidget *parent) :
 
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    this->area = new Paint_area(this);
+
+
     layout = new QHBoxLayout(ui->centralwidget);
     paint_setting_panel = NULL;
     paint_panel = new QScrollArea(this);
+    this->area = new Paint_area(paint_panel);
+    connect(area, &Paint_area::clip_image_ready, this, [=](QImage image){
+        QClipboard *clip=QApplication::clipboard();
+        clip->setImage(image);
+    });
     paint_panel->setWidget(area);
     paint_panel->setFrameShape(QFrame::NoFrame);
     paint_panel->setBackgroundRole(QPalette::Light);
@@ -54,6 +60,7 @@ Paint_window::~Paint_window()
 {
     delete ui;
     delete new_button_action;
+    delete area;
 }
 
 void Paint_window::load_key_event(QString name)
@@ -218,8 +225,7 @@ void Paint_window::set_toolbar()
     clipboard_button->setIcon(QIcon(":/image/clipboard.png"));
     clipboard_button->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
     connect(clipboard_button, &QToolButton::clicked, this, [=](){
-        QClipboard *clip=QApplication::clipboard();
-        clip->setImage(area->get_image());
+        area->get_image();
     });
     ui->toolBar->addWidget(clipboard_button);
 
@@ -331,9 +337,16 @@ void Paint_window::set_toolbar()
             });
             connect(paint_setting_panel, &Paint_setting_panel::paint_shape, this,
                     [=](shape_type type){
-                cursor_button->setChecked(true);
-                area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
-                area->paint_shape(type);
+                if(type == DELETE_SHAPE)
+                {
+                    area->delete_shape();
+                }
+                else
+                {
+                    cursor_button->setChecked(true);
+                    area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
+                    area->paint_shape(type);
+                }
             });
             addDockWidget(Qt::RightDockWidgetArea, paint_setting_panel);
         }
@@ -390,11 +403,6 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
     {
         QClipboard *clip=QApplication::clipboard();
         clip->setPixmap(pix);
-    }
-    else
-    {
-        QClipboard *clip=QApplication::clipboard();
-        clip->clear();
     }
     QScreen* screen = QGuiApplication::primaryScreen();
     if(rect.width()+100 >= (double)screen->geometry().width()

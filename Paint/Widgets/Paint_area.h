@@ -7,13 +7,15 @@
 #include "Paint/Widgets/Layers/paint_layer.h"
 #include "Paint/Data/Ilayer.h"
 #include "Paint/Data/Common.h"
+#include<QScrollArea>
 
 class Paint_area : public QWidget
 {
+    Q_OBJECT
 public:
     Paint_area();
     ~Paint_area();
-    Paint_area(QWidget* parent=nullptr);
+    Paint_area(QScrollArea* parent=nullptr);
     void set_picture(QPixmap pixmap, QRect rect);
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -34,7 +36,7 @@ public:
     void paint_rect(QRect rect);
     void save(QString path);//不可编辑，直接输出图片
     void save_temp();//可供下次编辑，保存了paint_layer
-    QImage get_image();
+    void get_image();
     void using_erase(bool is_using_eraser);
     void set_disable_color(int index, QColor color = QColor());
     bool contain_picture();
@@ -43,8 +45,11 @@ public:
     void delete_shape();
     void append_layer(Ilayer* layer);
     bool pic_save;
+
+signals:
+    void clip_image_ready(QImage pix);
 private:
-    QWidget* parent;
+    QScrollArea* parent;
     Picture_layer* pic_layer;
     Paint_layer* paint_layer;
     QVBoxLayout* layout;
