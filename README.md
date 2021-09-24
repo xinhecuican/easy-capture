@@ -20,48 +20,41 @@
 
 # 功能介绍
 
-## 基础功能
 
-> 支持开机自启，自动更新，历史记录保存，自动复制到剪切板等功能
+* 支持开机自启，自动更新，历史记录保存，自动复制到剪切板等功能
 
-## 截图
+* 分离区域截图
 
-由于本人主要使用矩形区域截图，因此矩形区域的模式最多。它支持单个区域截图，多个分离区域截图，多个可合并区域截图。
+  ​     ![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA3.gif)
 
-按中键可以快速确认，也可以使用屏幕上的确认按钮和enter键。返回可以使用esc键。切换模式使用1,2,3键。快捷键可以在设置中进行调整
+* 可合并区域截图
 
-**分离区域截图**
+  ​    ![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA4.gif)
 
-![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA3.gif)
+     多个区域截图主要是为了截取一些相关但不相连的部分。
 
-**可合并区域截图**
+* 自由截图
 
-![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA4.gif)
+  ![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA5.gif)
 
-多个区域截图主要是为了截取一些相关但不相连的部分。
+* 滚动截图
 
-### 自由截图、滚动截图
+	使用opencv库的图像拼接实现，并且加上了多线程，位置在Capture_window/.../Scroll_handle。
 
-自由截图是画出一片区域，这片区域可以不闭合，画完会立刻确认。
+	
+	
+	此外滚动截图可以调整滚动速度。滚动速度较快时可以利用所有cpu。
+	
+	![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA8.gif)
+	
+* 绘制
+	当前仅支持笔，荧光笔和文本绘制，并且支持撤销、恢复和擦除。
 
-![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA5.gif)
+	![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA6.gif)
 
-滚动截图
+* 透明
 
-使用opencv库的图像拼接实现，并且加上了多线程，位置在Capture_window/.../Scroll_handle
-
-![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA8.gif)
-
-
-## 绘制
-
-当前仅支持笔和荧光笔绘制，并且支持撤销、恢复和擦除。
-
-![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA6.gif)
-
-## 透明
-
-目前仅可以做到对某一个色素透明，对于渐变和拍屏无效。并且由于文字都是由不同种类像素组成因此无法做到选取文字（正好下学期有图像处理，看看通过反锯齿可以直接把文字的范围弄出来）。
+	目前仅可以做到对某一个色素透明，对于渐变和拍屏无效。并且由于文字都是由不同种类像素组成因此无法做到选取文字（正好下学期有图像处理，看看通过反锯齿可以直接把文字的范围弄出来）。
 
 # 快捷键
 
@@ -71,7 +64,7 @@
 |-|-|-|
 | 截图 | 左键 | 在区域上时为移动区域，不在为创建新区域 |
 | 截图 | 中键 | 确认 |
-|
+
 
 | 区域 | 快捷键 | 作用 |
 |-|-|-|

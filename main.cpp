@@ -44,7 +44,8 @@ int main(int argc, char *argv[])
         UnregisterHotKey((HWND)fliter->winId(), fliter->global_key_id);
         GlobalDeleteAtom( fliter->global_key_id );
     });
-    int ans = a.exec();
 //    Update::instance()->save();
+    int ans = a.exec();
+
     return ans;
 }

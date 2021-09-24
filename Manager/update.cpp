@@ -36,10 +36,15 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.2.4",
-"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.2.4.zip", "",
+Update_data Update::now_version = Update_data("0.3.0",
+"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.3.0.zip", "",
                                               "1. 修复若干bug\n"
-                                              "2. 更新功能修复");
+                                              "2. 修复上一版本引入的快捷键失效问题\n"
+                                              "3. 减小不使用时的内存占用\n"
+                                              "4. 完善了文本编辑功能，现在可以对每一小部分的文本格式进行设置\n"
+                                              "5. 透明的颜色可以保存\n"
+                                              "6. 对捕获窗口的样式进行了一些改进\n"
+                                              "7. 改善了图片过大时滚动卡顿的问题");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
