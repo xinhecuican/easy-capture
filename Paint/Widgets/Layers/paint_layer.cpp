@@ -10,7 +10,7 @@ Paint_layer::Paint_layer()
 
 }
 
-Paint_layer::Paint_layer(QWidget* parent, QString name) : QWidget(parent)
+Paint_layer::Paint_layer(QWidget* parent, QString name) : Ilayer(parent)
 {
     this->parent = parent;
     this->name = name;

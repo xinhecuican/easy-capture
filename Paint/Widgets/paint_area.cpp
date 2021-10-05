@@ -567,7 +567,7 @@ void Paint_area::delete_shape()
     if(focus_layer != NULL)
     {
         remove_layer(focus_layer);
-        delete focus_layer;
+        focus_layer->deleteLater();
         focus_layer = NULL;
         update();
     }

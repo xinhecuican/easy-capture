@@ -40,6 +40,7 @@ private:
     QList<Update_data> data_list;
     int reconnect_times;
     QTimer* timer;
+    Reply_timeout* timeout;
 };
 
 #endif // UPDATE_H

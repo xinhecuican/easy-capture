@@ -11,6 +11,7 @@
 #include<QToolButton>
 #include "Paint/Widgets/Panels/paint_setting_panel.h"
 #include "Widgets/IControl_layer_change.h"
+#include<QMenuBar>
 
 namespace Ui {
 class Paint_window;
@@ -27,7 +28,6 @@ public:
     void set_toolbar();
     void load_key_event(QString name) override;
     void reset();
-    void changeEvent(QEvent* event)override;
     void set_pic(QPixmap pix, QRect rect)override;
     void on_window_cancal() override;
     void closeEvent(QCloseEvent* event)override;
@@ -47,6 +47,7 @@ private:
     QHBoxLayout* layout;
     QToolButton* pencil_button;
     Paint_setting_panel* paint_setting_panel;
+    QMenuBar* menu_bar;
 };
 
 #endif // PAINT_WINDOW_H

@@ -13,7 +13,7 @@
 #include "Paint/Data/stretch_button.h"
 #include "Helper/plist.h"
 
-class Picture_layer : public QWidget, public Ilayer
+class Picture_layer : public Ilayer
 {
 public:
     enum DragPos{top_left, top_right, down_left, down_right};

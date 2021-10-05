@@ -42,6 +42,7 @@ private:
     QRect active_window_bound;
     bool is_enter;
     bool is_first_capture;//第一次捕获时可能是自由捕获
+    int mouse_move_times;
     QTimer* timer;
     QTimer* scroll_timer;
     HWND scroll_hwnd;

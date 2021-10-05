@@ -24,6 +24,7 @@ Capture_window::Capture_window(QWidget *parent) :
     is_first_capture = true;
     scroll_image = QImage();
     pre_image = QImage();
+    mouse_move_times = 0;
     qRegisterMetaType<cv::Mat>("cv::Mat");
 
     is_finish = false;
@@ -270,6 +271,7 @@ bool Capture_window::combine_image(QImage image)
 void Capture_window::mouseMoveEvent(QMouseEvent *event)
 {
     now_point = event->pos();
+    mouse_move_times++;
     if(Config::get_config(Config::scroll_capture))
     {
         return;
@@ -342,7 +344,7 @@ void Capture_window::mousePressEvent(QMouseEvent *event)
         free_paint_path.moveTo(event->pos());
         return;
     }
-
+    mouse_move_times = 0;
     button_click = true;
     captured->mousePressEvent(event);
     update();
@@ -382,7 +384,7 @@ void Capture_window::mouseReleaseEvent(QMouseEvent *event)
         return;
     }
     QRect rect = QRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h());
-    if((rect.width() <= 3 || rect.height() <= 3) && is_first_capture
+    if((rect.width() <= 3 || rect.height() <= 3) && mouse_move_times < 10 && is_first_capture
              && button_click)
     {
         is_first_capture = false;
@@ -396,6 +398,7 @@ void Capture_window::mouseReleaseEvent(QMouseEvent *event)
     {
         is_first_capture = false;
     }
+    mouse_move_times = 0;
     captured->mouseReleaseEvent(event);
     if(is_begin)
     {

@@ -3,6 +3,7 @@
 #include "QObject"
 #include "QTimer"
 #include "QNetworkReply"
+#include<QPointer>
 class Reply_timeout : public QObject {
 
 
@@ -11,19 +12,19 @@ class Reply_timeout : public QObject {
 
 public:
 
-  Reply_timeout(QNetworkReply *reply, const int time) : QObject(reply)
+  Reply_timeout(const int time)
   {
-      Q_ASSERT(reply);
+      reply = NULL;
       connect(&timer, &QTimer::timeout, this, [=](){
           // 处理超时
-          QNetworkReply *reply = static_cast<QNetworkReply*>(parent());
-          if (reply->isRunning())
+          if (reply != NULL && reply->isRunning())
           {
               reply->abort();
               reply->deleteLater();
               emit timeout();
           }
           emit deadline();
+          timer.stop();
       });
       if (reply && reply->isRunning())
       {
@@ -31,8 +32,9 @@ public:
       }
   }
 
-  void reset(int timeout)
+  void reset(QNetworkReply *reply, int timeout)
   {
+      this->reply = reply;
       if(timer.isActive())
       {
           timer.stop();
@@ -49,6 +51,7 @@ private slots:
   }
 private:
   QTimer timer;
+  QPointer<QNetworkReply> reply;
 };
 
 #endif // REPLY_TIMEOUT_H
