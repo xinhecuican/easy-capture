@@ -3,6 +3,7 @@
 #include "Helper/debug.h"
 #include "config.h"
 #include<QApplication>
+#include<QThread>
 
 QMap<QString, Window_manager::Window_data> Window_manager::window_list =
         QMap<QString, Window_manager::Window_data>();
@@ -16,11 +17,11 @@ Window_manager::Window_manager(){}
 void Window_manager::control_window_close()
 {
     int time = Config::get_config(Config::clear_interval);
-
     qint64 current_time = QDateTime::currentDateTime().currentSecsSinceEpoch();
     QList<Window_base*> temp_list = QList<Window_base*>();
     for(auto iter=window_list.begin(); iter!=window_list.end();)
     {
+        qDebug() << is_hidden << iter.key();
         if(current_time-iter.value().time >= time&&
                 (is_hidden || iter.key() != active_window))
         {
@@ -80,6 +81,7 @@ void Window_manager::change_window(QString name)
 //        }
         else if(window_list.contains(active_window))
         {
+            window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
             window_list[active_window].window->hide();
             window_list[active_window].window->on_window_cancal();
         }

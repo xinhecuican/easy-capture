@@ -11,7 +11,7 @@
 #include "Paint/Widgets/Recorder_element/paint_record.h"
 #include "Paint/Data/Common.h"
 
-class Paint_layer : public QWidget, public Ilayer
+class Paint_layer : public Ilayer
 {
 public:
     Paint_layer();

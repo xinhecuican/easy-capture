@@ -31,6 +31,9 @@
         <file>italic.png</file>
         <file>underline.png</file>
         <file>brush.png</file>
+        <file>close.png</file>
+        <file>maximize.png</file>
+        <file>minimize.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

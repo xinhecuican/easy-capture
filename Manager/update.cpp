@@ -14,6 +14,7 @@
 
 Update::Update()
 {
+    timeout = NULL;
     newest_data = Update_data();
     manager = new QNetworkAccessManager(this);
     reconnect_times = 0;
@@ -33,18 +34,17 @@ Update::~Update()
 {
     delete timer;
     _instance = NULL;
+    if(timeout != NULL)
+    {
+        delete timeout;
+    }
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.3.0",
-"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.3.0.zip", "",
-                                              "1. 修复若干bug\n"
-                                              "2. 修复上一版本引入的快捷键失效问题\n"
-                                              "3. 减小不使用时的内存占用\n"
-                                              "4. 完善了文本编辑功能，现在可以对每一小部分的文本格式进行设置\n"
-                                              "5. 透明的颜色可以保存\n"
-                                              "6. 对捕获窗口的样式进行了一些改进\n"
-                                              "7. 改善了图片过大时滚动卡顿的问题");
+Update_data Update::now_version = Update_data("0.3.2",
+"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.3.2.zip", "",
+                                              "1. 修复未联网时崩溃问题\n"
+                                              "2. 修复若干bug");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
@@ -89,7 +89,8 @@ void Update::start_request(const QUrl &url)
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
     manager->clearAccessCache();
     reply = manager->get(request);
-    Reply_timeout* timeout = new Reply_timeout(reply, 10000);
+    timeout = new Reply_timeout(10000);
+    timeout->reset(reply, 10000);
     connect(timeout, &Reply_timeout::timeout, this, [=](){
         qDebug() << "timeout";
     });

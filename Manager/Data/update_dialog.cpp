@@ -16,11 +16,16 @@ Update_dialog::Update_dialog()
 
 }
 
+Update_dialog::~Update_dialog()
+{
+    delete timeout;
+}
+
 Update_dialog::Update_dialog(QList<Update_data> data, QWidget* parent) : QDialog(parent)
 {
     this->data = data;
-    update_sum = 0;
-    timeout = new Reply_timeout(reply, 10000);
+    update_sum = data.size()-1;
+    timeout = new Reply_timeout(10000);
     connect(timeout, &Reply_timeout::deadline, this, [=](){
         Debug::show_error_message("更新超时，请检查网络设置");
         this->close();
@@ -34,7 +39,7 @@ Update_dialog::Update_dialog(QList<Update_data> data, QWidget* parent) : QDialog
     QLabel* label1 = new QLabel("新功能:", this);
     QLabel* label2 = new QLabel(data[0].get_description(), this);
     label2->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    QLabel* label3 = new QLabel("更新时间" + QDateTime::fromString(data[0].get_time()).toString("yyyy.MM.dd"), this);
+    QLabel* label3 = new QLabel("更新时间: " + QDateTime::fromString(data[0].get_time()).toString("yyyy.MM.dd"), this);
     QVBoxLayout* main_area_layout = new QVBoxLayout();
     main_area_layout->setAlignment(Qt::AlignTop);
     main_area_layout->setContentsMargins(20, 0, 20, 10);
@@ -75,7 +80,7 @@ void Update_dialog::get_one_update()
     request.setRawHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
     reply = manager.get(request);
-    timeout->reset(10000);
+    timeout->reset(reply, 10000);
     connect(reply, &QNetworkReply::finished, this, [=](){
         if (reply->error())
         {
@@ -118,8 +123,8 @@ void Update_dialog::get_one_update()
                 JlCompress::extractFile(file_name,
                                         "Upgrate.exe", "Upgrate.exe");
             }
-            update_sum++;
-            if(update_sum == data.size())
+            update_sum--;
+            if(update_sum < 0)
             {
                 Config::set_config(Config::need_update, true);
                 Config::update_config(Config::need_update);

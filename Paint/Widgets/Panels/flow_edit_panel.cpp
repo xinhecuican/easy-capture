@@ -57,7 +57,6 @@ Flow_edit_panel::Flow_edit_panel()
     }
     m_ComboBox->setModel(model);	//QComboBox设置数据源
     m_ComboBox->setEditable(true);
-    m_ComboBox->setStyleSheet("max-width: 60px;");
     QCompleter *completer=new QCompleter(m_ComboBox);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     completer->setModel(model);

@@ -10,7 +10,7 @@
 #include "text_edit.h"
 #include "Paint/Data/Common.h"
 
-class Text_layer : public QWidget, public Ilayer
+class Text_layer : public Ilayer
 {
 public:
     Text_layer(QRect bound_rect, QWidget* parent=nullptr);

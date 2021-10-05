@@ -14,6 +14,7 @@ Text_edit::Text_edit(QWidget* parent):QPlainTextEdit(parent)
         format.setForeground(Flow_edit_panel::instance()->get_color());
         format.setFont(Flow_edit_panel::instance()->get_font());
         setCurrentCharFormat(format);
+        this->setFocus();
     });
     connect(this, &QPlainTextEdit::cursorPositionChanged, this, [=](){
         Flow_edit_panel::instance()->set_format(textCursor().charFormat().font(),

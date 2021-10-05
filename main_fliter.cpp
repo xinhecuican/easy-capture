@@ -56,7 +56,7 @@ bool Main_fliter::nativeEventFilter(const QByteArray &eventType, void *message, 
            // Window_manager::show_now();
         if(Window_manager::get_now_window() != "Capture_window")
         {
-            qDebug() << Window_manager::get_now_window();
+            Window_manager::is_hidden = false;
             Window_manager::change_window("Capture_window");
             return true;
         }

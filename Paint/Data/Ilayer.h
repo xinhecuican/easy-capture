@@ -7,10 +7,12 @@
 #include "Common.h"
 #include<QDebug>
 #include<QPainter>
+#include<QWidget>
 
-class Ilayer
+class Ilayer : public QWidget
 {
 public:
+    Ilayer(QWidget* parent=nullptr):QWidget(parent){};
     virtual void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)=0;
     virtual void set_name(QString name)=0;
     virtual QRect bounded_rect()=0;

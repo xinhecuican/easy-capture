@@ -8,7 +8,7 @@ Picture_layer::Picture_layer()
 
 }
 
-Picture_layer::Picture_layer(QString name, QPixmap picture, QRect rect, QWidget* parent) : QWidget(parent)
+Picture_layer::Picture_layer(QString name, QPixmap picture, QRect rect, QWidget* parent) : Ilayer(parent)
 {
     this->name = name;
     this->picture = picture;

@@ -5,7 +5,7 @@
 #include<QTextOption>
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
 
-Text_layer::Text_layer(QRect bound_rect, QWidget* parent):QWidget(parent)
+Text_layer::Text_layer(QRect bound_rect, QWidget* parent):Ilayer(parent)
 {
     this->parent = parent;
     is_font_change = false;
@@ -90,6 +90,8 @@ Text_layer::~Text_layer()
         temp = temp->next;
         delete temp1;
     }
+    delete edit;
+    Flow_edit_panel::instance()->hide();
 }
 
 void Text_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_save)
@@ -430,6 +432,10 @@ void Text_layer::append_node(int len, QFont font, QColor color)
 
 void Text_layer::remove_addition_node()
 {
+    if(now == NULL)
+    {
+        return;
+    }
     paint_node* temp = now->next;
     while(temp != NULL)
     {

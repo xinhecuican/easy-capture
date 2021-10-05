@@ -13,6 +13,7 @@ class Update_dialog : public QDialog
 public:
     Update_dialog();
     Update_dialog(QList<Update_data> data, QWidget* widget);
+    ~Update_dialog();
 signals:
     void download_finished();
 private:

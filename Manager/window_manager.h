@@ -13,6 +13,7 @@ using namespace std;
 class Window_manager
 {
 public:
+    friend class Main_fliter;
     Window_manager();
     static void push_window(QString name, Window_base* widget);
     static void change_window(QString name);

@@ -50,7 +50,9 @@ SOURCES += \
     Panel/Widgets/tab_widget.cpp \
     Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
+    Style_widget/framelesshelper.cpp \
     Style_widget/spacer.cpp \
+    Style_widget/titlebar.cpp \
     Style_widget/tray.cpp \
     main.cpp \
     main_fliter.cpp \
@@ -119,7 +121,9 @@ HEADERS += \
     Panel/Widgets/num_tab.h \
     Panel/Widgets/tab_widget.h \
     Panel/setting.h \
+    Style_widget/framelesshelper.h \
     Style_widget/spacer.h \
+    Style_widget/titlebar.h \
     Style_widget/tray.h \
     main_fliter.h \
     mainwindow.h \

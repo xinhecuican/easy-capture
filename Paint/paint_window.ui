@@ -21,16 +21,6 @@
     </sizepolicy>
    </property>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>646</width>
-     <height>26</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>

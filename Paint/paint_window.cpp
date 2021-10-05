@@ -23,16 +23,37 @@
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include "opencv2/core.hpp"
 #include "opencv2/opencv.hpp"
+#include "Style_widget/titlebar.h"
+#include "Style_widget/framelesshelper.h"
 
 Paint_window::Paint_window(QWidget *parent) :
     Window_base(parent, this, "Paint_window"),
     ui(new Ui::Paint_window)
 {
     ui->setupUi(this);
-
-
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
+    Titlebar* title_bar = new Titlebar(this);
+    installEventFilter(title_bar);
+    FramelessHelper* helper = new FramelessHelper(this);
+    helper->activateOn(this);
+    helper->setWidgetResizable(true);
+    helper->setWidgetMovable(true);
+    helper->setTitleHeight(30);
+    setWindowFlag(Qt::FramelessWindowHint,  true);
+    setWindowTitle("简截");
+    setWindowIcon(QIcon(":/image/avator.png"));
+    connect(title_bar, &Titlebar::minimize, this, [=](){
+        Window_manager::hide_now();
+    });
+    menu_bar = new QMenuBar(this);
+    QWidget* menu_widget = new QWidget(this);
+    QVBoxLayout* menu_layout = new QVBoxLayout();
+    menu_layout->setMargin(0);
+    menu_layout->addWidget(title_bar);
+    menu_layout->addWidget(menu_bar);
+    menu_widget->setLayout(menu_layout);
+    menu_widget->setStyleSheet("background-color: rgb(255, 255, 255)");
+    setMenuWidget(menu_widget);
 
     layout = new QHBoxLayout(ui->centralwidget);
     paint_setting_panel = NULL;
@@ -60,7 +81,6 @@ Paint_window::~Paint_window()
 {
     delete ui;
     delete new_button_action;
-    delete area;
 }
 
 void Paint_window::load_key_event(QString name)
@@ -144,8 +164,8 @@ void Paint_window::set_menubar()
                                                          "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
         area->save(file_name);
     });
-    QAction* history_action = new QAction(MString::search("{Mo0LoFqQqT}历史"), ui->menuBar);
-    QMenu* history_menu = new QMenu(MString::search("{Mo0LoFqQqT}历史"), ui->menuBar);
+    QAction* history_action = new QAction(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
+    QMenu* history_menu = new QMenu(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
     connect(history_action, &QAction::hovered, this, [=](){//动态生成菜单项
         if(History::instance()->is_change)//hovered会一直触发，防止重复调用函数导致闪屏
         {
@@ -182,7 +202,7 @@ void Paint_window::set_menubar()
     });
     history_action->setMenu(history_menu);
     file_setting_menu->addAction(history_action);
-    ui->menuBar->addMenu(file_setting_menu);
+    menu_bar->addMenu(file_setting_menu);
 }
 
 void Paint_window::set_toolbar()
@@ -263,7 +283,7 @@ void Paint_window::set_toolbar()
     QToolButton* cursor_button = new QToolButton(this);
     cursor_button->setIcon(QIcon(":/image/cursor.png"));
     cursor_button->setToolTip(MString::search("{l4yTU9QXUd}指针"));
-    cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png")));
+    cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png"), 9, 5));
     cursor_button->setCheckable(true);
     paint_button_group->addButton(cursor_button, 0);
     ui->toolBar->addWidget(cursor_button);
@@ -297,7 +317,7 @@ void Paint_window::set_toolbar()
         {
         case 0:
             area->set_paintable(false);
-            area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
+            area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 9, 5));
             break;
         case 1:
             area->set_paintable(true);
@@ -402,6 +422,7 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
     if(Config::get_config(Config::auto_copy_to_clipboard))
     {
         QClipboard *clip=QApplication::clipboard();
+
         clip->setPixmap(pix);
     }
     QScreen* screen = QGuiApplication::primaryScreen();
@@ -476,9 +497,12 @@ void Paint_window::on_window_close()
     delete Style_manager::instance();
     delete Recorder::instance();
     delete History::instance();
-    delete Flow_edit_panel::instance();
+    Flow_edit_panel::instance()->deleteLater();
     QClipboard *clip=QApplication::clipboard();
-    clip->clear();
+    if(Config::get_config(Config::auto_copy_to_clipboard))
+    {
+        clip->clear();
+    }
 }
 
 QString  Paint_window::append_layer()
@@ -511,13 +535,4 @@ void Paint_window::change_layer_position(int before_index, int after_index)
 QStringList Paint_window::get_layer_name()
 {
     return area->layers_name();
-}
-
-void Paint_window::changeEvent(QEvent *event)
-{
-    if ((event->type() == QEvent::WindowStateChange) && isMinimized())
-    {
-        Window_manager::hide_now();
-        event->ignore();
-    }
 }
