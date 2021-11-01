@@ -18,6 +18,7 @@
 #include "Paint/Widgets/Layers/text_layer.h"
 #include <QTextCodec>//转码
 #include<QScrollBar>
+#include "Paint/Widgets/Layers/rect_layer.h"
 
 Paint_area::Paint_area()
 {
@@ -42,6 +43,7 @@ void Paint_area::reset()
     layer_num = 0;
     state = PAINT;
     focus_layer = NULL;
+    paint_layer->clear();
 }
 
 Paint_area::Paint_area(QScrollArea* parent) : QWidget(parent)
@@ -247,6 +249,7 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
         switch(shape)
         {
         case TEXT:
+        {
             if(shape_rect.width() < 10 && shape_rect.height()<10)
             {
                 break;
@@ -260,6 +263,13 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
             focus_layer = text_layer;
             append_layer(text_layer);
             break;
+        }
+        case RECTANGLE:
+        {
+            Rect_layer* rect_layer = new Rect_layer(this, shape_rect);
+            append_layer(rect_layer);
+            break;
+        }
         }
     }
     case ARROW:
@@ -539,7 +549,7 @@ void Paint_area::find_focus(QPoint point)
 {
     for (Ilayer* layer : layers)
     {
-        if(layer->bounded_rect().contains(point))
+        if(layer->focuseable() && layer->bounded_rect().contains(point))
         {
             layer->get_focus();
             focus_layer = layer;

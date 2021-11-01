@@ -11,7 +11,7 @@
 #include<windows.h>
 #include "new_capture/Widgets/Scroll_handler/scroll_dispatcher.h"
 #include "opencv2/core/core.hpp"
-
+#include<QPointer>
 
 namespace Ui {
 class Capture_window;
@@ -36,11 +36,13 @@ public:
 
 private:
     Ui::Capture_window *ui;
-    Capture_area* captured;
+    QPointer<Capture_area> captured;
     bool button_click;
     QPainterPath free_paint_path;
     QRect active_window_bound;
+    QRect scroll_bound;
     bool is_enter;
+    static bool end_scroll;
     bool is_first_capture;//第一次捕获时可能是自由捕获
     int mouse_move_times;
     QTimer* timer;

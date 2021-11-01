@@ -4,6 +4,7 @@
 #include "config.h"
 #include<QApplication>
 #include<QThread>
+#include "key_manager.h"
 
 QMap<QString, Window_manager::Window_data> Window_manager::window_list =
         QMap<QString, Window_manager::Window_data>();
@@ -86,7 +87,7 @@ void Window_manager::change_window(QString name)
             window_list[active_window].window->on_window_cancal();
         }
 
-
+        Key_manager::on_window_change(active_window, name);
         previous_window = active_window;
         active_window = name;
         window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();

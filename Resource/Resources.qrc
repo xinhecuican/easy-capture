@@ -34,6 +34,8 @@
         <file>close.png</file>
         <file>maximize.png</file>
         <file>minimize.png</file>
+        <file>rect.png</file>
+        <file>rotate.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

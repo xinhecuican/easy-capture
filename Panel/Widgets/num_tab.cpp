@@ -15,8 +15,8 @@ Num_tab::Num_tab(QString name, int index, int min, int max, std::function<void (
     setValue(Config::get_config(Config::setting(index)));
     setAccelerated(true);
     setWrapping(true);  // 开启循环
-    setFocusPolicy(Qt::NoFocus);
     setKeyboardTracking(true);
+
 }
 
 void Num_tab::reset()

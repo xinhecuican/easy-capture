@@ -39,14 +39,16 @@ public:
     bool is_press_region();
     void cal_button_pos();
     void combine_region(QRect rect);
+    void is_key_press(bool enter);
 
     QPoint begin_point;
     QPoint end_point;
-    bool key_press;
+
 
 public slots:
     void on_click_ok();
 private:
+    bool key_press;
     //QList<QRegion> regions;
     bool begin_draw;
     QRect all_rect;

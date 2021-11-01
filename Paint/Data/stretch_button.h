@@ -1,17 +1,18 @@
 #ifndef STRETCH_BUTTON_H
 #define STRETCH_BUTTON_H
 #include<QPushButton>
+#include "Common.h"
 
 class Stretch_button : public QPushButton
 {
     Q_OBJECT
 public:
     static const int OFFSET = 5;
-    enum direction{NW, NE, SE, SW};
+
     Stretch_button();
     ~Stretch_button();
     Stretch_button(direction dir, QWidget* parent);
-    void set_constraints(QRect rect);
+    void set_constraint(QRect rect);
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);

@@ -73,10 +73,11 @@ void Stretch_button::mousePressEvent(QMouseEvent *event)
 
 void Stretch_button::mouseReleaseEvent(QMouseEvent *event)
 {
+    is_click = false;
     emit button_click(false, deltax, deltay);
 }
 
-void Stretch_button::set_constraints(QRect rect)
+void Stretch_button::set_constraint(QRect rect)
 {
     constraint = rect;
     is_set_constraint = true;

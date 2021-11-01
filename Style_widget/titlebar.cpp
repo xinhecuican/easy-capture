@@ -3,7 +3,6 @@
 #include<QHBoxLayout>
 #include<QMouseEvent>
 #include<QDebug>
-
 Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
 {
     this->parent = parent;

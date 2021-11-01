@@ -14,6 +14,7 @@
 #include "Helper/image_helper.h"
 #include<malloc.h>
 
+bool Capture_window::end_scroll = false;
 
 Capture_window::Capture_window(QWidget *parent) :
     Window_base(parent, this, "Capture_window"),
@@ -21,7 +22,7 @@ Capture_window::Capture_window(QWidget *parent) :
 {
     ui->setupUi(this);
     button_click = false;
-    is_first_capture = true;
+    is_first_capture = false;
     scroll_image = QImage();
     pre_image = QImage();
     mouse_move_times = 0;
@@ -53,7 +54,6 @@ Capture_window::Capture_window(QWidget *parent) :
 Capture_window::~Capture_window()
 {
     delete ui;
-    delete captured;
     if(Config::get_config(Config::scroll_capture))
     {
         delete dispatcher;
@@ -141,8 +141,8 @@ void Capture_window::load_key_event(QString name)
             {
                 if(Config::get_config(Config::scroll_capture))
                 {
-                    scroll_timer->stop();
-                    dispatcher->get_all_images();
+                    qDebug() << 1 << end_scroll;
+                    end_scroll = true;
                     return;
                 }
                 Window_manager::pop_window();
@@ -178,17 +178,21 @@ void Capture_window::load_key_event(QString name)
                 Config::set_config(Config::capture_multi_window_combine, 1);
             }
         });
-        Key_manager::add_func(name, "move_all", [=](bool is_enter)
-        {
-            if(is_enter)
-            {
-                captured->key_press = true;
-            }
-            else
-            {
-                captured->key_press = false;
-            }
-        });
+//        Key_manager::add_func(name, "move_all", [=](bool is_enter)
+//        {
+//            if(captured.isNull())
+//            {
+//                return;
+//            }
+//            if(is_enter)
+//            {
+//                captured->is_key_press(true);
+//            }
+//            else
+//            {
+//                captured->is_key_press(false);
+//            }
+//        });
         Key_manager::add_func(name, "enter_capture", [=](bool is_enter)
         {
             if(is_enter)
@@ -565,7 +569,8 @@ void Capture_window::on_window_select()
                 }
                 else if(type == XGlobalHook::LBUTTON && !is_enter)
                 {
-
+                    end_scroll = false;
+                    qDebug() << 2 << end_scroll;
                     is_enter = true;
                     *is_shield = true;
                     POINT point;
@@ -611,9 +616,11 @@ void Capture_window::set_scroll_info()
         });
         scroll_timer = new QTimer(this);
         connect(scroll_timer, &QTimer::timeout, this, [=](){
+            qDebug() << 3 << end_scroll;
             QScreen * screen = QGuiApplication::primaryScreen();
             QPixmap pix = screen->grabWindow(WId(scroll_hwnd));
             QImage image = pix.toImage();
+//            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
             bool success = false;
             cv::Mat mat1 = Image_helper::QImage2Mat(pre_image);
             if(mat1.cols != 0)
@@ -625,7 +632,7 @@ void Capture_window::set_scroll_info()
             {
                 success = true;
             }
-            if(!success)
+            if(!success || end_scroll)
             {
                 dispatcher->get_all_images();//结束
                 scroll_timer->stop();

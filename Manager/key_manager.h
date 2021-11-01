@@ -24,6 +24,7 @@ public:
     static void save();
     static void load();
     static void update_all();
+    static void on_window_change(QString old_window, QString new_window);
     static QList<int> get_keys(QString window_name, QString key_name);
     static void set_keys(QString window_name, QString key_name, QList<int> keys);
     static QList<QString> get_window_names();
@@ -112,6 +113,7 @@ private:
             {
                 availiable_key.removeOne(key);
             }
+            QList<int>  availiable = availiable_key;
             for(auto iter=func.begin(); iter!=func.end(); iter++)
             {
                 if(iter->is_key_equal(availiable_key) && iter->func != NULL)

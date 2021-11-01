@@ -41,9 +41,8 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.3.2",
+Update_data Update::now_version = Update_data("0.3.3",
 "https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.3.2.zip", "",
-                                              "1. 修复未联网时崩溃问题\n"
                                               "2. 修复若干bug");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用

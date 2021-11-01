@@ -20,6 +20,7 @@ public:
     virtual ~Ilayer(){};
     virtual void get_focus(){};
     virtual void lose_focus(){};
+    virtual bool focuseable(){return false;};
 
     virtual void mouse_enter(int key_code){};
     virtual void mouse_move(int dx, int dy){};

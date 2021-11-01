@@ -380,3 +380,8 @@ void Capture_area::on_click_ok()
     Window_manager::get_window("Paint_window")->
             set_pic(temp_copy, rect);
 }
+
+void Capture_area::is_key_press(bool enter)
+{
+    this->key_press = enter;
+}

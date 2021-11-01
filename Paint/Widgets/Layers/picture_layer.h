@@ -12,6 +12,7 @@
 #include "Base/Record_element.h"
 #include "Paint/Data/stretch_button.h"
 #include "Helper/plist.h"
+#include "Paint/Data/button_group.h"
 
 class Picture_layer : public Ilayer
 {
@@ -29,7 +30,7 @@ public:
     void main_layer_paint(QPainter* painter, QList<QColor> disable_color, bool is_save, int scroll_pos);
     bool is_base_layer;
 public slots:
-    void on_button_move(Stretch_button::direction dir, int dx, int dy);
+    void on_button_move(direction dir, int dx, int dy);
 private:
     struct node
     {
@@ -47,7 +48,7 @@ private:
     QRect pic_rect;
     QPoint move_begin_point;
     DragPos drag_pos;
-    PList<Stretch_button*> buttons;
+    Button_group* button_group;
     void paint_pic(QPainter* painter, QList<QColor> disable_color, bool is_save);
 };
 

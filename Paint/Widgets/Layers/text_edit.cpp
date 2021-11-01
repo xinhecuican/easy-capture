@@ -1,6 +1,7 @@
 #include "text_edit.h"
 #include<QDebug>
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
+#include<QPainter>
 
 Text_edit::Text_edit(QWidget* parent):QPlainTextEdit(parent)
 {

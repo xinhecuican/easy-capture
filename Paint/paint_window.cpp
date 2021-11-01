@@ -39,7 +39,7 @@ Paint_window::Paint_window(QWidget *parent) :
     helper->setWidgetResizable(true);
     helper->setWidgetMovable(true);
     helper->setTitleHeight(30);
-    setWindowFlag(Qt::FramelessWindowHint,  true);
+    setWindowFlags (Qt::FramelessWindowHint);
     setWindowTitle("简截");
     setWindowIcon(QIcon(":/image/avator.png"));
     connect(title_bar, &Titlebar::minimize, this, [=](){
@@ -283,7 +283,7 @@ void Paint_window::set_toolbar()
     QToolButton* cursor_button = new QToolButton(this);
     cursor_button->setIcon(QIcon(":/image/cursor.png"));
     cursor_button->setToolTip(MString::search("{l4yTU9QXUd}指针"));
-    cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png"), 9, 5));
+    cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
     cursor_button->setCheckable(true);
     paint_button_group->addButton(cursor_button, 0);
     ui->toolBar->addWidget(cursor_button);
@@ -317,7 +317,7 @@ void Paint_window::set_toolbar()
         {
         case 0:
             area->set_paintable(false);
-            area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 9, 5));
+            area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
             break;
         case 1:
             area->set_paintable(true);
@@ -423,7 +423,7 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
     {
         QClipboard *clip=QApplication::clipboard();
 
-        clip->setPixmap(pix);
+        clip->setPixmap(pix.copy(rect));
     }
     QScreen* screen = QGuiApplication::primaryScreen();
     if(rect.width()+100 >= (double)screen->geometry().width()

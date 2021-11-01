@@ -4,6 +4,11 @@
 #include<QVBoxLayout>
 #include<QTextOption>
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
+#include<QDebug>
+#include<QGraphicsScene>
+#include<QGraphicsView>
+#include<QGraphicsProxyWidget>
+#include "Style_widget/rotate_view.h"
 
 Text_layer::Text_layer(QRect bound_rect, QWidget* parent):Ilayer(parent)
 {
@@ -23,66 +28,34 @@ Text_layer::Text_layer(QRect bound_rect, QWidget* parent):Ilayer(parent)
     edit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
     edit->document()->setDefaultTextOption(QTextOption(Qt::AlignHCenter));
     edit->hide();
-//    connect(edit, &QPlainTextEdit::cursorPositionChanged, this, [=](){
-//        int pos = edit->textCursor().position();
-//        cursor_pos_change(pos);
-//    });
-//    connect(edit, &Text_edit::text_change, this, [=](int pos, int remove, int add, QString text){
-//        QTextCursor cursor = edit->textCursor();
-//        if(cursor.position() != pos)
-//        {
-//            cursor_pos_change(pos);
-//        }
-//        if(remove > 0)
-//        {
-//            remove_text(remove, pos);
-//        }
-//        if(add > 0)
-//        {
-//            if(root->next == NULL)
-//            {
-//                paint_node* new_node = new paint_node;
-//                new_node->len = add;
-//                new_node->data = now_data;
-//                new_node->next = NULL;
-//                now = new_node;
-//                root->next = new_node;
-//                is_font_change = false;
-//            }
-//            else
-//            {
 
-//            }
-//        }
-//    });
     this->bound = bound_rect;
     this->has_focus = false;
     this->has_double_click = false;
-    for(int i=0; i<4; i++)
-    {
-        Stretch_button* button = new Stretch_button(Stretch_button::direction(i), parent);
-        button->move(i == 1 || i == 2 ? bound.right()-Stretch_button::OFFSET : bound.left()-Stretch_button::OFFSET,
-                     i == 2 || i == 3 ? bound.bottom()-Stretch_button::OFFSET : bound.top()-Stretch_button::OFFSET);
-        connect(button, &Stretch_button::button_move, this, &Text_layer::on_button_move);
-        connect(button, &Stretch_button::button_click, this, [=](bool is_enter, int dx, int dy){
-            if(!is_enter)
-            {
-                Resize_record* record = new Resize_record(this, i, dx, dy);
-                Recorder::instance()->record(record);
-                parent->update();
-            }
-        });
-        button->show();
-        buttons.append(button);
-    }
+    button_group = new Button_group(bound, parent, this);
+//    for(int i=0; i<4; i++)
+//    {
+//        Stretch_button* button = new Stretch_button(direction(i), parent);
+//        button->move(i == 1 || i == 2 ? bound.right()-Stretch_button::OFFSET : bound.left()-Stretch_button::OFFSET,
+//                     i == 2 || i == 3 ? bound.bottom()-Stretch_button::OFFSET : bound.top()-Stretch_button::OFFSET);
+//        connect(button, &Stretch_button::button_move, this, &Text_layer::on_button_move);
+//        connect(button, &Stretch_button::button_click, this, [=](bool is_enter, int dx, int dy){
+//            if(!is_enter)
+//            {
+//                Resize_record* record = new Resize_record(this, i, dx, dy);
+//                Recorder::instance()->record(record);
+//                parent->update();
+//            }
+//        });
+//        button->show();
+//        buttons.append(button);
+//    }
+    connect(button_group, &Button_group::button_move, this, &Text_layer::on_button_move);
 }
 
 Text_layer::~Text_layer()
 {
-    for(int i=0; i<buttons.size(); i++)
-    {
-        delete buttons[i];
-    }
+    button_group->deleteLater();
     paint_node* temp = root;
     while(temp != NULL)
     {
@@ -235,10 +208,8 @@ QString Text_layer::get_name()
 void Text_layer::get_focus()
 {
     has_focus = true;
-    for(int i=0; i<buttons.size(); i++)
-    {
-        buttons[i]->show();
-    }
+    button_group->show_buttons();
+    parent->update();
 }
 
 void Text_layer::lose_focus()
@@ -272,23 +243,11 @@ void Text_layer::lose_focus()
         parent->update();
         has_double_click = false;
     }
-    for(int i=0; i<buttons.size(); i++)
-    {
-        buttons[i]->hide();
-    }
+    button_group->hide_buttons();
     Flow_edit_panel::instance()->hide();
 }
 
-void Text_layer::move_to_loc()
-{
-    for(int i=0; i<buttons.size(); i++)
-    {
-        buttons[i]->move(i == 1 || i == 2 ? bound.right()-Stretch_button::OFFSET : bound.left()-Stretch_button::OFFSET,
-                     i == 2 || i == 3 ? bound.bottom()-Stretch_button::OFFSET : bound.top()-Stretch_button::OFFSET);
-    }
-}
-
-void Text_layer::on_button_move(Stretch_button::direction dir, int dx, int dy)
+void Text_layer::on_button_move(direction dir, int dx, int dy)
 {
     QRect temp = bounded_rect();
     temp.translate(-8, -8);
@@ -296,26 +255,10 @@ void Text_layer::on_button_move(Stretch_button::direction dir, int dx, int dy)
     temp.setHeight(temp.height() + 16);
     switch (dir)
     {
-    case Stretch_button::NE:
-        buttons[Stretch_button::NW]->translate(0, dy);
-        buttons[Stretch_button::SE]->translate(dx, 0);
-        bound.setTopRight(bound.topRight() + QPoint(dx, dy));
-        break;
-    case Stretch_button::NW:
-        buttons[Stretch_button::NE]->translate(0, dy);
-        buttons[Stretch_button::SW]->translate(dx, 0);
-        bound.setTopLeft(bound.topLeft() + QPoint(dx, dy));
-        break;
-    case Stretch_button::SE:
-        buttons[Stretch_button::NE]->translate(dx, 0);
-        buttons[Stretch_button::SW]->translate(0, dy);
-        bound.setBottomRight(bound.bottomRight() + QPoint(dx, dy));
-        break;
-    case Stretch_button::SW:
-        buttons[Stretch_button::SE]->translate(0, dy);
-        buttons[Stretch_button::NW]->translate(dx, 0);
-        bound.setBottomLeft(bound.bottomLeft() + QPoint(dx, dy));
-        break;
+    case NE:bound.setTopRight(bound.topRight() + QPoint(dx, dy));break;
+    case NW:bound.setTopLeft(bound.topLeft() + QPoint(dx, dy));break;
+    case SE:bound.setBottomRight(bound.bottomRight() + QPoint(dx, dy));break;
+    case SW:bound.setBottomLeft(bound.bottomLeft() + QPoint(dx, dy));break;
     }
     edit->resize(bound.width(), bound.height());
     edit->move(bound.x(), bound.y());
@@ -347,8 +290,8 @@ void Text_layer::double_click()
 
 void Text_layer::on_size_change(int index, int dx, int dy)
 {
-    this->buttons[index]->translate(dx, dy);
-    on_button_move((Stretch_button::direction)index, dx, dy);
+    button_group->move_button(index, dx, dy);
+    on_button_move((direction)index, dx, dy);
     QRect rect = bounded_rect();
     rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
     rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
@@ -359,10 +302,7 @@ void Text_layer::mouse_move(int dx, int dy)
 {
     if(is_press)
     {
-        for(int i=0; i<buttons.size(); i++)
-        {
-            buttons[i]->translate(dx, dy);
-        }
+        button_group->translate(dx, dy);
         edit->move(edit->x()+dx, edit->y()+dy);
         QRect temp = bound;
         bound.translate(dx, dy);

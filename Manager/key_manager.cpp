@@ -21,7 +21,7 @@ QList<QString> Key_manager::key_settings = {
     "Capture_window:one_window;49",
     "Capture_window:multi_window_separate;50",
     "Capture_window:multi_window_combine;51",
-    "Capture_window:move_all;16777249",//ctrl
+//    "Capture_window:move_all;16777249",//ctrl
     "Capture_window:enter_capture;16777221",//enter
     "Paint_window:undo;16777249,90",
     "Paint_window:redo;16777249,88",
@@ -345,6 +345,23 @@ void Key_manager::load()
         }
     }
 
+}
+
+void Key_manager::on_window_change(QString old_window, QString new_window)
+{
+    if(old_window != "")
+    {
+        window old = all_key[old_window];
+        for(auto iter=old.func.begin(); iter!=old.func.end(); iter++)//无论有键按下还是松开都会让原来的键失效
+        {
+            if(iter->is_key_equal(availiable_key) && iter->func != NULL)
+            {
+                iter->func(false);
+                break;
+            }
+        }
+    }
+    availiable_key.clear();
 }
 
 QHash<int, QString> Key_manager::key_type =

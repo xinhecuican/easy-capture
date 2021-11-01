@@ -73,9 +73,16 @@ void Paint_setting_panel::init_shape_setting()
     connect(delete_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(DELETE_SHAPE);
     });
+    QToolButton* rect_button = new QToolButton(this);
+    rect_button->setToolTip("矩形");
+    rect_button->setIcon(QIcon(":/image/rect.png"));
+    connect(rect_button, &QToolButton::clicked, this, [=](){
+        emit paint_shape(RECTANGLE);
+    });
     shape_layout->setOriginCorner(Qt::TopLeftCorner);
     shape_layout->addWidget(text_button, 0, 0);
     shape_layout->addWidget(delete_button, 0, 1);
+    shape_layout->addWidget(rect_button, 0, 2);
     spacer->add_layout(shape_layout);
     layout->addWidget(spacer);
 }
@@ -222,6 +229,7 @@ void Paint_setting_panel::init_disable_color_setting()
     });
     add_button->setIcon(QIcon(":/image/add.svg"));
     remove_button->setIcon(QIcon(":/image/delete.svg"));
+
     combo_layout->addWidget(combo_label);
     combo_layout->addWidget(combo);
     combo_layout->addWidget(add_button);

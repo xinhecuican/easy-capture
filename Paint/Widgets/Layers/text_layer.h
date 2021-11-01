@@ -9,6 +9,7 @@
 #include "Paint/Data/stretch_button.h"
 #include "text_edit.h"
 #include "Paint/Data/Common.h"
+#include "Paint/Data/button_group.h"
 
 class Text_layer : public Ilayer
 {
@@ -26,8 +27,9 @@ public:
     void double_click() override;
     void mouse_release() override;
     void on_size_change(int index, int dx, int dy) override;
+    bool focuseable() override{return true;}
 public slots:
-    void on_button_move(Stretch_button::direction dir, int dx, int dy);
+    void on_button_move(direction dir, int dx, int dy);
 //    void cursor_pos_change(int pos);
 private:
     struct draw_font_info
@@ -51,8 +53,7 @@ private:
     bool has_double_click;
     bool is_press;
     bool is_font_change;
-    PList<Stretch_button*> buttons;
-    void move_to_loc();
+    Button_group* button_group;
     void append_node(int len, QFont font, QColor color);
     void remove_addition_node();
 //    void remove_text(int len, int begin_pos);

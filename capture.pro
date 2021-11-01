@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Helper/debug.cpp \
     Helper/image_helper.cpp \
+    Helper/math.cpp \
     Helper/mstring.cpp \
     Helper/stackdumper.cpp \
     Manager/Data/update_data.cpp \
@@ -26,11 +27,14 @@ SOURCES += \
     Manager/key_manager.cpp \
     Manager/update.cpp \
     Manager/window_manager.cpp \
+    Paint/Data/button_group.cpp \
+    Paint/Data/scroll_button.cpp \
     Paint/Data/stretch_button.cpp \
     Paint/Widgets/Layer_list/list_item.cpp \
     Paint/Widgets/Layer_list/list_widget.cpp \
     Paint/Widgets/Layers/paint_layer.cpp \
     Paint/Widgets/Layers/picture_layer.cpp \
+    Paint/Widgets/Layers/rect_layer.cpp \
     Paint/Widgets/Layers/text_edit.cpp \
     Paint/Widgets/Layers/text_layer.cpp \
     Paint/Widgets/Panels/close_dialog.cpp \
@@ -51,6 +55,7 @@ SOURCES += \
     Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
     Style_widget/framelesshelper.cpp \
+    Style_widget/rotate_view.cpp \
     Style_widget/spacer.cpp \
     Style_widget/titlebar.cpp \
     Style_widget/tray.cpp \
@@ -78,8 +83,10 @@ HEADERS += \
     Helper/Pool/mpool.h \
     Helper/Reflect.h \
     Helper/Serialize.h \
+    Helper/common.h \
     Helper/debug.h \
     Helper/image_helper.h \
+    Helper/math.h \
     Helper/mstring.h \
     Helper/plist.h \
     Helper/stackdumper.h \
@@ -94,13 +101,16 @@ HEADERS += \
     Paint/Data/Common.h \
     Paint/Data/History_data.h \
     Paint/Data/Ilayer.h \
+    Paint/Data/button_group.h \
     Paint/Data/paint_data.h \
+    Paint/Data/scroll_button.h \
     Paint/Data/stretch_button.h \
     Paint/Widgets/IControl_layer_change.h \
     Paint/Widgets/Layer_list/list_item.h \
     Paint/Widgets/Layer_list/list_widget.h \
     Paint/Widgets/Layers/paint_layer.h \
     Paint/Widgets/Layers/picture_layer.h \
+    Paint/Widgets/Layers/rect_layer.h \
     Paint/Widgets/Layers/text_edit.h \
     Paint/Widgets/Layers/text_layer.h \
     Paint/Widgets/Panels/close_dialog.h \
@@ -122,6 +132,7 @@ HEADERS += \
     Panel/Widgets/tab_widget.h \
     Panel/setting.h \
     Style_widget/framelesshelper.h \
+    Style_widget/rotate_view.h \
     Style_widget/spacer.h \
     Style_widget/titlebar.h \
     Style_widget/tray.h \

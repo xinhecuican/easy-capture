@@ -337,8 +337,8 @@ TEST_AGAIN:;
 
     //计算配准图的四个顶点坐标
     CalcCorners(H, imageR);
-    qDebug() << corners.right_top.x << corners.left_top.x << corners.right_bottom.x << corners.left_bottom.x
-             << imageR.cols;
+//    qDebug() << corners.right_top.x << corners.left_top.x << corners.right_bottom.x << corners.left_bottom.x
+//             << imageR.cols;
 
     //将透视变换应用于图像
 

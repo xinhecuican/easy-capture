@@ -7,7 +7,7 @@ class Text_edit : public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    Text_edit(QWidget* parent);
+    Text_edit(QWidget* parent=nullptr);
     void inputMethodEvent(QInputMethodEvent* event) override;
     void keyPressEvent(QKeyEvent *e) override;
 signals:
