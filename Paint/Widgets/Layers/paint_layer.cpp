@@ -68,14 +68,14 @@ int Paint_layer::add_data(Paint_data* style, QPainterPath path)
     return now_index-1;
 }
 
-QRect Paint_layer::bounded_rect()
+QPolygon Paint_layer::bounded_rect()
 {
-    QRect rect;
+    QPolygon polygon;
     for(auto info : data)
     {
-        rect = rect.united(info.path.boundingRect().toRect());
+        polygon = polygon.united(info.path.boundingRect().toRect());
     }
-    return rect;
+    return polygon;
 }
 
 QString Paint_layer::get_name()

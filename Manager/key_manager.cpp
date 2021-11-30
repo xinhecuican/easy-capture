@@ -22,7 +22,7 @@ QList<QString> Key_manager::key_settings = {
     "Capture_window:multi_window_separate;50",
     "Capture_window:multi_window_combine;51",
 //    "Capture_window:move_all;16777249",//ctrl
-    "Capture_window:enter_capture;16777221",//enter
+    "Capture_window:enter_capture;16777220",//enter
     "Paint_window:undo;16777249,90",
     "Paint_window:redo;16777249,88",
     "Paint_window:save;16777249,83",

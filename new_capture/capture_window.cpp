@@ -13,6 +13,7 @@
 #include "window_fliter.h"
 #include "Helper/image_helper.h"
 #include<malloc.h>
+#include<QBitmap>
 
 bool Capture_window::end_scroll = false;
 
@@ -22,7 +23,7 @@ Capture_window::Capture_window(QWidget *parent) :
 {
     ui->setupUi(this);
     button_click = false;
-    is_first_capture = false;
+    is_first_capture = false;//自由截屏使用，已废弃
     scroll_image = QImage();
     pre_image = QImage();
     mouse_move_times = 0;
@@ -71,7 +72,6 @@ Capture_window::~Capture_window()
 void Capture_window::paintEvent(QPaintEvent *paint_event)
 {
     QPainter painter(this);
-
     if(Config::get_config(Config::free_capture) && button_click)
     {
         QPen pen;
@@ -82,18 +82,25 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
         painter.drawPath(free_paint_path);
         return;
     }
-    else if(Config::get_config(Config::scroll_capture))//活动窗口截屏
+    else if(Config::get_config(Config::scroll_capture))
     {
         QPen pen;
         pen.setColor(QColor(255, 0, 0));
         pen.setWidth(3);
         painter.setPen(pen);
         painter.setCompositionMode(QPainter::CompositionMode_Source);
-        painter.drawRect(active_window_bound);
         if(is_enter)
         {
+            QRect rect = active_window_bound;
+            rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
+            rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
+            painter.drawRect(rect);
             painter.drawText(active_window_bound.left(),
-                             active_window_bound.top() + active_window_bound.height()-20, "按Esc中止");
+                             active_window_bound.top() + active_window_bound.height()+20, "按Esc中止");
+        }
+        else
+        {
+            painter.drawRect(active_window_bound);
         }
         return;
     }
@@ -141,7 +148,6 @@ void Capture_window::load_key_event(QString name)
             {
                 if(Config::get_config(Config::scroll_capture))
                 {
-                    qDebug() << 1 << end_scroll;
                     end_scroll = true;
                     return;
                 }
@@ -196,81 +202,12 @@ void Capture_window::load_key_event(QString name)
         Key_manager::add_func(name, "enter_capture", [=](bool is_enter)
         {
             if(is_enter)
+            {
                 captured->on_click_ok();
+            }
         });
     }
 }
-
-/*
-bool Capture_window::combine_image(QImage image)
-{
-
-    if(scroll_image.height() == 0)
-    {
-        scroll_image = image;
-        pre_image = image;
-        return false;
-    }
-    cv::Mat img1 = QImage2Mat(scroll_image);
-    cv::Mat img2 = QImage2Mat(image);
-    Mat pre_img = QImage2Mat(pre_image);
-    int begin = 0;
-    int end = 0;
-    for(int i=0; i<pre_img.rows; i++)
-    {
-        int sum1 = 0;
-        int sum2 = 0;
-        uchar* data = pre_img.ptr<uchar>(i);
-        int cols = pre_img.cols * pre_img.channels();
-        for(int k=0; k<cols; k++)
-        {
-            sum1 += data[k];
-        }
-        data = img2.ptr<uchar>(i);
-        cols = pre_img.cols * pre_img.channels();
-        for(int k=0; k<cols; k++)
-        {
-            sum2 += data[k];
-        }
-        if(abs(sum1 - sum2) >= pre_img.rows/50)
-        {
-            begin = i;
-            break;
-        }
-    }
-
-    img2 = img2(Rect(0, begin, img2.cols, img2.rows-begin-end));
-    qDebug() << img2.cols << img2.rows;
-    img1 = img1(Rect(0, scroll_image.height()-pre_image.height(), scroll_image.width(), pre_image.height()));
-    Mat scroll_image1, scroll_image2;
-    cv::rotate(img1, scroll_image1, ROTATE_90_COUNTERCLOCKWISE);
-    cv::rotate(img2, scroll_image2, ROTATE_90_COUNTERCLOCKWISE);
-    imwrite("D:/temp1.png", img1);
-    imwrite("D:/temp2.png", scroll_image1);
-    if (img1.empty() || img2.empty())
-    {
-        cout << "Read image failed, please check again!" << endl;
-        return 1;
-    }
-    Mat pano;
-    if(SURF(scroll_image1, scroll_image2, pano))
-    {
-        qDebug() << "combine image failure";
-    }
-    cv::rotate(pano, pano, ROTATE_90_CLOCKWISE);
-    QImage temp_image = Mat2QImage(pano);
-    QImage ans_image = QImage(scroll_image.width(), scroll_image.height()-pre_image.height()+temp_image.height(),
-                              QImage::Format_RGB32);
-    QPainter painter(&ans_image);
-    painter.drawImage(QPoint(0, 0), scroll_image);
-    painter.drawImage(QPoint(0, scroll_image.height()-pre_image.height()), temp_image);
-    painter.end();
-    scroll_image = ans_image;
-    scroll_image.save("D:/temp.png");
-    pre_image = image;
-
-    return false;
-}*/
 
 void Capture_window::mouseMoveEvent(QMouseEvent *event)
 {
@@ -367,24 +304,17 @@ void Capture_window::mouseReleaseEvent(QMouseEvent *event)
         hide();
         QScreen * screen = QGuiApplication::primaryScreen();
         QPixmap p = screen->grabWindow(0);
-        QPixmap temp = p.copy();
-        temp.fill(Qt::transparent);
-        //p.fill(Qt::transparent);
-        QPainter painter(&temp);
-        painter.setCompositionMode(QPainter::CompositionMode_Source);
-        painter.drawPixmap(0, 0, p);
-        painter.setCompositionMode( QPainter::CompositionMode_DestinationIn );
-        painter.setBackgroundMode(Qt::OpaqueMode);
-        QPainterPath temp_path = QPainterPath();
-        temp_path.addRect(p.rect());
-        temp_path = temp_path.subtracted(free_paint_path.simplified());
-        painter.fillPath(temp_path, QColor(0, 0, 0, 0));
+        QPolygon polygon;
+        QPixmap mask = QPixmap(p.width(), p.height());
+        mask.fill(Qt::transparent);
+        QPainter painter(&mask);
+        painter.fillPath(free_paint_path.simplified(), QColor(1, 1, 1));
+        p.setMask(mask.createMaskFromColor(QColor(1, 1, 1), Qt::MaskOutColor));
         QRect rect = free_paint_path.boundingRect().toRect();
-        QPixmap temp_copy = temp.copy(rect);
+        QPixmap ans = p.copy(rect);
         rect.moveTo(0, 0);
         Window_manager::change_window("Paint_window");
-        Window_manager::get_window("Paint_window")->
-                set_pic(temp_copy, rect);
+        Window_manager::get_window("Paint_window")->set_pic(ans, rect);
         return;
     }
     QRect rect = QRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h());
@@ -413,7 +343,7 @@ void Capture_window::mouseReleaseEvent(QMouseEvent *event)
 void Capture_window::on_window_cancal()
 {
     button_click = false;
-    is_first_capture = true;
+//    is_first_capture = true;
     captured->reset();
     free_paint_path = QPainterPath();
     active_window_bound = QRect();
@@ -459,7 +389,7 @@ static inline HWND next_window(HWND window, enum window_search_mode mode)
 
 void Capture_window::on_window_select()
 {
-    Window_fliter::instance()->SnapshotAllWinRect();
+//    Window_fliter::instance()->SnapshotAllWinRect();
     /*if(Config::get_config(Config::active_window_capture))
     {
         is_enter = false;
@@ -570,7 +500,6 @@ void Capture_window::on_window_select()
                 else if(type == XGlobalHook::LBUTTON && !is_enter)
                 {
                     end_scroll = false;
-                    qDebug() << 2 << end_scroll;
                     is_enter = true;
                     *is_shield = true;
                     POINT point;
@@ -616,9 +545,10 @@ void Capture_window::set_scroll_info()
         });
         scroll_timer = new QTimer(this);
         connect(scroll_timer, &QTimer::timeout, this, [=](){
-            qDebug() << 3 << end_scroll;
             QScreen * screen = QGuiApplication::primaryScreen();
-            QPixmap pix = screen->grabWindow(WId(scroll_hwnd));
+            QWindow* mainWindow = QWindow::fromWinId(WId(scroll_hwnd));
+            QPixmap pix = screen->grabWindow(0, active_window_bound.x(), active_window_bound.y(),
+                                             active_window_bound.width(), active_window_bound.height());
             QImage image = pix.toImage();
 //            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
             bool success = false;
@@ -642,15 +572,13 @@ void Capture_window::set_scroll_info()
 
             //combine_image(pix.toImage());
             dispatcher->start(image);
-            QWindow* mainWindow = QWindow::fromWinId(WId(scroll_hwnd));
             QPoint window_point;
             if (mainWindow != nullptr)
             {
                window_point = mainWindow->framePosition();
             }
-
-            PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -240), MAKELPARAM(window_point.x()+cursor_point.x(),
-                                                                                   window_point.y()+cursor_point.y()));
+            PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -240), MAKELPARAM(active_window_bound.x()+cursor_point.x(),
+                                                                                   active_window_bound.y()+cursor_point.y()));
         });
     }
 }

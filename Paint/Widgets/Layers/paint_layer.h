@@ -21,7 +21,7 @@ public:
     int add_data(Paint_data* style, QPainterPath path);
     void set_name(QString name)override;
     QString get_name()override;
-    QRect bounded_rect()override;
+    QPolygon bounded_rect()override;
     void on_paint_change(int index, paint_info info) override;
     void clear();
     QPoint begin;

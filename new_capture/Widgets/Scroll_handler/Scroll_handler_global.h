@@ -7,6 +7,7 @@ public:
     Scroll_handler_global()
     {
         middle_width = 0;
+        delta_width = 0;
     }
 
     ~Scroll_handler_global();
@@ -29,7 +30,17 @@ public:
         }
         middle_width = (float)middle_width * 0.9 + (float)new_width * 0.1;
     }
+    void cal_delta_width(int new_width)
+    {
+        if(delta_width == 0)
+        {
+            delta_width = new_width;
+            return;
+        }
+        delta_width = (float)delta_width * 0.9 + (float)new_width * 0.1;
+    }
     int middle_width;
+    int delta_width;
 private:
     static Scroll_handler_global* _instance;
 };

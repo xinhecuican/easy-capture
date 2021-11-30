@@ -15,6 +15,7 @@ signals:
 private:
     bool is_text_brush;
     bool can_brush;
+    bool new_format_enable;
     int text_len;
     QTextCharFormat brush_format;
     font_data now_data;

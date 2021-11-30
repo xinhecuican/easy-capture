@@ -24,7 +24,7 @@ public:
     void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)override;
     void set_name(QString name) override;
     QPixmap get_pic();
-    QRect bounded_rect()override;
+    QPolygon bounded_rect() override;
     void on_size_change(int index, int dx, int dy) override;
     QString get_name() override;
     void main_layer_paint(QPainter* painter, QList<QColor> disable_color, bool is_save, int scroll_pos);

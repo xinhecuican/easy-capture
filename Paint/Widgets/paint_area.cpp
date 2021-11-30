@@ -19,6 +19,8 @@
 #include <QTextCodec>//转码
 #include<QScrollBar>
 #include "Paint/Widgets/Layers/rect_layer.h"
+#include "Manager/config.h"
+#include "Manager/window_manager.h"
 
 Paint_area::Paint_area()
 {
@@ -267,6 +269,12 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
         case RECTANGLE:
         {
             Rect_layer* rect_layer = new Rect_layer(this, shape_rect);
+            rect_layer->get_focus();
+            if(focus_layer != NULL)
+            {
+                focus_layer->lose_focus();
+            }
+            focus_layer = rect_layer;
             append_layer(rect_layer);
             break;
         }
@@ -357,10 +365,10 @@ QRect Paint_area::bounded_rect()
     QRect rect;
     for(int i=0; i<layers.size(); i++)
     {
-        rect = rect.united(layers[i]->bounded_rect());
+        rect = rect.united(layers[i]->bounded_rect().boundingRect());
     }
-    rect = rect.united(pic_layer->bounded_rect());
-    rect = rect.united(paint_layer->bounded_rect());
+    rect = rect.united(pic_layer->bounded_rect().boundingRect());
+    rect = rect.united(paint_layer->bounded_rect().boundingRect());
     return rect;
 }
 
@@ -376,7 +384,6 @@ void Paint_area::save(QString path)
         pic_save = true;
         QRect rect = bounded_rect();
         cv::Mat ans(rect.height(), rect.width(), CV_8UC4);
-        qDebug() << rect.height();
         if(rect.height() >= 32700)//图片过大需要切分
         {
             for(int i=0; i<rect.height(); i+=32700)
@@ -413,6 +420,11 @@ void Paint_area::save(QString path)
         cv::imwrite(path.toLocal8Bit().toStdString(), ans);
 
         is_save = false;
+                if(Config::get_config(Config::hide_to_tray))
+                {
+                    Window_manager::change_window("MainWindow");
+                    Window_manager::hide_now();
+                }
     });
     History::instance()->log(History_data::Persist, path);
 

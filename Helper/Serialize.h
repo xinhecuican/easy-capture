@@ -27,7 +27,7 @@ public:
         }
         catch (...)
         {
-            Debug::show_error_message("配置文件打开错误\n位置： Serialize::serialize");
+            Debug::debug_print_warning("配置文件打开错误\n位置： Serialize::serialize");
             file.close();
         }
         point->serialized(&jsonObject);
@@ -50,7 +50,7 @@ public:
             {
                 file.open(QIODevice::ReadOnly | QIODevice::Text);
             } catch (...) {
-                Debug::show_error_message("配置文件打开错误\n位置：Serialize::deserialize");
+                Debug::debug_print_warning("配置文件打开错误\n位置：Serialize::deserialize");
                 file.close();
                 return false;
             }
@@ -62,7 +62,7 @@ public:
                QJsonDocument jsonDoc(QJsonDocument::fromJson(allData, &json_error));
             if(json_error.error != QJsonParseError::NoError)
             {
-                Debug::show_error_message("配置文件打开错误\n位置：Serialize::deserialize");
+                Debug::debug_print_warning("配置文件打开错误\n位置：Serialize::deserialize");
                 return false;
             }
             QJsonObject rootObj = jsonDoc.object();
@@ -78,7 +78,7 @@ public:
         QJsonDocument jsonDoc(QJsonDocument::fromJson(data, &json_error));
         if(json_error.error != QJsonParseError::NoError)
         {
-            Debug::show_error_message("配置文件打开错误\n位置: Serailize::deserialize_data");
+            Debug::debug_print_warning("配置文件打开错误\n位置: Serailize::deserialize_data");
             return false;
         }
         QJsonObject rootObj = jsonDoc.object();
@@ -102,7 +102,7 @@ public:
         }
         catch (...)
         {
-            Debug::show_error_message("配置文件打开错误\n位置Serialize::append");
+            Debug::debug_print_warning("配置文件打开错误\n位置Serialize::append");
             file.close();
         }
         QByteArray allData = file.readAll();
@@ -112,7 +112,7 @@ public:
         QJsonDocument jsonDoc(QJsonDocument::fromJson(allData, &json_error));
         if(json_error.error != QJsonParseError::NoError)
         {
-            Debug::show_error_message("配置文件打开错误\n位置Serialize::append");
+            Debug::debug_print_warning("配置文件打开错误\n位置Serialize::append");
         }
         QJsonObject rootObj = jsonDoc.object();
         point->serialized(&rootObj);
@@ -123,7 +123,7 @@ public:
         }
         catch (...)
         {
-            Debug::show_error_message("配置文件打开错误\n位置Serialize::append");
+            Debug::debug_print_warning("配置文件打开错误\n位置Serialize::append");
             file.close();
         }
         file.write(jsonDoc.toJson());

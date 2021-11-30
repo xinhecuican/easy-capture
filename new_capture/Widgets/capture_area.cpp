@@ -8,6 +8,7 @@
 #include<QScreen>
 #include "Manager/config.h"
 #include "Manager/window_manager.h"
+#include<QBitmap>
 
 Capture_area::Capture_area(QWidget* parent):QWidget(parent)
 {
@@ -350,35 +351,26 @@ void Capture_area::control_point_position_change(int index, QList<int> position,
 void Capture_area::on_click_ok()
 {
     parent->hide();
-    QScreen * screen = QGuiApplication::primaryScreen();
+    QScreen* screen = QGuiApplication::primaryScreen();
     QPixmap p = screen->grabWindow(0);
-    QPixmap temp = p.copy();
-    temp.fill(Qt::transparent);
-    //p.fill(Qt::transparent);
-    QPainter painter(&temp);
-    painter.setCompositionMode(QPainter::CompositionMode_Source);
-    painter.drawPixmap(0, 0, p);
-    painter.setCompositionMode( QPainter::CompositionMode_DestinationIn );
-    painter.setBackgroundMode(Qt::OpaqueMode);
     QPainterPath path;
-    QPolygon transmit_polygon = QPolygon();
+    QPolygon polygon;
     for(int i=0; i<regions.size(); i++)
     {
         QPolygon temp_polygon = regions[i]->get_polygon();
         path.addPolygon(temp_polygon);
-        transmit_polygon = transmit_polygon.united(temp_polygon);
-        path = path.simplified();//防止绘制环形时有一条回到原点的线
+        polygon = polygon.united(temp_polygon);
     }
-    QPainterPath temp_path = QPainterPath();
-    temp_path.addRect(p.rect());
-    temp_path = temp_path.subtracted(path);
-    painter.fillPath(temp_path, QColor(0, 0, 0, 0));
-    QRect rect = transmit_polygon.boundingRect();
-    QPixmap temp_copy = temp.copy(rect);
+    QPixmap mask = QPixmap(p.width(), p.height());
+    mask.fill(Qt::transparent);
+    QPainter painter(&mask);
+    painter.fillPath(path, QColor(1, 1, 1));
+    p.setMask(mask.createMaskFromColor(QColor(1, 1, 1), Qt::MaskOutColor));
+    QRect rect = path.boundingRect().toRect();
+    QPixmap ans = p.copy(rect);
     rect.moveTo(0, 0);
     Window_manager::change_window("Paint_window");
-    Window_manager::get_window("Paint_window")->
-            set_pic(temp_copy, rect);
+    Window_manager::get_window("Paint_window")->set_pic(ans, rect);
 }
 
 void Capture_area::is_key_press(bool enter)

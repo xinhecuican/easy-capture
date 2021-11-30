@@ -123,7 +123,7 @@ QPixmap Picture_layer::get_pic()
     return picture;
 }
 
-QRect Picture_layer::bounded_rect()
+QPolygon Picture_layer::bounded_rect()
 {
     QRect temp = bound.translated(pic_rect.x(), pic_rect.y());
     temp.setWidth(pic_rect.width());
@@ -138,7 +138,7 @@ QString Picture_layer::get_name()
 
 void Picture_layer::on_button_move(direction dir, int dx, int dy)
 {
-    QRect temp = bounded_rect();
+    QRect temp = bounded_rect().boundingRect();
     temp.translate(-8, -8);
     temp.setWidth(temp.width() + 16);
     temp.setHeight(temp.height() + 16);
@@ -156,7 +156,7 @@ void Picture_layer::on_size_change(int index, int dx, int dy)
 {
     button_group->move_button(index, dx, dy);
     on_button_move((direction)index, dx, dy);
-    QRect rect = bounded_rect();
+    QRect rect = bounded_rect().boundingRect();
     rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
     rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
     parent->update(rect);

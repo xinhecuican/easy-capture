@@ -422,8 +422,7 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
     if(Config::get_config(Config::auto_copy_to_clipboard))
     {
         QClipboard *clip=QApplication::clipboard();
-
-        clip->setPixmap(pix.copy(rect));
+        clip->setPixmap(pix);
     }
     QScreen* screen = QGuiApplication::primaryScreen();
     if(rect.width()+100 >= (double)screen->geometry().width()

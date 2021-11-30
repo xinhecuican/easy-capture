@@ -10,16 +10,21 @@ Text_edit::Text_edit(QWidget* parent):QPlainTextEdit(parent)
     format.setFont(Flow_edit_panel::instance()->get_font());
     setCurrentCharFormat(format);
     can_brush = false;
+    new_format_enable = false;
     connect(Flow_edit_panel::instance(), &Flow_edit_panel::font_change, this, [=](){
         QTextCharFormat format;
         format.setForeground(Flow_edit_panel::instance()->get_color());
         format.setFont(Flow_edit_panel::instance()->get_font());
         setCurrentCharFormat(format);
+        new_format_enable = true;
         this->setFocus();
     });
     connect(this, &QPlainTextEdit::cursorPositionChanged, this, [=](){
-        Flow_edit_panel::instance()->set_format(textCursor().charFormat().font(),
+        if(!new_format_enable)
+        {
+            Flow_edit_panel::instance()->set_format(textCursor().charFormat().font(),
                                                 textCursor().charFormat().foreground().color());
+        }
     });
     connect(this, &QPlainTextEdit::copyAvailable, this, [=](bool yes){
         if(is_text_brush && yes)
@@ -54,6 +59,7 @@ void Text_edit::inputMethodEvent(QInputMethodEvent* event)
     {
         textCursor().removeSelectedText();
     }
+    new_format_enable = false;
     insert_text(event->commitString());
 }
 
@@ -74,6 +80,7 @@ void Text_edit::keyPressEvent(QKeyEvent *e)
         cursor.deletePreviousChar();
         return;
     }
+    new_format_enable = false;
     insert_text(text);
 }
 

@@ -22,7 +22,7 @@ public:
     void lose_focus() override;
     void mouse_enter(int key_code) override;
     void mouse_move(int dx, int dy) override;
-    QRect bounded_rect()override;
+    QPolygon bounded_rect()override;
     QString get_name()override;
     void double_click() override;
     void mouse_release() override;

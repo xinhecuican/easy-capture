@@ -5,6 +5,22 @@ Rect_layer::Rect_layer(QWidget* parent, QRect rect) : Ilayer(parent)
 {
     this->parent = parent;
     this->bound = rect;
+    Button_group* group = new Button_group(rect, parent, this);
+    connect(group, &Button_group::move_button, this, [=](int index, int dx, int dy)
+    {
+        QRect temp = bounded_rect().boundingRect();
+        temp.translate(-8, -8);
+        temp.setWidth(temp.width() + 16);
+        temp.setHeight(temp.height() + 16);
+        switch (index)
+        {
+        case NE:bound.setTopRight(bound.topRight() + QPoint(dx, dy));break;
+        case NW:bound.setTopLeft(bound.topLeft() + QPoint(dx, dy));break;
+        case SE:bound.setBottomRight(bound.bottomRight() + QPoint(dx, dy));break;
+        case SW:bound.setBottomLeft(bound.bottomLeft() + QPoint(dx, dy));break;
+        }
+        parent->update(temp);
+    });
 }
 
 void Rect_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_save)
@@ -27,7 +43,17 @@ void Rect_layer::set_name(QString name)
     this->name = name;
 }
 
-QRect Rect_layer::bounded_rect()
+QPolygon Rect_layer::bounded_rect()
 {
-    return bound;
+    QPolygon polygon = QPolygon(bound);
+    QRect inner_rect = bound;
+    inner_rect.setTopLeft(inner_rect.topLeft() + QPoint(10, 10));
+    inner_rect.setBottomRight(inner_rect.bottomRight() + QPoint(-10, -10));
+    polygon = polygon.subtracted(QPolygon(inner_rect));
+    return polygon;
+}
+
+bool Rect_layer::focuseable()
+{
+    return true;
 }

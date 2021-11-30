@@ -41,9 +41,11 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.3.3",
-"https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/0.3.2.zip", "",
-                                              "2. 修复若干bug");
+Update_data Update::now_version = Update_data("0.3.5",
+"https://gitee.com/xinhecuican/Resources/raw/master/easy_capture_version/0.3.5.zip", "",
+                                              "1. 保存时自动隐藏\n"
+                                              "2. 修复了截图时有黑边的问题\n"
+                                              "3. 扩充了滚动截图的适用范围，并稍微改进算法");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
@@ -77,7 +79,7 @@ void Update::deserialized(QJsonObject *json)
 void Update::check_update()
 {
     Config::set_config(Config::last_update_time, QDateTime::currentSecsSinceEpoch() / 60);
-    start_request(QUrl("https://cdn.jsdelivr.net/gh/xinhecuican/Resources/easy_capture_version/update.json"));
+    start_request(QUrl("https://gitee.com/xinhecuican/Resources/raw/master/easy_capture_version/update.json"));
 }
 
 void Update::start_request(const QUrl &url)

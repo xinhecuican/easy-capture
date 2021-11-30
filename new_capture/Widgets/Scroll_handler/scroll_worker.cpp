@@ -256,6 +256,7 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans, int img_he
 
     int process_width = 0;
     int process_sum = 0;
+    int delta_width = 0;
     bool is_success = true;
 TEST_AGAIN:;
     // Lowe's algorithm,获取优秀匹配点
@@ -277,10 +278,12 @@ TEST_AGAIN:;
                 history_influence = false;
             }
             //排除相同位置的干扰
-            float dis = (point1.x - point2.x) * (point1.x - point2.x) + (point1.y - point2.y) * (point1.y - point2.y);
-            if (dis >= 10 && std::abs(point1.y-point2.y) <= 30
-                    && matchePoints[i][0].distance < 0.33 * matchePoints[i][1].distance && history_influence)
+            float dis = std::abs(point1.x - point2.x);
+            if (dis >= 10 && dis && std::abs(point1.y-point2.y) <= 5
+                    && dis > (Scroll_handler_global::instance()->delta_width >> 1) &&
+                    matchePoints[i][0].distance < 0.33 * matchePoints[i][1].distance && history_influence)
             {
+                delta_width += dis;
                 process_width += keyPointL[i1].pt.x;
                 process_sum++;
                 GoodMatchePoints.push_back(matchePoints[i][0]);
@@ -302,7 +305,7 @@ TEST_AGAIN:;
         return -1;
     }
     process_width /= process_sum;
-
+    delta_width /= process_sum;
 
     //画出匹配图
 //    cv::Mat first_match;
@@ -321,7 +324,7 @@ TEST_AGAIN:;
 
     //计算单应矩阵H，并细化匹配结果
     //射影变换:获取图像1到图像2的投影映射矩阵 尺寸为3*3
-    if(imagePointsL.size() <= 0 || imagePointsR.size() <= 0)
+    if(imagePointsL.size() < 4 || imagePointsR.size() < 4)
     {
         qDebug() << "no match points";
         return -1;
@@ -381,6 +384,7 @@ TEST_AGAIN:;
     //ImShow("dst", dst);
     ans = dst;
     Scroll_handler_global::instance()->cal_middle_width(process_width);
+    Scroll_handler_global::instance()->cal_delta_width(delta_width);
 
     //cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", ans);
     return 0;

@@ -86,7 +86,6 @@ void Window_manager::change_window(QString name)
             window_list[active_window].window->hide();
             window_list[active_window].window->on_window_cancal();
         }
-
         Key_manager::on_window_change(active_window, name);
         previous_window = active_window;
         active_window = name;
