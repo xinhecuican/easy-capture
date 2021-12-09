@@ -58,7 +58,7 @@ private:
     QImage pre_image;
     bool is_finish;
     void set_scroll_info();
-
+    bool window_valid;
 };
 
 #endif // CAPTURE_WINDOW_H

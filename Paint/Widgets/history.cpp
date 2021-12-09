@@ -58,11 +58,9 @@ void History::log(History_data::save_type type, QString file_name)
 //            last_directory = file_name.mid(0, index+1);
             last_directory = file_name;
             QDomNodeList list = doc.elementsByTagName("history");
-            qDebug() << list.size();
             list.at(0).toElement().setAttribute("directory", last_directory);
         }
         QTextStream out_stream(&file);
-        qDebug() << doc.childNodes().count();
         doc.save(out_stream,4); //缩进4格
         file.close();
     }

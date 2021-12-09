@@ -41,11 +41,10 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.3.5",
-"https://gitee.com/xinhecuican/Resources/raw/master/easy_capture_version/0.3.5.zip", "",
-                                              "1. 保存时自动隐藏\n"
-                                              "2. 修复了截图时有黑边的问题\n"
-                                              "3. 扩充了滚动截图的适用范围，并稍微改进算法");
+Update_data Update::now_version = Update_data("0.3.6",
+"https://gitee.com/xinhecuican/Resources/raw/master/easy_capture_version/0.3.6.zip", "",
+                                              "1. 现在可以在qq上截图了\n"
+                                              "2. 进一步降低长时间不使用的内存占用和cpu消耗");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {

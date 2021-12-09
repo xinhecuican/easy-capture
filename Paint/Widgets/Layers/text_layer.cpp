@@ -185,6 +185,8 @@ EXIT:;
     {
         QPen pen;
         pen.setStyle(Qt::DotLine);
+        pen.setColor(QColor(176, 224, 230));
+        pen.setWidth(2);
         painter->setPen(pen);
         painter->drawRect(bound);
     }
@@ -192,7 +194,9 @@ EXIT:;
 
 QPolygon Text_layer::bounded_rect()
 {
-    return bound;
+    QPolygon polygon;
+    polygon = polygon.united(bound);
+    return polygon;
 }
 
 void Text_layer::set_name(QString name)
@@ -385,117 +389,3 @@ void Text_layer::remove_addition_node()
     }
     now->next = NULL;
 }
-
-//void Text_layer::cursor_pos_change(int pos)
-//{
-//    int now = 0;
-//    paint_node* temp = root->next;
-//    while(temp != NULL)
-//    {
-//        now += temp->len;
-//        if(now > pos)
-//        {
-//            this->now = temp;
-//            this->now_begin_pos = now - temp->len;
-//            break;
-//        }
-//        temp = temp->next;
-//    }
-//}
-
-//void Text_layer::remove_text(int len, int begin_pos)
-//{
-//    QTextCursor cursor = edit->textCursor();
-//    if(cursor.position() != begin_pos)
-//    {
-//        cursor_pos_change(begin_pos);
-//    }
-//    paint_node* temp_now;
-//    if(now_begin_pos == begin_pos)
-//    {
-//        if(now == root->next)
-//        {
-//            temp_now = NULL;
-//        }
-//        else
-//        {
-//            temp_now = now->prev;
-//            now_begin_pos -= now->prev->len;
-//        }
-//    }
-//    else
-//    {
-//        temp_now = now;
-//    }
-//    int can_remove_len = now->len - begin_pos + now_begin_pos;
-//    paint_node* temp = now;
-//    paint_node* temp2 = NULL;
-//    if(can_remove_len > len)
-//    {
-//        now->len -= len;
-//        goto DESIDE_NOW;
-//    }
-//    else
-//    {
-//        temp = now->next;
-//        now->len -= can_remove_len;
-//        if(now_begin_pos == begin_pos)
-//        {
-//            remove_node(now);
-//        }
-//    }
-//    while(len > 0 && temp != NULL)
-//    {
-//        if(temp->len > len)
-//        {
-//            len -= len;
-//            temp->len -= len;
-//            break;
-//        }
-//        else
-//        {
-//            len -= temp->len;
-//            temp2 = temp;
-//            temp = temp->next;
-//            remove_node(temp2);
-//        }
-//    }
-
-//DESIDE_NOW:;
-//    if(temp_now == NULL)
-//    {
-//        paint_node* new_node = new paint_node;
-//        new_node->data = now_data;
-//        is_font_change = false;
-//        new_node->len = 0;
-//        new_node->next = root->next;
-//        root->next = now;
-//        if(new_node->next != NULL)
-//        {
-//            new_node->prev = new_node;
-//        }
-//        now_begin_pos = 0;
-//    }
-//    else
-//    {
-//        now = temp_now;
-//    }
-//}
-
-//void Text_layer::remove_node(paint_node *node)
-//{
-//    if(node == root->next)
-//    {
-//        root->next = node->next;
-//        delete node;
-//    }
-//    else
-//    {
-//        if(node->next != NULL)
-//        {
-//            node->next->prev = node->prev;
-//        }
-//        node->prev->next = node->next;
-//        delete node;
-//    }
-//}

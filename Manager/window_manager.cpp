@@ -5,6 +5,7 @@
 #include<QApplication>
 #include<QThread>
 #include "key_manager.h"
+#include "main_fliter.h"
 
 QMap<QString, Window_manager::Window_data> Window_manager::window_list =
         QMap<QString, Window_manager::Window_data>();
@@ -39,6 +40,10 @@ void Window_manager::control_window_close()
     {
         temp_list[i]->on_window_close();
         temp_list[i]->deleteLater();
+    }
+    if(window_list.size() == 0)
+    {
+        Main_fliter::instance()->stop_timer();
     }
 }
 
@@ -187,6 +192,10 @@ void Window_manager::show_now()
     is_hidden = false;
     window_list[active_window].window->show();
     window_list[active_window].window->setWindowFlag(Qt::WindowSystemMenuHint, true);
+    if(!Main_fliter::instance()->is_timer_run())
+    {
+        Main_fliter::instance()->start_timer();
+    }
 //    window_list["MainWindow"].window->show();
     //window_list["MainWindow"].window->hide();
 }

@@ -41,6 +41,10 @@ public:
     }
     QImage ans_image;
     int SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans, int img_height);
+    bool first_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans);
+    bool second_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans);
+    int process_width;
+    int delta_width;
 };
 
 #endif // SCROLL_WORKER_H

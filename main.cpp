@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     Reflect::registerClass<Setting>();
     Reflect::registerClass<Capture_window>();
     Reflect::registerClass<Paint_window>();
-    Main_fliter* fliter = new Main_fliter();
+    Main_fliter* fliter = Main_fliter::instance();
     a.installEventFilter(fliter);//使用mainwindow上的eventfliter
     a.installNativeEventFilter(fliter);
     a.setQuitOnLastWindowClosed(false);

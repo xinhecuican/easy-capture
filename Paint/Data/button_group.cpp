@@ -7,6 +7,7 @@ Button_group::Button_group(QRect rect, QWidget* parent, Ilayer* owner) : QWidget
     this->bound = rect;
     this->parent = parent;
     this->owner = owner;
+    buttons = QList<Stretch_button*>();
     if(abs(bound.top() - bound.bottom()) >= 10 && abs(bound.left() - bound.right()) >= 10)
     {
         set_buttons();

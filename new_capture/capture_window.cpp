@@ -14,7 +14,7 @@
 #include "Helper/image_helper.h"
 #include<malloc.h>
 #include<QBitmap>
-
+#include<stdio.h>
 bool Capture_window::end_scroll = false;
 
 Capture_window::Capture_window(QWidget *parent) :
@@ -31,6 +31,7 @@ Capture_window::Capture_window(QWidget *parent) :
 
     is_finish = false;
     begin_waiting = false;
+    window_valid = false;
 
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -91,12 +92,22 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
         painter.setCompositionMode(QPainter::CompositionMode_Source);
         if(is_enter)
         {
-            QRect rect = active_window_bound;
-            rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
-            rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
-            painter.drawRect(rect);
-            painter.drawText(active_window_bound.left(),
-                             active_window_bound.top() + active_window_bound.height()+20, "按Esc中止");
+            if(window_valid)
+            {
+                QRect rect = active_window_bound;
+                painter.drawRect(rect);
+                painter.drawText(active_window_bound.left(),
+                                 active_window_bound.top() + active_window_bound.height()-20, "按Esc中止");
+            }
+            else
+            {
+                QRect rect = active_window_bound;
+                rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
+                rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
+                painter.drawRect(rect);
+                painter.drawText(active_window_bound.left(),
+                                 active_window_bound.top() + active_window_bound.height()+20, "按Esc中止\n请不要移动鼠标");
+            }
         }
         else
         {
@@ -361,7 +372,6 @@ static bool check_window_valid(HWND window, enum window_search_mode mode)
     if (/*!IsWindowVisible(window) ||*/
         (mode == EXCLUDE_MINIMIZED && IsIconic(window)))
         return false;
-
     GetClientRect(window, &rect);
     styles    = (DWORD)GetWindowLongPtr(window, GWL_STYLE);
     ex_styles = (DWORD)GetWindowLongPtr(window, GWL_EXSTYLE);
@@ -372,7 +382,6 @@ static bool check_window_valid(HWND window, enum window_search_mode mode)
         return false;
     if (mode == EXCLUDE_MINIMIZED && (rect.bottom == 0 || rect.right == 0))
         return false;
-
     return true;
 }
 
@@ -510,13 +519,30 @@ void Capture_window::on_window_select()
                     cursor_point.setX(point.x);
                     cursor_point.setY(point.y);
                     scroll_hwnd = WindowFromPoint(point);
-                    /*HDC hdc = GetDC(scroll_hwnd);
-                    TEXTMETRIC tm;
-                    GetTextMetrics(hdc, &tm);
-                    height_char = tm.tmHeight + tm.tmExternalLeading;
-                    ReleaseDC(scroll_hwnd, hdc);*/
+                    QScreen * screen = QGuiApplication::primaryScreen();
+                    QPixmap pix = screen->grabWindow(WId(scroll_hwnd));
+                    QImage image = pix.toImage();
+                    for(int i=0; i<image.height(); i++)
+                    {
+                        for(int k=0; k<image.width(); k++)
+                        {
+                            if(image.pixel(k, i) != 0xff000000)
+                            {
+                                window_valid = true;
+                                goto WINDOW_VALID_OUT;
+                                }
+                        }
+                    }
+                    window_valid = false;
+
+WINDOW_VALID_OUT:;
                     update();
-                    scroll_timer->start(Config::get_config(Config::capture_interval));
+                    int time = Config::get_config(Config::capture_interval);
+                    if(!window_valid)
+                    {
+                        time = 300;
+                    }
+                    scroll_timer->start(time);
                 }
                 else if(type == XGlobalHook::RBUTTON && !is_enter)
                 {
@@ -546,11 +572,19 @@ void Capture_window::set_scroll_info()
         scroll_timer = new QTimer(this);
         connect(scroll_timer, &QTimer::timeout, this, [=](){
             QScreen * screen = QGuiApplication::primaryScreen();
+            QPixmap pix;
+            if(!window_valid)
+            {
+                pix = screen->grabWindow(0, active_window_bound.x(), active_window_bound.y(),
+                                                 active_window_bound.width(), active_window_bound.height());
+            }
+            else
+            {
+                pix = screen->grabWindow(WId(scroll_hwnd));
+            }
             QWindow* mainWindow = QWindow::fromWinId(WId(scroll_hwnd));
-            QPixmap pix = screen->grabWindow(0, active_window_bound.x(), active_window_bound.y(),
-                                             active_window_bound.width(), active_window_bound.height());
             QImage image = pix.toImage();
-//            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
+
             bool success = false;
             cv::Mat mat1 = Image_helper::QImage2Mat(pre_image);
             if(mat1.cols != 0)
@@ -571,14 +605,29 @@ void Capture_window::set_scroll_info()
             pre_image = image;
 
             //combine_image(pix.toImage());
+//            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
             dispatcher->start(image);
             QPoint window_point;
             if (mainWindow != nullptr)
             {
                window_point = mainWindow->framePosition();
             }
-            PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -240), MAKELPARAM(active_window_bound.x()+cursor_point.x(),
-                                                                                   active_window_bound.y()+cursor_point.y()));
+            if(!window_valid)
+            {
+                INPUT inputs[1] = {};
+                ZeroMemory(inputs, sizeof(inputs));
+                inputs[0].type = INPUT_MOUSE;
+                inputs[0].mi.mouseData = -240;
+                inputs[0].mi.dwFlags = MOUSEEVENTF_WHEEL;
+                inputs[0].mi.dx = 0;
+                inputs[0].mi.dy = 0;
+                SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+            }
+            else
+            {
+                PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -240), MAKELPARAM(window_point.x()+cursor_point.x(),
+                                                                                   window_point.y()+cursor_point.y()));
+            }
         });
     }
 }

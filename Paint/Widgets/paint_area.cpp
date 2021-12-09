@@ -212,7 +212,7 @@ void Paint_area::mousePressEvent(QMouseEvent *event)
     case SHAPE:
         if(focus_layer != NULL)
         {
-            if(focus_layer->bounded_rect().contains(event->pos()))
+            if(focus_layer->bounded_rect().containsPoint(event->pos(), Qt::OddEvenFill))
             {
                 focus_layer->mouse_enter(event->button());
             }
@@ -268,6 +268,10 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
         }
         case RECTANGLE:
         {
+            if(shape_rect.width() < 10 && shape_rect.height()<10)
+            {
+                break;
+            }
             Rect_layer* rect_layer = new Rect_layer(this, shape_rect);
             rect_layer->get_focus();
             if(focus_layer != NULL)
@@ -561,7 +565,7 @@ void Paint_area::find_focus(QPoint point)
 {
     for (Ilayer* layer : layers)
     {
-        if(layer->focuseable() && layer->bounded_rect().contains(point))
+        if(layer->focuseable() && layer->bounded_rect().containsPoint(point, Qt::OddEvenFill))
         {
             layer->get_focus();
             focus_layer = layer;
@@ -572,7 +576,7 @@ void Paint_area::find_focus(QPoint point)
 
 void Paint_area::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if(focus_layer != NULL && focus_layer->bounded_rect().contains(event->pos()))
+    if(focus_layer != NULL && focus_layer->bounded_rect().containsPoint(event->pos(), Qt::OddEvenFill))
     {
         focus_layer->double_click();
     }
