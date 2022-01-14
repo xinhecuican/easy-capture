@@ -9,12 +9,14 @@
 #include<QDebug>
 
 Flow_edit_panel* Flow_edit_panel::_instance = NULL;
+QFont Flow_edit_panel::default_font = QFont("宋体", 12);
 
 Flow_edit_panel::Flow_edit_panel()
 {
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     setWindowTitle("字体样式选择");
     color = QColor(0, 0, 0);
+    font = default_font;
     QToolButton* brush_button = new QToolButton(this);
     brush_button->setIcon(QIcon(":/image/brush.png"));
     brush_button->setToolTip("格式刷");
@@ -67,7 +69,6 @@ Flow_edit_panel::Flow_edit_panel()
     m_ComboBox->setStyleSheet("QComboBox{combobox-popup: 0;}");	//linux系统上，防止下拉框过长
     m_ComboBox->setMaxVisibleItems(10);	//下拉最大高度
     m_ComboBox->setCurrentText("宋体");
-    font.setFamily("宋体");
     connect(m_ComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
             , this, [=](const QString& text){
         font.setFamily(text);
@@ -80,7 +81,6 @@ Flow_edit_panel::Flow_edit_panel()
     QList<QString> width_text = {"2", "3", "4", "5", "6", "8", "10", "12", "14", "16", "18", "20"};
     width_button->addItems(width_text);
     width_button->setEditable(true);
-    font.setPointSize(12);
     width_button->setCurrentText(QString::number(font.pointSize()));
     connect(width_button, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
             , this, [=](const QString& text){

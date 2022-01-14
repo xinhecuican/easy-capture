@@ -10,7 +10,7 @@
 #include<QGraphicsProxyWidget>
 #include "Style_widget/rotate_view.h"
 
-Text_layer::Text_layer(QRect bound_rect, QWidget* parent):Ilayer(parent)
+Text_layer::Text_layer(QPoint begin_point, QWidget* parent):Ilayer(parent)
 {
     this->parent = parent;
     is_font_change = false;
@@ -24,38 +24,25 @@ Text_layer::Text_layer(QRect bound_rect, QWidget* parent):Ilayer(parent)
     edit->setStyleSheet("background:transparent;");
     edit->setFocusPolicy(Qt::StrongFocus);
     edit->setReadOnly(false);
-    edit->setBackgroundVisible(false);
-    edit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
-    edit->document()->setDefaultTextOption(QTextOption(Qt::AlignHCenter));
+    edit->setLineWrapMode(QTextEdit::LineWrapMode::NoWrap);
     edit->hide();
 
-    this->bound = bound_rect;
+    this->bound = QRect(begin_point, QSize(60, 32));
     this->has_focus = false;
     this->has_double_click = false;
-    button_group = new Button_group(bound, parent, this);
-//    for(int i=0; i<4; i++)
-//    {
-//        Stretch_button* button = new Stretch_button(direction(i), parent);
-//        button->move(i == 1 || i == 2 ? bound.right()-Stretch_button::OFFSET : bound.left()-Stretch_button::OFFSET,
-//                     i == 2 || i == 3 ? bound.bottom()-Stretch_button::OFFSET : bound.top()-Stretch_button::OFFSET);
-//        connect(button, &Stretch_button::button_move, this, &Text_layer::on_button_move);
-//        connect(button, &Stretch_button::button_click, this, [=](bool is_enter, int dx, int dy){
-//            if(!is_enter)
-//            {
-//                Resize_record* record = new Resize_record(this, i, dx, dy);
-//                Recorder::instance()->record(record);
-//                parent->update();
-//            }
-//        });
-//        button->show();
-//        buttons.append(button);
-//    }
-    connect(button_group, &Button_group::button_move, this, &Text_layer::on_button_move);
+    connect(edit, &Text_edit::sizeChange, this, [=](int width, int height){
+        resize(width, height);
+        bound.setSize(QSize(width, height));
+        update();
+    });
+    double_click();
+//    button_group = new Button_group(bound, parent, this);
+//    connect(button_group, &Button_group::button_move, this, &Text_layer::on_button_move);
 }
 
 Text_layer::~Text_layer()
 {
-    button_group->deleteLater();
+//    button_group->deleteLater();
     paint_node* temp = root;
     while(temp != NULL)
     {
@@ -100,15 +87,10 @@ void Text_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_s
             for(int i=0; i<temp_str.size(); i++)
             {
                 now_width += metrics.horizontalAdvance(temp_str.at(i));
-                if(now_width + col_pos > text_bound.width() || temp_str.at(i) == '\xa')
+                if(temp_str.at(i) == '\xa')
                 {
                     int now_len = 0;
-                    if(temp_str.at(i) == '\xa')
-                    {
-                        now_len = (text_bound.width() + metrics.horizontalAdvance(temp_str.at(i)) - now_width - col_pos)/2;
-                        col_pos += now_len;
-                    }
-                    if(col_pos != 0)
+                    if(addition_data.size() != 0)
                     {
                         QFont save_font = painter->font();
                         QColor save_color = painter->pen().color();
@@ -136,18 +118,7 @@ void Text_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_s
                     now_height += next_height;
                     next_height = metrics.height();
                     col_pos = 0;
-                    if(temp_str.at(i) == '\xa')
-                    {
-                        now_width = 0;
-                    }
-                    else
-                    {
-                        now_width = metrics.horizontalAdvance(temp_str.at(i));
-                    }
-                    if(now_height + next_height > text_bound.height())
-                    {
-                        goto EXIT;
-                    }
+                    now_width = 0;
                 }
                 insert_str.append(temp_str.at(i));
             }
@@ -165,7 +136,7 @@ void Text_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_s
         }
         if(col_pos != 0)//还有剩余数据
         {
-            int begin_col_pos = (text_bound.width() - col_pos)/2;
+            int begin_col_pos = 0;
             for(int i=0; i<addition_data.size(); i++)
             {
                 painter->setFont(addition_data[i].font);
@@ -179,7 +150,6 @@ void Text_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_s
                 begin_col_pos += addition_data[i].len;
             }
         }
-EXIT:;
     }
     if(!is_save && has_focus)
     {
@@ -212,7 +182,7 @@ QString Text_layer::get_name()
 void Text_layer::get_focus()
 {
     has_focus = true;
-    button_group->show_buttons();
+//    button_group->show_buttons();
     parent->update();
 }
 
@@ -243,11 +213,13 @@ void Text_layer::lose_focus()
         }
         remove_addition_node();
         str = edit->toPlainText();
+        resize(edit->size());
+        bound.setSize(edit->size());
         edit->hide();
         parent->update();
         has_double_click = false;
     }
-    button_group->hide_buttons();
+//    button_group->hide_buttons();
     Flow_edit_panel::instance()->hide();
 }
 
@@ -306,7 +278,7 @@ void Text_layer::mouse_move(int dx, int dy)
 {
     if(is_press)
     {
-        button_group->translate(dx, dy);
+//        button_group->translate(dx, dy);
         edit->move(edit->x()+dx, edit->y()+dy);
         QRect temp = bound;
         bound.translate(dx, dy);

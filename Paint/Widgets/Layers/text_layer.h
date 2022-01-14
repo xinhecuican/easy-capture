@@ -14,7 +14,7 @@
 class Text_layer : public Ilayer
 {
 public:
-    Text_layer(QRect bound_rect, QWidget* parent=nullptr);
+    Text_layer(QPoint begin_point, QWidget* parent=nullptr);
     ~Text_layer();
     void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)override;
     void set_name(QString name)override;

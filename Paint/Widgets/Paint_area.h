@@ -8,6 +8,7 @@
 #include "Paint/Data/Ilayer.h"
 #include "Paint/Data/Common.h"
 #include<QScrollArea>
+#include<QMainWindow>
 
 class Paint_area : public QWidget
 {

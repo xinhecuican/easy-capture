@@ -19,6 +19,7 @@ Update::Update()
     manager = new QNetworkAccessManager(this);
     reconnect_times = 0;
     timer = new QTimer(this);
+    timeout = new Reply_timeout(10000);
     connect(timer, &QTimer::timeout, this, [=](){
         reconnect_times++;
         if(reconnect_times > 5)
@@ -89,7 +90,6 @@ void Update::start_request(const QUrl &url)
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
     manager->clearAccessCache();
     reply = manager->get(request);
-    timeout = new Reply_timeout(10000);
     timeout->reset(reply, 10000);
     connect(timeout, &Reply_timeout::timeout, this, [=](){
         qDebug() << "timeout";

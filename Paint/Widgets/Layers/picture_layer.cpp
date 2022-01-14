@@ -128,7 +128,9 @@ QPolygon Picture_layer::bounded_rect()
     QRect temp = bound.translated(pic_rect.x(), pic_rect.y());
     temp.setWidth(pic_rect.width());
     temp.setHeight(pic_rect.height());
-    return temp;
+    QPolygon ans;
+    ans = ans.united(temp);
+    return ans;
 }
 
 QString Picture_layer::get_name()

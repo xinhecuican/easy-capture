@@ -21,6 +21,7 @@
 #include "Paint/Widgets/Layers/rect_layer.h"
 #include "Manager/config.h"
 #include "Manager/window_manager.h"
+#include<QLabel>
 
 Paint_area::Paint_area()
 {
@@ -216,12 +217,6 @@ void Paint_area::mousePressEvent(QMouseEvent *event)
             {
                 focus_layer->mouse_enter(event->button());
             }
-            else
-            {
-                focus_layer->lose_focus();
-                focus_layer = NULL;
-                find_focus(event->pos());
-            }
         }
         else
         {
@@ -247,21 +242,24 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
         break;
     case SHAPE:
     {
+        if(focus_layer != NULL && !focus_layer->bounded_rect().containsPoint(event->pos(), Qt::OddEvenFill))
+        {
+            focus_layer->lose_focus();
+            focus_layer = NULL;
+            find_focus(event->pos());
+            break;
+        }
         QRect shape_rect(point, event->pos());
         switch(shape)
         {
         case TEXT:
         {
-            if(shape_rect.width() < 10 && shape_rect.height()<10)
+            if(focus_layer == NULL)
             {
-                break;
+
             }
-            Text_layer* text_layer = new Text_layer(shape_rect, this);
+            Text_layer* text_layer = new Text_layer(point, this);
             text_layer->get_focus();
-            if(focus_layer != NULL)
-            {
-                focus_layer->lose_focus();
-            }
             focus_layer = text_layer;
             append_layer(text_layer);
             break;
@@ -283,6 +281,7 @@ void Paint_area::mouseReleaseEvent(QMouseEvent* event)
             break;
         }
         }
+        break;
     }
     case ARROW:
         if(focus_layer != NULL)
@@ -366,13 +365,14 @@ void Paint_area::using_erase(bool is_using_eraser)
 
 QRect Paint_area::bounded_rect()
 {
-    QRect rect;
+    QRect rect(0, 0, 0, 0);
     for(int i=0; i<layers.size(); i++)
     {
         rect = rect.united(layers[i]->bounded_rect().boundingRect());
     }
     rect = rect.united(pic_layer->bounded_rect().boundingRect());
     rect = rect.united(paint_layer->bounded_rect().boundingRect());
+    rect.setBottomRight(rect.bottomRight() - QPoint(1, 1));
     return rect;
 }
 
@@ -421,14 +421,12 @@ void Paint_area::save(QString path)
             cv::Mat temp_mat = Image_helper::QImage2Mat(temp);
             temp_mat.copyTo(ans);
         }
-        cv::imwrite(path.toLocal8Bit().toStdString(), ans);
-
         is_save = false;
-                if(Config::get_config(Config::hide_to_tray))
-                {
-                    Window_manager::change_window("MainWindow");
-                    Window_manager::hide_now();
-                }
+        if(Config::get_config(Config::hide_to_tray))
+        {
+            Window_manager::change_window("MainWindow");
+            Window_manager::hide_now();
+        }
     });
     History::instance()->log(History_data::Persist, path);
 
