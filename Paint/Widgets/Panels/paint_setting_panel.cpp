@@ -14,17 +14,18 @@
 #include<QSpinBox>
 #include "Paint/Widgets/history.h"
 
+Paint_setting_panel* Paint_setting_panel::_instance = NULL;
+
 Paint_setting_panel::Paint_setting_panel()
 {
     layout = new QVBoxLayout(this);
     init();
 }
 
-Paint_setting_panel::Paint_setting_panel(IControl_layer_change* layer_control, QWidget* parent) : QDockWidget(parent)
+Paint_setting_panel::Paint_setting_panel(QWidget* parent) : QDockWidget(parent)
 {
     this->parent = parent;
-    this->layer_control = layer_control;
-    setAttribute(Qt::WA_DeleteOnClose);
+//    setAttribute(Qt::WA_DeleteOnClose);
     layout = new QVBoxLayout();//scrollarea的layout
     layout->setAlignment(Qt::AlignTop);
     init_shape_setting();
@@ -32,11 +33,20 @@ Paint_setting_panel::Paint_setting_panel(IControl_layer_change* layer_control, Q
     init_disable_color_setting();
     init_layer_setting();
     init();
+}
 
+Paint_setting_panel* Paint_setting_panel::instance(QWidget *parent)
+{
+    if(_instance == NULL)
+    {
+        _instance = new Paint_setting_panel(parent);
+    }
+    return _instance;
 }
 
 Paint_setting_panel::~Paint_setting_panel()
 {
+    _instance = NULL;
 }
 
 void Paint_setting_panel::init()
@@ -50,6 +60,7 @@ void Paint_setting_panel::init()
     area->setWidget(base);
     area->setFrameShape(QFrame::NoFrame);
     setWidget(area);
+    hide();
     /*QWidget* widget = new QWidget(this);
     QHBoxLayout* central_layout = new QHBoxLayout(this);
     central_layout->addWidget(area);
@@ -318,28 +329,26 @@ void Paint_setting_panel::init_disable_color_setting()
 void Paint_setting_panel::init_layer_setting()
 {
     Spacer* spacer = new Spacer("{i4yFQ5UXBc}层次管理", false, this);
-    List_widget* widget = new List_widget(this);
-    connect(widget, &List_widget::text_change, this, [=](int index, QString text){
-        layer_control->layer_rename(index, text);
+    list_widget = new List_widget(this);
+    connect(list_widget, &List_widget::text_change, this, [=](int index, QString text){
+        emit layer_rename(index, text);
     });
-    connect(widget, &List_widget::button_click, this, [=](int index, List_item::button_type type){
+    connect(list_widget, &List_widget::button_click, this, [=](int index, List_item::button_type type){
         switch(type)
         {
         case 0:
-            layer_control->change_layer_position(index, index-1);break;
+            emit change_layer_position(index, index-1);break;
         case 1:
-            layer_control->change_layer_position(index, index+1);break;
+            emit change_layer_position(index, index+1);break;
         case 2:
-            layer_control->remove_layer(index);break;
+            emit remove_layer(index);break;
         case 3:
-            widget->add_widget(layer_control->append_layer());break;
+            emit append_layer();
+            break;
         }
     });
-    for(QString str : layer_control->get_layer_name())
-    {
-        widget->add_widget(str);
-    }
-    spacer->add_widget(widget);
+    emit requestLayersName();
+    spacer->add_widget(list_widget);
     layout->addWidget(spacer);
 }
 
@@ -371,4 +380,17 @@ void Paint_setting_panel::set_style()
     color.getRgb(&r, &g, &b, &a);
     //back_button->setStyleSheet(QString("background-color: rgba(%1, %2, %3, %4)").arg(r).arg(g).arg(b).arg(a));
     width_button->setEditText(QString::number(Style_manager::instance()->get_now().width));
+}
+
+void Paint_setting_panel::receiveLayerName(QString name)
+{
+    list_widget->add_widget(name);
+}
+
+void Paint_setting_panel::receiveLayersName(QStringList name)
+{
+    for(QString str : name)
+    {
+        list_widget->add_widget(str);
+    }
 }

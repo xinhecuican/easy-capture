@@ -37,6 +37,26 @@ public:
                                                           val5, val6, val7, val8, val9);
     }
 
+    static QGenericReturnArgument invokeMethod(const QString& className, QObject* object, const char* method_name,
+                             QGenericArgument val0 = QGenericArgument(nullptr),
+                             QGenericArgument val1 = QGenericArgument(),
+                             QGenericArgument val2 = QGenericArgument(),
+                             QGenericArgument val3 = QGenericArgument(),
+                             QGenericArgument val4 = QGenericArgument(),
+                             QGenericArgument val5 = QGenericArgument(),
+                             QGenericArgument val6 = QGenericArgument(),
+                             QGenericArgument val7 = QGenericArgument(),
+                             QGenericArgument val8 = QGenericArgument(),
+                             QGenericArgument val9 = QGenericArgument()
+                             )
+    {
+        Q_ASSERT(metaObjects().contains(className));
+        QGenericReturnArgument ret;
+        metaObjects().value(className).invokeMethod(object, method_name, Qt::AutoConnection, ret, val0,
+                                                           val1, val2, val3, val4, val5, val6, val7, val8, val9);
+        return ret;
+    }
+
 private:
     static QHash<QString, QMetaObject>& metaObjects()
     {

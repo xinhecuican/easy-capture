@@ -4,99 +4,119 @@
 #include<QDebug>
 #include<QWidget>
 #include "Paint/Widgets/recorder.h"
+#include "Paint/Widgets/style_manager.h"
+#include<QGraphicsSceneMouseEvent>
 
-Paint_layer::Paint_layer()
-{
 
-}
-
-Paint_layer::Paint_layer(QWidget* parent, QString name) : Ilayer(parent)
+Paint_layer::Paint_layer(QGraphicsItem* parent) : QGraphicsItem(parent)
 {
     this->parent = parent;
-    this->name = name;
-    now_index = 0;
-    data = QHash<int, paint_info>();
-    show();
+    is_enable = true;
+    is_press = false;
+    is_erase = false;
+    setAcceptedMouseButtons(Qt::NoButton);
 }
 
-void Paint_layer::paint(QPainter* painter, QList<QColor> disable_color, bool is_save)
+Paint_layer::~Paint_layer()
+{
+    reset();
+}
+
+void Paint_layer::reset()
+{
+    for(QGraphicsItem* line : lines)
+    {
+        delete line;
+    }
+    lines.clear();
+}
+
+void Paint_layer::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    path = QPainterPath();
+    if(is_enable)
+    {
+        is_press = true;
+        path.moveTo(mapFromScene(event->scenePos()));
+    }
+    if(is_erase)
+    {
+        is_press = true;
+        removeLines(mapFromScene(event->scenePos()));
+    }
+}
+
+void Paint_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(is_enable && is_press)
+    {
+        path.lineTo(mapFromScene(event->scenePos()));
+        update();
+    }
+    if(is_erase && is_press)
+    {
+        removeLines(mapFromScene(event->scenePos()));
+    }
+}
+
+void Paint_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(is_enable)
+    {
+        path.lineTo(mapFromScene(event->scenePos()));
+        Paint_data* paint_data = Style_manager::instance()->get();
+        paint_info info(paint_data, path);
+        PaintItem* item = new PaintItem(info, this); // 添加一个线条
+        lines.append(item);
+        path = QPainterPath();
+    }
+    is_press = false;
+}
+
+void Paint_layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
-    for(paint_info path : data)
-    {
-        QPen pen;
-        pen.setColor(path.style_info->color);
-        pen.setWidth(path.style_info->width);
-        pen.setCapStyle(path.style_info->cap_style);
-        pen.setJoinStyle(path.style_info->join_style);
-        painter->setPen(pen);
-        painter->drawPath(path.path);
-    }
+    Paint_data* paint_data = Style_manager::instance()->get();
+    QPen pen;
+    pen.setColor(paint_data->color);
+    pen.setWidth(paint_data->width);
+    pen.setCapStyle(paint_data->cap_style);
+    pen.setJoinStyle(paint_data->join_style);
+    painter->setPen(pen);
+    painter->drawPath(path);
 }
 
-void Paint_layer::erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color)
+void Paint_layer::setEnableDraw(bool enable)
 {
-    QRect rect = QRect(point.x()-3, point.y()-3, 6, 6);
-    for(auto iter=data.begin(); iter!=data.end();)
+    this->is_enable = enable;
+}
+
+QRectF Paint_layer::boundingRect() const
+{
+    return path.boundingRect();
+}
+
+void Paint_layer::setErase(bool enable)
+{
+    is_erase = enable;
+}
+
+void Paint_layer::removeLines(QPointF point)
+{
+    QRectF rect(point - QPointF(3, 3), point + QPointF(3, 3));
+    QList<PaintItem*> items;
+    for(PaintItem* item : lines)
     {
-        if(!iter->path.controlPointRect().contains(point))
+        if(item->shape().intersects(rect))
         {
-            iter++;
-            continue;
-        }
-        if(iter->path.intersects(rect))
-        {
-            iter = data.erase(iter);
-        }
-        else
-        {
-            iter++;
+            qDebug() << item;
+            items.append(item);
         }
     }
-    paint(painter, disable_color, false);
-}
-
-void Paint_layer::set_name(QString name)
-{
-    this->name = name;
-}
-
-int Paint_layer::add_data(Paint_data* style, QPainterPath path)
-{
-
-    data[now_index++] = paint_info(style, path);
-    return now_index-1;
-}
-
-QPolygon Paint_layer::bounded_rect()
-{
-    QPolygon polygon;
-    for(auto info : data)
+    for(PaintItem* item: items)
     {
-        polygon = polygon.united(info.path.boundingRect().toRect());
+        lines.removeOne(item);
+        delete item;
     }
-    return polygon;
-}
-
-QString Paint_layer::get_name()
-{
-    return name;
-}
-
-void Paint_layer::on_paint_change(int index, paint_info info)
-{
-    if(data.find(index) != data.end())
-    {
-        data.remove(index);
-    }
-    else
-    {
-        data[index] = info;
-    }
-    parent->update();
-}
-
-void Paint_layer::clear()
-{
-    data.clear();
+    update();
 }

@@ -14,18 +14,45 @@
 #include<windows.h>
 #include "main_fliter.h"
 #include "Paint/Widgets/history.h"
+#include<dbghelp.h>
+#include<windows.h>
+#include "Helper/debug.h"
+#include "Paint/Widgets/Layers/rect_layer.h"
+#include "Paint/Widgets/Layers/text_layer.h"
+//程式异常捕获
+LONG ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
+{
+    //创建 Dump 文件
+    HANDLE hDumpFile = CreateFile(L"crash.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hDumpFile != INVALID_HANDLE_VALUE)
+    {
+        //Dump信息
+        MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
+        dumpInfo.ExceptionPointers = pException;
+        dumpInfo.ThreadId = GetCurrentThreadId();
+        dumpInfo.ClientPointers = TRUE;
+
+        //写入Dump文件内容
+        MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile, MiniDumpNormal, &dumpInfo, NULL, NULL);
+    }
+
+    //这里弹出一个错误对话框并退出程序
+    Debug::show_error_message(QObject::tr("Program crash\nSee crash.dmp for more information"));
+
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+void registerClasses();
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);//注冊异常捕获函数
     QString applicationDirPathStr = QCoreApplication::applicationDirPath();
     QDir::setCurrent(applicationDirPathStr);
     Config::load_config();
     Key_manager::load();
-    Reflect::registerClass<MainWindow>();
-    Reflect::registerClass<Setting>();
-    Reflect::registerClass<Capture_window>();
-    Reflect::registerClass<Paint_window>();
+    registerClasses();
     Main_fliter* fliter = Main_fliter::instance();
     a.installEventFilter(fliter);//使用mainwindow上的eventfliter
     a.installNativeEventFilter(fliter);
@@ -48,4 +75,14 @@ int main(int argc, char *argv[])
     int ans = a.exec();
 
     return ans;
+}
+
+void registerClasses()
+{
+    Reflect::registerClass<MainWindow>();
+    Reflect::registerClass<Setting>();
+    Reflect::registerClass<Capture_window>();
+    Reflect::registerClass<Paint_window>();
+    Reflect::registerClass<Rect_layer>();
+    Reflect::registerClass<Text_layer>();
 }

@@ -10,54 +10,46 @@
 #include "text_edit.h"
 #include "Paint/Data/Common.h"
 #include "Paint/Data/button_group.h"
+#include<QGraphicsTextItem>
+#include "baselayer.h"
+#include "rect_layer.h"
 
-class Text_layer : public Ilayer
+class Text_layer : public QGraphicsTextItem, public BaseLayer
 {
+    Q_OBJECT
 public:
-    Text_layer(QPoint begin_point, QWidget* parent=nullptr);
-    ~Text_layer();
-    void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)override;
-    void set_name(QString name)override;
-    void get_focus() override;
-    void lose_focus() override;
-    void mouse_enter(int key_code) override;
-    void mouse_move(int dx, int dy) override;
-    QPolygon bounded_rect()override;
-    QString get_name()override;
-    void double_click() override;
-    void mouse_release() override;
-    void on_size_change(int index, int dx, int dy) override;
-    bool focuseable() override{return true;}
-public slots:
-    void on_button_move(direction dir, int dx, int dy);
-//    void cursor_pos_change(int pos);
+    Text_layer(QRectF rect, QGraphicsItem* parent=nullptr);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+    void getFocusFunc() override;
+    void loseFocusFunc() override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void focusInEvent(QFocusEvent *event) override;
+    void focusOutEvent(QFocusEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void inputMethodEvent(QInputMethodEvent* event) override;
+    Q_INVOKABLE void hideNormal() override;
+    Q_INVOKABLE void showNormal() override;
+signals:
+    void requestFocus(BaseLayer* object, QGraphicsObject* object2);
 private:
-    struct draw_font_info
-    {
-        int len;
-        int height;
-        QString data;
-        QFont font;
-        QColor color;
-    };
-    paint_node* root;
-    paint_node* now;
-    font_data now_data;
-    int now_begin_pos;
-    QWidget* parent;
-    QString name;
-    Text_edit* edit;
-    QRect bound;
-    QString str;
-    bool has_focus;
-    bool has_double_click;
-    bool is_press;
-    bool is_font_change;
-    Button_group* button_group;
-    void append_node(int len, QFont font, QColor color);
-    void remove_addition_node();
-//    void remove_text(int len, int begin_pos);
-//    void remove_node(paint_node* node);
+    void boundShow();
+    void boundHide();
+    void initFlowEditPanel();
+    void onCursorPositionChange(int current);
+    QRectF rect;
+    Rect_layer* rect_layer;
+    bool force_focus;
+    bool is_enable;
+    bool is_commit_string;
+    bool is_brush;
+    int commit_length;
+    int commit_position;
+    int now_position;
+    QTextCharFormat brush_format;
+    QTextCharFormat current_charformat;
 };
 
 #endif // TEXT_LAYER_H

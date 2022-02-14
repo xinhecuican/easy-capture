@@ -70,38 +70,38 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     connect(ok, &QPushButton::clicked, this, [=](){
         if(Config::get_config(Config::hide_to_tray))
         {
-            area->save_temp();
+//            area->save_temp();
             emit hide_paint();
             is_close = false;
             this->close();
         }
-        else if(!area->pic_save)
-        {
-            int ans = QMessageBox::warning(
-                        this,
-                        "简截",
-                        "是否保存该截图\n可以保存为png、jpg、jpeg文件",
-                        QMessageBox::Cancel | QMessageBox::No| QMessageBox::Ok);
-            if(ans == QMessageBox::Ok)
-            {
-                QString file_name = QFileDialog::getSaveFileName(this,
-                                                                 "保存",
-                                                                 History::instance()->get_last_directory(),
-                                                                 "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-                area->save(file_name);
-                hide();
-                Window_manager::close();
-            }
-            else if(ans == QMessageBox::No)
-            {
-                hide();
-                Window_manager::close();
-            }
-            else
-            {
-                this->close();
-            }
-        }
+//        else if(!area->pic_save)
+//        {
+//            int ans = QMessageBox::warning(
+//                        this,
+//                        "简截",
+//                        "是否保存该截图\n可以保存为png、jpg、jpeg文件",
+//                        QMessageBox::Cancel | QMessageBox::No| QMessageBox::Ok);
+//            if(ans == QMessageBox::Ok)
+//            {
+//                QString file_name = QFileDialog::getSaveFileName(this,
+//                                                                 "保存",
+//                                                                 History::instance()->get_last_directory(),
+//                                                                 "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+//                area->save(file_name);
+//                hide();
+//                Window_manager::close();
+//            }
+//            else if(ans == QMessageBox::No)
+//            {
+//                hide();
+//                Window_manager::close();
+//            }
+//            else
+//            {
+//                this->close();
+//            }
+//        }
         else
         {
             Window_manager::close();

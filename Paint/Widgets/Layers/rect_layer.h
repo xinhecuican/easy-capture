@@ -1,31 +1,52 @@
 #ifndef RECT_LAYER_H
 #define RECT_LAYER_H
-#include"Paint/Data/Ilayer.h"
-#include "Paint/Data/button_group.h"
+#include <QGraphicsItem>
+#include "LayerItems/expandbutton.h"
+#include<QGraphicsObject>
+#include "baselayer.h"
 
-class Rect_layer : public Ilayer
+class Rect_layer : public QGraphicsObject, BaseLayer
 {
+    Q_OBJECT
 public:
-    Rect_layer(QWidget* parent, QRect rect);
-    ~Rect_layer();
-    void paint(QPainter *painter, QList<QColor> disable_color, bool is_save) override;
-    void set_name(QString name) override;
-    QPolygon bounded_rect() override;
-    QString get_name() override;
-    bool focuseable() override;
-    // TODO: 完成get_focus lose_focus
-    void get_focus() override;
-    void lose_focus() override;
-    void mouse_enter(int key_code) override;
-    void mouse_release() override;
-    void mouse_move(int dx, int dy) override;
+    enum RECT_STYLE{NORMAL, RED};
+    Rect_layer(QGraphicsItem* parent, QRectF rect);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+    QPainterPath shape() const override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    QRectF boundingRect() const override;
+    void showButtons();
+    void hideButtons();
+    void setBounding(QRectF rect);
+    void setEnableMove(bool enable);
+    void setEnableSizeChange(bool enable);
+    void getFocusFunc() override;
+    void loseFocusFunc() override;
+    void setStyle(RECT_STYLE style);
+    Q_INVOKABLE void hideNormal() override;
+    Q_INVOKABLE void showNormal() override;
+signals:
+    void sizeChange();
+    void move(qreal dx, qreal dy);
+    void requestFocus(BaseLayer* object, QGraphicsObject* object2);
+
+private slots:
+    void posChangeFunc(direction dir, qreal x, qreal y);
+    void posToFunc(direction dir, qreal x, qreal y);
 private:
-    QString name;
-    QRect bound;
-    QWidget* parent;
-    Button_group* group;
-    bool has_focus;
-    bool is_enter;
+    void paintStyle(QPainter* painter);
+    QCursor out_cursor;
+    QRectF rect;
+    QMap<direction, ExpandButton*> buttons;
+    QPointF begin_point;
+    RECT_STYLE style;
+    bool enable_move;
+    bool enable_size_change;
+    bool force_show;
 };
 
 #endif // RECT_LAYER_H

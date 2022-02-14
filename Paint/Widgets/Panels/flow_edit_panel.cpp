@@ -13,8 +13,6 @@ QFont Flow_edit_panel::default_font = QFont("宋体", 12);
 
 Flow_edit_panel::Flow_edit_panel()
 {
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
-    setWindowTitle("字体样式选择");
     color = QColor(0, 0, 0);
     font = default_font;
     QToolButton* brush_button = new QToolButton(this);
@@ -72,6 +70,7 @@ Flow_edit_panel::Flow_edit_panel()
     connect(m_ComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
             , this, [=](const QString& text){
         font.setFamily(text);
+        clearFocus();
         emit font_change();
     });
     addWidget(m_ComboBox);
@@ -88,6 +87,7 @@ Flow_edit_panel::Flow_edit_panel()
         int num = text.toInt(&success);
         if(success && num > 0)
         {
+            clearFocus();
             font.setPointSize(num);
             emit font_change();
         }

@@ -10,27 +10,30 @@
 #include<QWidget>
 #include "Paint/Widgets/Recorder_element/paint_record.h"
 #include "Paint/Data/Common.h"
+#include<QGraphicsItem>
+#include "Paint/Widgets/Layers/LayerItems/paintitem.h"
 
-class Paint_layer : public Ilayer
+class Paint_layer : public QGraphicsItem
 {
 public:
-    Paint_layer();
-    Paint_layer(QWidget* parent, QString name);
-    void paint(QPainter* painter, QList<QColor> disable_color, bool is_save) override;
-    void erase_and_paint(QPoint point, QPainter* painter, QList<QColor> disable_color);
-    int add_data(Paint_data* style, QPainterPath path);
-    void set_name(QString name)override;
-    QString get_name()override;
-    QPolygon bounded_rect()override;
-    void on_paint_change(int index, paint_info info) override;
-    void clear();
-    QPoint begin;
+    Paint_layer(QGraphicsItem* parent=nullptr);
+    ~Paint_layer();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void setEnableDraw(bool enable);
+    void reset();
+    void setErase(bool enable);
+    QRectF boundingRect() const override;
 private:
-
-    QWidget* parent;
-    QString name;
-    QHash<int, paint_info> data;
-    int now_index;
+    void removeLines(QPointF point);
+    QList<PaintItem*> lines;
+    QPainterPath path;
+    QGraphicsItem* parent;
+    bool is_enable;
+    bool is_press;
+    bool is_erase;
 };
 
 #endif // PAINT_LAYER_H

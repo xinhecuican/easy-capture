@@ -1,119 +1,225 @@
 #include "rect_layer.h"
 #include<QPen>
+#include<QGraphicsSceneHoverEvent>
+#include<QPainter>
+#include<QDebug>
 
-Rect_layer::Rect_layer(QWidget* parent, QRect rect) : Ilayer(parent)
+Rect_layer::Rect_layer(QGraphicsItem* parent, QRectF rect) : QGraphicsObject(parent)
 {
-    this->parent = parent;
-    this->bound = rect;
-    group = new Button_group(rect, parent, this);
-    connect(group, &Button_group::button_move, this, [=](int index, int dx, int dy)
+    enable_move = false;
+    enable_size_change = false;
+    force_show = false;
+    setAcceptHoverEvents(true);
+    setPos(rect.topLeft());
+    this->rect = QRectF(QPointF(0, 0), QSize(rect.width(), rect.height()));
+    setBounding(this->rect);
+    style = NORMAL;
+}
+
+void Rect_layer::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    out_cursor = cursor();
+    if(enable_size_change)
     {
-        QRect temp = bounded_rect().boundingRect();
-        temp.translate(-8, -8);
-        temp.setWidth(temp.width() + 16);
-        temp.setHeight(temp.height() + 16);
-        switch (index)
+        setCursor(Qt::SizeAllCursor);
+        showButtons();
+    }
+    QGraphicsItem::hoverEnterEvent(event);
+}
+
+void Rect_layer::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    setCursor(out_cursor);
+    hideButtons();
+    QGraphicsItem::hoverLeaveEvent(event);
+}
+
+void Rect_layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    paintStyle(painter);
+    painter->drawRect(this->boundingRect());
+}
+
+QPainterPath Rect_layer::shape() const
+{
+    QPainterPath ans;
+    ans.addRect(rect);
+    if(rect.width() > 10 && rect.height() > 10)
+    {
+        QRectF tmp = rect;
+        tmp.setTopLeft(tmp.topLeft() + QPoint(5, 5));
+        tmp.setBottomRight(tmp.bottomRight() - QPoint(5, 5));
+        ans.addRect(tmp);
+    }
+    return ans;
+}
+
+void Rect_layer::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    begin_point = event->scenePos();
+    emit requestFocus(this, this);
+}
+
+void Rect_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(enable_move)
+    {
+        QPointF delta = event->scenePos() - begin_point;
+        begin_point = event->scenePos();
+        moveBy(delta.x(), delta.y());
+        emit move(delta.x(), delta.y());
+    }
+}
+
+void Rect_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(enable_move)
+    {
+        QPointF delta = event->scenePos() - begin_point;
+        moveBy(delta.x(), delta.y());
+        emit move(delta.x(), delta.y());
+    }
+}
+
+QRectF Rect_layer::boundingRect() const
+{
+    return this->rect;
+}
+
+void Rect_layer::showButtons()
+{
+    if(enable_size_change)
+    {
+        for(ExpandButton* button: buttons)
         {
-        case NE:bound.setTopRight(bound.topRight() + QPoint(dx, dy));break;
-        case NW:bound.setTopLeft(bound.topLeft() + QPoint(dx, dy));break;
-        case SE:bound.setBottomRight(bound.bottomRight() + QPoint(dx, dy));break;
-        case SW:bound.setBottomLeft(bound.bottomLeft() + QPoint(dx, dy));break;
+            button->show();
+            button->update();
         }
-        parent->update(temp);
-    });
-    has_focus = true;
-}
-
-Rect_layer::~Rect_layer()
-{
-    group->deleteLater();
-}
-
-void Rect_layer::paint(QPainter *painter, QList<QColor> disable_color, bool is_save)
-{
-    QPen pen;
-    pen.setColor(QColor(161, 47, 47));
-    pen.setWidth(3);
-    pen.setJoinStyle(Qt::RoundJoin);
-    painter->setPen(pen);
-    painter->drawRect(bound);
-}
-
-QString Rect_layer::get_name()
-{
-    return name;
-}
-
-void Rect_layer::set_name(QString name)
-{
-    this->name = name;
-}
-
-QPolygon Rect_layer::bounded_rect()
-{
-    QPolygon polygon = QPolygon(bound);
-    QRect inner_rect = bound;
-
-    if(inner_rect.width() > 20 && inner_rect.height() > 20)
-    {
-        inner_rect.setTopLeft(inner_rect.topLeft() + QPoint(20, 20));
-        inner_rect.setBottomRight(inner_rect.bottomRight() + QPoint(-20, -20));
-        polygon = polygon.subtracted(QPolygon(inner_rect));
-    }
-
-    return polygon;
-}
-
-bool Rect_layer::focuseable()
-{
-    return true;
-}
-
-void Rect_layer::get_focus()
-{
-    has_focus = true;
-    group->show_buttons();
-    QRect temp = bound;
-    temp = temp.united(bound);
-    temp.setTopLeft(temp.topLeft() + QPoint(-10, -10));
-    temp.setBottomRight(temp.bottomRight()+QPoint(10, 10));
-    parent->update(temp);
-}
-
-void Rect_layer::lose_focus()
-{
-    has_focus = false;
-    group->hide_buttons();
-    QRect temp = bound;
-    temp = temp.united(bound);
-    temp.setTopLeft(temp.topLeft() + QPoint(-10, -10));
-    temp.setBottomRight(temp.bottomRight()+QPoint(10, 10));
-    parent->update(temp);
-}
-
-void Rect_layer::mouse_move(int dx, int dy)
-{
-    if(is_enter)
-    {
-        group->translate(dx, dy);
-        QRect temp = bound;
-        bound.translate(dx, dy);
-        temp = temp.united(bound);
-        temp.setTopLeft(temp.topLeft() + QPoint(-10, -10));
-        temp.setBottomRight(temp.bottomRight()+QPoint(10, 10));
-        parent->update(temp);
+        update();
     }
 }
 
-void Rect_layer::mouse_enter(int key_code)
+void Rect_layer::hideButtons()
 {
-    if(key_code == Qt::LeftButton)
+    if(force_show)
     {
-        is_enter = true;
+        return;
+    }
+    for(ExpandButton* button: buttons)
+    {
+        button->hide();
     }
 }
 
-void Rect_layer::mouse_release()
+void Rect_layer::setBounding(QRectF rect)
 {
-    is_enter = false;
+    this->rect = rect;
+    for(int i=0; i<4; i++)
+    {
+        direction dir = (direction)i;
+        float x = dir == NW || dir == SW ? 0 : rect.width();
+        float y = dir == NW || dir == NE ? 0 : rect.height();
+        ExpandButton* button = new ExpandButton(dir, QPointF(x, y), this);
+        connect(button, &ExpandButton::posChange, this, &Rect_layer::posChangeFunc);
+        connect(button, &ExpandButton::posTo, this, &Rect_layer::posToFunc);
+        buttons.insert(dir, button);
+    }
+    hideButtons();
+}
+
+void Rect_layer::posChangeFunc(direction dir, qreal x, qreal y)
+{
+    QRectF before_rect = rect;
+    qreal width = buttons[NW]->boundingRect().width();
+    before_rect.setTopLeft(before_rect.topLeft() - QPointF(width, width));
+    before_rect.setBottomRight(before_rect.bottomRight() + QPointF(width, width));
+    QPointF point(x, y);
+    prepareGeometryChange();
+    switch (dir)
+    {
+    case NW:
+        rect.setTopLeft(rect.topLeft() + point);
+        buttons[NE]->moveBy(0, y);
+        buttons[SW]->moveBy(x, 0);
+        break;
+    case NE:
+        rect.setTopRight(rect.topRight() + point);
+        buttons[NW]->moveBy(0, y);
+        buttons[SE]->moveBy(x, 0);
+        break;
+    case SW:
+        rect.setBottomLeft(rect.bottomLeft() + point);
+        buttons[SE]->moveBy(0, y);
+        buttons[NW]->moveBy(x, 0);
+        break;
+    case SE:
+        rect.setBottomRight(rect.bottomRight() + point);
+        buttons[SW]->moveBy(0, y);
+        buttons[NE]->moveBy(x, 0);
+        break;
+    default: qDebug() << "no implement this direction";break;
+    }
+    update(before_rect);
+}
+
+void Rect_layer::posToFunc(direction dir, qreal x, qreal y)
+{
+    emit sizeChange();
+}
+
+void Rect_layer::setEnableMove(bool enable)
+{
+    enable_move = enable;
+}
+
+void Rect_layer::setEnableSizeChange(bool enable)
+{
+    enable_size_change = enable;
+}
+
+void Rect_layer::getFocusFunc()
+{
+    showButtons();
+    force_show = true;
+}
+
+void Rect_layer::loseFocusFunc()
+{
+    force_show = false;
+    hideButtons();
+}
+
+void Rect_layer::setStyle(RECT_STYLE style)
+{
+    this->style = style;
+}
+
+void Rect_layer::paintStyle(QPainter *painter)
+{
+    switch(style)
+    {
+    case NORMAL:break;
+    case RED:
+        QPen pen;
+        pen.setColor(QColor(161, 47, 47));
+        pen.setWidth(3);
+        pen.setJoinStyle(Qt::RoundJoin);
+        painter->setPen(pen);
+        break;
+    }
+}
+
+void Rect_layer::hideNormal()
+{
+    enable_move = false;
+    enable_size_change = false;
+    force_show = false;
+    hideButtons();
+    update();
+}
+
+void Rect_layer::showNormal()
+{
+    enable_move = true;
+    enable_size_change = true;
 }

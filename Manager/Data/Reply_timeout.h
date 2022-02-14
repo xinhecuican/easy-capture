@@ -19,8 +19,8 @@ public:
           // 处理超时
           if (reply != NULL && reply->isRunning())
           {
-              reply->abort();
               reply->deleteLater();
+              reply = NULL;
               emit timeout();
           }
           emit deadline();
@@ -35,6 +35,22 @@ public:
   void reset(QNetworkReply *reply, int timeout)
   {
       this->reply = reply;
+      connect(reply, &QNetworkReply::finished, this, [=](){
+          if(timer.isActive())
+          {
+              timer.stop();
+          }
+          this->reply = NULL;
+      });
+      connect(reply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+              this, [=](QNetworkReply::NetworkError code){
+          qDebug() << code;
+          if(timer.isActive())
+          {
+              timer.stop();
+          }
+          this->reply = NULL;
+      });
       if(timer.isActive())
       {
           timer.stop();

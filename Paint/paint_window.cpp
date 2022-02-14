@@ -25,6 +25,7 @@
 #include "opencv2/opencv.hpp"
 #include "Style_widget/titlebar.h"
 #include "Style_widget/framelesshelper.h"
+#include "Paint/Widgets/Layers/baselayer.h"
 
 Paint_window::Paint_window(QWidget *parent) :
     Window_base(parent, this, "Paint_window"),
@@ -45,6 +46,7 @@ Paint_window::Paint_window(QWidget *parent) :
     connect(title_bar, &Titlebar::minimize, this, [=](){
         Window_manager::hide_now();
     });
+    qRegisterMetaType<BaseLayer>("BaseLayer");
     menu_bar = new QMenuBar(this);
     QWidget* menu_widget = new QWidget(this);
     QVBoxLayout* menu_layout = new QVBoxLayout();
@@ -56,24 +58,29 @@ Paint_window::Paint_window(QWidget *parent) :
     setMenuWidget(menu_widget);
 
     layout = new QHBoxLayout(ui->centralwidget);
-    paint_setting_panel = NULL;
-    paint_panel = new QScrollArea(this);
-    this->area = new Paint_area(paint_panel);
-    connect(area, &Paint_area::clip_image_ready, this, [=](QImage image){
-        QClipboard *clip=QApplication::clipboard();
-        clip->setImage(image);
-    });
-    paint_panel->setWidget(area);
+    Paint_setting_panel::instance(this);
+
+    this->area = new Paint_area(this);
+    paint_panel = new QGraphicsView(this->area, this);
+//    connect(area, &Paint_area::clip_image_ready, this, [=](QImage image){
+//        QClipboard *clip=QApplication::clipboard();
+//        clip->setImage(image);
+//    });
     paint_panel->setFrameShape(QFrame::NoFrame);
     paint_panel->setBackgroundRole(QPalette::Light);
     paint_panel->setAlignment(Qt::AlignCenter);
     //paint_panel->setWidgetResizable(true);
     paint_panel->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    pen_cursor = QCursor(QPixmap(":/image/pencil.png"), 0, 24);
 
     layout->addWidget(paint_panel);
     ui->centralwidget->setLayout(layout);
     set_menubar();
     set_toolbar();
+    initSettingPanel();
+    addToolBarBreak();
+    addToolBar(Flow_edit_panel::instance());
+    Flow_edit_panel::instance()->hide();
     load_key_event("Paint_window");
 }
 
@@ -94,7 +101,7 @@ void Paint_window::load_key_event(QString name)
             {
                 QString file_name = QFileDialog::getSaveFileName(this,"保存",
                 History::instance()->get_last_directory(), "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-                area->save(file_name);
+//                area->save(file_name);
             }
         });
         Key_manager::add_func(name, "new_capture", [=](bool is_enter){
@@ -123,7 +130,7 @@ void Paint_window::load_key_event(QString name)
         Key_manager::add_func(name, "delete_shape", [=](bool is_enter){
             if(is_enter)
             {
-                area->delete_shape();
+//                area->delete_shape();
             }
         });
     }
@@ -162,7 +169,7 @@ void Paint_window::set_menubar()
                                                          "保存",
                                                          History::instance()->get_last_directory(),
                                                          "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-        area->save(file_name);
+//        area->save(file_name);
     });
     QAction* history_action = new QAction(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
     QMenu* history_menu = new QMenu(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
@@ -192,7 +199,7 @@ void Paint_window::set_menubar()
                     }
                     QRect rect = pixmap.rect();
                     rect.moveTo(0, 0);
-                    area->pic_save = true;//不需要添加记录
+//                    area->pic_save = true;//不需要添加记录
                     set_pic(pixmap, rect);
                 });
                 history_actions.append(action);
@@ -227,11 +234,25 @@ void Paint_window::set_toolbar()
     QList<QAction*> actions = mode_menu->actions();
     for(int i=0; i<actions.size(); i++)
     {
+        actions[i]->setCheckable(true);
         actions[i]->setData(QVariant(i));
+    }
+    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
+    {
+        if(Config::get_config(i) != 0)
+        {
+            actions[i-Config::capture_mode_begin]->setChecked(true);
+            break;
+        }
     }
     connect(mode_menu, &QMenu::triggered, this, [=](QAction* action){
         QVariant index_var = action->data();
         int index = index_var.toInt();
+        for(int i=0; i<actions.size(); i++)
+        {
+            actions[i]->setChecked(false);
+        }
+        action->setChecked(true);
         for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
         {
             Config::set_config(i, false);
@@ -245,7 +266,7 @@ void Paint_window::set_toolbar()
     clipboard_button->setIcon(QIcon(":/image/clipboard.png"));
     clipboard_button->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
     connect(clipboard_button, &QToolButton::clicked, this, [=](){
-        area->get_image();
+//        area->get_image();
     });
     ui->toolBar->addWidget(clipboard_button);
 
@@ -257,7 +278,7 @@ void Paint_window::set_toolbar()
                                                          "保存",
                                                          History::instance()->get_last_directory(),
                                                          "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-        area->save(file_name);
+//        area->save(file_name);
     });
     ui->toolBar->addWidget(save_button);
     ui->toolBar->addSeparator();
@@ -278,9 +299,9 @@ void Paint_window::set_toolbar()
     ui->toolBar->addWidget(redo_button);
 
     ui->toolBar->addSeparator();
-    QButtonGroup* paint_button_group = new QButtonGroup(this);
+    paint_button_group = new QButtonGroup(this);
     paint_button_group->setExclusive(true);
-    QToolButton* cursor_button = new QToolButton(this);
+    cursor_button = new QToolButton(this);
     cursor_button->setIcon(QIcon(":/image/cursor.png"));
     cursor_button->setToolTip(MString::search("{l4yTU9QXUd}指针"));
     cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
@@ -290,19 +311,60 @@ void Paint_window::set_toolbar()
 
     pencil_button = new QToolButton(this);
     pencil_button->setIcon(QIcon(":/image/pencil.png"));
-    pencil_button->setToolTip(MString::search("{ndvChZ2O6z}笔"));
+//    pencil_button->setToolTip();
     pencil_button->setCheckable(true);
     pencil_button->setChecked(true);
-    area->setCursor(QCursor(QPixmap(":/image/pencil.png"), 0, 24));
+    pencil_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    pencil_button->setPopupMode(QToolButton::InstantPopup);
+    QMenu* pen_menu = new QMenu(this);
+    pen_menu->addAction(MString::search("{ndvChZ2O6z}笔"));
+    pen_menu->addAction(MString::search("{j54u1kWtCx}荧光笔"));
+    QList<QAction*> penactions = pen_menu->actions();
+    for(int i=0; i<penactions.size(); i++)
+    {
+        penactions[i]->setCheckable(true);
+        penactions[i]->setData(QVariant(i));
+    }
+    penactions[0]->setChecked(true);
+    connect(pen_menu, &QMenu::triggered, this, [=](QAction* action){
+        QVariant index_var = action->data();
+        int index = index_var.toInt();
+        for(int i=0; i<penactions.size(); i++)
+        {
+            penactions[i]->setChecked(false);
+        }
+        action->setChecked(true);
+        switch(index)
+        {
+        case 0:
+            Style_manager::instance()->change_pen(Style_manager::default_pencil);
+            pen_cursor = QCursor(QPixmap(":/image/pencil.png"), 0, 24);
+            break;
+        case 1:
+            Style_manager::instance()->change_pen(Style_manager::default_highlighter);
+            pen_cursor = QCursor(QPixmap(":/image/highlighter_cursor.png"), 0, 24);
+            break;
+        }
+        paint_button_group->buttonClicked(1);
+    });
+    pencil_button->setMenu(pen_menu);
+//    area->setCursor(QCursor(QPixmap(":/image/pencil.png"), 0, 24));
     paint_button_group->addButton(pencil_button, 1);
     ui->toolBar->addWidget(pencil_button);
 
-    QToolButton* highlighter_button = new QToolButton(this);
-    highlighter_button->setToolTip(MString::search("{j54u1kWtCx}荧光笔"));
-    highlighter_button->setIcon(QIcon(":/image/highlighter.png"));
-    highlighter_button->setCheckable(true);
-    paint_button_group->addButton(highlighter_button, 2);
-    ui->toolBar->addWidget(highlighter_button);
+//    QToolButton* highlighter_button = new QToolButton(this);
+//    highlighter_button->setToolTip(MString::search("{j54u1kWtCx}荧光笔"));
+//    highlighter_button->setIcon(QIcon(":/image/highlighter.png"));
+//    highlighter_button->setCheckable(true);
+//    paint_button_group->addButton(highlighter_button, 2);
+//    ui->toolBar->addWidget(highlighter_button);
+
+    QToolButton* shape_button = new QToolButton(this);
+    shape_button->setToolTip(MString::search("{25JzGpOvFt}形状"));
+    shape_button->setIcon(QIcon(":/image/shape.png"));
+    shape_button->setCheckable(true);
+    paint_button_group->addButton(shape_button, 2);
+    ui->toolBar->addWidget(shape_button);
 
     QToolButton* erase_button = new QToolButton(this);
     erase_button->setToolTip(MString::search("{7cwKObEhcx}擦除"));
@@ -312,69 +374,38 @@ void Paint_window::set_toolbar()
     ui->toolBar->addWidget(erase_button);
     connect(paint_button_group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
             , this, [=](int id){
-        area->using_erase(false);
         switch (id)
         {
         case 0:
-            area->set_paintable(false);
-            area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
+            area->stateChange(ARROW);
+            cursor_button->setChecked(true);
+            paint_panel->viewport()->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
             break;
         case 1:
-            area->set_paintable(true);
+            area->stateChange(PAINT);
             pencil_button->setChecked(true);
-            Style_manager::instance()->change_pen(Style_manager::default_pencil);
-            area->setCursor(QCursor(QPixmap(":/image/pencil.png"), 0, 24));
+            paint_panel->viewport()->setCursor(pen_cursor);
             break;
         case 2:
-            area->set_paintable(true);
-            highlighter_button->setChecked(true);
-            Style_manager::instance()->change_pen(Style_manager::default_highlighter);
-            area->setCursor(QCursor(QPixmap(":/image/highlighter_cursor.png"), 0, 24));
+            area->stateChange(SHAPE);
+            shape_button->setChecked(true);
             break;
         case 3:
-            area->using_erase(true);
-            area->set_paintable(true);
-            area->setCursor(QCursor(QPixmap(":/image/eraser.png"), 4, 20));
+            area->stateChange(ERASE);
+            erase_button->setChecked(true);
+            paint_panel->viewport()->setCursor(QCursor(QPixmap(":/image/eraser.png"), 4, 20));
             break;
         }
-        if(paint_setting_panel != NULL)
-        {
-            paint_setting_panel->set_style();
-        }
+        paint_panel->update();
+        Paint_setting_panel::instance()->set_style();
         area->update();
     });
+    paint_button_group->buttonClicked(1);
 
     QToolButton* more_button = new QToolButton(this);
     more_button->setToolTip(MString::search("{dAIlC0hPf5}更多画图选项"));
     more_button->setIcon(QIcon(":/image/more.png"));
-    connect(more_button, &QToolButton::clicked, this, [=](){
-        if(paint_setting_panel == NULL)
-        {
-            paint_setting_panel = new Paint_setting_panel(this);
-            connect(paint_setting_panel, &Paint_setting_panel::disable_color_change, this,
-                    [=](int index, QColor color=QColor()){
-                area->set_disable_color(index, color);
-            });
-            connect(paint_setting_panel, &Paint_setting_panel::paint_shape, this,
-                    [=](shape_type type){
-                if(type == DELETE_SHAPE)
-                {
-                    area->delete_shape();
-                }
-                else
-                {
-                    cursor_button->setChecked(true);
-                    area->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
-                    area->paint_shape(type);
-                }
-            });
-            addDockWidget(Qt::RightDockWidgetArea, paint_setting_panel);
-        }
-        else
-        {
-            paint_setting_panel->close();
-        }
-    });
+    connect(more_button, &QToolButton::clicked, this, &Paint_window::showSettingPanel);
     ui->toolBar->addWidget(more_button);
 
     QToolButton* setting_button = new QToolButton(this);
@@ -417,8 +448,9 @@ void Paint_window::set_toolbar()
 void Paint_window::set_pic(QPixmap pix, QRect rect)
 {
     reset();
-    area->resize(rect.width() * 2, rect.height() * 2);
-    area->set_picture(pix, rect);//在这个函数中还设置了paint_panel的大小
+    paint_panel->resize(rect.width() * 2, rect.height() * 2);
+    area->setPic(pix, rect);//在这个函数中还设置了paint_panel的大小
+    paint_button_group->buttonClicked(1);
     if(Config::get_config(Config::auto_copy_to_clipboard))
     {
         QClipboard *clip=QApplication::clipboard();
@@ -472,10 +504,10 @@ void Paint_window::closeEvent(QCloseEvent *event)
 
 void Paint_window::reset()
 {
-    if(area->contain_picture() && !area->pic_save)
-    {
-        area->save_temp();
-    }
+//    if(area->contain_picture() && !area->pic_save)
+//    {
+//        area->save_temp();
+//    }
     pencil_button->setChecked(true);
     area->reset();
     Style_manager::instance()->reset();
@@ -488,7 +520,6 @@ void Paint_window::on_window_cancal()
 
 void Paint_window::on_paint_panel_close()
 {
-    paint_setting_panel = NULL;
 }
 
 void Paint_window::on_window_close()
@@ -496,6 +527,7 @@ void Paint_window::on_window_close()
     delete Style_manager::instance();
     delete Recorder::instance();
     delete History::instance();
+    delete Paint_setting_panel::instance();
     Flow_edit_panel::instance()->deleteLater();
     QClipboard *clip=QApplication::clipboard();
     if(Config::get_config(Config::auto_copy_to_clipboard))
@@ -504,34 +536,63 @@ void Paint_window::on_window_close()
     }
 }
 
-QString  Paint_window::append_layer()
+void Paint_window::append_layer()
 {
-    return area->create_layer();
+//    return area->create_layer();
 }
 
 void Paint_window::remove_layer(int index)
 {
-    area->remove_layer(index);
+//    area->remove_layer(index);
 }
 
 void Paint_window::layer_rename(int index, QString after_name)
 {
-    area->set_name(index, after_name);
+//    area->set_name(index, after_name);
 }
 
 void Paint_window::change_layer_position(int before_index, int after_index)
 {
-    if(before_index > after_index)
-    {
-        area->drop_layer(before_index);
-    }
-    else
-    {
-        area->raise_layer(before_index);
-    }
+//    if(before_index > after_index)
+//    {
+//        area->drop_layer(before_index);
+//    }
+//    else
+//    {
+//        area->raise_layer(before_index);
+//    }
 }
 
 QStringList Paint_window::get_layer_name()
 {
-    return area->layers_name();
+//    return area->layers_name();
+}
+
+void Paint_window::showSettingPanel()
+{
+    if(Paint_setting_panel::instance()->isVisible())
+    {
+        Paint_setting_panel::instance()->hide();
+    }
+    else
+    {
+        addDockWidget(Qt::RightDockWidgetArea, Paint_setting_panel::instance());
+        Paint_setting_panel::instance()->show();
+    }
+}
+
+void Paint_window::initSettingPanel()
+{
+    connect(Paint_setting_panel::instance(), &Paint_setting_panel::paint_shape, this,
+            [=](SHAPE_TYPE type){
+        if(type == DELETE_SHAPE)
+        {
+            area->deleteShape();
+        }
+        else
+        {
+            area->paintShape(type);
+            paint_button_group->buttonClicked(2);
+        }
+    });
 }

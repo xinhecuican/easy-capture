@@ -12,16 +12,18 @@
 #include "Paint/Widgets/Panels/paint_setting_panel.h"
 #include "Widgets/IControl_layer_change.h"
 #include<QMenuBar>
+#include<QGraphicsView>
 
 namespace Ui {
 class Paint_window;
 }
 
-class Paint_window : public Window_base, IControl_layer_change
+class Paint_window : public Window_base
 {
     Q_OBJECT
 
 public:
+    friend class Paint_setting_panel;
     Q_INVOKABLE explicit Paint_window(QWidget *parent = nullptr);
     ~Paint_window();
     void set_menubar();
@@ -33,21 +35,25 @@ public:
     void closeEvent(QCloseEvent* event)override;
     void on_paint_panel_close() override;
     void on_window_close() override;
-    QString append_layer() override;
-    void remove_layer(int index) override;
-    void layer_rename(int index, QString after_name) override;
-    void change_layer_position(int before_index, int after_index) override;
-    QStringList get_layer_name() override;
-
+public slots:
+    void append_layer();
+    void remove_layer(int index);
+    void layer_rename(int index, QString after_name);
+    void change_layer_position(int before_index, int after_index);
+    QStringList get_layer_name();
+    void showSettingPanel();
 private:
     Ui::Paint_window *ui;
     Paint_area* area;
     Capture_button_action* new_button_action;
-    QScrollArea* paint_panel;
+    QGraphicsView* paint_panel;
     QHBoxLayout* layout;
     QToolButton* pencil_button;
-    Paint_setting_panel* paint_setting_panel;
     QMenuBar* menu_bar;
+    QToolButton* cursor_button;
+    QCursor pen_cursor;
+    QButtonGroup* paint_button_group;
+    void initSettingPanel();
 };
 
 #endif // PAINT_WINDOW_H

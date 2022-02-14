@@ -9,69 +9,33 @@
 #include "Paint/Data/Common.h"
 #include<QScrollArea>
 #include<QMainWindow>
+#include<QGraphicsScene>
+#include "Paint/Widgets/Layers/shapelayer.h"
 
-class Paint_area : public QWidget
+class Paint_area : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    Paint_area();
-    ~Paint_area();
-    Paint_area(QScrollArea* parent=nullptr);
-    void set_picture(QPixmap pixmap, QRect rect);
-    void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void mouseDoubleClickEvent(QMouseEvent *event) override;
-    void remove_layer(Paint_layer* layer);
-    void remove_layer(int index);
-    void remove_layer(Ilayer* layer);
-    QString create_layer();
-    QStringList layers_name();
-    void set_name(int index, QString text);
-    void set_paintable(bool paintable);
-    void raise_layer(int index);//提升一层
-    void drop_layer(int index);//下降一层
+    Paint_area(QObject* parent=nullptr);
+    void setPic(QPixmap pic, QRect rect);
+    void deleteShape();
+    void paintShape(SHAPE_TYPE type);
     void reset();
-    void paint_rect(QRect rect);
-    void save(QString path);//不可编辑，直接输出图片
-    void save_temp();//可供下次编辑，保存了paint_layer
-    void get_image();
-    void using_erase(bool is_using_eraser);
-    void set_disable_color(int index, QColor color = QColor());
-    bool contain_picture();
-    QRect bounded_rect();
-    void paint_shape(shape_type type);
-    void delete_shape();
-    void append_layer(Ilayer* layer);
-    bool pic_save;
-
-signals:
-    void clip_image_ready(QImage pix);
+    void stateChange(PAINT_STATE state);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 private:
-    QScrollArea* parent;
-    Picture_layer* pic_layer;
-    Paint_layer* paint_layer;
-    QVBoxLayout* layout;
-    QImage image;
-    QRect image_bound;
-    QVector<Ilayer*> layers;
-    Ilayer* focus_layer;
-    QList<QColor> disable_color;
-    int layer_num;
-    bool is_draw;
-    bool is_eraser;
-    bool is_save;
-    shape_type shape;
-    QPainterPath now_path;
-    Paint_data now_data;
-    QPoint point;
-    paint_state state;
+    void setOtherLayer();
+    void initSettingPanel();
 
-    void paint(QPainter* painter, QList<QColor> disable_color);
-    void update_image(QRect bound_rect);
-    void find_focus(QPoint point);
+    const int DEFAULT_LAYER_NUM = 1;
+    SHAPE_TYPE shape_type;
+    PAINT_STATE state;
+    QPointF begin_point;
+    Paint_layer* paint_layer;
+    Picture_layer* pic_layer;
+    ShapeLayer* shape_layer;
 };
 
 #endif // PAINT_AREA_H

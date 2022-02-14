@@ -32,9 +32,12 @@ SOURCES += \
     Paint/Data/stretch_button.cpp \
     Paint/Widgets/Layer_list/list_item.cpp \
     Paint/Widgets/Layer_list/list_widget.cpp \
+    Paint/Widgets/Layers/LayerItems/expandbutton.cpp \
+    Paint/Widgets/Layers/LayerItems/paintitem.cpp \
     Paint/Widgets/Layers/paint_layer.cpp \
     Paint/Widgets/Layers/picture_layer.cpp \
     Paint/Widgets/Layers/rect_layer.cpp \
+    Paint/Widgets/Layers/shapelayer.cpp \
     Paint/Widgets/Layers/text_edit.cpp \
     Paint/Widgets/Layers/text_layer.cpp \
     Paint/Widgets/Panels/close_dialog.cpp \
@@ -108,9 +111,13 @@ HEADERS += \
     Paint/Widgets/IControl_layer_change.h \
     Paint/Widgets/Layer_list/list_item.h \
     Paint/Widgets/Layer_list/list_widget.h \
+    Paint/Widgets/Layers/LayerItems/expandbutton.h \
+    Paint/Widgets/Layers/LayerItems/paintitem.h \
+    Paint/Widgets/Layers/baselayer.h \
     Paint/Widgets/Layers/paint_layer.h \
     Paint/Widgets/Layers/picture_layer.h \
     Paint/Widgets/Layers/rect_layer.h \
+    Paint/Widgets/Layers/shapelayer.h \
     Paint/Widgets/Layers/text_edit.h \
     Paint/Widgets/Layers/text_layer.h \
     Paint/Widgets/Panels/close_dialog.h \
@@ -182,7 +189,7 @@ else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/
 INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
 DEPENDPATH += $$PWD/../quazip-0.7.3/quazip
 
-LIBS += -lGdi32 -loleacc
+LIBS += -lGdi32 -loleacc -lDbgHelp
 
 RC_FILE = logo.rc
 
