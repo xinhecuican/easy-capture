@@ -1,6 +1,7 @@
 #ifndef SCROLL_WORKER_H
 #define SCROLL_WORKER_H
-#include<windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include "opencv2/core/core.hpp"
 #include "opencv2/opencv.hpp"
 #include <opencv2/features2d/features2d.hpp>

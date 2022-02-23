@@ -2,10 +2,11 @@
 #define RECT_LAYER_H
 #include <QGraphicsItem>
 #include "LayerItems/expandbutton.h"
+#include "LayerItems/scrollitem.h"
 #include<QGraphicsObject>
 #include "baselayer.h"
 
-class Rect_layer : public QGraphicsObject, BaseLayer
+class Rect_layer : public QGraphicsObject, public BaseLayer
 {
     Q_OBJECT
 public:
@@ -22,11 +23,14 @@ public:
     void showButtons();
     void hideButtons();
     void setBounding(QRectF rect);
+    void setLimit(QRectF limit);
     void setEnableMove(bool enable);
     void setEnableSizeChange(bool enable);
+    void setEnableScroll(bool enable);
     void getFocusFunc() override;
     void loseFocusFunc() override;
     void setStyle(RECT_STYLE style);
+    bool contains(const QPointF& point)const override;
     Q_INVOKABLE void hideNormal() override;
     Q_INVOKABLE void showNormal() override;
 signals:
@@ -42,10 +46,12 @@ private:
     QCursor out_cursor;
     QRectF rect;
     QMap<direction, ExpandButton*> buttons;
+    ScrollItem* scroll_item;
     QPointF begin_point;
     RECT_STYLE style;
     bool enable_move;
     bool enable_size_change;
+    bool enable_scroll;
     bool force_show;
 };
 

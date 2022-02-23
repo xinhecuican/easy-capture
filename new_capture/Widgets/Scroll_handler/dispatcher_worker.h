@@ -49,7 +49,7 @@ private:
     int thread_count;
     bool is_init;
 
-    void combine(combine_data image1, combine_data image2);
+    bool combine(combine_data image1, combine_data image2);
 };
 
 #endif // DISPATCHER_WORKER_H

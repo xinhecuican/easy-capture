@@ -19,12 +19,15 @@ public:
     void setShape(SHAPE_TYPE shape);
     void setGrabFocus(bool enable);
     void deleteShape();
+    void prepareSave();
+    void endSave();
 public slots:
     void onRequestFocus(BaseLayer* object, QGraphicsObject* object2);
 
 private:
     void setLayersState();
     bool childContains(QPointF point);
+    void setFocus(QGraphicsObject* object, BaseLayer* func);
     bool is_enable;
     bool is_press;
     bool is_focus;

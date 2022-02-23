@@ -3,7 +3,8 @@
 
 #include <QWidget>
 #include "QAbstractNativeEventFilter"
-#include<windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include "Style_widget/tray.h"
 
 class Main_fliter : public QWidget, public QAbstractNativeEventFilter

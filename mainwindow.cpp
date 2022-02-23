@@ -7,6 +7,9 @@
 #include "Style_widget/tray.h"
 #include "Manager/update.h"
 #include "JlCompress.h"
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
 
 bool MainWindow::is_start = false;
 
@@ -74,18 +77,6 @@ MainWindow::MainWindow(QWidget *parent)
     if(!is_start)
     {
         is_start = true;
-        QSettings reg("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
-        QString appName = QApplication::applicationName();
-        if(Config::get_config(Config::start_instantly))
-        {
-            QString strAppPath=QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
-            reg.setValue(appName,strAppPath+ tr(" autoStart"));
-        }
-        else
-        {
-            reg.remove(appName);
-        }
-
         Update::instance()->update();
         if(!Config::get_config(Config::need_update) && Config::get_config(Config::update_interval) != -1 &&
                 Config::get_config(Config::last_update_time) + Config::get_config(Config::update_interval) <

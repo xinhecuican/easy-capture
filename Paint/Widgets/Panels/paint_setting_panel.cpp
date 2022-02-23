@@ -90,10 +90,17 @@ void Paint_setting_panel::init_shape_setting()
     connect(rect_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(RECTANGLE);
     });
+    QToolButton* arrow_button = new QToolButton(this);
+    arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
+    arrow_button->setToolTip("箭头");
+    connect(arrow_button, &QToolButton::clicked, this, [=](){
+        emit paint_shape(PAINT_ARROW);
+    });
     shape_layout->setOriginCorner(Qt::TopLeftCorner);
     shape_layout->addWidget(text_button, 0, 0);
-    shape_layout->addWidget(delete_button, 0, 1);
-    shape_layout->addWidget(rect_button, 0, 2);
+    shape_layout->addWidget(delete_button, 1, 2);
+    shape_layout->addWidget(rect_button, 0, 1);
+    shape_layout->addWidget(arrow_button, 0, 2);
     spacer->add_layout(shape_layout);
     layout->addWidget(spacer);
 }
@@ -167,7 +174,7 @@ void Paint_setting_panel::init_pen_setting()
 
     QLabel* width_label = new QLabel(MString::search("{zW4GVylzEh}画笔宽度: "), this);
     width_button = new QComboBox(this);
-    QList<QString> width_text = {"2", "3", "4", "6", "8", "10", "12", "14", "16", "18", "20"};
+    QList<QString> width_text = {"4", "8", "12", "16", "20", "24", "28", "40", "50"};
     width_button->addItems(width_text);
     width_button->setEditable(true);
     connect(width_button, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
@@ -300,6 +307,7 @@ void Paint_setting_panel::init_disable_color_setting()
             model->item(save_box->count()-1)->setForeground(QColor(red, green, blue));
             save_box->setCurrentIndex(save_box->count()-1);
             History::instance()->log_color(color);
+            emit disable_color_change(-1, color);
         });
     });
     connect(save_remove_button, &QToolButton::clicked, this, [=](){
@@ -313,6 +321,7 @@ void Paint_setting_panel::init_disable_color_setting()
         QStringList list = str.split(',');
         QColor color(list[0].toInt(), list[1].toInt(), list[2].toInt());
         History::instance()->remove_color(color);
+        emit disable_color_change(index);
     });
     save_add_button->setIcon(QIcon(":/image/add.svg"));
     save_remove_button->setIcon(QIcon(":/image/delete.svg"));

@@ -4,6 +4,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/opencv.hpp"
 #include "opencv2/imgproc/types_c.h"
+#define WIN32_LEAN_AND_MEAN
 #include<windows.h>
 class Image_helper
 {

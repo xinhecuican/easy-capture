@@ -24,7 +24,8 @@ public:
     static void save();
     static void load();
     static void update_all();
-    static void on_window_change(QString old_window, QString new_window);
+    static void onWindowChangeBegin(QString old_window, QString new_window);
+    static void onWindowChangeEnd();
     static QList<int> get_keys(QString window_name, QString key_name);
     static void set_keys(QString window_name, QString key_name, QList<int> keys);
     static QList<QString> get_window_names();
@@ -135,7 +136,7 @@ private:
     static QList<QString> key_settings;
     static QSet<QString> using_window_set;
     static QList<listener_data> listeners;
-
+    static bool is_windowchange;
 public:
     static QHash<int, QString> key_type;
 };

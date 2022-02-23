@@ -4,7 +4,8 @@
 #include <QtGlobal>
 #include <QMutex>
 #include <QSharedPointer>
-#include "windows.h"
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include "Hook_global.h"
 
 #define xHook XGlobalHook::instance().data()

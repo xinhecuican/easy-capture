@@ -11,7 +11,8 @@
 #include "opencv2/core.hpp"
 #include "opencv2/opencv.hpp"
 #include "Helper/image_helper.h"
-#include<windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include<QImageWriter>
 #include "Helper/image_helper.h"
 #include<QPixmapCache>
@@ -24,12 +25,21 @@
 #include<QLabel>
 #include<QGraphicsSceneMouseEvent>
 #include "Panels/paint_setting_panel.h"
+#include<QApplication>
+#include<QClipboard>
 
 Paint_area::Paint_area(QObject* parent) : QGraphicsScene(parent)
 {
-    pic_layer = NULL;
+    is_save = false;
+    pic_layer = new Picture_layer();
+    addItem(pic_layer);
     paint_layer = new Paint_layer();
+    paint_layer->setZValue(1);
+    addItem(paint_layer);
     shape_layer = new ShapeLayer();
+    paint_layer->setZValue(1);
+    addItem(shape_layer);
+    initSettingPanel();
 }
 
 void Paint_area::reset()
@@ -46,19 +56,18 @@ void Paint_area::reset()
     {
         shape_layer->reset();
     }
+    is_save = false;
 }
 
 void Paint_area::setPic(QPixmap pic, QRect rect)
 {
-    if(pic_layer == NULL)
-    {
-        pic_layer = new Picture_layer();
-        setOtherLayer();
-    }
+    setSceneRect(0, 0, rect.width()*2, rect.height()*2);
     pic_layer->setPos(rect.width() / 2, rect.height() / 2);
     pic_layer->setPixmap(pic);
-    this->addItem(pic_layer);
-    setFocusItem(pic_layer);
+    for(QColor color : History::instance()->get_color())
+    {
+        pic_layer->setDisableColor(-1, color);
+    }
     setSceneRect(0, 0, rect.width() * 2, rect.height() * 2);
 }
 
@@ -72,6 +81,15 @@ void Paint_area::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     sendEvent(paint_layer, event);
     sendEvent(shape_layer, event);
+    qDebug() << event->button();
+    if(event->button() == Qt::BackButton)
+    {
+        Recorder::instance()->back();
+    }
+    else if(event->button() == Qt::ForwardButton)
+    {
+        Recorder::instance()->forward();
+    }
     QGraphicsScene::mousePressEvent(event);
 }
 
@@ -161,7 +179,10 @@ void Paint_area::initSettingPanel()
 {
     connect(Paint_setting_panel::instance(), &Paint_setting_panel::disable_color_change, this,
             [=](int index, QColor color=QColor()){
-        //                area->set_disable_color(index, color);
+        if(pic_layer != NULL)
+        {
+            pic_layer->setDisableColor(index, color);
+        }
     });
     connect(Paint_setting_panel::instance(), &Paint_setting_panel::layer_rename, this, [=](int index, QString after_name){
 
@@ -175,4 +196,69 @@ void Paint_area::initSettingPanel()
     });
     connect(Paint_setting_panel::instance(), &Paint_setting_panel::requestLayersName, this, [=](){
     });
+}
+
+void Paint_area::save(History_data::save_type type, QString path)
+{
+    if(path == "")
+    {
+        return;
+    }
+    prepareSave();
+    is_save = true;
+    QRectF bound = pic_layer->boundingRect();
+    bound.moveTo(pic_layer->pos());
+    bound = bound.united(paint_layer->childrenBoundingRect());
+    bound = bound.united(shape_layer->childrenBoundingRect());
+
+    cv::Mat ans(bound.height(), bound.width(), CV_8UC4);
+    for(int i=0; i<bound.height(); i+=32700)
+    {
+        int height = bound.height() - i > 32700 ? 32700 : bound.height() - i;
+        QRect temp_rect(bound.left(), bound.top()+i, bound.width(), height);
+        QImage image(bound.width(), height, QImage::Format_ARGB32);
+//        image.fill(Qt::transparent);
+        QPainter painter(&image);
+        render(&painter, QRectF(QPointF(0, 0), image.size()), temp_rect);
+        cv::Mat temp_mat = Image_helper::QImage2Mat(image);
+        temp_mat.copyTo(ans(cv::Rect(0, i, bound.width(), height)));
+    }
+    cv::imwrite(path.toLocal8Bit().toStdString(), ans);
+    History::instance()->log(type, path);
+    endSave();
+}
+
+void Paint_area::save2Clipboard()
+{
+    prepareSave();
+    QRectF bound = pic_layer->boundingRect();
+    bound.moveTo(pic_layer->pos());
+    bound = bound.united(paint_layer->childrenBoundingRect());
+    bound = bound.united(shape_layer->childrenBoundingRect());
+    QImage image(bound.width(), bound.height(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+    QPainter painter(&image);
+    render(&painter, QRectF(QPointF(0, 0), bound.size()), bound);
+    QClipboard *clip=QApplication::clipboard();
+    clip->setImage(image);
+    endSave();
+}
+
+bool Paint_area::needSave()
+{
+    return pic_layer != NULL && pic_layer->containsPicture() && !is_save;
+}
+
+void Paint_area::prepareSave()
+{
+    pic_layer->prepareSave();
+    shape_layer->prepareSave();
+    update();
+}
+
+void Paint_area::endSave()
+{
+    pic_layer->endSave();
+    shape_layer->endSave();
+    update();
 }

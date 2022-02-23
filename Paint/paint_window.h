@@ -36,11 +36,11 @@ public:
     void on_paint_panel_close() override;
     void on_window_close() override;
 public slots:
-    void append_layer();
-    void remove_layer(int index);
-    void layer_rename(int index, QString after_name);
-    void change_layer_position(int before_index, int after_index);
-    QStringList get_layer_name();
+//    void append_layer();
+//    void remove_layer(int index);
+//    void layer_rename(int index, QString after_name);
+//    void change_layer_position(int before_index, int after_index);
+//    QStringList get_layer_name();
     void showSettingPanel();
 private:
     Ui::Paint_window *ui;

@@ -11,14 +11,20 @@
 #include "JlCompress.h"
 #include "Manager/update.h"
 #include "Style_widget/tray.h"
-#include<windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include "main_fliter.h"
 #include "Paint/Widgets/history.h"
 #include<dbghelp.h>
-#include<windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include "Helper/debug.h"
 #include "Paint/Widgets/Layers/rect_layer.h"
 #include "Paint/Widgets/Layers/text_layer.h"
+#include "Paint/Widgets/Layers/picture_layer.h"
+#include "Paint/Widgets/Layers/paint_layer.h"
+#include "Paint/Widgets/Layers/shapelayer.h"
+#include<QPair>
 //程式异常捕获
 LONG ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
 {
@@ -35,11 +41,36 @@ LONG ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
         //写入Dump文件内容
         MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile, MiniDumpNormal, &dumpInfo, NULL, NULL);
     }
+#ifdef QT_NO_DEBUG
+    QString version = Update::now_version.get_version();
+    QString cmd = "CrashHandler.exe " + version;
+    QProcess::startDetached(cmd.toStdString().c_str());
+#else
+    //这里弹出一个错误对话框并退出程序
+    Debug::show_error_message(QObject::tr("Program crash\nSee crash.dmp for more information"));
+#endif
+    abort();
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+
+void terminateHandler()
+{
+    //创建 Dump 文件
+    HANDLE hDumpFile = CreateFile(L"crash.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hDumpFile != INVALID_HANDLE_VALUE)
+    {
+        //Dump信息
+        MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
+        dumpInfo.ThreadId = GetCurrentThreadId();
+        dumpInfo.ClientPointers = TRUE;
+
+        //写入Dump文件内容
+        MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hDumpFile, MiniDumpNormal, &dumpInfo, NULL, NULL);
+    }
 
     //这里弹出一个错误对话框并退出程序
     Debug::show_error_message(QObject::tr("Program crash\nSee crash.dmp for more information"));
-
-    return EXCEPTION_EXECUTE_HANDLER;
+    abort();
 }
 
 void registerClasses();
@@ -47,6 +78,9 @@ void registerClasses();
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    set_new_handler(terminateHandler);
+    set_terminate(terminateHandler);
+    _set_purecall_handler(terminateHandler);
     SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)ApplicationCrashHandler);//注冊异常捕获函数
     QString applicationDirPathStr = QCoreApplication::applicationDirPath();
     QDir::setCurrent(applicationDirPathStr);
@@ -85,4 +119,7 @@ void registerClasses()
     Reflect::registerClass<Paint_window>();
     Reflect::registerClass<Rect_layer>();
     Reflect::registerClass<Text_layer>();
+    Reflect::registerClass<Picture_layer>();
+    Reflect::registerClass<Paint_layer>();
+    Reflect::registerClass<ShapeLayer>();
 }

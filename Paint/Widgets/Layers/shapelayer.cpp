@@ -4,6 +4,8 @@
 #include "text_layer.h"
 #include<QDebug>
 #include "Helper/Reflect.h"
+#include "Paint/Widgets/recorder.h"
+#include "arrowlayer.h"
 
 ShapeLayer::ShapeLayer(QGraphicsItem* parent) : QGraphicsObject(parent)
 {
@@ -38,7 +40,8 @@ void ShapeLayer::mousePressEvent(QGraphicsSceneMouseEvent *event)
     begin_point = mapFromScene(event->scenePos());
     if(is_enable)
     {
-        is_press = true;
+        if(!childContains(mapFromScene(begin_point)))
+            is_press = true;
     }
     if(is_focus && focus_item != NULL)
     {
@@ -90,7 +93,7 @@ void ShapeLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             rect_layer->setEnableMove(true);
             rect_layer->setEnableSizeChange(true);
             connect(rect_layer, &Rect_layer::requestFocus, this, &ShapeLayer::onRequestFocus);
-            rect_layer->getFocusFunc();
+            setFocus(rect_layer, rect_layer);
             break;
         }
         case TEXT:
@@ -100,15 +103,18 @@ void ShapeLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 break;
             }
             Text_layer* text_layer = new Text_layer(rect, this);
-            if(focus_item != NULL)
-            {
-                focus_item_func->loseFocusFunc();
-            }
-            focus_item = text_layer;
-            focus_item_func = text_layer;
-            text_layer->getFocusFunc();
+            setFocus(text_layer, text_layer);
             connect(text_layer, &Text_layer::requestFocus, this, &ShapeLayer::onRequestFocus);
             break;
+        }
+        case PAINT_ARROW:
+        {
+            ArrowLayer* arrow_layer = new ArrowLayer(this, begin_point, point);
+            setFocus(arrow_layer, arrow_layer);
+        }
+        case DELETE_SHAPE:
+        {
+
         }
         }
     }
@@ -139,15 +145,25 @@ void ShapeLayer::onRequestFocus(BaseLayer* object, QGraphicsObject* object2)
         focus_item_func = object;
         object->getFocusFunc();
     }
+    if(shape == DELETE_SHAPE && is_enable)
+    {
+        Recorder::instance()->removeRecord(object2);
+        delete object2;
+        focus_item = NULL;
+        focus_item_func = NULL;
+    }
 }
 
 void ShapeLayer::deleteShape()
 {
     if(focus_item != NULL)
     {
+        Recorder::instance()->removeRecord(focus_item);
         delete focus_item;
         focus_item = NULL;
+        focus_item_func = NULL;
     }
+    shape = DELETE_SHAPE;
 }
 
 void ShapeLayer::setLayersState()
@@ -181,4 +197,36 @@ bool ShapeLayer::childContains(QPointF point)
         }
     }
     return false;
+}
+
+void ShapeLayer::prepareSave()
+{
+    const char* method_name = "hideNormal";
+    for(QGraphicsItem* item: childItems())
+    {
+        QGraphicsObject* object = qgraphicsitem_cast<QGraphicsObject*>(item);
+        Reflect::invokeMethod(object->metaObject()->className(), object, method_name);
+    }
+}
+
+void ShapeLayer::endSave()
+{
+    const char* method_name = "showNormal";
+    for(QGraphicsItem* item: childItems())
+    {
+        QGraphicsObject* object = qgraphicsitem_cast<QGraphicsObject*>(item);
+        Reflect::invokeMethod(object->metaObject()->className(), object, method_name);
+    }
+}
+
+void ShapeLayer::setFocus(QGraphicsObject *object, BaseLayer *func)
+{
+    if(focus_item != NULL)
+    {
+        focus_item_func->loseFocusFunc();
+    }
+
+    focus_item = object;
+    focus_item_func = func;
+    func->getFocusFunc();
 }

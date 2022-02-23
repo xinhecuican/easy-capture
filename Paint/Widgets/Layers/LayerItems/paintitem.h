@@ -7,13 +7,13 @@
 #include "Paint/Data/paint_data.h"
 #include "Paint/Data/Ilayer.h"
 #include<QWidget>
-#include "Paint/Widgets/Recorder_element/paint_record.h"
 #include "Paint/Data/Common.h"
 #include<QGraphicsItem>
 
-class PaintItem : public QGraphicsItem
+class PaintItem : public QGraphicsObject
 {
 public:
+    PaintItem(){}
     PaintItem(paint_info info, QGraphicsItem* parent=nullptr);
     QRectF boundingRect() const override;
     void setPath(QPainterPath path);

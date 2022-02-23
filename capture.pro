@@ -20,20 +20,20 @@ SOURCES += \
     Helper/image_helper.cpp \
     Helper/math.cpp \
     Helper/mstring.cpp \
-    Helper/stackdumper.cpp \
     Manager/Data/update_data.cpp \
     Manager/Data/update_dialog.cpp \
     Manager/config.cpp \
     Manager/key_manager.cpp \
     Manager/update.cpp \
     Manager/window_manager.cpp \
-    Paint/Data/button_group.cpp \
     Paint/Data/scroll_button.cpp \
     Paint/Data/stretch_button.cpp \
     Paint/Widgets/Layer_list/list_item.cpp \
     Paint/Widgets/Layer_list/list_widget.cpp \
     Paint/Widgets/Layers/LayerItems/expandbutton.cpp \
     Paint/Widgets/Layers/LayerItems/paintitem.cpp \
+    Paint/Widgets/Layers/LayerItems/scrollitem.cpp \
+    Paint/Widgets/Layers/arrowlayer.cpp \
     Paint/Widgets/Layers/paint_layer.cpp \
     Paint/Widgets/Layers/picture_layer.cpp \
     Paint/Widgets/Layers/rect_layer.cpp \
@@ -45,6 +45,7 @@ SOURCES += \
     Paint/Widgets/Panels/flow_edit_panel.cpp \
     Paint/Widgets/Panels/paint_setting_panel.cpp \
     Paint/Widgets/Recorder_element/paint_record.cpp \
+    Paint/Widgets/Recorder_element/paintdeleterecord.cpp \
     Paint/Widgets/Recorder_element/resize_record.cpp \
     Paint/Widgets/history.cpp \
     Paint/Widgets/paint_area.cpp \
@@ -92,7 +93,6 @@ HEADERS += \
     Helper/math.h \
     Helper/mstring.h \
     Helper/plist.h \
-    Helper/stackdumper.h \
     Manager/Data/Reply_timeout.h \
     Manager/Data/update_data.h \
     Manager/Data/update_dialog.h \
@@ -104,7 +104,6 @@ HEADERS += \
     Paint/Data/Common.h \
     Paint/Data/History_data.h \
     Paint/Data/Ilayer.h \
-    Paint/Data/button_group.h \
     Paint/Data/paint_data.h \
     Paint/Data/scroll_button.h \
     Paint/Data/stretch_button.h \
@@ -113,6 +112,8 @@ HEADERS += \
     Paint/Widgets/Layer_list/list_widget.h \
     Paint/Widgets/Layers/LayerItems/expandbutton.h \
     Paint/Widgets/Layers/LayerItems/paintitem.h \
+    Paint/Widgets/Layers/LayerItems/scrollitem.h \
+    Paint/Widgets/Layers/arrowlayer.h \
     Paint/Widgets/Layers/baselayer.h \
     Paint/Widgets/Layers/paint_layer.h \
     Paint/Widgets/Layers/picture_layer.h \
@@ -125,7 +126,7 @@ HEADERS += \
     Paint/Widgets/Panels/flow_edit_panel.h \
     Paint/Widgets/Panels/paint_setting_panel.h \
     Paint/Widgets/Recorder_element/paint_record.h \
-    Paint/Widgets/Recorder_element/record_base.h \
+    Paint/Widgets/Recorder_element/paintdeleterecord.h \
     Paint/Widgets/Recorder_element/resize_record.h \
     Paint/Widgets/history.h \
     Paint/Widgets/paint_area.h \
@@ -172,28 +173,56 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
+QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
+
+
 RESOURCES += \
     Resource/Resources.qrc\
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Release/release/ -lHook
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/debug/ -lHook
-else:unix: LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/ -lHook
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Release/release/ -lHook
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/debug/ -lHook
+#else:unix: LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/ -lHook
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-MSVC-Release/release/ -lHook
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-MSVC-Debug/debug/ -lHook
+else:unix: LIBS += -L$$PWD/../build-Hook-MSVC-Debug/ -lHook
 
 INCLUDEPATH += $$PWD/../HOOK
 DEPENDPATH += $$PWD/../HOOK
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Release/quazip/release/ -lquazip
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/debug/ -lquazipd
-else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/ -lquazipd
+#win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Release/quazip/release/ -lquazip
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/debug/ -lquazipd
+#else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/ -lquazipd
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-MSVC-Release/quazip/release/ -lquazip
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-MSVC-Debug/quazip/debug/ -lquazipd
+else:unix: LIBS += -L$$PWD/../build-quazip-MSVC-Debug/ -lquazipd
 
 INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
 DEPENDPATH += $$PWD/../quazip-0.7.3/quazip
 
 LIBS += -lGdi32 -loleacc -lDbgHelp
+LIBS += \
+    -ldwmapi -lOle32 -lwinmm -lksuser -luuid -lUser32
 
 RC_FILE = logo.rc
 
 INCLUDEPATH += F:/capture/opencv/opencv4.5.1/include \
     F:/capture/opencv/opencv4.5.1/include/opencv2
 
-LIBS += F:/capture/opencv/opencv4.5.1/x64/mingw/lib/libopencv_*
+#LIBS += F:/capture/opencv/opencv4.5.1/x64/mingw/lib/libopencv_*
+win32:CONFIG(release, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
+-lopencv_xfeatures2d451 -lopencv_imgproc451 -lopencv_imgcodecs451\
+-lopencv_core451 -lopencv_flann451 -lopencv_calib3d451 -lopencv_features2d451
+else:win32:CONFIG(debug, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
+-lopencv_xfeatures2d451d -lopencv_imgproc451d -l opencv_imgcodecs451d\
+-lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d
+else:unix: LIBS += LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
+-lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
+-lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d
+
+msvc {
+    QMAKE_CFLAGS += /utf-8
+    QMAKE_CXXFLAGS += /utf-8
+}

@@ -26,6 +26,7 @@
 #include "Style_widget/titlebar.h"
 #include "Style_widget/framelesshelper.h"
 #include "Paint/Widgets/Layers/baselayer.h"
+#include "Paint/Data/History_data.h"
 
 Paint_window::Paint_window(QWidget *parent) :
     Window_base(parent, this, "Paint_window"),
@@ -62,13 +63,11 @@ Paint_window::Paint_window(QWidget *parent) :
 
     this->area = new Paint_area(this);
     paint_panel = new QGraphicsView(this->area, this);
-//    connect(area, &Paint_area::clip_image_ready, this, [=](QImage image){
-//        QClipboard *clip=QApplication::clipboard();
-//        clip->setImage(image);
-//    });
     paint_panel->setFrameShape(QFrame::NoFrame);
     paint_panel->setBackgroundRole(QPalette::Light);
     paint_panel->setAlignment(Qt::AlignCenter);
+    paint_panel->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    paint_panel->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     //paint_panel->setWidgetResizable(true);
     paint_panel->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     pen_cursor = QCursor(QPixmap(":/image/pencil.png"), 0, 24);
@@ -101,7 +100,7 @@ void Paint_window::load_key_event(QString name)
             {
                 QString file_name = QFileDialog::getSaveFileName(this,"保存",
                 History::instance()->get_last_directory(), "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-//                area->save(file_name);
+                area->save(History_data::Persist, file_name);
             }
         });
         Key_manager::add_func(name, "new_capture", [=](bool is_enter){
@@ -111,9 +110,9 @@ void Paint_window::load_key_event(QString name)
                 {
                     QTimer::singleShot(200, this, [=](){
                         Config::set_config(Config::total_capture, false);
-                        Window_manager::change_window("Paint_window");
                         QScreen *screen = QGuiApplication::primaryScreen();
                         QPixmap map = screen->grabWindow(0);
+                        Window_manager::change_window("Paint_window");
                         Window_manager::get_window("Paint_window")->
                                 set_pic(map, QGuiApplication::primaryScreen()->geometry());
                     });
@@ -169,7 +168,9 @@ void Paint_window::set_menubar()
                                                          "保存",
                                                          History::instance()->get_last_directory(),
                                                          "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-//        area->save(file_name);
+        area->save(History_data::Persist, file_name);
+        Window_manager::change_window("MainWindow");
+        Window_manager::hide_now();
     });
     QAction* history_action = new QAction(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
     QMenu* history_menu = new QMenu(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
@@ -266,7 +267,7 @@ void Paint_window::set_toolbar()
     clipboard_button->setIcon(QIcon(":/image/clipboard.png"));
     clipboard_button->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
     connect(clipboard_button, &QToolButton::clicked, this, [=](){
-//        area->get_image();
+        area->save2Clipboard();
     });
     ui->toolBar->addWidget(clipboard_button);
 
@@ -278,7 +279,9 @@ void Paint_window::set_toolbar()
                                                          "保存",
                                                          History::instance()->get_last_directory(),
                                                          "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-//        area->save(file_name);
+        area->save(History_data::Persist, file_name);
+        Window_manager::change_window("MainWindow");
+        Window_manager::hide_now();
     });
     ui->toolBar->addWidget(save_button);
     ui->toolBar->addSeparator();
@@ -297,6 +300,25 @@ void Paint_window::set_toolbar()
         Recorder::instance()->forward();
     });
     ui->toolBar->addWidget(redo_button);
+
+    connect(Recorder::instance(), &Recorder::recordChange, this, [=](){
+        if(!Recorder::instance()->undoAvaliable())
+        {
+            undo_button->setEnabled(false);
+        }
+        else
+        {
+            undo_button->setEnabled(true);
+        }
+        if(!Recorder::instance()->redoAvaliable())
+        {
+            redo_button->setEnabled(false);
+        }
+        else
+        {
+            redo_button->setEnabled(true);
+        }
+    });
 
     ui->toolBar->addSeparator();
     paint_button_group = new QButtonGroup(this);
@@ -448,8 +470,8 @@ void Paint_window::set_toolbar()
 void Paint_window::set_pic(QPixmap pix, QRect rect)
 {
     reset();
-    paint_panel->resize(rect.width() * 2, rect.height() * 2);
     area->setPic(pix, rect);//在这个函数中还设置了paint_panel的大小
+    paint_panel->update();
     paint_button_group->buttonClicked(1);
     if(Config::get_config(Config::auto_copy_to_clipboard))
     {
@@ -472,25 +494,26 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
                              ?1:rect.height()/(double)screen->geometry().height())));
     }
 
-
-    paint_panel->verticalScrollBar()->setSliderPosition(rect.height() / 2);
-    paint_panel->horizontalScrollBar()->setSliderPosition(rect.width() / 2);
+    paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
+    paint_panel->horizontalScrollBar()->setValue(rect.width() / 2);
+//    paint_panel->verticalScrollBar()->setSliderPosition(rect.height() / 2);
+//    paint_panel->horizontalScrollBar()->setSliderPosition(rect.width() / 2);
 
 }
 
 void Paint_window::closeEvent(QCloseEvent *event)
 {
     event->ignore();
-    if(Config::get_config(Config::show_close_dialog))
-    {
-        Close_dialog* close_dialog = new Close_dialog(area, this);
-        connect(close_dialog, &Close_dialog::hide_paint, this, [=](){
-            Window_manager::change_window("MainWindow");
-            Window_manager::hide_now();
-        });
-        close_dialog->show();
-    }
-    else if(Config::get_config(Config::hide_to_tray))
+//    if(Config::get_config(Config::show_close_dialog))
+//    {
+//        Close_dialog* close_dialog = new Close_dialog(area, this);
+//        connect(close_dialog, &Close_dialog::hide_paint, this, [=](){
+//            Window_manager::change_window("MainWindow");
+//            Window_manager::hide_now();
+//        });
+//        close_dialog->show();
+//    }
+    if(Config::get_config(Config::hide_to_tray))
     {
         Window_manager::change_window("MainWindow");
         Window_manager::hide_now();
@@ -504,10 +527,22 @@ void Paint_window::closeEvent(QCloseEvent *event)
 
 void Paint_window::reset()
 {
-//    if(area->contain_picture() && !area->pic_save)
-//    {
-//        area->save_temp();
-//    }
+    if(area->needSave())
+    {
+        QDir dir;
+        if(!dir.exists("Data/Temp"))
+        {
+            dir.mkpath("Data/Temp");
+        }
+        QDateTime time = QDateTime::currentDateTime();
+        QString path = "Data/Temp/" + time.toString("dd_mm_yyyy_hh_mm_ss") + "/";
+        if(!dir.exists(path))
+        {
+            dir.mkpath(path);
+        }
+        path += "main.png";
+        area->save(History_data::Editable, path);
+    }
     pencil_button->setChecked(true);
     area->reset();
     Style_manager::instance()->reset();
@@ -516,6 +551,7 @@ void Paint_window::reset()
 
 void Paint_window::on_window_cancal()
 {
+
 }
 
 void Paint_window::on_paint_panel_close()
@@ -528,7 +564,6 @@ void Paint_window::on_window_close()
     delete Recorder::instance();
     delete History::instance();
     delete Paint_setting_panel::instance();
-    Flow_edit_panel::instance()->deleteLater();
     QClipboard *clip=QApplication::clipboard();
     if(Config::get_config(Config::auto_copy_to_clipboard))
     {
@@ -536,37 +571,37 @@ void Paint_window::on_window_close()
     }
 }
 
-void Paint_window::append_layer()
-{
-//    return area->create_layer();
-}
+//void Paint_window::append_layer()
+//{
+////    return area->create_layer();
+//}
 
-void Paint_window::remove_layer(int index)
-{
-//    area->remove_layer(index);
-}
+//void Paint_window::remove_layer(int index)
+//{
+////    area->remove_layer(index);
+//}
 
-void Paint_window::layer_rename(int index, QString after_name)
-{
-//    area->set_name(index, after_name);
-}
+//void Paint_window::layer_rename(int index, QString after_name)
+//{
+////    area->set_name(index, after_name);
+//}
 
-void Paint_window::change_layer_position(int before_index, int after_index)
-{
-//    if(before_index > after_index)
-//    {
-//        area->drop_layer(before_index);
-//    }
-//    else
-//    {
-//        area->raise_layer(before_index);
-//    }
-}
+//void Paint_window::change_layer_position(int before_index, int after_index)
+//{
+////    if(before_index > after_index)
+////    {
+////        area->drop_layer(before_index);
+////    }
+////    else
+////    {
+////        area->raise_layer(before_index);
+////    }
+//}
 
-QStringList Paint_window::get_layer_name()
-{
-//    return area->layers_name();
-}
+//QStringList Paint_window::get_layer_name()
+//{
+////    return area->layers_name();
+//}
 
 void Paint_window::showSettingPanel()
 {

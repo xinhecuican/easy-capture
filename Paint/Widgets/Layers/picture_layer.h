@@ -12,12 +12,12 @@
 #include "Base/Record_element.h"
 #include "Paint/Data/stretch_button.h"
 #include "Helper/plist.h"
-#include "Paint/Data/button_group.h"
-#include <QGraphicsItem>
+#include <QGraphicsObject>
 #include "rect_layer.h"
 
-class Picture_layer : public QGraphicsItem
+class Picture_layer : public QGraphicsObject
 {
+    Q_OBJECT
 public:
     enum DragPos{top_left, top_right, down_left, down_right};
     Picture_layer(QGraphicsItem* parent=nullptr);
@@ -26,12 +26,20 @@ public:
     void reset();
     void setEnableMove(bool enable);
     void setDisableColor(int index, QColor color);
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+    bool containsPicture();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget = nullptr) override;
+    void prepareSave();
+    void endSave();
+    Q_INVOKABLE void undoRedoSizeFunc(bool is_undo, QRectF before_rect, QRectF after_rect);
 private:
+
     Rect_layer* rect_layer;
     QPixmap pix;
     QRectF bound;
-    QHash<int, QColor> disable_color;
+    QRectF mask;
+    QList<QColor> disable_color;
+    QPixmap mask_pix;
 };
 
 #endif // PICTURE_LAYER_H

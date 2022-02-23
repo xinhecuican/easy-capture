@@ -6,9 +6,10 @@
 #include "Paint/Widgets/recorder.h"
 #include "Paint/Widgets/style_manager.h"
 #include<QGraphicsSceneMouseEvent>
+#include "Paint/Widgets/recorder.h"
+#include "Paint/Widgets/Recorder_element/paintdeleterecord.h"
 
-
-Paint_layer::Paint_layer(QGraphicsItem* parent) : QGraphicsItem(parent)
+Paint_layer::Paint_layer(QGraphicsItem* parent) : QGraphicsObject(parent)
 {
     this->parent = parent;
     is_enable = true;
@@ -34,16 +35,19 @@ void Paint_layer::reset()
 void Paint_layer::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     path = QPainterPath();
-    if(is_enable)
+    if(event->button() == Qt::LeftButton)
     {
         is_press = true;
+    }
+    if(is_enable)
+    {
         path.moveTo(mapFromScene(event->scenePos()));
     }
     if(is_erase)
     {
-        is_press = true;
         removeLines(mapFromScene(event->scenePos()));
     }
+
 }
 
 void Paint_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -61,7 +65,7 @@ void Paint_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void Paint_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(is_enable)
+    if(is_enable && is_press)
     {
         path.lineTo(mapFromScene(event->scenePos()));
         Paint_data* paint_data = Style_manager::instance()->get();
@@ -69,6 +73,8 @@ void Paint_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         PaintItem* item = new PaintItem(info, this); // 添加一个线条
         lines.append(item);
         path = QPainterPath();
+        PaintRecord* record = new PaintRecord(item);
+        Recorder::instance()->record(record);
     }
     is_press = false;
 }
@@ -109,14 +115,28 @@ void Paint_layer::removeLines(QPointF point)
     {
         if(item->shape().intersects(rect))
         {
-            qDebug() << item;
             items.append(item);
         }
     }
     for(PaintItem* item: items)
     {
+        PaintDeleteRecord* record = new PaintDeleteRecord(this, item, "undoRedoPaintFunc");
+        Recorder::instance()->record(record);
         lines.removeOne(item);
-        delete item;
     }
     update();
+}
+
+void Paint_layer::undoRedoPaintFunc(bool is_undo, PaintItem *item)
+{
+    if(is_undo)
+    {
+        item->show();
+        lines.append(item);
+    }
+    else
+    {
+        item->hide();
+        lines.removeOne(item);
+    }
 }

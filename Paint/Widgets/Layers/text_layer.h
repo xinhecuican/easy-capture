@@ -9,7 +9,6 @@
 #include "Paint/Data/stretch_button.h"
 #include "text_edit.h"
 #include "Paint/Data/Common.h"
-#include "Paint/Data/button_group.h"
 #include<QGraphicsTextItem>
 #include "baselayer.h"
 #include "rect_layer.h"

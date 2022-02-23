@@ -1,12 +1,14 @@
 #ifndef RECORD_ELEMENT_H
 #define RECORD_ELEMENT_H
-class Record_element
+#include<QObject>
+class RecordElement
 {
 public:
     //undo操作成功返回true
-    virtual bool undo(int index=0)=0;
-    virtual bool redo(int index=0)=0;
-    virtual ~Record_element(){};
+    virtual void undo()=0;
+    virtual void redo()=0;
+    virtual ~RecordElement(){}
+    QObject* base_object;
 };
 
 #endif // RECORD_ELEMENT_H

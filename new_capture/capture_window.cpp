@@ -195,6 +195,18 @@ void Capture_window::load_key_event(QString name)
                 Config::set_config(Config::capture_multi_window_combine, 1);
             }
         });
+        Key_manager::add_func(name, "save2file", [=](bool is_enter){
+            if(is_enter)
+            {
+                captured->save2file();
+            }
+        });
+        Key_manager::add_func(name, "save2clip", [=](bool is_enter){
+            if(is_enter)
+            {
+                captured->save2clip();
+            }
+        });
 //        Key_manager::add_func(name, "move_all", [=](bool is_enter)
 //        {
 //            if(captured.isNull())
@@ -522,6 +534,7 @@ void Capture_window::on_window_select()
                     QScreen * screen = QGuiApplication::primaryScreen();
                     QPixmap pix = screen->grabWindow(WId(scroll_hwnd));
                     QImage image = pix.toImage();
+//                    image.save("f:/dinfo/temp.png");
                     for(int i=0; i<image.height(); i++)
                     {
                         for(int k=0; k<image.width(); k++)
@@ -530,7 +543,7 @@ void Capture_window::on_window_select()
                             {
                                 window_valid = true;
                                 goto WINDOW_VALID_OUT;
-                                }
+                            }
                         }
                     }
                     window_valid = false;
@@ -538,11 +551,12 @@ void Capture_window::on_window_select()
 WINDOW_VALID_OUT:;
                     update();
                     int time = Config::get_config(Config::capture_interval);
-                    if(!window_valid)
-                    {
-                        time = 300;
-                    }
+//                    if(!window_valid)
+//                    {
+//                        time = 300;
+//                    }
                     scroll_timer->start(time);
+                    time = QDateTime::currentMSecsSinceEpoch();
                 }
                 else if(type == XGlobalHook::RBUTTON && !is_enter)
                 {
@@ -569,7 +583,7 @@ void Capture_window::set_scroll_info()
             timer->start(50);
 
         });
-        scroll_timer = new QTimer(this);
+        scroll_timer = new QTimer();
         connect(scroll_timer, &QTimer::timeout, this, [=](){
             QScreen * screen = QGuiApplication::primaryScreen();
             QPixmap pix;
@@ -582,7 +596,30 @@ void Capture_window::set_scroll_info()
             {
                 pix = screen->grabWindow(WId(scroll_hwnd));
             }
+
             QWindow* mainWindow = QWindow::fromWinId(WId(scroll_hwnd));
+            QPoint window_point;
+            if (mainWindow != nullptr)
+            {
+               window_point = mainWindow->framePosition();
+            }
+            if(false)
+            {
+                INPUT inputs[1] = {};
+                ZeroMemory(inputs, sizeof(inputs));
+                inputs[0].type = INPUT_MOUSE;
+                inputs[0].mi.mouseData = -240;
+                inputs[0].mi.dwFlags = MOUSEEVENTF_WHEEL;
+                inputs[0].mi.dx = 0;
+                inputs[0].mi.dy = 0;
+                inputs[0].mi.time = 0;
+                SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+            }
+            else
+            {
+                PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -240), MAKELPARAM(cursor_point.x(),
+                                                                                   cursor_point.y()));
+            }
             QImage image = pix.toImage();
 
             bool success = false;
@@ -607,27 +644,6 @@ void Capture_window::set_scroll_info()
             //combine_image(pix.toImage());
 //            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
             dispatcher->start(image);
-            QPoint window_point;
-            if (mainWindow != nullptr)
-            {
-               window_point = mainWindow->framePosition();
-            }
-            if(!window_valid)
-            {
-                INPUT inputs[1] = {};
-                ZeroMemory(inputs, sizeof(inputs));
-                inputs[0].type = INPUT_MOUSE;
-                inputs[0].mi.mouseData = -240;
-                inputs[0].mi.dwFlags = MOUSEEVENTF_WHEEL;
-                inputs[0].mi.dx = 0;
-                inputs[0].mi.dy = 0;
-                SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
-            }
-            else
-            {
-                PostMessage(scroll_hwnd, WM_MOUSEWHEEL, MAKEWPARAM(0, -240), MAKELPARAM(window_point.x()+cursor_point.x(),
-                                                                                   window_point.y()+cursor_point.y()));
-            }
         });
     }
 }

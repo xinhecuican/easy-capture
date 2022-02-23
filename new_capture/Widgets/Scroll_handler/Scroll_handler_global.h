@@ -1,6 +1,8 @@
 #ifndef SCROLL_HANDLER_GLOBAL_H
 #define SCROLL_HANDLER_GLOBAL_H
 #include<iostream>
+#include<QProcess>
+#include<QPair>
 class Scroll_handler_global
 {
 public:
@@ -8,6 +10,20 @@ public:
     {
         middle_width = 0;
         delta_width = 0;
+        QProcess queryCPU;
+        QPair<int , int> pairResult;
+
+        const QString queryCPUNumberOfCores = "wmic cpu get NumberOfCores";
+        queryCPU.start(queryCPUNumberOfCores);
+        queryCPU.waitForFinished();
+        QString result = QString::fromLocal8Bit(queryCPU.readAllStandardOutput());
+        QStringList list = queryCPUNumberOfCores.split(" ");
+        result = result.remove(list.last(), Qt::CaseInsensitive);
+        result = result.replace("\r", "");
+        result = result.replace("\n", "");
+        result = result.simplified();
+        pairResult.first = result.toInt();
+        num_core = pairResult.first;
     }
 
     ~Scroll_handler_global();
@@ -41,6 +57,7 @@ public:
     }
     int middle_width;
     int delta_width;
+    int num_core;
 private:
     static Scroll_handler_global* _instance;
 };

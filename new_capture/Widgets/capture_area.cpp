@@ -9,6 +9,10 @@
 #include "Manager/config.h"
 #include "Manager/window_manager.h"
 #include<QBitmap>
+#include<QClipboard>
+#include<QFileDialog>
+#include "Paint/Widgets/history.h"
+#include<QTimer>
 
 Capture_area::Capture_area(QWidget* parent):QWidget(parent)
 {
@@ -20,6 +24,7 @@ Capture_area::Capture_area(QWidget* parent):QWidget(parent)
     key_press = false;
     begin_draw = false;
     button_box = new QDialogButtonBox(parent);
+    button_box->resize(130, 30);
 
     setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setMouseTracking(true);
@@ -39,6 +44,8 @@ void Capture_area::reset()
     {
         delete ok;
         delete cancel;
+        delete clip;
+        delete save;
         button_box->clear();
     }
 
@@ -159,7 +166,17 @@ void Capture_area::mouseReleaseEvent(QMouseEvent *event)
         cancel->setIcon(QIcon(":/image/cancel.svg"));
         cancel->setStyleSheet(str);
         cancel->connect(cancel, &QPushButton::clicked, this, [=](){Window_manager::pop_window();});
-        button_box->addButton(ok, QDialogButtonBox::AcceptRole);
+        clip = new QPushButton(parent);
+        clip->setIcon(QIcon(":/image/clipboard.png"));
+        clip->setStyleSheet(str);
+        clip->connect(clip, &QPushButton::clicked, this, &Capture_area::save2clip);
+        save = new QPushButton(parent);
+        save->setIcon(QIcon(":/image/save.png"));
+        save->setStyleSheet(str);
+        save->connect(save, &QPushButton::clicked, this, &Capture_area::save2file);
+        button_box->addButton(ok, QDialogButtonBox::ActionRole);
+        button_box->addButton(clip, QDialogButtonBox::AcceptRole);
+        button_box->addButton(save, QDialogButtonBox::YesRole);
         button_box->addButton(cancel, QDialogButtonBox::RejectRole);
     }
     cal_button_pos();
@@ -171,17 +188,17 @@ void Capture_area::cal_button_pos()
     QRect bound = bounded_rect();
     QDesktopWidget* desktop = QApplication::desktop();
     QRect total = desktop->screenGeometry();
-    if(bound.right()+100 < total.right() && bound.bottom() + 30 < total.bottom())
+    if(bound.right()+130 < total.right() && bound.bottom() + 30 < total.bottom())
     {
         button_box->move(bound.bottomRight());
     }
-    else if(bound.left() - 100 > total.left() &&  bound.top() - 30 > total.top())
+    else if(bound.left() - 130 > total.left() &&  bound.top() - 30 > total.top())
     {
-        button_box->move(bound.topLeft() - QPoint(100, 30));
+        button_box->move(bound.topLeft() - QPoint(130, 30));
     }
     else
     {
-        button_box->move(bound.bottomRight() - QPoint(100, 30));
+        button_box->move(bound.bottomRight() - QPoint(130, 30));
     }
 }
 
@@ -350,6 +367,15 @@ void Capture_area::control_point_position_change(int index, QList<int> position,
 
 void Capture_area::on_click_ok()
 {
+    QPixmap ans;
+    QRect rect;
+    getPic(ans, rect);
+    Window_manager::change_window("Paint_window");
+    Window_manager::get_window("Paint_window")->set_pic(ans, rect);
+}
+
+void Capture_area::getPic(QPixmap &ans, QRect &rect)
+{
     parent->hide();
     QScreen* screen = QGuiApplication::primaryScreen();
     QPixmap p = screen->grabWindow(0);
@@ -366,14 +392,40 @@ void Capture_area::on_click_ok()
     QPainter painter(&mask);
     painter.fillPath(path, QColor(1, 1, 1));
     p.setMask(mask.createMaskFromColor(QColor(1, 1, 1), Qt::MaskOutColor));
-    QRect rect = path.boundingRect().toRect();
-    QPixmap ans = p.copy(rect);
+    rect = path.boundingRect().toRect();
+    ans = p.copy(rect);
     rect.moveTo(0, 0);
-    Window_manager::change_window("Paint_window");
-    Window_manager::get_window("Paint_window")->set_pic(ans, rect);
 }
 
 void Capture_area::is_key_press(bool enter)
 {
     this->key_press = enter;
+}
+
+void Capture_area::save2file()
+{
+    QString file_name = QFileDialog::getSaveFileName(this,
+                                                     "保存",
+                                                     History::instance()->get_last_directory(),
+                                                     "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+    QTimer::singleShot(50, [=](){
+        QPixmap pix;
+        QRect rect;
+        getPic(pix, rect);
+        pix.save(file_name);
+        History::instance()->log(History_data::Persist, file_name);
+        Window_manager::change_window("MainWindow");
+        Window_manager::hide_now();
+    });
+}
+
+void Capture_area::save2clip()
+{
+    QClipboard *clip=QApplication::clipboard();
+    QPixmap pix;
+    QRect rect;
+    getPic(pix, rect);
+    clip->setPixmap(pix);
+    Window_manager::change_window("MainWindow");
+    Window_manager::hide_now();
 }

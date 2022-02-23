@@ -1,6 +1,7 @@
 #ifndef WINDOW_FLITER_H
 #define WINDOW_FLITER_H
-#include<windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include<QWidget>
 #include<QDebug>
 class CSCWinInfo
@@ -94,10 +95,25 @@ public:
            return rtRect;
        }
 
+       static bool enableStyle(DWORD style, DWORD exstyle)
+       {
+           return (style & WS_VSCROLL) || (exstyle & WS_EX_RIGHTSCROLLBAR)
+                   || (exstyle & WS_EX_LEFTSCROLLBAR);
+       }
+
+       static bool disableStyle(DWORD style, DWORD exstyle)
+       {
+           return (style & WS_DISABLED) || (exstyle & WS_EX_TRANSPARENT)
+                   || (exstyle & WS_EX_NOACTIVATE);
+       }
+
        static HWND find_scroll_window(HWND hwnd, QPoint point)
        {
+           scroll_hwnd = NULL;
            DWORD dwStyle = GetWindowLong(hwnd, GWL_STYLE);
-           if((dwStyle & WS_VSCROLL) == WS_VSCROLL)
+           DWORD ex_style = GetWindowLong(hwnd, GWL_EXSTYLE);
+           qDebug() << hwnd << dwStyle << ex_style;
+           if(enableStyle(dwStyle, ex_style) && !disableStyle(dwStyle, ex_style))
            {
                return hwnd;
            }
@@ -110,7 +126,8 @@ public:
        static BOOL CALLBACK EnumScrollWindowProc(HWND hwnd, LPARAM lParam)
        {
            DWORD dwStyle = GetWindowLong(hwnd, GWL_STYLE);
-           if((dwStyle & WS_VSCROLL) != WS_VSCROLL)
+           DWORD ex_style = GetWindowLong(hwnd, GWL_EXSTYLE);
+           if(!(enableStyle(dwStyle, ex_style) && !disableStyle(dwStyle, ex_style)))
            {
                EnumChildWindows(hwnd, EnumScrollWindowProc, lParam);
            }

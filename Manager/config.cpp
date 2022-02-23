@@ -30,7 +30,7 @@ const int Config::default_settings[] =
     0,
     false,//start_instantly
     true,
-    true,//show_close_dialog
+    false,//show_close_dialog
     true,
     300
 };

@@ -8,6 +8,7 @@ ExpandButton::ExpandButton(direction dir, QPointF pos, QGraphicsItem* parent): Q
     this->dir = dir;
     setPos(pos);
     setAcceptHoverEvents(true);
+    is_limit = false;
 }
 
 void ExpandButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -20,6 +21,12 @@ void ExpandButton::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF delta_point = event->scenePos() - begin_point;
     begin_point = event->scenePos();
+    QPointF after_point = pos() + delta_point;
+    if(is_limit && (after_point.x() > limit.right() || after_point.x() < limit.left()
+            || after_point.y() > limit.bottom() || after_point.y() < limit.top()))
+    {
+        return;
+    }
     moveBy(delta_point.x(), delta_point.y());
     emit posChange(dir, delta_point.x(), delta_point.y());
 }
@@ -28,6 +35,12 @@ void ExpandButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF delta_point = event->scenePos() - begin_point;
     begin_point = event->scenePos();
+    QPointF after_point = pos() + delta_point;
+    if(is_limit && (after_point.x() > limit.right() || after_point.x() < limit.left()
+            || after_point.y() > limit.bottom() || after_point.y() < limit.top()))
+    {
+        return;
+    }
     moveBy(delta_point.x(), delta_point.y());
     delta_point = event->scenePos() - record_point;
     emit posTo(dir, delta_point.x(), delta_point.y());
@@ -69,4 +82,10 @@ void ExpandButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 QRectF ExpandButton::boundingRect() const
 {
     return QRectF(-QPointF(radius, radius), QPointF(radius, radius));
+}
+
+void ExpandButton::setLimit(QRectF rect)
+{
+    is_limit = true;
+    limit = rect;
 }

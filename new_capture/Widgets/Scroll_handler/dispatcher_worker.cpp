@@ -2,9 +2,11 @@
 #include<QImage>
 #include<QPainter>
 #include<QDebug>
-#include<windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include<QDateTime>
 #include "Helper/debug.h"
+#include "Scroll_handler_global.h"
 
 Dispatcher_worker::Dispatcher_worker(QObject* object) : QObject(object)
 {
@@ -73,8 +75,7 @@ void Dispatcher_worker::check_work()
                 {
                     success = true;
                     image2 = iter.value();
-                    map.erase(tmp_iter);
-                    map.erase(iter);
+                    tmp2_iter = iter;
                     break;
                 }
                 image1 = iter.value();
@@ -82,7 +83,15 @@ void Dispatcher_worker::check_work()
             }
             if(success)
             {
-                combine(image1, image2);
+                if(!combine(image1, image2))
+                {
+                    break;
+                }
+                else
+                {
+                    map.erase(tmp_iter);
+                    map.erase(tmp2_iter);
+                }
             }
             else
             {
@@ -100,14 +109,15 @@ void Dispatcher_worker::check_work()
 
 }
 
-void Dispatcher_worker::combine(combine_data image1, combine_data image2)
+bool Dispatcher_worker::combine(combine_data image1, combine_data image2)
 {
-
     Scroll_handle* handle;
     if((handle = take()) != NULL)
     {
         handle->start(image1.begin, image2.end, image1.image, image2.image, img_height);
+        return true;
     }
+    return false;
 }
 
 Scroll_handle* Dispatcher_worker::take()
@@ -120,9 +130,7 @@ Scroll_handle* Dispatcher_worker::take()
     }
     else
     {
-        SYSTEM_INFO sysInfo;
-        GetSystemInfo(&sysInfo);
-        if(idle_list.size() + work_list.size() > (int)sysInfo.dwNumberOfProcessors)//限制线程数量
+        if(idle_list.size() + work_list.size() > Scroll_handler_global::instance()->num_core)//限制线程数量
         {
             return NULL;
         }

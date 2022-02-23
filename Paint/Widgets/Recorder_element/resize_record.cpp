@@ -1,21 +1,23 @@
 #include "resize_record.h"
+#include "Helper/Reflect.h"
 
-Resize_record::Resize_record(Ilayer* layer, int index, int dx, int dy)
+ResizeRecord::ResizeRecord(QGraphicsObject* object, const char* func_name, QRectF before_rect, QRectF after_rect)
 {
-    this->layer = layer;
-    this->index = index;
-    this->dx = dx;
-    this->dy = dy;
+    this->object = object;
+    this->func_name = func_name;
+    this->before_rect = before_rect;
+    this->after_rect = after_rect;
+    this->base_object = object;
 }
 
-bool Resize_record::redo(int index)
+void ResizeRecord::redo()
 {
-    layer->on_size_change(this->index, dx, dy);
-    return true;
+    Reflect::invokeMethod(object->metaObject()->className(), object, func_name,
+                          Q_ARG(bool, false), Q_ARG(QRectF, before_rect), Q_ARG(QRectF, after_rect));
 }
 
-bool Resize_record::undo(int index)
+void ResizeRecord::undo()
 {
-    layer->on_size_change(this->index, -dx, -dy);
-    return true;
+    Reflect::invokeMethod(object->metaObject()->className(), object, func_name,
+                          Q_ARG(bool, true), Q_ARG(QRectF, before_rect), Q_ARG(QRectF, after_rect));
 }

@@ -21,6 +21,7 @@ void Window_manager::control_window_close()
     int time = Config::get_config(Config::clear_interval);
     qint64 current_time = QDateTime::currentDateTime().currentSecsSinceEpoch();
     QList<Window_base*> temp_list = QList<Window_base*>();
+    if(active_window == "Setting")return;
     for(auto iter=window_list.begin(); iter!=window_list.end();)
     {
         qDebug() << is_hidden << iter.key();
@@ -76,35 +77,23 @@ void Window_manager::change_window(QString name)
     create_window(name);
     if(active_window != name)
     {
+        Key_manager::onWindowChangeBegin(active_window, name);
         if(active_window == NULL)
         {
             active_window = name;
         }
-//        else if(active_window == "MainWindow")
-//        {
-//            window_list["MainWindow"].window->setWindowOpacity(0);
-//            window_list["MainWindow"].window->on_window_cancal();
-//        }
         else if(window_list.contains(active_window))
         {
             window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
             window_list[active_window].window->hide();
             window_list[active_window].window->on_window_cancal();
         }
-        Key_manager::on_window_change(active_window, name);
         previous_window = active_window;
         active_window = name;
         window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
         window_list[active_window].window->on_window_select();
-//        if(name == "MainWindow")
-//        {
-//            window_list["MainWindow"].window->show();
-//            window_list["MainWindow"].window->setWindowOpacity(1);
-//        }
-//        else
-//        {
-            window_list[name].window->show();
-//        }
+        window_list[name].window->show();
+        Key_manager::onWindowChangeEnd();
     }
 }
 

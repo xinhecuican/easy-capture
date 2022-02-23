@@ -1,6 +1,6 @@
 #include "paintitem.h"
 
-PaintItem::PaintItem(paint_info info, QGraphicsItem* parent) : QGraphicsItem(parent)
+PaintItem::PaintItem(paint_info info, QGraphicsItem* parent) : QGraphicsObject(parent)
 {
     this->info = info;
 }

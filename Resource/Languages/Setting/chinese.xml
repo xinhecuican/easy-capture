@@ -27,4 +27,6 @@
     <string id="delete_shape" text="删除形状"/>
     <string id="FcOnYo1uUa" text="滚动时间间隔"/>
     <string id="g2X3jHOVbU" text="自动复制到剪切板"/>
+    <string id="save2file" text="保存"/>
+    <string id="save2clip" text="保存到剪切板"/>
 </strings>

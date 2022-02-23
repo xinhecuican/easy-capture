@@ -25,52 +25,59 @@ Recorder::~Recorder()
 
 void Recorder::back()
 {
-    Record_base* element;
+    RecordElement* element;
     //当没到栈底并且当前undo操作不成功时
-    while (data.can_undo())
+    if (data.can_undo())
     {
         element = data.pop();
-        if(element->undo(0))
-        {
-            break;
-        }
+        element->undo();
     }
-
-
+    emit recordChange();
 }
 
 void Recorder::forward()
 {
-    Record_base* element;
-    while (data.can_redo())
+    RecordElement* element;
+    if (data.can_redo())
     {
         element = data.forward();
-        if(element->redo(0))
-        {
-            break;
-        }
+        element->redo();
     }
+    emit recordChange();
 }
 
-void Recorder::remove_record(Ilayer *layer)
+void Recorder::removeRecord(QObject* layer)
 {
     for(int i=0; i<data.size(); i++)
     {
-        if(data.get(i)->layer == layer)
+        if(data.get(i)->base_object == layer)
         {
             data.remove(i);
             i--;
         }
     }
+    emit recordChange();
 }
 
-void Recorder::record(Record_base* element)
+void Recorder::record(RecordElement* element)
 {
     data.push_and_resize(element);
+    emit recordChange();
 }
 
 
 void Recorder::reset()
 {
     data.reset();
+    emit recordChange();
+}
+
+bool Recorder::undoAvaliable()
+{
+    return data.can_undo();
+}
+
+bool Recorder::redoAvaliable()
+{
+    return data.can_redo();
 }

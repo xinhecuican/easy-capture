@@ -11,10 +11,10 @@
 #include "Paint/Widgets/Recorder_element/paint_record.h"
 #include "Paint/Data/Common.h"
 #include<QGraphicsItem>
-#include "Paint/Widgets/Layers/LayerItems/paintitem.h"
 
-class Paint_layer : public QGraphicsItem
+class Paint_layer : public QGraphicsObject
 {
+    Q_OBJECT
 public:
     Paint_layer(QGraphicsItem* parent=nullptr);
     ~Paint_layer();
@@ -25,6 +25,7 @@ public:
     void setEnableDraw(bool enable);
     void reset();
     void setErase(bool enable);
+    Q_INVOKABLE void undoRedoPaintFunc(bool is_undo, PaintItem* item);
     QRectF boundingRect() const override;
 private:
     void removeLines(QPointF point);

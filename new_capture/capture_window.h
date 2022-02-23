@@ -8,7 +8,8 @@
 #include "new_capture/Widgets/capture_area.h"
 #include "Base/Window_base.h"
 #include<QTimer>
-#include<windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include "new_capture/Widgets/Scroll_handler/scroll_dispatcher.h"
 #include "opencv2/core/core.hpp"
 #include<QPointer>

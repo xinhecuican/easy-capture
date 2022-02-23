@@ -1,5 +1,4 @@
 #include "capture_region.h"
-#include "Helper/stackdumper.h"
 
 Capture_region::Capture_region()
 {

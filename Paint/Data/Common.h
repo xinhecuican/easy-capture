@@ -4,7 +4,7 @@
 #include<QPainterPath>
 #include<QFont>
 #include<cmath>
-enum SHAPE_TYPE{TEXT, DELETE_SHAPE, RECTANGLE};
+enum SHAPE_TYPE{TEXT, DELETE_SHAPE, RECTANGLE, PAINT_ARROW};
 enum PAINT_STATE{PAINT, ARROW, SHAPE, ERASE};
 enum direction{NW, NE, SW, SE, N, W, S, E};
 

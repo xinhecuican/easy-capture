@@ -15,6 +15,7 @@ public:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    void setLimit(QRectF rect);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     QRectF boundingRect() const override;
 signals:
@@ -25,6 +26,8 @@ private:
     QCursor out_cursor;
     QPointF begin_point;
     QPointF record_point;
+    QRectF limit;
+    bool is_limit;
     const qreal radius = 5;
 };
 

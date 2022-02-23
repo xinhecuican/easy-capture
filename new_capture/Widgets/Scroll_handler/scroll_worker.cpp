@@ -416,8 +416,8 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans, int img_he
 //            CalcCorners(H, imageR);
 //        }
 //    }
-    qDebug() << corners.right_top.x << corners.left_top.x << corners.right_bottom.x << corners.left_bottom.x
-             << imageR.cols;
+//    qDebug() << corners.right_top.x << corners.left_top.x << corners.right_bottom.x << corners.left_bottom.x
+//             << imageR.cols;
 
 
     //将透视变换应用于图像

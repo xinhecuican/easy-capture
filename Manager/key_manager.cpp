@@ -15,6 +15,7 @@ QHash<QString, Key_manager::window> Key_manager::all_key = QHash<QString, window
 QList<int> Key_manager::availiable_key = QList<int>();
 QSet<QString> Key_manager::using_window_set = QSet<QString>();
 QList<Key_manager::listener_data> Key_manager::listeners = QList<listener_data>();
+bool Key_manager::is_windowchange = false;
 QList<QString> Key_manager::key_settings = {
     "MainWindow:main_capture;16777249,78",
     "Capture_window:leave;16777216",//Escape,可以通过Qt::Key_Escape查看键值
@@ -23,6 +24,8 @@ QList<QString> Key_manager::key_settings = {
     "Capture_window:multi_window_combine;51",
 //    "Capture_window:move_all;16777249",//ctrl
     "Capture_window:enter_capture;16777220",//enter
+    "Capture_window:save2file;16777249,83",
+    "Capture_window:save2clip;16777249,69",
     "Paint_window:undo;16777249,90",
     "Paint_window:redo;16777249,88",
     "Paint_window:save;16777249,83",
@@ -104,7 +107,7 @@ void Key_manager::on_key_count_change(bool is_enter, int key)
 
 void Key_manager::key_enter(int key)
 {
-    if(availiable_key.contains(key))
+    if(availiable_key.contains(key) || is_windowchange)
     {
         return;
     }
@@ -118,7 +121,7 @@ void Key_manager::key_enter(int key)
 
 void Key_manager::key_release(int key)
 {
-    if(!availiable_key.contains(key))
+    if(!availiable_key.contains(key) || is_windowchange)
     {
         return;
     }
@@ -347,7 +350,7 @@ void Key_manager::load()
 
 }
 
-void Key_manager::on_window_change(QString old_window, QString new_window)
+void Key_manager::onWindowChangeBegin(QString old_window, QString new_window)
 {
     if(old_window != "")
     {
@@ -362,6 +365,12 @@ void Key_manager::on_window_change(QString old_window, QString new_window)
         }
     }
     availiable_key.clear();
+    is_windowchange = true;
+}
+
+void Key_manager::onWindowChangeEnd()
+{
+    is_windowchange = false;
 }
 
 QHash<int, QString> Key_manager::key_type =

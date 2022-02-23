@@ -47,7 +47,10 @@ public:
 
 public slots:
     void on_click_ok();
+    void save2file();
+    void save2clip();
 private:
+    void getPic(QPixmap& pic, QRect& rect);
     bool key_press;
     //QList<QRegion> regions;
     bool begin_draw;
@@ -64,7 +67,8 @@ private:
     QDialogButtonBox* button_box;
     QPushButton* ok;
     QPushButton* cancel;
-
+    QPushButton* save;
+    QPushButton* clip;
 };
 
 #endif // CAPTURE_AREA_H

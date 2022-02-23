@@ -10,7 +10,8 @@
 #include "Manager/key_manager.h"
 #include<QLabel>
 #include<QMessageBox>
-
+#include<QSettings>
+#include<QDir>
 
 Setting::Setting(QWidget *parent) :
     Window_base(parent, this, "Setting"),
@@ -120,16 +121,25 @@ void Setting::normal_settings()
     });
     normal_setting->add_bool_option("start_now", "{3BIidMbkAm}开机启动", Config::start_instantly, [=](bool ans){
         ready_setting.append(data(Config::start_instantly, ans));
+        QSettings reg("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
+        QString appName = QApplication::applicationName();
+        if(ans)
+        {
+            QString strAppPath=QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
+            reg.setValue(appName,strAppPath+ tr(" autoStart"));
+        }
+        else
+            reg.remove(appName);
         normal_setting->set_dirty(true);
     });
     normal_setting->add_bool_option("hide_tray", "{ZflcWUcIX8}隐藏到托盘", Config::hide_to_tray, [=](bool ans){
         ready_setting.append(data(Config::hide_to_tray, ans));
         normal_setting->set_dirty(true);
     });
-    normal_setting->add_bool_option("show_close", "{YycWGmFDhU}显示关闭对话框", Config::show_close_dialog, [=](bool ans){
-        ready_setting.append(data(Config::show_close_dialog, ans));
-        normal_setting->set_dirty(true);
-    });
+//    normal_setting->add_bool_option("show_close", "{YycWGmFDhU}显示关闭对话框", Config::show_close_dialog, [=](bool ans){
+//        ready_setting.append(data(Config::show_close_dialog, ans));
+//        normal_setting->set_dirty(true);
+//    });
     normal_setting->add_bool_option("copy_clipboard", "{g2X3jHOVbU}自动复制到剪切板", Config::auto_copy_to_clipboard, [=](bool ans){
         ready_setting.append(data(Config::auto_copy_to_clipboard, ans));
         normal_setting->set_dirty(true);

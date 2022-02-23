@@ -4,30 +4,36 @@
 #include "Base/Record_element.h"
 #include<iostream>
 #include "Helper/debug.h"
-#include "Paint/Widgets/Recorder_element/record_base.h"
+#include<QGraphicsItem>
+#include<QObject>
 
-class Recorder
+class Recorder : public QObject
 {
+    Q_OBJECT
 public:
     Recorder();
     ~Recorder();
     static Recorder* instance();
-    void record(Record_base* element);
+    void record(RecordElement* element);
     void reset();
     void back();
     void forward();
-    void remove_record(Ilayer* layer);
+    void removeRecord(QObject* item);
+    bool undoAvaliable();
+    bool redoAvaliable();
+signals:
+    void recordChange();
 private:
     struct Record_data
     {
         Record_data(){};
-        Record_data(int index, Record_element* element)
+        Record_data(int index, RecordElement* element)
         {
             this->index = index;
             this->element = element;
         }
         int index;//在element中的标识
-        Record_element* element;
+        RecordElement* element;
     };
     struct MVector
     {
@@ -35,14 +41,14 @@ private:
         int limit;
         int point;
         int max_size;
-        Record_base** data;
+        RecordElement** data;
         MVector()
         {
             capacity = 10;
             limit = 0;
             point = 0;
             max_size = 0;
-            data = new Record_base*[10];
+            data = new RecordElement*[10];
         }
 
         void ensure_capacity()
@@ -51,7 +57,7 @@ private:
             {
                 int old_size = capacity;
                 capacity <<= 1;
-                Record_base** temp = new Record_base*[capacity];
+                RecordElement** temp = new RecordElement*[capacity];
                 for(int i=0; i<old_size; i++)
                 {
                     temp[i] = data[i];
@@ -76,7 +82,7 @@ private:
             {
                 delete data[i];
             }
-            Record_base** temp = new Record_base*[10];
+            RecordElement** temp = new RecordElement*[10];
             capacity = 10;
             limit = 0;
             point = 0;
@@ -85,7 +91,7 @@ private:
             data = temp;
         }
 
-        void push_back(Record_base* record_data)
+        void push_back(RecordElement* record_data)
         {
             ensure_capacity();
             data[point++] = record_data;
@@ -96,7 +102,7 @@ private:
             limit++;
         }
 
-        Record_base* pop()
+        RecordElement* pop()
         {
             if(point > 0)
             {
@@ -106,7 +112,7 @@ private:
             return data[0];
         }
 
-        void push_and_resize(Record_base* record_data)
+        void push_and_resize(RecordElement* record_data)
         {
             data[point++] = record_data;
             limit = point;
@@ -129,7 +135,7 @@ private:
             return i;
         }
 
-        Record_base* get(int i)
+        RecordElement* get(int i)
         {
             if(i > limit-1)
             {
@@ -144,7 +150,7 @@ private:
 
         inline int size(){return limit;};
 
-        inline Record_base*& forward(){point++;return data[point-1];};
+        inline RecordElement*& forward(){point++;return data[point-1];};
     };
 
     static Recorder* _instance;

@@ -1,19 +1,17 @@
 #ifndef PAINT_RECORD_H
 #define PAINT_RECORD_H
-#include "record_base.h"
+#include "Base/Record_element.h"
 #include "Paint/Data/Common.h"
+#include "Paint/Widgets/Layers/LayerItems/paintitem.h"
 
-class Paint_record : public Record_base
+class PaintRecord : public RecordElement
 {
 public:
-
-    Paint_record(Ilayer* layer, int index, paint_info info);
-    bool redo(int index = 0) override;
-    bool undo(int index = 0) override;
+    PaintRecord(PaintItem* item);
+    void redo() override;
+    void undo() override;
 private:
-    int index;
-    paint_info info;
-
+    PaintItem* item;
 };
 
 #endif // PAINT_RECORD_H

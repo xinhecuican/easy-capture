@@ -1,21 +1,18 @@
 #include "paint_record.h"
 #include<QDebug>
 
-Paint_record::Paint_record(Ilayer* layer, int index, paint_info info)
+PaintRecord::PaintRecord(PaintItem* item)
 {
-    this->layer = layer;
-    this->index = index;
-    this->info = info;
+    this->item = item;
+    this->base_object = item;
 }
 
-bool Paint_record::redo(int index)
+void PaintRecord::undo()
 {
-    layer->on_paint_change(this->index, this->info);
-    return true;
+    item->hide();
 }
 
-bool Paint_record::undo(int index)
+void PaintRecord::redo()
 {
-    layer->on_paint_change(this->index, this->info);
-    return true;
+    item->show();
 }

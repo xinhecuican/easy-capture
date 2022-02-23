@@ -11,6 +11,7 @@
 #include<QMainWindow>
 #include<QGraphicsScene>
 #include "Paint/Widgets/Layers/shapelayer.h"
+#include "Paint/Data/History_data.h"
 
 class Paint_area : public QGraphicsScene
 {
@@ -25,9 +26,14 @@ public:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
+    void save(History_data::save_type type, QString path);
+    void save2Clipboard();
+    bool needSave();
 private:
     void setOtherLayer();
     void initSettingPanel();
+    void prepareSave();
+    void endSave();
 
     const int DEFAULT_LAYER_NUM = 1;
     SHAPE_TYPE shape_type;
@@ -36,6 +42,7 @@ private:
     Paint_layer* paint_layer;
     Picture_layer* pic_layer;
     ShapeLayer* shape_layer;
+    bool is_save;
 };
 
 #endif // PAINT_AREA_H

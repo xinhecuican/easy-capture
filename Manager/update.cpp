@@ -42,10 +42,13 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.3.6",
-"https://gitee.com/xinhecuican/Resources/raw/master/easy_capture_version/0.3.6.zip", "",
-                                              "1. 现在可以在qq上截图了\n"
-                                              "2. 进一步降低长时间不使用的内存占用和cpu消耗");
+Update_data Update::now_version = Update_data("0.4.0",
+"http://121.37.81.150:8200/easycapture/update/0.4.0.zip", "",
+                                              "1. 增加了bug上传，更好的改进程序\n"
+                                              "2. 使用新的架构实现绘图窗口，增加稳定性\n"
+                                              "3. 修复了滚动截屏卡死的问题\n"
+                                              "4. 进行了一些体验上的优化\n"
+                                              "5. 由于改动较大，需要重新下载: http://121.37.81.150:8200/easycapture/downloads/easy_capture0.4.0.exe");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
@@ -79,7 +82,7 @@ void Update::deserialized(QJsonObject *json)
 void Update::check_update()
 {
     Config::set_config(Config::last_update_time, QDateTime::currentSecsSinceEpoch() / 60);
-    start_request(QUrl("https://gitee.com/xinhecuican/Resources/raw/master/easy_capture_version/update.json"));
+    start_request(QUrl("http://121.37.81.150:8200/easycapture/update/update.json?download=true"));
 }
 
 void Update::start_request(const QUrl &url)
@@ -90,7 +93,7 @@ void Update::start_request(const QUrl &url)
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
     manager->clearAccessCache();
     reply = manager->get(request);
-    timeout->reset(reply, 10000);
+    timeout->reset(reply, 500000);
     connect(timeout, &Reply_timeout::timeout, this, [=](){
         qDebug() << "timeout";
     });

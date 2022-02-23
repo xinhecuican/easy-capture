@@ -76,11 +76,12 @@ void Update_dialog::get_one_update()
 {
     request.setUrl(this->data[update_sum].get_url());
     qDebug() << this->data[update_sum].get_url();
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    request.setRawHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
+
+//    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+//    request.setRawHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+//    request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
     reply = manager.get(request);
-    timeout->reset(reply, 10000);
+    timeout->reset(reply, 500000);
     connect(reply, &QNetworkReply::finished, this, [=](){
         if (reply->error())
         {
