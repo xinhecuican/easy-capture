@@ -4,7 +4,7 @@
 
 | 透明化前|透明化后 |
 |-|-|
-| <img src="https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA1.png"> | <img src="https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA2.png"> |
+| <img src="https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA1.png"> | <img src="https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA2.png"> |
 
 此外他还支持多种截图模式并且可以图片上编辑
 
@@ -35,17 +35,17 @@
 
 * 分离区域截图
 
-  ​     ![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA3.gif)
+  ​     ![](https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA3.gif)
 
 * 可合并区域截图
 
-  ​    ![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA4.gif)
+  ​    ![](https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA4.gif)
 
      多个区域截图主要是为了截取一些相关但不相连的部分。
 
 * 自由截图
 
-  ![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA5.gif)
+  ![](https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA5.gif)
 
 * 滚动截图
 
@@ -55,12 +55,12 @@
 	
 	此外滚动截图可以调整滚动速度。滚动速度较快时可以利用所有cpu。
 	
-	![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA8.gif)
+	![](https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA8.gif)
 	
 * 绘制
 	当前仅支持笔，荧光笔和文本绘制，并且支持撤销、恢复和擦除。
 
-	![](https://cdn.jsdelivr.net/gh/xinhecuican/xinhecuican.github.io/images/%E7%AE%80%E6%88%AA6.gif)
+	![](https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA6.gif)
 
 * 透明
 
