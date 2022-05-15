@@ -50,7 +50,11 @@ public:
                              QGenericArgument val9 = QGenericArgument()
                              )
     {
-        Q_ASSERT(metaObjects().contains(className));
+        if(!metaObjects().contains(className))
+        {
+            Debug::debug_print_warning(className);
+            Debug::debug_print_warning(method_name);
+        }
         QGenericReturnArgument ret;
         metaObjects().value(className).invokeMethod(object, method_name, Qt::AutoConnection, ret, val0,
                                                            val1, val2, val3, val4, val5, val6, val7, val8, val9);

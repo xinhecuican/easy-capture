@@ -11,25 +11,30 @@ QMap<QString, Window_manager::Window_data> Window_manager::window_list =
         QMap<QString, Window_manager::Window_data>();
 QString Window_manager::active_window = NULL;
 QString Window_manager::previous_window = NULL;
-bool Window_manager::is_hidden = false;
+bool Window_manager::current_hidden = false;
+bool Window_manager::previous_hidden = false;
 
 Window_manager::Window_manager(){}
 
 //延时删除，加快窗口间的切换速度
 void Window_manager::control_window_close()
 {
-    int time = Config::get_config(Config::clear_interval);
+    int time = Config::getConfig<int>(Config::clear_interval);
     qint64 current_time = QDateTime::currentDateTime().currentSecsSinceEpoch();
     QList<Window_base*> temp_list = QList<Window_base*>();
     if(active_window == "Setting")return;
+#ifdef QT_DEBUG
+    qDebug() << active_window << endl;
+#endif
     for(auto iter=window_list.begin(); iter!=window_list.end();)
     {
-        qDebug() << is_hidden << iter.key();
         if(current_time-iter.value().time >= time&&
-                (is_hidden || iter.key() != active_window))
+                (current_hidden || iter.key() != active_window))
         {
             temp_list.append(iter.value().window);
-            qDebug() << iter.key();
+#ifdef QT_DEBUG
+            qDebug() << "delete " << iter.key();
+#endif
             iter = window_list.erase(iter);
         }
         else
@@ -69,11 +74,9 @@ void Window_manager::push_window(QString name, Window_base *widget)
 
 void Window_manager::change_window(QString name)
 {
+#ifdef QT_DEBUG
     qDebug() << name << " " << active_window;
-    /*if(window_list.find(name) == window_list.end())
-    {
-        window_list[name] = static_cast<Window_base*>(Reflect::newInstance(name));
-    }*/
+#endif
     create_window(name);
     if(active_window != name)
     {
@@ -90,10 +93,17 @@ void Window_manager::change_window(QString name)
         }
         previous_window = active_window;
         active_window = name;
+        previous_hidden = current_hidden;
+        current_hidden = false;
         window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
         window_list[active_window].window->on_window_select();
         window_list[name].window->show();
         Key_manager::onWindowChangeEnd();
+    }
+
+    if(!Main_fliter::instance()->is_timer_run())
+    {
+        Main_fliter::instance()->start_timer();
     }
 }
 
@@ -120,14 +130,17 @@ Window_base* Window_manager::get_window(QString name)
     return NULL;
 }
 
-Window_base* Window_manager::create_and_get_window(QString name)
-{
-    create_window(name);
-    return window_list[name].window;
-}
-
 void Window_manager::pop_window()
 {
+    if(previous_hidden)
+    {
+        previous_hidden = current_hidden;
+        hide_now();
+        QString temp_window = active_window;
+        active_window = previous_window;
+        previous_window = temp_window;
+        return;
+    }
     change_window(previous_window);
 }
 
@@ -141,26 +154,19 @@ void Window_manager::create_window(QString name)
 {
     if(window_list.find(name) == window_list.end())
     {
-//        if(name == "MainWindow")
-//        {
-//            window_list[name] = create_data(static_cast<Window_base*>(Reflect::newInstance(name)));
-//        }
-//        else
-//        {
-//            if(window_list.find("MainWindow") == window_list.end())
-//            {
-//                window_list["MainWindow"] = create_data
-//                        (static_cast<Window_base*>(Reflect::newInstance("MainWindow")));
-//            }
-            window_list[name] = create_data(static_cast<Window_base*>(
+        window_list[name] = create_data(static_cast<Window_base*>(
                             Reflect::newInstance(name)));
-//        }
     }
 }
 
 void Window_manager::close()
 {
     QApplication::quit();
+    for(auto iter=window_list.begin(); iter!=window_list.end(); iter++)
+    {
+        iter->window->on_window_close();
+        iter->window->deleteLater();
+    }
 }
 
 Window_manager::Window_data Window_manager::create_data(Window_base *window)
@@ -173,29 +179,28 @@ Window_manager::Window_data Window_manager::create_data(Window_base *window)
 
 void Window_manager::show_now()
 {
-//    if(active_window == "MainWindow")
-//    {
-//        window_list["MainWindow"].window->setWindowOpacity(1);
-//    }
     create_window(active_window);
-    is_hidden = false;
+    current_hidden = false;
     window_list[active_window].window->show();
     window_list[active_window].window->setWindowFlag(Qt::WindowSystemMenuHint, true);
     if(!Main_fliter::instance()->is_timer_run())
     {
         Main_fliter::instance()->start_timer();
     }
-//    window_list["MainWindow"].window->show();
-    //window_list["MainWindow"].window->hide();
 }
 
 void Window_manager::hide_now()
 {
-//    if(active_window == "MainWindow")
-//    {
-//        window_list["MainWindow"].window->setWindowOpacity(0);
-//    }
-    is_hidden = true;
+    current_hidden = true;
     window_list[active_window].window->hide();
     window_list[active_window].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
+}
+
+void Window_manager::hideToMain()
+{
+    current_hidden = true;
+    window_list[active_window].window->hide();
+    window_list[active_window].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
+    previous_window = active_window;
+    active_window = "MainWindow";
 }

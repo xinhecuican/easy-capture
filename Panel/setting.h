@@ -7,9 +7,6 @@
 #include "Base/Window_base.h"
 #include<QCloseEvent>
 #include "Helper/plist.h"
-#if _MSC_VER >= 1600
-#pragma execution_character_set("utf-8")
-#endif
 
 namespace Ui {
 class Setting;
@@ -30,8 +27,8 @@ private:
     struct data
     {
         int type;
-        int sum;
-        data(int t, int s)
+        QVariant sum;
+        data(int t, QVariant s)
         {
             type = t;
             sum = s;

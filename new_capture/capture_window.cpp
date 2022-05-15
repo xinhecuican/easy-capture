@@ -56,7 +56,7 @@ Capture_window::Capture_window(QWidget *parent) :
 Capture_window::~Capture_window()
 {
     delete ui;
-    if(Config::get_config(Config::scroll_capture))
+    if(Config::getConfig<bool>(Config::scroll_capture))
     {
         delete dispatcher;
         scroll_timer->stop();
@@ -73,7 +73,7 @@ Capture_window::~Capture_window()
 void Capture_window::paintEvent(QPaintEvent *paint_event)
 {
     QPainter painter(this);
-    if(Config::get_config(Config::free_capture) && button_click)
+    if(Config::getConfig<bool>(Config::free_capture) && button_click)
     {
         QPen pen;
         pen.setStyle(Qt::DashLine);
@@ -83,7 +83,7 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
         painter.drawPath(free_paint_path);
         return;
     }
-    else if(Config::get_config(Config::scroll_capture))
+    else if(Config::getConfig<bool>(Config::scroll_capture))
     {
         QPen pen;
         pen.setColor(QColor(255, 0, 0));
@@ -157,7 +157,7 @@ void Capture_window::load_key_event(QString name)
         Key_manager::add_func(name, "leave", [=](bool is_enter){
             if(is_enter)
             {
-                if(Config::get_config(Config::scroll_capture))
+                if(Config::getConfig<bool>(Config::scroll_capture))
                 {
                     end_scroll = true;
                     return;
@@ -170,9 +170,9 @@ void Capture_window::load_key_event(QString name)
             {
                 for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
                 {
-                    Config::set_config((Config::setting)i, 0);
+                    Config::setConfig((Config::setting)i, 0);
                 }
-                Config::set_config(Config::capture_one_window, 1);
+                Config::setConfig(Config::capture_one_window, 1);
             }
         });
         Key_manager::add_func(name, "multi_window_separate", [=](bool is_enter){
@@ -180,9 +180,9 @@ void Capture_window::load_key_event(QString name)
            {
                for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
                {
-                   Config::set_config((Config::setting)i, 0);
+                   Config::setConfig((Config::setting)i, 0);
                }
-               Config::set_config(Config::capture_multi_window_separate, 1);
+               Config::setConfig(Config::capture_multi_window_separate, 1);
            }
         });
         Key_manager::add_func(name, "multi_window_combine", [=](bool is_enter){
@@ -190,9 +190,9 @@ void Capture_window::load_key_event(QString name)
             {
                 for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
                 {
-                    Config::set_config((Config::setting)i, 0);
+                    Config::setConfig((Config::setting)i, 0);
                 }
-                Config::set_config(Config::capture_multi_window_combine, 1);
+                Config::setConfig(Config::capture_multi_window_combine, 1);
             }
         });
         Key_manager::add_func(name, "save2file", [=](bool is_enter){
@@ -236,11 +236,11 @@ void Capture_window::mouseMoveEvent(QMouseEvent *event)
 {
     now_point = event->pos();
     mouse_move_times++;
-    if(Config::get_config(Config::scroll_capture))
+    if(Config::getConfig<bool>(Config::scroll_capture))
     {
         return;
     }
-    else if(Config::get_config(Config::free_capture))
+    else if(Config::getConfig<bool>(Config::free_capture))
     {
         free_paint_path.lineTo(event->pos());
         update();
@@ -279,7 +279,7 @@ void Capture_window::mouseMoveEvent(QMouseEvent *event)
 
 void Capture_window::mousePressEvent(QMouseEvent *event)
 {
-    if(Config::get_config(Config::scroll_capture))
+    if(Config::getConfig<bool>(Config::scroll_capture))
     {
         return;
     }
@@ -301,7 +301,7 @@ void Capture_window::mousePressEvent(QMouseEvent *event)
         update();
         return;
     }
-    else if(Config::get_config(Config::free_capture))
+    else if(Config::getConfig<bool>(Config::free_capture))
     {
         button_click = true;
         free_paint_path = QPainterPath();
@@ -317,11 +317,11 @@ void Capture_window::mousePressEvent(QMouseEvent *event)
 
 void Capture_window::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(Config::get_config(Config::scroll_capture))
+    if(Config::getConfig<bool>(Config::scroll_capture))
     {
         return;
     }
-    else if(Config::get_config(Config::free_capture))
+    else if(Config::getConfig<bool>(Config::free_capture))
     {
         button_click = false;
         hide();
@@ -487,7 +487,7 @@ void Capture_window::on_window_select()
             });
         }
     }*/
-    if(Config::get_config(Config::scroll_capture))
+    if(Config::getConfig<bool>(Config::scroll_capture))
     {
         is_enter = false;
         set_scroll_info();
@@ -550,7 +550,7 @@ void Capture_window::on_window_select()
 
 WINDOW_VALID_OUT:;
                     update();
-                    int time = Config::get_config(Config::capture_interval);
+                    int time = Config::getConfig<int>(Config::capture_interval);
 //                    if(!window_valid)
 //                    {
 //                        time = 300;
@@ -571,7 +571,7 @@ WINDOW_VALID_OUT:;
 
 void Capture_window::set_scroll_info()
 {
-    if(Config::get_config(Config::scroll_capture))
+    if(Config::getConfig<bool>(Config::scroll_capture))
     {
         dispatcher = new Scroll_dispatcher(this);
         connect(dispatcher, &Scroll_dispatcher::finish, this, [=](QImage image){

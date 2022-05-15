@@ -26,10 +26,12 @@ public:
     void update();
     void serialized(QJsonObject *json) override;
     void deserialized(QJsonObject *json) override;
+    void onFinish();
     static Update_data now_version;
 private slots:
     void on_update();
 private:
+
     static Update* _instance;
     Update_data newest_data;
     QNetworkReply* reply;

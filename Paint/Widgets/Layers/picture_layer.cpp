@@ -73,6 +73,36 @@ void Picture_layer::setDisableColor(int index, QColor color)
         QImage mask = temp.createMaskFromColor(color.rgb(), Qt::MaskOutColor);
         temp.setAlphaChannel(mask);
     }
+    for(QColor color: save_disable_color)
+    {
+        QImage mask = temp.createMaskFromColor(color.rgb(), Qt::MaskOutColor);
+        temp.setAlphaChannel(mask);
+    }
+    mask_pix = QPixmap::fromImage(temp);
+    update();
+}
+
+void Picture_layer::setSaveDisableColor(int index, QColor color)
+{
+    if(index != -1)
+    {
+        save_disable_color.removeAt(index);
+    }
+    else
+    {
+        save_disable_color.append(color);
+    }
+    QImage temp = pix.toImage();
+    for(QColor color: save_disable_color)
+    {
+        QImage mask = temp.createMaskFromColor(color.rgb(), Qt::MaskOutColor);
+        temp.setAlphaChannel(mask);
+    }
+    for(QColor color : disable_color)
+    {
+        QImage mask = temp.createMaskFromColor(color.rgb(), Qt::MaskOutColor);
+        temp.setAlphaChannel(mask);
+    }
     mask_pix = QPixmap::fromImage(temp);
     update();
 }

@@ -45,8 +45,6 @@ void ScrollItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         dotValue = -1.0;
 
     dotValue = qAcos(dotValue);
-    if (isnan(dotValue))
-        dotValue = 0.0;
 
     qreal angle = dotValue * 1.0 / (M_PI / 180);
 

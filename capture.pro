@@ -34,6 +34,7 @@ SOURCES += \
     Paint/Widgets/Layers/LayerItems/paintitem.cpp \
     Paint/Widgets/Layers/LayerItems/scrollitem.cpp \
     Paint/Widgets/Layers/arrowlayer.cpp \
+    Paint/Widgets/Layers/blurlayer.cpp \
     Paint/Widgets/Layers/paint_layer.cpp \
     Paint/Widgets/Layers/picture_layer.cpp \
     Paint/Widgets/Layers/rect_layer.cpp \
@@ -53,6 +54,7 @@ SOURCES += \
     Paint/Widgets/style_manager.cpp \
     Paint/paint_window.cpp \
     Panel/Widgets/combo_tab.cpp \
+    Panel/Widgets/filechooser.cpp \
     Panel/Widgets/key_tab.cpp \
     Panel/Widgets/num_tab.cpp \
     Panel/Widgets/tab_widget.cpp \
@@ -63,6 +65,7 @@ SOURCES += \
     Style_widget/spacer.cpp \
     Style_widget/titlebar.cpp \
     Style_widget/tray.cpp \
+    Tests/configtest.cpp \
     main.cpp \
     main_fliter.cpp \
     mainwindow.cpp \
@@ -89,6 +92,7 @@ HEADERS += \
     Helper/Serialize.h \
     Helper/common.h \
     Helper/debug.h \
+    Helper/dump.h \
     Helper/image_helper.h \
     Helper/math.h \
     Helper/mstring.h \
@@ -115,6 +119,7 @@ HEADERS += \
     Paint/Widgets/Layers/LayerItems/scrollitem.h \
     Paint/Widgets/Layers/arrowlayer.h \
     Paint/Widgets/Layers/baselayer.h \
+    Paint/Widgets/Layers/blurlayer.h \
     Paint/Widgets/Layers/paint_layer.h \
     Paint/Widgets/Layers/picture_layer.h \
     Paint/Widgets/Layers/rect_layer.h \
@@ -135,6 +140,7 @@ HEADERS += \
     Paint/paint_window.h \
     Panel/Widgets/bool_tab.h \
     Panel/Widgets/combo_tab.h \
+    Panel/Widgets/filechooser.h \
     Panel/Widgets/key_tab.h \
     Panel/Widgets/num_tab.h \
     Panel/Widgets/tab_widget.h \
@@ -144,6 +150,8 @@ HEADERS += \
     Style_widget/spacer.h \
     Style_widget/titlebar.h \
     Style_widget/tray.h \
+    Tests/AllTests.h \
+    Tests/configtest.h \
     main_fliter.h \
     mainwindow.h \
     new_capture/Capture_button_action.h \
@@ -184,8 +192,8 @@ RESOURCES += \
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/debug/ -lHook
 #else:unix: LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/ -lHook
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-MSVC-Release/release/ -lHook
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-MSVC-Debug/debug/ -lHook
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lHook
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/debug/ -lHook
 else:unix: LIBS += -L$$PWD/../build-Hook-MSVC-Debug/ -lHook
 
 INCLUDEPATH += $$PWD/../HOOK
@@ -195,16 +203,16 @@ DEPENDPATH += $$PWD/../HOOK
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/debug/ -lquazipd
 #else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/ -lquazipd
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-MSVC-Release/quazip/release/ -lquazip
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-MSVC-Debug/quazip/debug/ -lquazipd
-else:unix: LIBS += -L$$PWD/../build-quazip-MSVC-Debug/ -lquazipd
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/quazip/release/ -lquazip
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/quazip/debug/ -lquazipd
+else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/ -lquazipd
 
 INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
 DEPENDPATH += $$PWD/../quazip-0.7.3/quazip
 
 LIBS += -lGdi32 -loleacc -lDbgHelp
 LIBS += \
-    -ldwmapi -lOle32 -lwinmm -lksuser -luuid -lUser32
+    -ldwmapi -lOle32 -lksuser -lUser32
 
 RC_FILE = logo.rc
 
@@ -216,9 +224,9 @@ win32:CONFIG(release, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-ms
 -lopencv_xfeatures2d451 -lopencv_imgproc451 -lopencv_imgcodecs451\
 -lopencv_core451 -lopencv_flann451 -lopencv_calib3d451 -lopencv_features2d451
 else:win32:CONFIG(debug, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
--lopencv_xfeatures2d451d -lopencv_imgproc451d -l opencv_imgcodecs451d\
+-lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
 -lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d
-else:unix: LIBS += LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
+else:unix: LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
 -lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
 -lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d
 
@@ -226,3 +234,7 @@ msvc {
     QMAKE_CFLAGS += /utf-8
     QMAKE_CXXFLAGS += /utf-8
 }
+
+DEPENDPATH += C:/usr/software/Visual_Leak_Detector/include
+INCLUDEPATH += C:/usr/software/Visual_Leak_Detector/include
+win32:CONFIG(release, debug|release): LIBS += -LC:/usr/software/Visual_Leak_Detector/lib/Win64 -lvld

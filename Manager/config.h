@@ -4,6 +4,7 @@
 #include<QList>
 #include "Base/Serializable.h"
 #include "Helper/EnumReflect.h"
+#include <QJsonValue>
 
 class Config : Serializable
 {
@@ -39,7 +40,8 @@ public:
               hide_to_tray,
               show_close_dialog,
               auto_copy_to_clipboard,//自动复制到剪切板
-              capture_interval//滚动截屏时间间隔
+              capture_interval,//滚动截屏时间间隔
+              total_capture_save_path
               );
     Config();
     static Config*& instance()
@@ -56,18 +58,33 @@ public:
     static void save_to_config();
     static void update_config(setting type);
     static void update_all();
-    static int get_config(setting type);
-    static int get_config(QString type);
-    static int get_config(int type);
-    static void set_config(setting type, int data);
-    static void set_config(int type, int data);
+    template<typename T>
+    static T getConfig(setting type)
+    {
+        if(all_settings[type].canConvert<T>())
+        {
+            return all_settings[type].value<T>();
+        }
+        return T();
+
+    }
+    template<typename T>
+    static T getConfig(int type)
+    {
+        if(all_settings[type].canConvert<T>())
+        {
+            return all_settings[type].value<T>();
+        }
+        return T();
+    }
+    static void setConfig(setting type, QVariant data);
+    static void setConfig(int type, QVariant data);
     static QString get_config_name(setting type);
     static QString get_config_name(int type);
 private:
     bool is_loading_translate = false;
     static Config* _instance;
-    static QMap<int, int> all_settings;
-    static const int default_settings[];
+    static QMap<int, QVariant> all_settings;
     bool is_update_config;
     setting update_setting;
     QString read_translate(int type);

@@ -22,12 +22,12 @@ public:
     static void pop_window();
     static bool contains(QString name);
     static Window_base* get_window(QString name);
-    static Window_base* create_and_get_window(QString name);
     static void close();
     static void control_window_close();
     static void close_window(QString name);
     static void show_now();
     static void hide_now();
+    static void hideToMain();
 private:
     struct Window_data
     {
@@ -39,7 +39,8 @@ private:
     static QString previous_window;
     static void create_window(QString name);
     static Window_data create_data(Window_base* window);
-    static bool is_hidden;
+    static bool current_hidden;
+    static bool previous_hidden;
 };
 
 

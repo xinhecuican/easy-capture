@@ -7,6 +7,8 @@
 #include "Helper/debug.h"
 #include "Helper/EnumReflect.h"
 #include "IKey_listener.h"
+#include "QAbstractNativeEventFilter"
+#include <windows.h>
 
 class Key_manager
 {
@@ -31,6 +33,7 @@ public:
     static QList<QString> get_window_names();
     static QList<QString> get_key_names(QString window_name);
     static QList<QString> detect_key_conflict(QString window_name, QString key_name, QList<int> keys);
+    quint32 nativeKeycode(Qt::Key keycode, bool& ok);
 private:
     struct node
     {

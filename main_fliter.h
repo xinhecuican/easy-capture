@@ -27,6 +27,7 @@ public:
     void start_timer();
     bool is_timer_run();
     ATOM global_key_id;
+    ATOM global_capture_id;
 public slots:
     void window_manager_thread();
 private:

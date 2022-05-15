@@ -19,12 +19,13 @@ Update::Update()
     manager = new QNetworkAccessManager(this);
     reconnect_times = 0;
     timer = new QTimer(this);
-    timeout = new Reply_timeout(10000);
+    timeout = new Reply_timeout(10000, this);
     connect(timer, &QTimer::timeout, this, [=](){
         reconnect_times++;
         if(reconnect_times > 5)
         {
             timer->stop();
+            onFinish();
             return;
         }
         check_update();
@@ -33,22 +34,17 @@ Update::Update()
 
 Update::~Update()
 {
-    delete timer;
-    _instance = NULL;
-    if(timeout != NULL)
+    if(_instance != NULL)
     {
-        delete timeout;
+        _instance = NULL;
     }
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.4.0",
-"http://121.37.81.150:8200/easycapture/update/0.4.0.zip", "",
-                                              "1. 增加了bug上传，更好的改进程序\n"
-                                              "2. 使用新的架构实现绘图窗口，增加稳定性\n"
-                                              "3. 修复了滚动截屏卡死的问题\n"
-                                              "4. 进行了一些体验上的优化\n"
-                                              "5. 由于改动较大，需要重新下载: http://121.37.81.150:8200/easycapture/downloads/easy_capture0.4.0.exe");
+Update_data Update::now_version = Update_data("0.4.1",
+"http://121.37.81.150:8200/easycapture/update/0.4.1.zip", "",
+                                              "1. 修复若干bug\n"
+                                              "2. 增加马赛克效果");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
@@ -81,7 +77,7 @@ void Update::deserialized(QJsonObject *json)
 
 void Update::check_update()
 {
-    Config::set_config(Config::last_update_time, QDateTime::currentSecsSinceEpoch() / 60);
+    Config::setConfig(Config::last_update_time, QDateTime::currentSecsSinceEpoch() / 60);
     start_request(QUrl("http://121.37.81.150:8200/easycapture/update/update.json?download=true"));
 }
 
@@ -127,7 +123,6 @@ void Update::start_request(const QUrl &url)
             Serialize::deserialize("Data/Temp/update_msg.json", this);
             if(newest_data > now_version)
             {
-                ///TODO: 更新提示面板
                 dialog = new Update_dialog(data_list, this);
                 connect(dialog, &Update_dialog::download_finished, this, [=](){
                     on_update();
@@ -171,13 +166,13 @@ void Update::on_update()
             Config::update_all();
             Key_manager::update_all();
             History::instance()->update();
-            Config::set_config(Config::need_update, 0);
+            Config::setConfig(Config::need_update, 0);
             Config::update_config(Config::need_update);
             file.remove();
         }
     }
 
-    if(Config::get_config(Config::need_update) == 1)
+    if(Config::getConfig<bool>(Config::need_update) == 1)
     {
         int ans = QMessageBox::question(this, "更新提示", "是否进行更新");
         if(ans == QMessageBox::Yes)
@@ -186,6 +181,7 @@ void Update::on_update()
                 Window_manager::close();
             else
                 Debug::debug_print_warning("更新程序未启动");
+            onFinish();
         }
     }
 }
@@ -198,4 +194,12 @@ void Update::save()
 void Update::load()
 {
 
+}
+
+void Update::onFinish()
+{
+    if(_instance != NULL)
+    {
+        _instance->deleteLater();
+    }
 }

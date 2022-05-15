@@ -12,7 +12,7 @@ class Reply_timeout : public QObject {
 
 public:
 
-  Reply_timeout(const int time)
+  Reply_timeout(const int time, QObject* parent): QObject(parent)
   {
       reply = NULL;
       connect(&timer, &QTimer::timeout, this, [=](){

@@ -30,6 +30,7 @@ public:
 private:
     void removeLines(QPointF point);
     QList<PaintItem*> lines;
+    PaintItem* current_item;
     QPainterPath path;
     QGraphicsItem* parent;
     bool is_enable;

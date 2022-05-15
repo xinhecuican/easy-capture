@@ -6,6 +6,7 @@
 #include "Helper/Reflect.h"
 #include "Paint/Widgets/recorder.h"
 #include "arrowlayer.h"
+#include "string.h"
 
 ShapeLayer::ShapeLayer(QGraphicsItem* parent) : QGraphicsObject(parent)
 {
@@ -13,6 +14,8 @@ ShapeLayer::ShapeLayer(QGraphicsItem* parent) : QGraphicsObject(parent)
     is_enable = false;
     is_focus = false;
     focus_item = NULL;
+    shape = RECTANGLE;
+//    blur_layer = new BlurLayer(this);
 }
 
 void ShapeLayer::reset()
@@ -23,6 +26,7 @@ void ShapeLayer::reset()
     {
         delete item;
     }
+    blur_layer = new BlurLayer(this);
 }
 
 void ShapeLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -35,10 +39,15 @@ QRectF ShapeLayer::boundingRect() const
     return QRectF();
 }
 
+void ShapeLayer::setPic(const QPixmap &pix)
+{
+    this->pix = pix;
+}
+
 void ShapeLayer::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     begin_point = mapFromScene(event->scenePos());
-    if(is_enable)
+    if(is_enable && shape != BLUR)
     {
         if(!childContains(mapFromScene(begin_point)))
             is_press = true;
@@ -52,6 +61,32 @@ void ShapeLayer::mousePressEvent(QGraphicsSceneMouseEvent *event)
             focus_item_func->loseFocusFunc();
             focus_item = NULL;
         }
+    }
+    if(is_enable && shape == DELETE_SHAPE)
+    {
+        is_press = true;
+    }
+    if(is_enable && shape == BLUR)
+    {
+        is_press = true;
+        if(!blur_layer->isSetPic())
+        {
+            blur_layer->setPix(pix);
+        }
+    }
+}
+
+void ShapeLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QPointF point = mapFromScene(event->scenePos());
+    if(is_enable && is_press && shape == BLUR)
+    {
+        blur_layer->addPoint(point.toPoint());
+    }
+    if(is_enable && is_press && shape == DELETE_SHAPE)
+    {
+        blur_layer->deletePoint(point.toPoint());
+        deleteChildrens(point);
     }
 }
 
@@ -88,6 +123,8 @@ void ShapeLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
         case RECTANGLE:
         {
+            if(rect.width() < 10 || rect.height() < 10)
+                break;
             Rect_layer* rect_layer = new Rect_layer(this, rect);
             rect_layer->setStyle(Rect_layer::RED);
             rect_layer->setEnableMove(true);
@@ -111,6 +148,7 @@ void ShapeLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             ArrowLayer* arrow_layer = new ArrowLayer(this, begin_point, point);
             setFocus(arrow_layer, arrow_layer);
+            break;
         }
         case DELETE_SHAPE:
         {
@@ -156,13 +194,13 @@ void ShapeLayer::onRequestFocus(BaseLayer* object, QGraphicsObject* object2)
 
 void ShapeLayer::deleteShape()
 {
-    if(focus_item != NULL)
-    {
-        Recorder::instance()->removeRecord(focus_item);
-        delete focus_item;
-        focus_item = NULL;
-        focus_item_func = NULL;
-    }
+//    if(focus_item != NULL)
+//    {
+//        Recorder::instance()->removeRecord(focus_item);
+//        delete focus_item;
+//        focus_item = NULL;
+//        focus_item_func = NULL;
+//    }
     shape = DELETE_SHAPE;
 }
 
@@ -177,12 +215,20 @@ void ShapeLayer::setLayersState()
     else
     {
         method_name = "hideNormal";
+
     }
     for(QGraphicsItem* item: items)
     {
         QGraphicsObject* object = qgraphicsitem_cast<QGraphicsObject*>(item);
         Reflect::invokeMethod(object->metaObject()->className(), object, method_name);
     }
+    if(focus_item != NULL)
+    {
+        focus_item_func->loseFocusFunc();
+    }
+
+    focus_item = NULL;
+    focus_item_func = NULL;
 }
 
 bool ShapeLayer::childContains(QPointF point)
@@ -199,12 +245,37 @@ bool ShapeLayer::childContains(QPointF point)
     return false;
 }
 
+void ShapeLayer::deleteChildrens(QPointF point)
+{
+    QList<QGraphicsItem*> items = childItems();
+    for(QGraphicsItem* item : items)
+    {
+        QPointF point1 = item->mapFromParent(point);
+        if(item->contains(point1))
+        {
+            if(item == focus_item)
+            {
+                focus_item = NULL;
+                focus_item_func = NULL;
+            }
+            QGraphicsObject* object = qgraphicsitem_cast<QGraphicsObject*>(item);
+            if(!strcmp(object->metaObject()->className(), "BlurLayer"))
+            {
+                continue;
+            }
+            Recorder::instance()->removeRecord(object);
+            delete item;
+        }
+    }
+}
+
 void ShapeLayer::prepareSave()
 {
     const char* method_name = "hideNormal";
     for(QGraphicsItem* item: childItems())
     {
         QGraphicsObject* object = qgraphicsitem_cast<QGraphicsObject*>(item);
+
         Reflect::invokeMethod(object->metaObject()->className(), object, method_name);
     }
 }

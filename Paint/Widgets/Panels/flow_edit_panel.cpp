@@ -9,7 +9,8 @@
 #include<QDebug>
 
 Flow_edit_panel* Flow_edit_panel::_instance = NULL;
-QFont Flow_edit_panel::default_font = QFont("宋体", 12);
+QFont Flow_edit_panel::default_font = QFont("宋体", 15);
+QColor Flow_edit_panel::default_color = QColor(255, 0, 0);
 
 Flow_edit_panel::Flow_edit_panel()
 {
@@ -77,7 +78,7 @@ Flow_edit_panel::Flow_edit_panel()
     addSeparator();
 
     width_button = new QComboBox(this);
-    QList<QString> width_text = {"2", "3", "4", "5", "6", "8", "10", "12", "14", "16", "18", "20"};
+    QList<QString> width_text = {"4", "8", "15", "20", "22", "26", "30", "40", "50"};
     width_button->addItems(width_text);
     width_button->setEditable(true);
     width_button->setCurrentText(QString::number(font.pointSize()));

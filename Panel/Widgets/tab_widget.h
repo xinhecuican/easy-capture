@@ -24,6 +24,7 @@ public:
     void add_key_option(int index, QString tab_name, QString window_name, QString key_name);
     void add_num_option(QString tab_name, int index, QString name, int min, int max,
                         std::function<void(int)> const &f);
+    void add_file_option(QString tab_name, QString name, int index, std::function<void(QString)> const &f);
     void add_spacer(QString text = QString());
     void add_layout(QLayout* layout);
     int get_default_index(QString name);

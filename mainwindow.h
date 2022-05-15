@@ -12,9 +12,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "QAbstractNativeEventFilter"
-#if _MSC_VER >= 1600
-#pragma execution_character_set("utf-8")
-#endif
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE

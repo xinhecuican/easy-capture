@@ -18,7 +18,7 @@ Capture_button_action::Capture_button_action(QAbstractButton* source, QWidget* p
 
 void Capture_button_action::on_button_click()
 {
-    if(Config::get_config(Config::total_capture))
+    if(Config::getConfig<bool>(Config::total_capture))
     {
         Window_manager::hide_now();
         QTimer::singleShot(200, this, [=](){

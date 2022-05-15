@@ -42,20 +42,21 @@ void Paint_layer::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if(is_enable)
     {
         path.moveTo(mapFromScene(event->scenePos()));
+        Paint_data* paint_data = Style_manager::instance()->get();
+        paint_info info(paint_data, path);
+        current_item = new PaintItem(info, this); // 添加一个线条
     }
     if(is_erase)
     {
         removeLines(mapFromScene(event->scenePos()));
     }
-
 }
 
 void Paint_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if(is_enable && is_press)
     {
-        path.lineTo(mapFromScene(event->scenePos()));
-        update();
+        current_item->addPoint(mapFromScene(event->scenePos()));
     }
     if(is_erase && is_press)
     {
@@ -67,13 +68,10 @@ void Paint_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if(is_enable && is_press)
     {
-        path.lineTo(mapFromScene(event->scenePos()));
-        Paint_data* paint_data = Style_manager::instance()->get();
-        paint_info info(paint_data, path);
-        PaintItem* item = new PaintItem(info, this); // 添加一个线条
-        lines.append(item);
+        current_item->addPoint(mapFromScene(event->scenePos()));
+        lines.append(current_item);
         path = QPainterPath();
-        PaintRecord* record = new PaintRecord(item);
+        PaintRecord* record = new PaintRecord(current_item);
         Recorder::instance()->record(record);
     }
     is_press = false;

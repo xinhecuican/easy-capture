@@ -7,9 +7,6 @@
 #include "Style_widget/tray.h"
 #include "Manager/update.h"
 #include "JlCompress.h"
-#if _MSC_VER >= 1600
-#pragma execution_character_set("utf-8")
-#endif
 
 bool MainWindow::is_start = false;
 
@@ -40,9 +37,9 @@ MainWindow::MainWindow(QWidget *parent)
     mode_button->setPopupMode(QToolButton::InstantPopup);
     for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
     {
-        Config::set_config(i, false);
+        Config::setConfig(i, false);
     }
-    Config::set_config(Config::rect_capture, true);
+    Config::setConfig(Config::rect_capture, true);
     QMenu* mode_menu = new QMenu(this);
     mode_menu->addAction(MString::search("{OBwjJUhTkh}矩形窗口"));
     mode_menu->addAction(MString::search("{FHFzLMcLYa}全屏"));
@@ -58,9 +55,9 @@ MainWindow::MainWindow(QWidget *parent)
         int index = index_var.toInt();
         for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
         {
-            Config::set_config(i, false);
+            Config::setConfig(i, false);
         }
-        Config::set_config(Config::capture_mode_begin+index, true);
+        Config::setConfig(Config::capture_mode_begin+index, true);
     });
     mode_button->setMenu(mode_menu);
     toolbar->addWidget(mode_button);
@@ -78,8 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
     {
         is_start = true;
         Update::instance()->update();
-        if(!Config::get_config(Config::need_update) && Config::get_config(Config::update_interval) != -1 &&
-                Config::get_config(Config::last_update_time) + Config::get_config(Config::update_interval) <
+        if(!Config::getConfig<bool>(Config::need_update) && Config::getConfig<int>(Config::update_interval) != -1 &&
+                Config::getConfig<int>(Config::last_update_time) + Config::getConfig<int>(Config::update_interval) <
                 QDateTime::currentSecsSinceEpoch()/60)
         {
             Update::instance()->check_update();

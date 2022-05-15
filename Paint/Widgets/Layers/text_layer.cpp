@@ -25,6 +25,7 @@ Text_layer::Text_layer(QRectF rect, QGraphicsItem* parent) : QGraphicsTextItem(p
     now_position = 0;
     is_commit_string = false;
     current_charformat.setFont(Flow_edit_panel::default_font);
+    current_charformat.setForeground(Flow_edit_panel::default_color);
 }
 
 void Text_layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -182,10 +183,12 @@ void Text_layer::initFlowEditPanel()
 
 void Text_layer::hideNormal()
 {
+    QTextCursor text_cursor = textCursor();
+    text_cursor.clearSelection();
+    setTextCursor(text_cursor);
     rect_layer->hide();
     force_focus = false;
     is_enable = false;
-    textCursor().clearSelection();
     setTextInteractionFlags(Qt::NoTextInteraction);
     update();
 }

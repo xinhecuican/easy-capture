@@ -21,13 +21,4 @@ Tray::Tray(QObject* parent) : QSystemTrayIcon(parent)
             break;
         }
     });
-
-    QMenu* menu = new QMenu();
-    QAction* close = new QAction(this);
-    close->setText("关闭");
-    connect(close, &QAction::triggered, this, [=](){
-        Window_manager::close();
-    });
-    menu->addAction(close);
-    setContextMenu(menu);
 }

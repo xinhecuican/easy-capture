@@ -13,6 +13,7 @@
 #include<QStandardItemModel>
 #include<QSpinBox>
 #include "Paint/Widgets/history.h"
+#include <QButtonGroup>
 
 Paint_setting_panel* Paint_setting_panel::_instance = NULL;
 
@@ -73,34 +74,63 @@ void Paint_setting_panel::init_shape_setting()
     Spacer* spacer = new Spacer("形状绘制", false, this);
     QGridLayout* shape_layout = new QGridLayout();
     QToolButton* text_button = new QToolButton(this);
+//    text_button->setCheckable(true);
+//    text_button->setChecked(true);
     text_button->setToolTip("文本框");
     text_button->setIcon(QIcon(":/image/text.png"));
     connect(text_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(TEXT);
     });
     QToolButton* delete_button = new QToolButton(this);
+//    delete_button->setCheckable(true);
     delete_button->setToolTip("删除形状");
     delete_button->setIcon(QIcon(":/image/delete.svg"));
     connect(delete_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(DELETE_SHAPE);
     });
     QToolButton* rect_button = new QToolButton(this);
+//    rect_button->setCheckable(true);
     rect_button->setToolTip("矩形");
     rect_button->setIcon(QIcon(":/image/rect.png"));
     connect(rect_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(RECTANGLE);
     });
     QToolButton* arrow_button = new QToolButton(this);
+//    arrow_button->setCheckable(true);
     arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
     arrow_button->setToolTip("箭头");
     connect(arrow_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(PAINT_ARROW);
     });
+    QToolButton* mosaic_button = new QToolButton(this);
+//    mosaic_button->setCheckable(true);
+    mosaic_button->setIcon(QIcon(":/image/mosaic.png"));
+    mosaic_button->setToolTip("马赛克");
+    connect(mosaic_button, &QToolButton::clicked, this, [=](){
+       emit paint_shape(BLUR);
+    });
+//    QButtonGroup* group = new QButtonGroup(this);
+//    group->addButton(text_button, 0);
+//    group->addButton(delete_button, 1);
+//    group->addButton(rect_button, 2);
+//    group->addButton(arrow_button, 3);
+//    group->addButton(mosaic_button, 4);
+//    connect(group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, [=](int id){
+//       switch(id)
+//       {
+//       case 0:emit paint_shape(TEXT);break;
+//       case 1:emit paint_shape(DELETE_SHAPE);break;
+//       case 2:emit paint_shape(RECTANGLE);break;
+//       case 3:emit paint_shape(PAINT_ARROW);break;
+//       case 4:emit paint_shape(BLUR);break;
+//       }
+//    });
     shape_layout->setOriginCorner(Qt::TopLeftCorner);
     shape_layout->addWidget(text_button, 0, 0);
     shape_layout->addWidget(delete_button, 1, 2);
     shape_layout->addWidget(rect_button, 0, 1);
     shape_layout->addWidget(arrow_button, 0, 2);
+    shape_layout->addWidget(mosaic_button, 1, 1);
     spacer->add_layout(shape_layout);
     layout->addWidget(spacer);
 }
@@ -307,7 +337,7 @@ void Paint_setting_panel::init_disable_color_setting()
             model->item(save_box->count()-1)->setForeground(QColor(red, green, blue));
             save_box->setCurrentIndex(save_box->count()-1);
             History::instance()->log_color(color);
-            emit disable_color_change(-1, color);
+            emit saveDisableColorChange(-1, color);
         });
     });
     connect(save_remove_button, &QToolButton::clicked, this, [=](){
@@ -321,7 +351,8 @@ void Paint_setting_panel::init_disable_color_setting()
         QStringList list = str.split(',');
         QColor color(list[0].toInt(), list[1].toInt(), list[2].toInt());
         History::instance()->remove_color(color);
-        emit disable_color_change(index);
+        qDebug() << index;
+        emit saveDisableColorChange(index);
     });
     save_add_button->setIcon(QIcon(":/image/add.svg"));
     save_remove_button->setIcon(QIcon(":/image/delete.svg"));

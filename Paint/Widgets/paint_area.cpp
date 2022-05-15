@@ -64,9 +64,10 @@ void Paint_area::setPic(QPixmap pic, QRect rect)
     setSceneRect(0, 0, rect.width()*2, rect.height()*2);
     pic_layer->setPos(rect.width() / 2, rect.height() / 2);
     pic_layer->setPixmap(pic);
+    shape_layer->setPic(pic);
     for(QColor color : History::instance()->get_color())
     {
-        pic_layer->setDisableColor(-1, color);
+        pic_layer->setSaveDisableColor(-1, color);
     }
     setSceneRect(0, 0, rect.width() * 2, rect.height() * 2);
 }
@@ -74,6 +75,7 @@ void Paint_area::setPic(QPixmap pic, QRect rect)
 void Paint_area::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     sendEvent(paint_layer, event);
+    sendEvent(shape_layer, event);
     QGraphicsScene::mouseMoveEvent(event);
 }
 
@@ -81,7 +83,6 @@ void Paint_area::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     sendEvent(paint_layer, event);
     sendEvent(shape_layer, event);
-    qDebug() << event->button();
     if(event->button() == Qt::BackButton)
     {
         Recorder::instance()->back();
@@ -183,6 +184,13 @@ void Paint_area::initSettingPanel()
         {
             pic_layer->setDisableColor(index, color);
         }
+    });
+    connect(Paint_setting_panel::instance(), &Paint_setting_panel::saveDisableColorChange, this,
+            [=](int index, QColor color=QColor()){
+       if(pic_layer != NULL)
+       {
+           pic_layer->setSaveDisableColor(index, color);
+       }
     });
     connect(Paint_setting_panel::instance(), &Paint_setting_panel::layer_rename, this, [=](int index, QString after_name){
 

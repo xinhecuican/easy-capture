@@ -31,3 +31,9 @@ QPainterPath PaintItem::shape() const
 {
     return this->info.path;
 }
+
+void PaintItem::addPoint(QPointF point)
+{
+    info.path.lineTo(point);
+    update();
+}

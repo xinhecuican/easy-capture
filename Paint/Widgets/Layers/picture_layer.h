@@ -26,6 +26,7 @@ public:
     void reset();
     void setEnableMove(bool enable);
     void setDisableColor(int index, QColor color);
+    void setSaveDisableColor(int index, QColor color);
     bool containsPicture();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = nullptr) override;
@@ -39,6 +40,7 @@ private:
     QRectF bound;
     QRectF mask;
     QList<QColor> disable_color;
+    QList<QColor> save_disable_color;
     QPixmap mask_pix;
 };
 

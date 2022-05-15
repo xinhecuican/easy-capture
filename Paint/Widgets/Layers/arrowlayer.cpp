@@ -30,7 +30,10 @@ void ArrowLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
 QRectF ArrowLayer::boundingRect() const
 {
-    return QRectF(begin_point, end_point);
+    QRectF ans(begin_point, end_point);
+    ans.setTopLeft(ans.topLeft() - QPointF(3, 3));
+    ans.setBottomRight(ans.bottomRight() + QPointF(3, 3));
+    return ans;
 }
 
 QPainterPath ArrowLayer::shape() const
@@ -39,7 +42,7 @@ QPainterPath ArrowLayer::shape() const
     line = line.unitVector();
     QLineF vertical_line = line;
     vertical_line.setAngle(line.angle() + 90);
-    qreal half_width = ExtRefArrowLenght * sin(ExtRefArrowDegrees);
+    qreal half_width = ExtRefArrowLenght * sin(ExtRefArrowDegrees) + 5;
     QPainterPath path;
     QLineF new_line = vertical_line;
     new_line.setLength(half_width);

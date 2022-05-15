@@ -8,6 +8,7 @@
 #include "Style_widget/spacer.h"
 #include<QMessageBox>
 #include "num_tab.h"
+#include "filechooser.h"
 
 Tab_widget::Tab_widget()
 {
@@ -102,6 +103,17 @@ void Tab_widget::add_num_option(QString tab_name, int index, QString name,
     QHBoxLayout* hlayout = new QHBoxLayout();
     hlayout->addWidget(label);
     hlayout->addWidget(element);
+    layout->addLayout(hlayout);
+}
+
+void Tab_widget::add_file_option(QString tab_name, QString name, int index, std::function<void(QString)> const &f)
+{
+    FileChooser* file_chooser = new FileChooser(tab_name, name, index, f, this);
+    QLabel* label = new QLabel(MString::search(name), this);
+    QHBoxLayout* hlayout = new QHBoxLayout();
+    hlayout->addWidget(label);
+    hlayout->addWidget(file_chooser);
+    widgets.push_back(file_chooser);
     layout->addLayout(hlayout);
 }
 

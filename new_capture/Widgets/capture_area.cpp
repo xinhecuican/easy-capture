@@ -54,7 +54,7 @@ void Capture_area::reset()
 
 Capture_area::~Capture_area()
 {
-
+    regions.clear_all();
 }
 
 void Capture_area::mouseMoveEvent(QMouseEvent *event)
@@ -64,7 +64,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
     {
         end_point = event->globalPos();
     }
-    else if(key_press || (Config::get_config(Config::capture_one_window) && _is_press_region))//按下ctrl键全部移动
+    else if(key_press || (Config::getConfig<bool>(Config::capture_one_window) && _is_press_region))//按下ctrl键全部移动
     {
         end_point = event->globalPos();
         int w = end_point.x() - begin_point.x();
@@ -81,7 +81,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
         int w = end_point.x() - begin_point.x();
         int h = end_point.y() - begin_point.y();
         begin_point = end_point;
-        if(Config::get_config(Config::capture_multi_window_combine))
+        if(Config::getConfig<bool>(Config::capture_multi_window_combine))
         {
             Capture_region* temp_region = NULL;
             for(int i=0; i<regions.count(); i++)
@@ -96,7 +96,7 @@ void Capture_area::mouseMoveEvent(QMouseEvent *event)
             }
             combine_region(temp_region);
         }
-        else if(Config::get_config(Config::capture_multi_window_separate) && now_index != -1)
+        else if(Config::getConfig<bool>(Config::capture_multi_window_separate) && now_index != -1)
         {
             regions[now_index]->move(w, h);
         }
@@ -110,7 +110,7 @@ void Capture_area::mousePressEvent(QMouseEvent *event)
     if(!region_contain(event->globalPos()))
     {
         _is_press_region = false;
-        if(Config::get_config(Config::capture_one_window) && regions.count() >= 1)
+        if(Config::getConfig<bool>(Config::capture_one_window) && regions.count() >= 1)
         {
             begin_draw = false;
         }
@@ -128,7 +128,7 @@ void Capture_area::mousePressEvent(QMouseEvent *event)
         begin_point = event->globalPos();
         end_point = begin_point;
         now_index = -1;
-        if(Config::get_config(Config::capture_multi_window_separate))
+        if(Config::getConfig<bool>(Config::capture_multi_window_separate))
         {
             for(int i=0; i<regions.count(); i++)
             {
@@ -414,8 +414,7 @@ void Capture_area::save2file()
         getPic(pix, rect);
         pix.save(file_name);
         History::instance()->log(History_data::Persist, file_name);
-        Window_manager::change_window("MainWindow");
-        Window_manager::hide_now();
+        Window_manager::hideToMain();
     });
 }
 
@@ -426,6 +425,5 @@ void Capture_area::save2clip()
     QRect rect;
     getPic(pix, rect);
     clip->setPixmap(pix);
-    Window_manager::change_window("MainWindow");
-    Window_manager::hide_now();
+    Window_manager::hideToMain();
 }

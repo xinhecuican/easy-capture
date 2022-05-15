@@ -37,69 +37,31 @@ private:
     };
     struct MVector
     {
-        int capacity;
         int limit;
         int point;
-        int max_size;
-        RecordElement** data;
+        QVector<RecordElement*> data;
         MVector()
         {
-            capacity = 10;
             limit = 0;
             point = 0;
-            max_size = 0;
-            data = new RecordElement*[10];
-        }
-
-        void ensure_capacity()
-        {
-            if(point+1 >= capacity)
-            {
-                int old_size = capacity;
-                capacity <<= 1;
-                RecordElement** temp = new RecordElement*[capacity];
-                for(int i=0; i<old_size; i++)
-                {
-                    temp[i] = data[i];
-                }
-                delete [] data;
-                data = temp;
-            }
         }
 
         void clear()
         {
-            for(int i=0; i<max_size; i++)
+            for(int i=0; i<limit; i++)
             {
                 delete data[i];
             }
-            delete [] data;
         }
 
         void reset()
         {
-            for(int i=0; i<max_size; i++)
+            for(int i=0; i<limit; i++)
             {
                 delete data[i];
             }
-            RecordElement** temp = new RecordElement*[10];
-            capacity = 10;
             limit = 0;
             point = 0;
-            max_size = 0;
-            delete [] data;
-            data = temp;
-        }
-
-        void push_back(RecordElement* record_data)
-        {
-            ensure_capacity();
-            data[point++] = record_data;
-            if(point > max_size)
-            {
-                max_size = point;
-            }
-            limit++;
         }
 
         RecordElement* pop()
@@ -109,12 +71,24 @@ private:
                 return data[--point];
             }
             Debug::debug_print_warning("下标过小\n位置Recorder::MVector::pop()");
-            return data[0];
+            return NULL;
         }
 
         void push_and_resize(RecordElement* record_data)
         {
-            data[point++] = record_data;
+            if(can_redo())
+            {
+                for(int i=point; i<limit; i++)
+                {
+                    delete data[i];
+                }
+                data[point++] = record_data;
+            }
+            else
+            {
+                data.push_back(record_data);
+                point++;
+            }
             limit = point;
         }
 
@@ -122,6 +96,7 @@ private:
         {
             if(i < limit)
             {
+                delete data[i];
                 if(i <= point)
                 {
                     point--;
@@ -140,7 +115,7 @@ private:
             if(i > limit-1)
             {
                 Debug::debug_print_warning("数组下标超界\n位置Recorder::MVector::get()");
-                return data[0];
+                return NULL;
             }
             return data[i];
         }

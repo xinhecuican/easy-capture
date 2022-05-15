@@ -24,7 +24,7 @@ void MString::load_from_file(QString path)
     QString language;
     for(int i=Config::languages_begin; i<Config::languages_end; i++)
     {
-        if(Config::get_config(i))
+        if(Config::getConfig<bool>(i))
         {
             language = Config::eto_string((Config::setting)i);
             break;

@@ -23,6 +23,7 @@ public:
     void set_style();
 signals:
     void disable_color_change(int index, QColor color=QColor());
+    void saveDisableColorChange(int index, QColor color=QColor());
     void paint_shape(SHAPE_TYPE type);
     void layer_rename(int index, QString after_name);
     void remove_layer(int index);

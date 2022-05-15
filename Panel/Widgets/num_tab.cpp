@@ -12,7 +12,7 @@ Num_tab::Num_tab(QString name, int index, int min, int max, std::function<void (
     this->index = index;
     setMinimum(min);
     setMaximum(max);
-    setValue(Config::get_config(Config::setting(index)));
+    setValue(Config::getConfig<int>(Config::setting(index)));
     setAccelerated(true);
     setWrapping(true);  // 开启循环
     setKeyboardTracking(true);
@@ -21,7 +21,7 @@ Num_tab::Num_tab(QString name, int index, int min, int max, std::function<void (
 
 void Num_tab::reset()
 {
-    setValue(Config::get_config(Config::setting(index)));
+    setValue(Config::getConfig<int>(Config::setting(index)));
 }
 
 int Num_tab::get_begin_index()

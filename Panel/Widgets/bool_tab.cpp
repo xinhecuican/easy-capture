@@ -11,7 +11,7 @@ Bool_tab::Bool_tab(QString tab_name, int index, std::function<void (bool)> const
 {
     this->tab_name = tab_name;
     this->index = index;
-    setChecked(Config::get_config(Config::setting(index)));
+    setChecked(Config::getConfig<int>(Config::setting(index)));
     setCheckable(true);
     setAutoExclusive(false);
     connect(this, &QRadioButton::toggled, this, f);
@@ -36,6 +36,6 @@ int Bool_tab::get_default_index()
 
 void Bool_tab::reset()
 {
-    default_option = Config::get_config(index);
+    default_option = Config::getConfig<int>(index);
     setChecked(default_option);
 }

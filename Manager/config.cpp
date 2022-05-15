@@ -7,36 +7,11 @@
 #include<QDebug>
 #include "Helper/Serialize.h"
 #include "Helper/mstring.h"
-
-const int Config::default_settings[] =
-{
-    true,//capture_one_window
-    false,
-    false,
-    true,//chinese
-    false,
-    30,//clear_interval,
-    30,//history_num
-    true,//rect_capture
-    false,
-    false,
-    false,
-    false,//need_update
-    60 * 24 * 7,//update_interval
-    false,
-    false,
-    false,
-    true,
-    0,
-    false,//start_instantly
-    true,
-    false,//show_close_dialog
-    true,
-    300
-};
+#include <string>
+#include "Helper/debug.h"
 
 DEFINE_STRING(Config);
-QMap<int, int> Config::all_settings = QMap<int, int>();
+QMap<int, QVariant> Config::all_settings = QMap<int, QVariant>();
 Config* Config::_instance = NULL;
 
 Config::Config()
@@ -60,13 +35,18 @@ void Config::serialized(QJsonObject* json)
 {
     if(is_update_config)
     {
-        (*json)[eto_string(update_setting)] = all_settings[update_setting];
+        QJsonValue value = QJsonValue::fromVariant(all_settings[update_setting]);
+        if(json->contains(eto_string(update_setting)))
+            (*json)[eto_string(update_setting)] = value;
+        else
+            json->insert(eto_string(update_setting), value);
     }
     else
     {
         for(setting i=capture_one_window; i<setting::COUNT; i = setting(i + 1))
         {
-            json->insert(eto_string((setting)i), all_settings[i]);
+            QJsonValue value = QJsonValue::fromVariant(all_settings[i]);
+            json->insert(eto_string((setting)i), value);
         }
     }
 }
@@ -75,7 +55,7 @@ void Config::deserialized(QJsonObject* json)
 {
     for(int i=0; i<COUNT; i++)
     {
-        all_settings[i] = (*json)[eto_string((setting)i)].toInt();
+        all_settings[i] = (*json)[eto_string((setting)i)].toVariant();
     }
 }
 
@@ -89,9 +69,9 @@ void Config::load_config()
 {
     if(!Serialize::deserialize("Data/config.json", instance()))
     {
-        for(int i=0; i<COUNT; i++)
+        if(!Serialize::deserialize(":/Data/default.json", instance()))
         {
-            all_settings[i] = default_settings[i];
+            Debug::debug_print_warning("配置文件解析失败");
         }
         save_to_config();
     }
@@ -106,42 +86,29 @@ void Config::update_config(setting type)
 
 void Config::update_all()
 {
+    QMap<int, QVariant> temp_setting;
+    temp_setting = all_settings;
+    if(!Serialize::deserialize(":/Data/default.json", instance()))
+    {
+        Debug::debug_print_warning("配置文件解析失败");
+    }
     for(int i=0; i<COUNT; i++)
     {
-        if(all_settings.find(i) == all_settings.end())
+        if(temp_setting.find(i) == temp_setting.end())
         {
-            all_settings[i] = default_settings[i];
+            temp_setting[i] = all_settings[i];
+            update_config((setting)i);
         }
     }
+    all_settings = temp_setting;
 }
 
-int Config::get_config(setting type)
-{
-    return all_settings[type];
-}
-
-int Config::get_config(QString type)
-{
-    for(int i=0; i<COUNT; i++)
-    {
-        if(eto_string((setting)(i)) == type)
-        {
-            return all_settings[i];
-        }
-    }
-    return 0;
-}
-
-int Config::get_config(int type)
-{
-    return all_settings[type];
-}
-void Config::set_config(setting type, int data)
+void Config::setConfig(setting type, QVariant data)
 {
     all_settings[type] = data;
 }
 
-void Config::set_config(int type, int data)
+void Config::setConfig(int type, QVariant data)
 {
     all_settings[type] = data;
 }
@@ -156,4 +123,25 @@ QString Config::get_config_name(int type)
     return instance()->read_translate(type);
 }
 
+//template<typename T>
+//T Config::getConfig(setting type)
+//{
+//    QVariant var;
+//    if(var.canConvert<T>())
+//    {
+//        return all_settings[type].value<T>();
+//    }
+//    return T();
+//}
+
+//template<typename T>
+//T Config::getConfig(int type)
+//{
+//    QVariant var;
+//    if(var.canConvert<T>())
+//    {
+//        return all_settings[type].value<T>();
+//    }
+//    return T();
+//}
 

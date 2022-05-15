@@ -43,7 +43,7 @@ void Combo_tab::reset()
 {
     for(int i=begin_index; i<=end_index; i++)
     {
-        if(Config::get_config(i))
+        if(Config::getConfig<int>(i))
         {
             default_index = i - begin_index;
             setCurrentIndex(default_index);

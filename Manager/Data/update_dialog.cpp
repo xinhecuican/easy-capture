@@ -25,7 +25,7 @@ Update_dialog::Update_dialog(QList<Update_data> data, QWidget* parent) : QDialog
 {
     this->data = data;
     update_sum = data.size()-1;
-    timeout = new Reply_timeout(10000);
+    timeout = new Reply_timeout(10000, this);
     connect(timeout, &Reply_timeout::deadline, this, [=](){
         Debug::show_error_message("更新超时，请检查网络设置");
         this->close();
@@ -112,7 +112,7 @@ void Update_dialog::get_one_update()
             if(!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
             {
                 Debug::debug_print_warning("文件打开失败\n位置Update_dialog");
-                Config::set_config(Config::need_update, false);
+                Config::setConfig(Config::need_update, false);
                 this->close();
                 return;
             }
@@ -127,7 +127,7 @@ void Update_dialog::get_one_update()
             update_sum--;
             if(update_sum < 0)
             {
-                Config::set_config(Config::need_update, true);
+                Config::setConfig(Config::need_update, true);
                 Config::update_config(Config::need_update);
                 emit download_finished();
                 QFile file("Data/Update/update_list.txt");

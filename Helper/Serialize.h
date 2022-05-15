@@ -119,7 +119,7 @@ public:
         jsonDoc.setObject(rootObj);
         try
         {
-            file.open(QIODevice::ReadWrite | QIODevice::Text);
+            file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate);
         }
         catch (...)
         {

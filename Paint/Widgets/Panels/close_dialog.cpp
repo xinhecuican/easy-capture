@@ -33,7 +33,7 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     group->addButton(hide_button, 0);
     group->addButton(close_button, 1);
     group->setExclusive(true);
-    if(Config::get_config(Config::hide_to_tray))
+    if(Config::getConfig<bool>(Config::hide_to_tray))
     {
         hide_button->setChecked(true);
     }
@@ -44,11 +44,11 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     connect(group, static_cast<void(QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, [=](int id){
         if(id == 0)
         {
-            Config::set_config(Config::hide_to_tray, true);
+            Config::setConfig(Config::hide_to_tray, true);
         }
         else
         {
-            Config::set_config(Config::hide_to_tray, false);
+            Config::setConfig(Config::hide_to_tray, false);
         }
         Config::update_config(Config::hide_to_tray);
     });
@@ -68,7 +68,7 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     QPushButton* close = new QPushButton(this);
     close->setText("关闭");
     connect(ok, &QPushButton::clicked, this, [=](){
-        if(Config::get_config(Config::hide_to_tray))
+        if(Config::getConfig<bool>(Config::hide_to_tray))
         {
 //            area->save_temp();
             emit hide_paint();
@@ -116,9 +116,9 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     QRadioButton* next_show_button = new QRadioButton(this);
     next_show_button->setCheckable(true);
     next_show_button->setAutoExclusive(false);
-    next_show_button->setChecked(!Config::get_config(Config::show_close_dialog));
+    next_show_button->setChecked(!Config::getConfig<bool>(Config::show_close_dialog));
     connect(next_show_button, &QRadioButton::toggled, this, [=](bool clicked){
-        Config::set_config(Config::show_close_dialog, !clicked);
+        Config::setConfig(Config::show_close_dialog, !clicked);
         Config::update_config(Config::show_close_dialog);
     });
     button_layout->addWidget(next_show_label);

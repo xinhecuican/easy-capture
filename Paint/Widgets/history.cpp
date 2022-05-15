@@ -78,7 +78,7 @@ void History::log(History_data::save_type type, QString file_name)
         }
         file.close();
         qint64 time = QDateTime::currentDateTime().currentSecsSinceEpoch();
-        int max_sum = Config::get_config(Config::history_num);
+        int max_sum = Config::getConfig<int>(Config::history_num);
         QDomElement root = doc.documentElement();
         QDomNodeList list = doc.elementsByTagName("history");
         QDomElement history = list.at(0).toElement();

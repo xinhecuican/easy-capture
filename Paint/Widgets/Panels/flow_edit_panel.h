@@ -11,6 +11,7 @@ class Flow_edit_panel : public QToolBar
     Q_OBJECT
 public:
     static QFont default_font;
+    static QColor default_color;
     static Flow_edit_panel* instance();
     ~Flow_edit_panel();
     QFont get_font();
