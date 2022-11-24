@@ -12,16 +12,20 @@ public:
     Stretch_button();
     ~Stretch_button();
     Stretch_button(direction dir, QWidget* parent);
+    Stretch_button(int index, QWidget* parent);
     void set_constraint(QRect rect);
     void mousePressEvent(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mouseReleaseEvent(QMouseEvent* event);
     void translate(int dx, int dy);
+    void setIndex(int index);
 signals:
     void button_move(direction dir, int dx, int dy);
+    void buttonMove(int index, int dx, int dy);
     void button_click(bool is_enter, int dx=10000, int dy=10000);
 private:
     direction dir;
+    int index;
     QPoint point;
     bool is_click;
     QRect constraint;

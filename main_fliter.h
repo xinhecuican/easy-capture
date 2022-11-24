@@ -31,6 +31,7 @@ public:
 public slots:
     void window_manager_thread();
 private:
+    void setTrayContextMenu();
     Tray* tray;
     QTimer* timer;
     static Main_fliter* _instance;

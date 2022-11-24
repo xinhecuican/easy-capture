@@ -13,6 +13,7 @@ bool MainWindow::is_start = false;
 MainWindow::MainWindow(QWidget *parent)
     : Window_base(parent, this, "MainWindow")
     , ui(new Ui::MainWindow)
+    , hiding(false)
 {
     ui->setupUi(this);
 
@@ -24,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     addToolBar(toolbar);
 
     new_button = new QToolButton(this);
-    new_button_action = new Capture_button_action(new_button, this);
+    connect(new_button, &QToolButton::clicked, this, &MainWindow::onCaptureButtonEnter);
     new_button->setText(MString::search("{cR3jOHb9Qw}新建"));
     new_button->setIcon(QIcon(":/image/capture.png"));
     new_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -87,7 +88,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete new_button_action;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -100,7 +100,7 @@ void MainWindow::load_key_event(QString name)
     Key_manager::add_func(name, "main_capture", [=](bool is_enter){
         if(is_enter)
         {
-            new_button_action->on_button_click();
+            onCaptureButtonEnter();
         }
     });
 }
@@ -109,7 +109,29 @@ void MainWindow::changeEvent(QEvent *event)
 {
     if ((event->type() == QEvent::WindowStateChange) && isMinimized())
     {
-        Window_manager::hide_now();
+        Window_manager::change_window("tray");
         event->ignore();
+    }
+}
+
+void MainWindow::onCaptureButtonEnter()
+{
+    if(Config::getConfig<bool>(Config::total_capture))
+    {
+        Window_manager::change_window("tray");
+        QTimer::singleShot(200, this, [=](){
+            QScreen *screen = QGuiApplication::primaryScreen();
+            QPixmap map = screen->grabWindow(0);
+            Window_manager::change_window("Paint_window");
+            Window_manager::get_window("Paint_window")->
+                    set_pic(map, screen->geometry());
+        });
+        return;
+    }
+    else
+    {
+        hide();
+        QTimer::singleShot(200, this, [=](){Window_manager::change_window("Capture_window");});
+//        Window_manager::change_window("Capture_window");
     }
 }

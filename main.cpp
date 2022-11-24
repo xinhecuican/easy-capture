@@ -23,12 +23,13 @@
 #include "Paint/Widgets/Layers/shapelayer.h"
 #include "Paint/Widgets/Layers/blurlayer.h"
 #include "Paint/Widgets/Layers/arrowlayer.h"
+#include "new_capture/Widgets/cliplayer.h"
 #include "Helper/dump.h"
 #include<QPair>
-#ifdef QT_DEBUG
-#pragma comment(lib, "C:/usr/software/Visual_Leak_Detector/lib/Win64/vld.lib")
-#include "vld.h"
-#endif
+//#ifdef QT_DEBUG
+//#pragma comment(lib, "C:/usr/software/Visual_Leak_Detector/lib/Win64/vld.lib")
+//#include "vld.h"
+//#endif
 //程式异常捕获
 LONG ApplicationCrashHandler(EXCEPTION_POINTERS *pException)
 {
@@ -108,18 +109,18 @@ int main(int argc, char *argv[])
     a.installEventFilter(fliter);//使用mainwindow上的eventfliter
     a.installNativeEventFilter(fliter);
     a.setQuitOnLastWindowClosed(false);
-    MainWindow* main_window = new MainWindow();
-    Window_manager::push_window("MainWindow", main_window);
-    Window_manager::change_window("MainWindow");
+//    MainWindow* main_window = new MainWindow();
+//    Window_manager::push_window("MainWindow", main_window);
+//    Window_manager::change_window("MainWindow");
 
-    if(argc > 1 && argv[1] == MainWindow::tr("autoStart"))
-    {
-        Window_manager::hide_now();
-    }
+//    if(argc > 1 && argv[1] == MainWindow::tr("autoStart"))
+//    {
+//        Window_manager::hide_now();
+//    }
     a.connect(&a, &QApplication::aboutToQuit, &a, [=](){
         Key_manager::save();
         UnregisterHotKey((HWND)fliter->winId(), fliter->global_key_id);
-         UnregisterHotKey((HWND)fliter->winId(), fliter->global_capture_id);
+        UnregisterHotKey((HWND)fliter->winId(), fliter->global_capture_id);
         GlobalDeleteAtom( fliter->global_key_id );
         GlobalDeleteAtom(fliter->global_capture_id);
         Update::instance()->onFinish();
@@ -147,4 +148,5 @@ void registerClasses()
     Reflect::registerClass<ShapeLayer>();
     Reflect::registerClass<BlurLayer>();
     Reflect::registerClass<ArrowLayer>();
+    Reflect::registerClass<ClipRegion>();
 }

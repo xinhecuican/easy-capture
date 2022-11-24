@@ -3,12 +3,27 @@
 #include<QPainter>
 #include<QDebug>
 
+ExpandButton::ExpandButton()
+{
+    is_limit = false;
+    is_capture = false;
+    setAcceptHoverEvents(true);
+}
+
+ExpandButton::ExpandButton(QGraphicsItem* parent) : QGraphicsObject(parent)
+{
+    is_limit = false;
+    is_capture = false;
+    setAcceptHoverEvents(true);
+}
+
 ExpandButton::ExpandButton(direction dir, QPointF pos, QGraphicsItem* parent): QGraphicsObject(parent)
 {
     this->dir = dir;
     setPos(pos);
     setAcceptHoverEvents(true);
     is_limit = false;
+    is_capture = false;
 }
 
 void ExpandButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -29,6 +44,7 @@ void ExpandButton::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     }
     moveBy(delta_point.x(), delta_point.y());
     emit posChange(dir, delta_point.x(), delta_point.y());
+    emit posChange(index, delta_point.x(), delta_point.y(), x_neighbor_index, y_neighbor_index);
 }
 
 void ExpandButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -49,6 +65,10 @@ void ExpandButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void ExpandButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     out_cursor = cursor();
+    if(is_capture)
+    {
+        setCursor(Qt::PointingHandCursor);
+    }
     if(dir == N || dir == S)
     {
         setCursor(Qt::SizeVerCursor);
@@ -88,4 +108,55 @@ void ExpandButton::setLimit(QRectF rect)
 {
     is_limit = true;
     limit = rect;
+}
+
+void ExpandButton::setIndex(int index)
+{
+    this->index.append(index);
+    is_capture = true;
+}
+
+void ExpandButton::setPosition(QPointF pos)
+{
+    setPos(pos);
+}
+
+bool ExpandButton::setNeighbor(QPoint pos, int index)
+{
+    if(this->pos().x() == pos.x())
+    {
+        x_neighbor_index = index;
+        return true;
+    }
+    else if(this->pos().y() == pos.y())
+    {
+        y_neighbor_index = index;
+        return true;
+    }
+    return false;
+}
+
+void ExpandButton::setIntPos(QPoint pos)
+{
+    this->int_point = pos;
+}
+
+QPoint ExpandButton::getPos()
+{
+    return int_point;
+}
+
+void ExpandButton::clearIndex()
+{
+    index.clear();
+}
+
+QList<int> ExpandButton::getIndex()
+{
+    return index;
+}
+
+void ExpandButton::setButtonIndex(int index)
+{
+    buttonIndex = index;
 }

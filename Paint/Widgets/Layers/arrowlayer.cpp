@@ -12,8 +12,8 @@ ArrowLayer::ArrowLayer(QGraphicsItem* parent, QPointF begin_point, QPointF end_p
     begin_button = new ExpandButton(W, begin_point, this);
     end_button = new ExpandButton(E, end_point, this);
     setAcceptHoverEvents(true);
-    connect(begin_button, &ExpandButton::posChange, this, &ArrowLayer::posChangeFunc);
-    connect(end_button, &ExpandButton::posChange, this, &ArrowLayer::posChangeFunc);
+    connect(begin_button, static_cast<void (ExpandButton::*)(direction, qreal, qreal)>(&ExpandButton::posChange), this, &ArrowLayer::posChangeFunc);
+    connect(end_button, static_cast<void (ExpandButton::*)(direction, qreal, qreal)>(&ExpandButton::posChange), this, &ArrowLayer::posChangeFunc);
 }
 
 void ArrowLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

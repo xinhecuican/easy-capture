@@ -15,7 +15,7 @@ Tray::Tray(QObject* parent) : QSystemTrayIcon(parent)
         switch(reason)
         {
         case DoubleClick:
-            Window_manager::show_now();
+            Window_manager::change_window("Capture_window");
             break;
         default:
             break;

@@ -13,6 +13,9 @@
 #include "new_capture/Widgets/Scroll_handler/scroll_dispatcher.h"
 #include "opencv2/core/core.hpp"
 #include<QPointer>
+#include <QHBoxLayout>
+#include <QGraphicsView>
+#include "Paint/Widgets/Paint_area.h"
 
 namespace Ui {
 class Capture_window;
@@ -37,7 +40,6 @@ public:
 
 private:
     Ui::Capture_window *ui;
-    QPointer<Capture_area> captured;
     bool button_click;
     QPainterPath free_paint_path;
     QRect active_window_bound;
@@ -60,6 +62,8 @@ private:
     bool is_finish;
     void set_scroll_info();
     bool window_valid;
+    QGraphicsView* view;
+    Paint_area* area;
 };
 
 #endif // CAPTURE_WINDOW_H

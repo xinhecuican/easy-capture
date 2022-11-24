@@ -5,7 +5,6 @@
 #include<QWidget>
 #include "Base/Window_base.h"
 #include "Paint/Widgets/Paint_area.h"
-#include "new_capture/capture_button_action.h"
 #include<QScrollArea>
 #include<QDockWidget>
 #include<QToolButton>
@@ -13,6 +12,7 @@
 #include "Widgets/IControl_layer_change.h"
 #include<QMenuBar>
 #include<QGraphicsView>
+#include <QTimer>
 
 namespace Ui {
 class Paint_window;
@@ -45,7 +45,6 @@ public slots:
 private:
     Ui::Paint_window *ui;
     Paint_area* area;
-    Capture_button_action* new_button_action;
     QGraphicsView* paint_panel;
     QHBoxLayout* layout;
     QToolButton* pencil_button;

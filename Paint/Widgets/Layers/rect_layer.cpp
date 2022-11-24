@@ -134,7 +134,7 @@ void Rect_layer::setBounding(QRectF rect)
             float x = dir == NW || dir == SW ? p.x() : p.x() + rect.width();
             float y = dir == NW || dir == NE ? p.y() : p.y() + rect.height();
             ExpandButton* button = new ExpandButton(dir, QPointF(x, y), this);
-            connect(button, &ExpandButton::posChange, this, &Rect_layer::posChangeFunc);
+            connect(button, static_cast<void (ExpandButton::*)(direction, qreal, qreal)>(&ExpandButton::posChange), this, &Rect_layer::posChangeFunc);
             connect(button, &ExpandButton::posTo, this, &Rect_layer::posToFunc);
             buttons.insert(dir, button);
         }

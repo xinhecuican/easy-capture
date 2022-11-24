@@ -2,7 +2,6 @@
 #define DISPATCHER_WORKER_H
 #include<QObject>
 #include<QTimer>
-#include "Helper/Pool/mpool.h"
 #include "scroll_handle.h"
 #include<QMap>
 #include<QMutex>

@@ -20,7 +20,6 @@ Scroll_worker::~Scroll_worker()
 
 void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
 {
-
     cv::Mat img1 = Image_helper::QImage2Mat(image1);
     cv::Mat img2 = Image_helper::QImage2Mat(image2);
 

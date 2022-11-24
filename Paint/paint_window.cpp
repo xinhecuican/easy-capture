@@ -45,7 +45,7 @@ Paint_window::Paint_window(QWidget *parent) :
     setWindowTitle("简截");
     setWindowIcon(QIcon(":/image/avator.png"));
     connect(title_bar, &Titlebar::minimize, this, [=](){
-        Window_manager::hide_now();
+        Window_manager::change_window("tray");
     });
     qRegisterMetaType<BaseLayer>("BaseLayer");
     menu_bar = new QMenuBar(this);
@@ -86,7 +86,6 @@ Paint_window::Paint_window(QWidget *parent) :
 Paint_window::~Paint_window()
 {
     delete ui;
-    delete new_button_action;
 }
 
 void Paint_window::load_key_event(QString name)
@@ -103,7 +102,7 @@ void Paint_window::load_key_event(QString name)
                 if(file_name != "")
                 {
                     area->save(History_data::Persist, file_name);
-                    Window_manager::hideToMain();
+                    Window_manager::change_window("tray");
                 }
             }
         });
@@ -175,7 +174,7 @@ void Paint_window::set_menubar()
         if(file_name != "")
         {
             area->save(History_data::Persist, file_name);
-            Window_manager::hideToMain();
+            Window_manager::change_window("tray");
         }
     });
     QAction* history_action = new QAction(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
@@ -222,7 +221,24 @@ void Paint_window::set_menubar()
 void Paint_window::set_toolbar()
 {
     QToolButton* new_button = new QToolButton(this);
-    new_button_action = new Capture_button_action(new_button, this);
+    connect(new_button, &QToolButton::clicked, this, [=](){
+        if(Config::getConfig<bool>(Config::total_capture))
+        {
+            Window_manager::change_window("tray");
+            QTimer::singleShot(200, this, [=](){
+                QScreen *screen = QGuiApplication::primaryScreen();
+                QPixmap map = screen->grabWindow(0);
+                Window_manager::change_window("Paint_window");
+                Window_manager::get_window("Paint_window")->
+                        set_pic(map, screen->geometry());
+            });
+            return;
+        }
+        else
+        {
+            Window_manager::change_window("Capture_window");
+        }
+    });
     new_button->setText(MString::search("{cR3jOHb9Qw}新建"));
     new_button->setIcon(QIcon(":/image/capture.png"));
     new_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -288,7 +304,7 @@ void Paint_window::set_toolbar()
         if(file_name != "")
         {
             area->save(History_data::Persist, file_name);
-            Window_manager::hideToMain();
+            Window_manager::change_window("tray");
         }
     });
     ui->toolBar->addWidget(save_button);
@@ -523,7 +539,7 @@ void Paint_window::closeEvent(QCloseEvent *event)
 //    }
     if(Config::getConfig<bool>(Config::hide_to_tray))
     {
-        Window_manager::hideToMain();
+        Window_manager::change_window("tray");
 
     }
     else

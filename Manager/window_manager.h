@@ -28,6 +28,7 @@ public:
     static void show_now();
     static void hide_now();
     static void hideToMain();
+    static void create_window(QString name);
 private:
     struct Window_data
     {
@@ -37,7 +38,6 @@ private:
     static QMap<QString, Window_data> window_list;
     static QString active_window;
     static QString previous_window;
-    static void create_window(QString name);
     static Window_data create_data(Window_base* window);
     static bool current_hidden;
     static bool previous_hidden;

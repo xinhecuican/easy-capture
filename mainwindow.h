@@ -6,7 +6,6 @@
 #include "Base/Window_base.h"
 #include<QtWidgets>
 #include<QMessageBox>
-#include "new_capture/capture_button_action.h"
 #include "Manager/window_manager.h"
 #include "Manager/config.h"
 #define WIN32_LEAN_AND_MEAN
@@ -27,13 +26,16 @@ public:
     void changeEvent(QEvent* event)override;
     void load_key_event(QString name) override;
 
+public slots:
+    void onCaptureButtonEnter();
+
 private:
     Ui::MainWindow *ui;
     QLabel* m_label;
     QToolBar* toolbar;
     QToolButton* new_button;
-    Capture_button_action* new_button_action;
     ATOM global_key_id;
     static bool is_start;
+    bool hiding;
 };
 #endif // MAINWINDOW_H

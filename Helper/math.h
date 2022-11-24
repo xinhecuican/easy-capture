@@ -11,6 +11,7 @@ class Math
 public:
     static QPoint scroll(float angle, QPoint point, QPoint begin_point);
     static MRect scroll(float angle, QRect rect);
+    static QRectF buildRect(QPointF point1, QPointF point2);
 };
 
 #endif // MATH_H

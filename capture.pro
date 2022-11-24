@@ -69,25 +69,29 @@ SOURCES += \
     main.cpp \
     main_fliter.cpp \
     mainwindow.cpp \
-    new_capture/Capture_button_action.cpp \
     new_capture/Widgets/Scroll_handler/Scroll_handle_global.cpp \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.cpp \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.cpp \
     new_capture/Widgets/Scroll_handler/scroll_handle.cpp \
     new_capture/Widgets/Scroll_handler/scroll_worker.cpp \
+    new_capture/Widgets/buttonboxlayer.cpp \
     new_capture/Widgets/capture_area.cpp \
     new_capture/Widgets/capture_region.cpp \
+    new_capture/Widgets/cliplayer.cpp \
+    new_capture/Widgets/clipregion.cpp \
+    new_capture/Widgets/masklayer.cpp \
     new_capture/Widgets/stretch_point.cpp \
     new_capture/Window_fliter.cpp \
     new_capture/capture_window.cpp
 
 HEADERS += \
+    Base/MPool.h \
     Base/Record_element.h \
     Base/Serializable.h \
     Base/Tab_base.h \
     Base/Window_base.h \
     Helper/EnumReflect.h \
-    Helper/Pool/mpool.h \
+    Helper/GraphicsViewPatch.h \
     Helper/Reflect.h \
     Helper/Serialize.h \
     Helper/common.h \
@@ -154,15 +158,18 @@ HEADERS += \
     Tests/configtest.h \
     main_fliter.h \
     mainwindow.h \
-    new_capture/Capture_button_action.h \
     new_capture/Widgets/Ipoint_position_change.h \
     new_capture/Widgets/Scroll_handler/Scroll_handler_global.h \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.h \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
     new_capture/Widgets/Scroll_handler/scroll_handle.h \
     new_capture/Widgets/Scroll_handler/scroll_worker.h \
+    new_capture/Widgets/buttonboxlayer.h \
     new_capture/Widgets/capture_area.h \
     new_capture/Widgets/capture_region.h \
+    new_capture/Widgets/cliplayer.h \
+    new_capture/Widgets/clipregion.h \
+    new_capture/Widgets/masklayer.h \
     new_capture/Widgets/stretch_point.h \
     new_capture/capture_window.h \
     new_capture/window_fliter.h

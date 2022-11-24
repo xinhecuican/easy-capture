@@ -22,3 +22,12 @@ MRect Math::scroll(float angle, QRect rect)
     ans.bottomright = scroll(angle, rect.bottomRight(), begin_point);
     return ans;
 }
+
+QRectF Math::buildRect(QPointF point1, QPointF point2)
+{
+    qreal top = point1.y() < point2.y() ? point1.y() : point2.y();
+    qreal left = point1.x() < point2.x() ? point1.x() : point2.x();
+    qreal bottom = point1.y() < point2.y() ? point2.y() : point1.y();
+    qreal right = point1.x() < point2.x() ? point2.x() : point1.x();
+    return QRectF(left, top, right-left, bottom-top);
+}

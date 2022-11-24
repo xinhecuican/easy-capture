@@ -9,7 +9,7 @@
 
 QMap<QString, Window_manager::Window_data> Window_manager::window_list =
         QMap<QString, Window_manager::Window_data>();
-QString Window_manager::active_window = NULL;
+QString Window_manager::active_window = "tray";
 QString Window_manager::previous_window = NULL;
 bool Window_manager::current_hidden = false;
 bool Window_manager::previous_hidden = false;
@@ -81,11 +81,15 @@ void Window_manager::change_window(QString name)
     if(active_window != name)
     {
         Key_manager::onWindowChangeBegin(active_window, name);
-        if(active_window == NULL)
+        if(name == "tray")
         {
-            active_window = name;
+            window_list[active_window].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
         }
-        else if(window_list.contains(active_window))
+        else
+        {
+            window_list[name].window->setWindowFlag(Qt::WindowSystemMenuHint, true);
+        }
+        if(active_window != "tray" && window_list.contains(active_window))
         {
             window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
             window_list[active_window].window->hide();
@@ -95,9 +99,12 @@ void Window_manager::change_window(QString name)
         active_window = name;
         previous_hidden = current_hidden;
         current_hidden = false;
-        window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
-        window_list[active_window].window->on_window_select();
-        window_list[name].window->show();
+        if(active_window != "tray")
+        {
+            window_list[active_window].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
+            window_list[active_window].window->on_window_select();
+            window_list[name].window->show();
+        }
         Key_manager::onWindowChangeEnd();
     }
 
@@ -152,6 +159,8 @@ bool Window_manager::contains(QString name)
 
 void Window_manager::create_window(QString name)
 {
+    if(name == "tray")
+        return;
     if(window_list.find(name) == window_list.end())
     {
         window_list[name] = create_data(static_cast<Window_base*>(

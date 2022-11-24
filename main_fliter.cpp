@@ -25,16 +25,7 @@ Main_fliter::Main_fliter()
     connect(timer, SIGNAL(timeout()), this, SLOT(window_manager_thread()));
     int time = Config::getConfig<int>(Config::clear_interval);
     timer->start(time * 1000);
-    QMenu* menu = new QMenu(this);
-    QAction* close = new QAction(this);
-    close->setText("关闭");
-    connect(close, &QAction::triggered, this, [=](){
-        Window_manager::close();
-    });
-    menu->addAction(close);
-    tray = new Tray(this);
-    tray->setContextMenu(menu);
-    tray->show();
+    setTrayContextMenu();
 }
 
 Main_fliter::~Main_fliter()
@@ -79,7 +70,7 @@ bool Main_fliter::nativeEventFilter(const QByteArray &eventType, void *message, 
     }
     if(pMsg->message == WM_HOTKEY && pMsg->wParam == global_capture_id)
     {
-        Window_manager::hide_now();
+        Window_manager::change_window("tray");
         QTimer::singleShot(200, this, [=](){
             QScreen *screen = QGuiApplication::primaryScreen();
             QPixmap map = screen->grabWindow(0);
@@ -117,4 +108,63 @@ void Main_fliter::start_timer()
 bool Main_fliter::is_timer_run()
 {
     return timer->isActive();
+}
+
+void Main_fliter::setTrayContextMenu()
+{
+    QMenu* menu = new QMenu(this);
+    QAction* close = new QAction(this);
+    close->setText("关闭");
+    connect(close, &QAction::triggered, this, [=](){
+        Window_manager::close();
+    });
+
+    QAction* setting = new QAction(this);
+    setting->setText("设置");
+    connect(setting, &QAction::triggered, this, [=](){
+        Window_manager::change_window("Setting");
+    });
+
+    QMenu* mode = new QMenu("模式");
+    QAction* rect_mode = new QAction(this);
+    mode->addAction(MString::search("{OBwjJUhTkh}矩形窗口"));
+    mode->addAction(MString::search("{FHFzLMcLYa}全屏"));
+    mode->addAction(MString::search("{fnGapBU4vo}自由截图"));
+    mode->addAction(MString::search("{ETY295cnab}滚动截屏"));
+    QList<QAction*> actions = mode->actions();
+    for(int i=0; i<actions.size(); i++)
+    {
+        actions[i]->setData(QVariant(i));
+    }
+    connect(mode, &QMenu::triggered, this, [=](QAction* action){
+        QVariant index_var = action->data();
+        int index = index_var.toInt();
+        for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
+        {
+            Config::setConfig(i, false);
+        }
+        Config::setConfig(Config::capture_mode_begin+index, true);
+        if(Config::getConfig<bool>(Config::rect_capture) || Config::getConfig<bool>(Config::free_capture)
+                || Config::getConfig<bool>(Config::scroll_capture))
+            Window_manager::change_window("Capture_window");
+        else if(Config::getConfig<bool>(Config::total_capture))
+        {
+            Window_manager::change_window("tray");
+            QTimer::singleShot(200, this, [=](){
+                QScreen *screen = QGuiApplication::primaryScreen();
+                QPixmap map = screen->grabWindow(0);
+                Window_manager::change_window("Paint_window");
+                Window_manager::get_window("Paint_window")->
+                        set_pic(map, screen->geometry());
+            });
+        }
+
+    });
+
+    menu->addMenu(mode);
+    menu->addAction(setting);
+    menu->addAction(close);
+    tray = new Tray(this);
+    tray->setContextMenu(menu);
+    tray->show();
 }

@@ -27,19 +27,51 @@
 #include "Panels/paint_setting_panel.h"
 #include<QApplication>
 #include<QClipboard>
+#include <QScreen>
 
-Paint_area::Paint_area(QObject* parent) : QGraphicsScene(parent)
+Paint_area::Paint_area(QObject* parent, bool enable_clip) : QGraphicsScene(parent)
 {
     is_save = false;
-    pic_layer = new Picture_layer();
-    addItem(pic_layer);
+    is_clip = enable_clip;
+    state = PAINT;
+    shape_type = RECTANGLE;
+    if(!is_clip)
+    {
+        pic_layer = new Picture_layer();
+        addItem(pic_layer);
+        initSettingPanel();
+        clip_layer = NULL;
+    }
+    else
+    {
+        pic_layer = NULL;
+        clip_layer = new ClipLayer();
+        connect(clip_layer, &ClipLayer::requestImage, this, [=](){
+            prepareSave();
+            QRectF bound = clip_layer->getClipRect();
+            bound = bound.united(paint_layer->childrenBoundingRect());
+            bound = bound.united(shape_layer->childrenBoundingRect());
+
+            if(bound == QRectF(0, 0, 0, 0))
+                return;
+
+            QImage image(bound.width(), bound.height(), QImage::Format_ARGB32);
+            image.fill(Qt::transparent);
+            QPainter painter(&image);
+            render(&painter, QRectF(QPointF(0, 0), bound.size()), bound);
+            Window_manager::change_window("Paint_window");
+            bound.moveTo(0, 0);
+            Window_manager::get_window("Paint_window")->set_pic(QPixmap::fromImage(image), bound.toRect());
+            endSave();
+        });
+        addItem(clip_layer);
+    }
     paint_layer = new Paint_layer();
     paint_layer->setZValue(1);
     addItem(paint_layer);
     shape_layer = new ShapeLayer();
-    paint_layer->setZValue(1);
+    shape_layer->setZValue(2);
     addItem(shape_layer);
-    initSettingPanel();
 }
 
 void Paint_area::reset()
@@ -55,6 +87,10 @@ void Paint_area::reset()
     if(shape_layer != NULL)
     {
         shape_layer->reset();
+    }
+    if(clip_layer != NULL)
+    {
+        clip_layer->reset();
     }
     is_save = false;
 }
@@ -72,10 +108,17 @@ void Paint_area::setPic(QPixmap pic, QRect rect)
     setSceneRect(0, 0, rect.width() * 2, rect.height() * 2);
 }
 
+void Paint_area::setClipPic(QPixmap pix)
+{
+    clip_layer->setPic(pix);
+}
+
 void Paint_area::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     sendEvent(paint_layer, event);
     sendEvent(shape_layer, event);
+    if(is_clip)
+        sendEvent(clip_layer, event);
     QGraphicsScene::mouseMoveEvent(event);
 }
 
@@ -83,6 +126,8 @@ void Paint_area::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     sendEvent(paint_layer, event);
     sendEvent(shape_layer, event);
+    if(is_clip)
+        sendEvent(clip_layer, event);
     if(event->button() == Qt::BackButton)
     {
         Recorder::instance()->back();
@@ -98,6 +143,8 @@ void Paint_area::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     sendEvent(paint_layer, event);
     sendEvent(shape_layer, event);
+    if(is_clip)
+        sendEvent(clip_layer, event);
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
@@ -149,11 +196,14 @@ void Paint_area::stateChange(PAINT_STATE state)
         paint_layer->setEnableDraw(false);
         break;
     case ARROW:
-        pic_layer->setEnableMove(false);
+        if(!is_clip)
+            pic_layer->setEnableMove(false);
         shape_layer->setGrabFocus(false);
         break;
     case SHAPE:
         shape_layer->setEnable(false);
+        break;
+    case MASK:
         break;
     }
     this->state = state;
@@ -167,7 +217,8 @@ void Paint_area::stateChange(PAINT_STATE state)
         paint_layer->setErase(true);
         break;
     case ARROW:
-        pic_layer->setEnableMove(true);
+        if(!is_clip)
+            pic_layer->setEnableMove(true);
         shape_layer->setGrabFocus(true);
         break;
     case SHAPE:
@@ -206,18 +257,29 @@ void Paint_area::initSettingPanel()
     });
 }
 
-void Paint_area::save(History_data::save_type type, QString path)
+bool Paint_area::save(History_data::save_type type, QString path)
 {
     if(path == "")
     {
-        return;
+        return false;
     }
     prepareSave();
     is_save = true;
-    QRectF bound = pic_layer->boundingRect();
-    bound.moveTo(pic_layer->pos());
+    QRectF bound;
+    if(pic_layer != NULL)
+    {
+        bound = pic_layer->boundingRect();
+        bound.moveTo(pic_layer->pos() + bound.topLeft());
+    }
+    else
+    {
+        bound = clip_layer->getClipRect();
+    }
     bound = bound.united(paint_layer->childrenBoundingRect());
     bound = bound.united(shape_layer->childrenBoundingRect());
+
+    if(bound == QRectF(0, 0, 0, 0))
+        return false;
 
     cv::Mat ans(bound.height(), bound.width(), CV_8UC4);
     for(int i=0; i<bound.height(); i+=32700)
@@ -234,15 +296,28 @@ void Paint_area::save(History_data::save_type type, QString path)
     cv::imwrite(path.toLocal8Bit().toStdString(), ans);
     History::instance()->log(type, path);
     endSave();
+    return true;
 }
 
-void Paint_area::save2Clipboard()
+bool Paint_area::save2Clipboard()
 {
     prepareSave();
-    QRectF bound = pic_layer->boundingRect();
-    bound.moveTo(pic_layer->pos());
+    QRectF bound;
+    if(pic_layer != NULL)
+    {
+        bound = pic_layer->boundingRect();
+        bound.moveTo(pic_layer->pos() + bound.topLeft());
+    }
+    else
+    {
+        bound = clip_layer->getClipRect();
+    }
     bound = bound.united(paint_layer->childrenBoundingRect());
     bound = bound.united(shape_layer->childrenBoundingRect());
+
+    if(bound == QRectF(0, 0, 0, 0))
+        return false;
+
     QImage image(bound.width(), bound.height(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);
     QPainter painter(&image);
@@ -250,6 +325,7 @@ void Paint_area::save2Clipboard()
     QClipboard *clip=QApplication::clipboard();
     clip->setImage(image);
     endSave();
+    return true;
 }
 
 bool Paint_area::needSave()
@@ -259,14 +335,26 @@ bool Paint_area::needSave()
 
 void Paint_area::prepareSave()
 {
-    pic_layer->prepareSave();
+    if(pic_layer != NULL)
+        pic_layer->prepareSave();
+    else
+        clip_layer->prepareSave();
     shape_layer->prepareSave();
     update();
 }
 
 void Paint_area::endSave()
 {
-    pic_layer->endSave();
+    if(pic_layer != NULL)
+        pic_layer->endSave();
+    else
+        clip_layer->endSave();
     shape_layer->endSave();
     update();
+}
+
+void Paint_area::sendRequestImage()
+{
+    if(clip_layer != NULL)
+        clip_layer->sendRequestImage();
 }

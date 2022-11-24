@@ -15,6 +15,14 @@ Stretch_button::Stretch_button(direction dir, QWidget* parent):QPushButton(paren
     show();
 }
 
+Stretch_button::Stretch_button(int index, QWidget* parent) : QPushButton(parent)
+{
+    this->index = index;
+    setFixedSize(2 * OFFSET, 2 * OFFSET);
+    is_set_constraint = false;
+    show();
+}
+
 Stretch_button::~Stretch_button()
 {
 }
@@ -57,6 +65,7 @@ void Stretch_button::mouseMoveEvent(QMouseEvent *event)
     deltay += dy;
     this->move(this->pos().x() + dx, this->pos().y() + dy);
     emit button_move(dir, dx, dy);
+    emit buttonMove(index, dx, dy);
 }
 
 void Stretch_button::mousePressEvent(QMouseEvent *event)
@@ -86,4 +95,9 @@ void Stretch_button::set_constraint(QRect rect)
 void Stretch_button::translate(int dx, int dy)
 {
     this->move(pos().x() + dx, pos().y() + dy);
+}
+
+void Stretch_button::setIndex(int index)
+{
+    this->index = index;
 }
