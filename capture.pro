@@ -39,7 +39,6 @@ SOURCES += \
     Paint/Widgets/Layers/picture_layer.cpp \
     Paint/Widgets/Layers/rect_layer.cpp \
     Paint/Widgets/Layers/shapelayer.cpp \
-    Paint/Widgets/Layers/text_edit.cpp \
     Paint/Widgets/Layers/text_layer.cpp \
     Paint/Widgets/Panels/close_dialog.cpp \
     Paint/Widgets/Panels/color_selector.cpp \
@@ -78,13 +77,10 @@ SOURCES += \
     new_capture/Widgets/Scroll_handler/scroll_handle.cpp \
     new_capture/Widgets/Scroll_handler/scroll_worker.cpp \
     new_capture/Widgets/attributetoolbar.cpp \
-    new_capture/Widgets/capture_area.cpp \
-    new_capture/Widgets/capture_region.cpp \
     new_capture/Widgets/cliplayer.cpp \
     new_capture/Widgets/clipregion.cpp \
     new_capture/Widgets/masklayer.cpp \
     new_capture/Widgets/mosicsample.cpp \
-    new_capture/Widgets/stretch_point.cpp \
     new_capture/Window_fliter.cpp \
     new_capture/capture_window.cpp
 
@@ -119,7 +115,6 @@ HEADERS += \
     Paint/Data/paint_data.h \
     Paint/Data/scroll_button.h \
     Paint/Data/stretch_button.h \
-    Paint/Widgets/IControl_layer_change.h \
     Paint/Widgets/Layer_list/list_item.h \
     Paint/Widgets/Layer_list/list_widget.h \
     Paint/Widgets/Layers/LayerItems/expandbutton.h \
@@ -132,7 +127,6 @@ HEADERS += \
     Paint/Widgets/Layers/picture_layer.h \
     Paint/Widgets/Layers/rect_layer.h \
     Paint/Widgets/Layers/shapelayer.h \
-    Paint/Widgets/Layers/text_edit.h \
     Paint/Widgets/Layers/text_layer.h \
     Paint/Widgets/Panels/close_dialog.h \
     Paint/Widgets/Panels/color_selector.h \
@@ -165,20 +159,16 @@ HEADERS += \
     Tests/testwidget.h \
     main_fliter.h \
     mainwindow.h \
-    new_capture/Widgets/Ipoint_position_change.h \
     new_capture/Widgets/Scroll_handler/Scroll_handler_global.h \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.h \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
     new_capture/Widgets/Scroll_handler/scroll_handle.h \
     new_capture/Widgets/Scroll_handler/scroll_worker.h \
     new_capture/Widgets/attributetoolbar.h \
-    new_capture/Widgets/capture_area.h \
-    new_capture/Widgets/capture_region.h \
     new_capture/Widgets/cliplayer.h \
     new_capture/Widgets/clipregion.h \
     new_capture/Widgets/masklayer.h \
     new_capture/Widgets/mosicsample.h \
-    new_capture/Widgets/stretch_point.h \
     new_capture/capture_window.h \
     new_capture/window_fliter.h
 
