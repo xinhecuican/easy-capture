@@ -27,6 +27,7 @@ public:
     void setErase(bool enable);
     Q_INVOKABLE void undoRedoPaintFunc(bool is_undo, PaintItem* item);
     QRectF boundingRect() const override;
+    int type() const override;
 private:
     void removeLines(QPointF point);
     QList<PaintItem*> lines;

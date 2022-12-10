@@ -613,7 +613,7 @@ void Paint_window::initSettingPanel()
             [=](SHAPE_TYPE type){
         if(type == DELETE_SHAPE)
         {
-            area->deleteShape();
+            area->stateChange(ERASE);
         }
         else
         {

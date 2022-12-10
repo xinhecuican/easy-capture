@@ -1,6 +1,7 @@
 #include "text_layer.h"
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include<QDebug>
+#include <QApplication>
 
 Text_layer::Text_layer(QRectF rect, QGraphicsItem* parent) : QGraphicsTextItem(parent)
 {
@@ -206,4 +207,14 @@ void Text_layer::onCursorPositionChange(int current)
     Flow_edit_panel::instance()->set_format(textCursor().charFormat().font(),
                                                 textCursor().charFormat().foreground().color());
     current_charformat = textCursor().charFormat();
+}
+
+bool Text_layer::acceptFocus()
+{
+    return true;
+}
+
+int Text_layer::type() const
+{
+    return 65544;
 }

@@ -104,6 +104,7 @@ int main(int argc, char *argv[])
     QDir::setCurrent(applicationDirPathStr);
     Config::load_config();
     Key_manager::load();
+    MString::load_from_file("Data/Languages/");
     registerClasses();
     Main_fliter* fliter = Main_fliter::instance();
     a.installEventFilter(fliter);//使用mainwindow上的eventfliter

@@ -138,3 +138,8 @@ void Paint_layer::undoRedoPaintFunc(bool is_undo, PaintItem *item)
         lines.removeOne(item);
     }
 }
+
+int Paint_layer::type() const
+{
+    return 65539;
+}

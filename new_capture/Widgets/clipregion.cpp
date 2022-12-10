@@ -6,6 +6,7 @@ ClipRegion::ClipRegion(QPolygonF polygon, QGraphicsItem* parent) : QGraphicsObje
 {
     this->polygon = polygon;
     isButtonHide = false;
+    is_enable = true;
     setFlag(QGraphicsItem::ItemIsMovable);
     remapPoint();
 }
@@ -95,6 +96,9 @@ void ClipRegion::remapPoint()
             buttons[y_neigh]->setPosition(buttons[y_neigh]->pos() + QPointF(0, dy));
             update();
         });
+        connect(button, &ExpandButton::posTo, this, [=](direction dir, qreal x, qreal y){
+            emit regionChange();
+        });
         buttons.append(button);
     }
     for(int i=0; i<buttons.count(); i++)
@@ -162,20 +166,30 @@ void ClipRegion::move(qreal dx, qreal dy)
     {
         buttons[i]->moveBy(dx, dy);
     }
-    emit regionChange();
     update();
 }
 
 void ClipRegion::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(!is_enable)
+        return;
     begin_point = event->pos();
 }
 
 void ClipRegion::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(!is_enable)
+        return;
     QPointF delta = event->pos() - begin_point;
     begin_point = event->pos();
     move(delta.x(), delta.y());
+}
+
+void ClipRegion::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!is_enable)
+        return;
+    emit regionChange();
 }
 
 void ClipRegion::hideNormal()
@@ -204,4 +218,13 @@ void ClipRegion::hideButton()
         button->hide();
     }
     update();
+}
+
+void ClipRegion::setEnable(bool enable)
+{
+    is_enable = enable;
+    if(is_enable)
+        showNormal();
+    else
+        hideNormal();
 }

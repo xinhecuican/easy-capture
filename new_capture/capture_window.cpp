@@ -20,6 +20,8 @@
 #include "Helper/GraphicsViewPatch.h"
 #include <QFileDialog>
 #include "Paint/Widgets/history.h"
+#include "Paint/Widgets/style_manager.h"
+#include "Paint/Widgets/recorder.h"
 
 bool Capture_window::end_scroll = false;
 
@@ -47,10 +49,12 @@ Capture_window::Capture_window(QWidget *parent) :
     this->ui->centralwidget->setMouseTracking(true);
 //    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
+    ui->centralwidget->setGeometry(QGuiApplication::primaryScreen()->geometry());
+    setGeometry(QGuiApplication::primaryScreen()->geometry());
     area = new Paint_area(this, true);
     area->stateChange(ARROW);
     view = new QGraphicsView(area, this);
-    view->setStyleSheet("background: transparent;border:0px");
+    view->setStyleSheet(".QGraphicsView{background: transparent;border:0px;}");
     view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 //    view->viewport()->installEventFilter(new GraphicsViewPatch(view));
     view->setFrameShape(QFrame::NoFrame);
@@ -60,6 +64,7 @@ Capture_window::Capture_window(QWidget *parent) :
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     setCentralWidget(view);
+    area->onViewSet(view);
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [=](){
@@ -134,39 +139,6 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
         }
         return;
     }
-
-//    painter.fillRect(this->rect(), QColor(0, 0, 0, 0x40)); // 设置透明颜色
-//    QPen pen;
-//    pen.setColor(QColor(26, 115, 231, 127));
-//    painter.setPen(pen);
-//    painter.drawLine(0, now_point.y(), this->rect().width(), now_point.y());
-//    painter.drawLine(now_point.x(), 0, now_point.x(), this->rect().height());
-//    pen.setColor(QColor(123, 123, 233));
-//    pen.setWidth(2);
-//    painter.setPen(pen);
-//    painter.setCompositionMode( QPainter::CompositionMode_Source );
-//    if(captured->is_begin_draw())
-//    {
-//        painter.drawRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h());
-//        painter.fillRect(captured->get_x(), captured->get_y(), captured->get_w(), captured->get_h(),
-//                         QColor(0, 0, 0, 0x1));
-//    }
-//    QPainterPath path;
-//    if(is_first_capture && !button_click)
-//    {
-//        painter.fillRect(active_window_bound, QColor(0, 0, 0, 0x1));
-//        painter.drawRect(active_window_bound);
-//    }
-//    QList<Capture_region*> list = captured->get_region();
-//    for(int i=0; i<list.size(); i++)
-//    {
-//        QPolygon temp_polygon = list[i]->get_polygon();
-//        path.addPolygon(temp_polygon);
-//        path = path.simplified();//防止绘制环形时有一条回到原点的线
-//    }
-
-//    painter.setBrush(QBrush(QColor(0, 0, 0, 1)));
-//    painter.drawPath(path);
 }
 
 void Capture_window::load_key_event(QString name)
@@ -184,38 +156,44 @@ void Capture_window::load_key_event(QString name)
                 Window_manager::pop_window();
             }
         });
-        Key_manager::add_func(name, "one_window", [=](bool is_enter){
-            if(is_enter)
-            {
-                for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
-                {
-                    Config::setConfig((Config::setting)i, 0);
-                }
-                Config::setConfig(Config::capture_one_window, 1);
-            }
+        Key_manager::add_func(name, "capture_rect", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                area->clipButtonEnter(0);
         });
-        Key_manager::add_func(name, "multi_window_separate", [=](bool is_enter){
-           if(is_enter)
-           {
-               for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
-               {
-                   Config::setConfig((Config::setting)i, 0);
-               }
-               Config::setConfig(Config::capture_multi_window_separate, 1);
-           }
+        Key_manager::add_func(name, "capture_mosaic", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                area->clipButtonEnter(1);
         });
-        Key_manager::add_func(name, "multi_window_combine", [=](bool is_enter){
-            if(is_enter)
-            {
-                for(int i=Config::capture_window_num_begin; i<=Config::capture_window_num_end; i++)
-                {
-                    Config::setConfig((Config::setting)i, 0);
-                }
-                Config::setConfig(Config::capture_multi_window_combine, 1);
-            }
+        Key_manager::add_func(name, "capture_cursor", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                area->clipButtonEnter(2);
+        });
+        Key_manager::add_func(name, "capture_pencil", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                area->clipButtonEnter(3);
+        });
+        Key_manager::add_func(name, "capture_highlighter", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                area->clipButtonEnter(4);
+        });
+        Key_manager::add_func(name, "capture_text", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                area->clipButtonEnter(5);
+        });
+        Key_manager::add_func(name, "capture_erase", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                area->clipButtonEnter(7);
+        });
+        Key_manager::add_func(name, "capture_undo", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                Recorder::instance()->back();
+        });
+        Key_manager::add_func(name, "capture_redo", [=](bool is_enter){
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+                Recorder::instance()->forward();
         });
         Key_manager::add_func(name, "save2file", [=](bool is_enter){
-            if(is_enter)
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
             {
                 QString file_name = QFileDialog::getSaveFileName(this,
                                                                  "保存",
@@ -224,35 +202,20 @@ void Capture_window::load_key_event(QString name)
                 if(file_name != "")
                 {
                     if(area->save(History_data::Persist, file_name))
-                        Window_manager::hideToMain();
+                        Window_manager::change_window("tray");
                 }
             }
         });
         Key_manager::add_func(name, "save2clip", [=](bool is_enter){
-            if(is_enter)
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
             {
                 if(area->save2Clipboard())
-                    Window_manager::hideToMain();
+                    Window_manager::change_window("tray");
             }
         });
-//        Key_manager::add_func(name, "move_all", [=](bool is_enter)
-//        {
-//            if(captured.isNull())
-//            {
-//                return;
-//            }
-//            if(is_enter)
-//            {
-//                captured->is_key_press(true);
-//            }
-//            else
-//            {
-//                captured->is_key_press(false);
-//            }
-//        });
         Key_manager::add_func(name, "enter_capture", [=](bool is_enter)
         {
-            if(is_enter)
+            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
             {
                 area->sendRequestImage();
             }
@@ -293,6 +256,8 @@ void Capture_window::on_window_cancal()
     area->reset();
     free_paint_path = QPainterPath();
     active_window_bound = QRect();
+    Style_manager::instance()->reset();
+    Recorder::instance()->reset();
 }
 
 enum window_search_mode {
@@ -496,6 +461,7 @@ WINDOW_VALID_OUT:;
         QScreen* screen = QGuiApplication::primaryScreen();
         QPixmap p = screen->grabWindow(0);
         area->setClipPic(p);
+        area->stateChange(ARROW);
         view->show();
     }
 }

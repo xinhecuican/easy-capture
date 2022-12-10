@@ -83,6 +83,8 @@ private:
                     delete data[i];
                 }
                 data[point++] = record_data;
+                for(int i=point; i<limit; i++)
+                    data.removeLast();
             }
             else
             {

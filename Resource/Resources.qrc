@@ -40,12 +40,14 @@
         <file>paint_arrow.png</file>
         <file>mosaic.png</file>
         <file>file.png</file>
+        <file>painterpath.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>
     </qresource>
     <qresource prefix="/qss">
         <file>capture_ok_button.qss</file>
+        <file>toolbar.qss</file>
     </qresource>
     <qresource prefix="/Data">
         <file>Languages/MainWindow/chinese.xml</file>
@@ -53,5 +55,6 @@
         <file>Languages/Paint_window/chinese.json</file>
         <file>Languages/Setting/chinese.xml</file>
         <file>default.json</file>
+        <file>Languages/chinese.xml</file>
     </qresource>
 </RCC>

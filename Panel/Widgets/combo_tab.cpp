@@ -41,6 +41,11 @@ int Combo_tab::get_default_index()
 
 void Combo_tab::reset()
 {
+    if(begin_index == end_index)
+    {
+        setCurrentIndex(Config::getConfig<int>(begin_index));
+        return;
+    }
     for(int i=begin_index; i<=end_index; i++)
     {
         if(Config::getConfig<int>(i))

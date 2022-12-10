@@ -51,6 +51,11 @@ QPainterPath ArrowLayer::shape() const
     path.lineTo(end_point + delta);
     path.lineTo(end_point - delta);
     path.lineTo(begin_point - delta);
+    for(QGraphicsItem* item : childItems())
+    {
+        path.addPath(item->shape());
+    }
+    path = path.simplified();
     return path;
 }
 
@@ -125,6 +130,7 @@ void ArrowLayer::posChangeFunc(direction dir, qreal x, qreal y)
     if(dir == W)
     {
         begin_point = begin_point + QPointF(x, y);
+        createArrow();
     }
     else
     {
@@ -174,4 +180,14 @@ void ArrowLayer::hideButtons()
     }
     begin_button->hide();
     end_button->hide();
+}
+
+bool ArrowLayer::acceptFocus()
+{
+    return true;
+}
+
+int ArrowLayer::type() const
+{
+    return 65537;
 }

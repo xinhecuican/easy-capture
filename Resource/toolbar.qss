@@ -1,0 +1,7 @@
+QToolBar{
+	background-color: rgba(255, 255, 255, 1);
+}
+
+.AttributeToolbar{
+	background-color: rgba(255, 255, 255, 1);
+}

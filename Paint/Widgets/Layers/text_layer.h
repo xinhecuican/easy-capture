@@ -29,8 +29,10 @@ public:
     void focusOutEvent(QFocusEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
     void inputMethodEvent(QInputMethodEvent* event) override;
+    int type() const override;
     Q_INVOKABLE void hideNormal() override;
     Q_INVOKABLE void showNormal() override;
+    Q_INVOKABLE bool acceptFocus() override;
 signals:
     void requestFocus(BaseLayer* object, QGraphicsObject* object2);
 private:

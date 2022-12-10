@@ -51,7 +51,10 @@ void Rect_layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 QPainterPath Rect_layer::shape() const
 {
     QPainterPath ans;
-    ans.addRect(rect);
+    QRectF tmp1 = rect;
+    tmp1.setTopLeft(tmp1.topLeft() - QPoint(5, 5));
+    tmp1.setBottomRight(tmp1.bottomRight() + QPoint(5, 5));
+    ans.addRect(tmp1);
     if(rect.width() > 10 && rect.height() > 10)
     {
         QRectF tmp = rect;
@@ -216,9 +219,11 @@ void Rect_layer::loseFocusFunc()
     hideButtons();
 }
 
-void Rect_layer::setStyle(RECT_STYLE style)
+void Rect_layer::setStyle(RECT_STYLE style, Paint_data data)
 {
     this->style = style;
+    this->data = data;
+    update();
 }
 
 void Rect_layer::paintStyle(QPainter *painter)
@@ -227,12 +232,24 @@ void Rect_layer::paintStyle(QPainter *painter)
     {
     case NORMAL:break;
     case RED:
+    {
         QPen pen;
         pen.setColor(QColor(161, 47, 47));
         pen.setWidth(3);
         pen.setJoinStyle(Qt::RoundJoin);
         painter->setPen(pen);
         break;
+    }
+    case CUSTOM:
+    {
+        QPen pen;
+        pen.setColor(data.color);
+        pen.setWidth(data.width);
+        pen.setJoinStyle(data.join_style);
+        pen.setCapStyle(data.cap_style);
+        painter->setPen(pen);
+        break;
+    }
     }
 }
 
@@ -274,4 +291,14 @@ bool Rect_layer::contains(const QPointF &point) const
         if(item->isVisible() && item->contains(item->mapFromParent(point)))return true;
     }
     return false;
+}
+
+bool Rect_layer::acceptFocus()
+{
+    return true;
+}
+
+int Rect_layer::type() const
+{
+    return 65542;
 }

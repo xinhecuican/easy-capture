@@ -24,7 +24,10 @@ public:
     void deleteShape();
     void prepareSave();
     void endSave();
-    void setPic(const QPixmap& pix);
+    void setPic(const QPixmap& pix, QPoint point);
+    void changeBlur(bool is_range, int value);
+    Q_INVOKABLE void undoRedoShapeFunc(bool show, QGraphicsObject* object);
+    int type() const override;
 public slots:
     void onRequestFocus(BaseLayer* object, QGraphicsObject* object2);
 
@@ -42,6 +45,7 @@ private:
     BlurLayer* blur_layer;
     BaseLayer* focus_item_func;
     QPixmap pix;
+    QPoint point;
 };
 
 #endif // SHAPELAYER_H

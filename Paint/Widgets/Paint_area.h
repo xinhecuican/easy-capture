@@ -18,7 +18,7 @@ class Paint_area : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    Paint_area(QObject* parent=nullptr, bool enable_clip=false);
+    Paint_area(QWidget* parent=nullptr, bool enable_clip=false);
     void setPic(QPixmap pic, QRect rect);
     void setClipPic(QPixmap pix);
     void deleteShape();
@@ -34,6 +34,8 @@ public:
     void prepareSave();
     void endSave();
     void sendRequestImage();
+    void onViewSet(QWidget* view);
+    void clipButtonEnter(int id);
 private:
     void setOtherLayer();
     void initSettingPanel();

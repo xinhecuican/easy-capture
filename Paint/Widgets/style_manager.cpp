@@ -102,5 +102,12 @@ Paint_data* Style_manager::get()
 
 Paint_data Style_manager::get_now()
 {
+    if(is_change)
+    {
+        Paint_data* temp_data = new Paint_data();
+        now_data.copy_to(temp_data);
+        data.push_back(temp_data);
+        is_change = false;
+    }
     return now_data;
 }

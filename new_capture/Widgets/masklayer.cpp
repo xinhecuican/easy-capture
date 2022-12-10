@@ -14,6 +14,7 @@ MaskLayer::MaskLayer(QGraphicsItem* parent) : QGraphicsObject(parent)
     is_drag = false;
     is_save = false;
     begin_clip = false;
+    is_enable = true;
     screen_rect = QGuiApplication::primaryScreen()->geometry();
 }
 
@@ -22,16 +23,7 @@ void MaskLayer::reset()
     is_drag = false;
     begin_clip = false;
     is_save = false;
-    for(ClipRegion* region : regions)
-    {
-        delete region;
-    }
-    for(ClipRegion* region : free_regions)
-    {
-        delete region;
-    }
-    regions.clear();
-    free_regions.clear();
+    clearRegion();
     free_capture_path.clear();
 }
 
@@ -50,7 +42,7 @@ QRectF MaskLayer::boundingRect() const
 void MaskLayer::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     button = event->button();
-    if(button != Qt::LeftButton)
+    if(button != Qt::LeftButton || !is_enable)
         return;
     if(Config::getConfig<bool>(Config::free_capture))
     {
@@ -65,7 +57,14 @@ void MaskLayer::mousePressEvent(QGraphicsSceneMouseEvent *event)
         if(regions[i]->contain(begin_point))
         {
             is_drag = true;
-            drag_index = i;
+            break;
+        }
+    }
+    for(int i=0; i<free_regions.size(); i++)
+    {
+        if(free_regions[i]->contain(begin_point))
+        {
+            is_drag = true;
             break;
         }
     }
@@ -83,6 +82,7 @@ void MaskLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         QPainterPath origin;
         origin.addRect(screen_rect);
         QPainterPath path;
+        path.setFillRule(Qt::WindingFill);
         if(!is_drag && begin_clip && button == Qt::LeftButton)
         {
             if(Config::getConfig<bool>(Config::free_capture))
@@ -98,16 +98,17 @@ void MaskLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             else
                 path.addRect(Math::buildRect(begin_point, end_point));
         }
+        QPolygonF polygon;
         for(ClipRegion* region : regions)
         {
-            path.addPolygon(region->getPolygon());
-            path = path.simplified();
+            polygon = polygon.united(region->getPolygon());
         }
         for(ClipRegion* region : free_regions)
         {
-            path.addPolygon(region->getPolygon());
-            path = path.simplified();
+            polygon = polygon.united(region->getPolygon());
         }
+        path.addPolygon(polygon);
+        path = path.simplified();
         painter->drawPath(path);
         origin = origin.subtracted(path);
         painter->fillPath(origin, QColor(0, 0, 0, 0x40));
@@ -116,7 +117,7 @@ void MaskLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
 void MaskLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!is_drag)
+    if(!is_drag || !is_enable)
     {
         update();
     }
@@ -134,8 +135,9 @@ void MaskLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         new_rect = free_capture_path.boundingRect();
     else
         new_rect = Math::buildRect(begin_point, mapFromScene(event->scenePos()));
-    if(new_rect.width() < 10 || new_rect.height() < 10 || is_drag || button != Qt::LeftButton)
+    if(new_rect.width() < 10 || new_rect.height() < 10 || is_drag || button != Qt::LeftButton || !is_enable)
     {
+        emit regionChanged();
         return;
     }
     if(Config::getConfig<bool>(Config::free_capture))
@@ -156,6 +158,7 @@ void MaskLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         addRegion(new_rect);
     }
     update();
+    emit regionChanged();
 }
 
 void MaskLayer::addRegion(QPolygonF polygon)
@@ -184,17 +187,17 @@ void MaskLayer::addRegion(QPolygonF polygon)
     intersect_path.clear_all();
     regions.append(new_region);
     connect(new_region, &ClipRegion::regionChange, this, [=](){
-        QList<QPolygonF> polygons;
-        for(ClipRegion* region: regions)
-        {
-            polygons.append(region->getPolygon());
-        }
+        emit regionChanged();
     });
 }
 
 void MaskLayer::prepareSave()
 {
     for(ClipRegion* region : regions)
+    {
+        region->hideNormal();
+    }
+    for(ClipRegion* region: free_regions)
     {
         region->hideNormal();
     }
@@ -209,14 +212,7 @@ void MaskLayer::endSave()
 
 QRectF MaskLayer::getClipRect()
 {
-    QPainterPath path;
-    QPolygonF polygon;
-    for(int i=0; i<regions.size(); i++)
-    {
-        QPolygonF temp_polygon = regions[i]->getPolygon();
-        path.addPolygon(temp_polygon);
-        polygon = polygon.united(temp_polygon);
-    }
+    QPainterPath path = getPath();
     return path.boundingRect();
 }
 
@@ -226,7 +222,12 @@ void MaskLayer::clearRegion()
     {
         delete region;
     }
+    for(ClipRegion* region : free_regions)
+    {
+        delete region;
+    }
     regions.clear();
+    free_regions.clear();
 }
 
 QPainterPath MaskLayer::getPath()
@@ -237,10 +238,24 @@ QPainterPath MaskLayer::getPath()
         QPolygonF temp_polygon = regions[i]->getPolygon();
         path.addPolygon(temp_polygon);
     }
+    for(int i=0; i<free_regions.size(); i++)
+    {
+        QPolygonF temp_polygon = free_regions[i]->getPolygon();
+        path.addPolygon(temp_polygon);
+    }
     return path;
 }
 
 int MaskLayer::getRegionCount()
 {
-    return regions.size();
+    return regions.size() + free_regions.size();
+}
+
+void MaskLayer::setEnable(bool enable)
+{
+    is_enable = enable;
+    for(ClipRegion* region : regions)
+        region->setEnable(enable);
+    for(ClipRegion* region : free_regions)
+        region->setEnable(enable);
 }

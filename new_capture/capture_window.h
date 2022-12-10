@@ -16,6 +16,7 @@
 #include <QHBoxLayout>
 #include <QGraphicsView>
 #include "Paint/Widgets/Paint_area.h"
+#include "Helper/EnumReflect.h"
 
 namespace Ui {
 class Capture_window;
@@ -26,7 +27,6 @@ class Capture_window : public Window_base
     Q_OBJECT
 
 public:
-
     Q_INVOKABLE explicit Capture_window(QWidget *parent = nullptr);
     ~Capture_window();
     void paintEvent(QPaintEvent*) override;

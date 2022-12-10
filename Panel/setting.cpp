@@ -152,17 +152,22 @@ void Setting::normal_settings()
 void Setting::capture_settings()
 {
     Tab_widget* capture_setting = new Tab_widget("捕获", this);
-    QVector<QString> capture_type_name = QVector<QString>();
-    capture_type_name << Config::get_config_name(Config::capture_one_window)
-                      << Config::get_config_name(Config::capture_multi_window_separate)
-                      << Config::get_config_name(Config::capture_multi_window_combine);
-    capture_setting->add_combo_option("capture_type", "{biSbDKXbuW}捕获窗口数量设置", capture_type_name,
-                                      Config::capture_window_num_begin, Config::capture_window_num_end, [=](int index){
-        int before_index = capture_setting->get_default_index("capture_type");
-        ready_setting.append(data(before_index, false));
-        ready_setting.append(data(index+capture_setting->get_begin_index("capture_type"), true));
+    QVector<QString> button_type_name = QVector<QString>();
+    button_type_name << MString::search("{CcwwfzotQL}跳转到绘图窗口")
+                     << MString::search("{Sx1TD3igtj}保存到剪切板")
+                     << MString::search("{ePbIenISyt}保存到文件");
+    capture_setting->add_combo_option("capture_button_type", "{PnHYo4i9Gu}鼠标中键作用", button_type_name,
+                                      Config::middle_button_type, Config::middle_button_type, [=](int index){
+        ready_setting.append(data(Config::middle_button_type, index));
         capture_setting->set_dirty(true);
     });
+//    capture_setting->add_combo_option("capture_type", "{biSbDKXbuW}捕获窗口数量设置", capture_type_name,
+//                                      Config::capture_window_num_begin, Config::capture_window_num_end, [=](int index){
+//        int before_index = capture_setting->get_default_index("capture_type");
+//        ready_setting.append(data(before_index, false));
+//        ready_setting.append(data(index+capture_setting->get_begin_index("capture_type"), true));
+//        capture_setting->set_dirty(true);
+//    });
     capture_setting->add_num_option("capture_interval", Config::capture_interval, "{FcOnYo1uUa}滚动时间间隔", 100, 500, [=](int index){
         ready_setting.append(data(Config::capture_interval, index));
         capture_setting->set_dirty(true);
@@ -192,9 +197,11 @@ void Setting::key_settings()
     key_setting->add_layout(hlayout);
     key_setting->add_layout(hlayout2);
     QList<QString> window_name = Key_manager::get_window_names();
+    window_name.sort();
     for(int i=0; i<window_name.size(); i++)
     {
         QList<QString> key_name = Key_manager::get_key_names(window_name[i]);
+        key_name.sort();
         key_setting->add_spacer("{" + window_name[i] + "}" + window_name[i]);
         int size = key_name.size();
         for(int k=0; k<size; k++)

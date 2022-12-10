@@ -48,6 +48,7 @@ SOURCES += \
     Paint/Widgets/Recorder_element/paint_record.cpp \
     Paint/Widgets/Recorder_element/paintdeleterecord.cpp \
     Paint/Widgets/Recorder_element/resize_record.cpp \
+    Paint/Widgets/Recorder_element/shaperecord.cpp \
     Paint/Widgets/history.cpp \
     Paint/Widgets/paint_area.cpp \
     Paint/Widgets/recorder.cpp \
@@ -60,12 +61,14 @@ SOURCES += \
     Panel/Widgets/tab_widget.cpp \
     Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
+    Style_widget/colorwidget.cpp \
     Style_widget/framelesshelper.cpp \
     Style_widget/rotate_view.cpp \
     Style_widget/spacer.cpp \
     Style_widget/titlebar.cpp \
     Style_widget/tray.cpp \
     Tests/configtest.cpp \
+    Tests/testwidget.cpp \
     main.cpp \
     main_fliter.cpp \
     mainwindow.cpp \
@@ -74,12 +77,13 @@ SOURCES += \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.cpp \
     new_capture/Widgets/Scroll_handler/scroll_handle.cpp \
     new_capture/Widgets/Scroll_handler/scroll_worker.cpp \
-    new_capture/Widgets/buttonboxlayer.cpp \
+    new_capture/Widgets/attributetoolbar.cpp \
     new_capture/Widgets/capture_area.cpp \
     new_capture/Widgets/capture_region.cpp \
     new_capture/Widgets/cliplayer.cpp \
     new_capture/Widgets/clipregion.cpp \
     new_capture/Widgets/masklayer.cpp \
+    new_capture/Widgets/mosicsample.cpp \
     new_capture/Widgets/stretch_point.cpp \
     new_capture/Window_fliter.cpp \
     new_capture/capture_window.cpp
@@ -137,6 +141,7 @@ HEADERS += \
     Paint/Widgets/Recorder_element/paint_record.h \
     Paint/Widgets/Recorder_element/paintdeleterecord.h \
     Paint/Widgets/Recorder_element/resize_record.h \
+    Paint/Widgets/Recorder_element/shaperecord.h \
     Paint/Widgets/history.h \
     Paint/Widgets/paint_area.h \
     Paint/Widgets/recorder.h \
@@ -149,6 +154,7 @@ HEADERS += \
     Panel/Widgets/num_tab.h \
     Panel/Widgets/tab_widget.h \
     Panel/setting.h \
+    Style_widget/colorwidget.h \
     Style_widget/framelesshelper.h \
     Style_widget/rotate_view.h \
     Style_widget/spacer.h \
@@ -156,6 +162,7 @@ HEADERS += \
     Style_widget/tray.h \
     Tests/AllTests.h \
     Tests/configtest.h \
+    Tests/testwidget.h \
     main_fliter.h \
     mainwindow.h \
     new_capture/Widgets/Ipoint_position_change.h \
@@ -164,12 +171,13 @@ HEADERS += \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
     new_capture/Widgets/Scroll_handler/scroll_handle.h \
     new_capture/Widgets/Scroll_handler/scroll_worker.h \
-    new_capture/Widgets/buttonboxlayer.h \
+    new_capture/Widgets/attributetoolbar.h \
     new_capture/Widgets/capture_area.h \
     new_capture/Widgets/capture_region.h \
     new_capture/Widgets/cliplayer.h \
     new_capture/Widgets/clipregion.h \
     new_capture/Widgets/masklayer.h \
+    new_capture/Widgets/mosicsample.h \
     new_capture/Widgets/stretch_point.h \
     new_capture/capture_window.h \
     new_capture/window_fliter.h
@@ -177,6 +185,8 @@ HEADERS += \
 FORMS += \
     Paint/paint_window.ui \
     Panel/setting.ui \
+    Style_widget/ColorWidget.ui \
+    Tests/testwidget.ui \
     mainwindow.ui \
     new_capture/capture_window.ui
 
@@ -245,3 +255,6 @@ msvc {
 DEPENDPATH += C:/usr/software/Visual_Leak_Detector/include
 INCLUDEPATH += C:/usr/software/Visual_Leak_Detector/include
 win32:CONFIG(release, debug|release): LIBS += -LC:/usr/software/Visual_Leak_Detector/lib/Win64 -lvld
+
+DISTFILES += \
+	Resource/toolbar.qss

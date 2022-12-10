@@ -137,3 +137,8 @@ void Picture_layer::undoRedoSizeFunc(bool is_undo, QRectF before_rect, QRectF af
     }
     update();
 }
+
+int Picture_layer::type() const
+{
+    return 65541;
+}

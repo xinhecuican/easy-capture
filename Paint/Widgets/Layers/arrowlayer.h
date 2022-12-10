@@ -21,8 +21,10 @@ public:
     void setLine(QPointF begin_point, QPointF end_point);
     void getFocusFunc() override;
     void loseFocusFunc() override;
+    int type() const override;
     Q_INVOKABLE void hideNormal() override;
     Q_INVOKABLE void showNormal() override;
+    Q_INVOKABLE bool acceptFocus() override;
 private slots:
     void posChangeFunc(direction dir, qreal x, qreal y);
 private:

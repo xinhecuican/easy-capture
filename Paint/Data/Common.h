@@ -5,7 +5,7 @@
 #include<QFont>
 #include<cmath>
 enum SHAPE_TYPE{TEXT, DELETE_SHAPE, BLUR, RECTANGLE, PAINT_ARROW, MASK};
-enum PAINT_STATE{PAINT, ARROW, SHAPE, ERASE};
+enum PAINT_STATE{IDLE, PAINT, ARROW, SHAPE, ERASE};
 enum direction{NW, NE, SW, SE, N, W, S, E};
 
 struct font_data

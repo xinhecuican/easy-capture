@@ -24,6 +24,7 @@ public:
     void setIntPos(QPoint pos);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     QRectF boundingRect() const override;
+    QPainterPath shape() const override;
     bool setNeighbor(QPoint pos, int index);
     QPoint getPos();
     void clearIndex();

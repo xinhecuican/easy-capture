@@ -13,6 +13,7 @@ public:
      */
     Q_INVOKABLE virtual void hideNormal(){}
     Q_INVOKABLE virtual void showNormal(){}
+    Q_INVOKABLE virtual bool acceptFocus(){return true;}
 };
 
 #endif // BASELAYER_H

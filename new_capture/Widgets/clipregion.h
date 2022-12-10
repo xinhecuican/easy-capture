@@ -21,8 +21,10 @@ public:
     void move(qreal dx, qreal dy);
     void mousePressEvent(QGraphicsSceneMouseEvent* event)override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event)override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* event)override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     void hideButton();
+    void setEnable(bool enable);
     QPolygonF getPolygon();
     QPainterPath shape()const override;
     QRectF boundingRect() const override;
@@ -33,6 +35,7 @@ signals:
 private:
     void remapPoint();
     bool isButtonHide;
+    bool is_enable;
     QPolygonF polygon;
     QList<ExpandButton*> buttons;
     QPointF begin_point;

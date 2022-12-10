@@ -25,6 +25,12 @@ Main_fliter::Main_fliter()
     connect(timer, SIGNAL(timeout()), this, SLOT(window_manager_thread()));
     int time = Config::getConfig<int>(Config::clear_interval);
     timer->start(time * 1000);
+
+    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
+    {
+        Config::setConfig(i, false);
+    }
+    Config::setConfig(Config::rect_capture, true);
     setTrayContextMenu();
 }
 
@@ -125,7 +131,7 @@ void Main_fliter::setTrayContextMenu()
         Window_manager::change_window("Setting");
     });
 
-    QMenu* mode = new QMenu("模式");
+    QMenu* mode = new QMenu("模式", this);
     QAction* rect_mode = new QAction(this);
     mode->addAction(MString::search("{OBwjJUhTkh}矩形窗口"));
     mode->addAction(MString::search("{FHFzLMcLYa}全屏"));

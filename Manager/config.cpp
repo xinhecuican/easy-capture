@@ -9,15 +9,17 @@
 #include "Helper/mstring.h"
 #include <string>
 #include "Helper/debug.h"
+#include "update.h"
 
 DEFINE_STRING(Config);
-QMap<int, QVariant> Config::all_settings = QMap<int, QVariant>();
+
 Config* Config::_instance = NULL;
 
 Config::Config()
 {
     is_loading_translate = false;
     is_update_config = false;
+    all_settings = QMap<int, QVariant>();
 }
 
 QString Config::read_translate(int type)
@@ -25,7 +27,7 @@ QString Config::read_translate(int type)
     if(!is_loading_translate)
     {
         //MString::load_from_file(":/Data/Languages/Config/");
-        MString::load_from_file("Data/Languages/Config/");
+//        MString::load_from_file("Data/Languages/Config/");
         is_loading_translate = true;
     }
     return MString::search("{" + eto_string((setting)type) + "}");
@@ -55,7 +57,8 @@ void Config::deserialized(QJsonObject* json)
 {
     for(int i=0; i<COUNT; i++)
     {
-        all_settings[i] = (*json)[eto_string((setting)i)].toVariant();
+        if((*json).find(eto_string((setting)i)) != (*json).end())
+            all_settings[i] = (*json)[eto_string((setting)i)].toVariant();
     }
 }
 
@@ -75,6 +78,10 @@ void Config::load_config()
         }
         save_to_config();
     }
+    if(getConfig<QString>(version) != Update::now_version.get_version())
+    {
+        update_all();
+    }
 }
 
 void Config::update_config(setting type)
@@ -82,12 +89,14 @@ void Config::update_config(setting type)
     instance()->update_setting = type;
     instance()->is_update_config = true;
     Serialize::append("Data/config.json", instance());
+    instance()->is_update_config = false;
 }
 
 void Config::update_all()
 {
     QMap<int, QVariant> temp_setting;
-    temp_setting = all_settings;
+    temp_setting = instance()->all_settings;
+    instance()->all_settings = QMap<int, QVariant>();
     if(!Serialize::deserialize(":/Data/default.json", instance()))
     {
         Debug::debug_print_warning("配置文件解析失败");
@@ -96,21 +105,21 @@ void Config::update_all()
     {
         if(temp_setting.find(i) == temp_setting.end())
         {
-            temp_setting[i] = all_settings[i];
+            temp_setting[i] = instance()->all_settings[i];
             update_config((setting)i);
         }
     }
-    all_settings = temp_setting;
+    instance()->all_settings = temp_setting;
 }
 
 void Config::setConfig(setting type, QVariant data)
 {
-    all_settings[type] = data;
+    instance()->all_settings[type] = data;
 }
 
 void Config::setConfig(int type, QVariant data)
 {
-    all_settings[type] = data;
+    instance()->all_settings[type] = data;
 }
 
 QString Config::get_config_name(setting type)

@@ -1,4 +1,4 @@
-QPushButton {
+.QToolButton {
 	background-color: rgba(0, 139, 139, 0.2);
 	border-radius: 3px;
 	min-width: 30px;
@@ -7,10 +7,10 @@ QPushButton {
 	min-height: 30px;
 }
 
-QPushButton:hover {
+.QToolButton:hover {
 	background-color: rgba(98, 230, 230, 0.2);
 }
 
-QPushButton:pressed {
+.QToolButton:pressed {
 	background-color: rgba(8, 75, 75, 0.2);
 }

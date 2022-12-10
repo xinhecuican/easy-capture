@@ -12,12 +12,12 @@ PaintDeleteRecord::PaintDeleteRecord(Paint_layer* layer, PaintItem* item, const 
 
 void PaintDeleteRecord::undo()
 {
-    Reflect::invokeMethod(layer->metaObject()->className(), layer, func,
+    Reflect::invokeMethod(layer->metaObject()->className(), layer, func, QGenericReturnArgument(),
                           Q_ARG(bool, true), Q_ARG(PaintItem*, item));
 }
 
 void PaintDeleteRecord::redo()
 {
-    Reflect::invokeMethod(layer->metaObject()->className(), layer, func,
+    Reflect::invokeMethod(layer->metaObject()->className(), layer, func, QGenericReturnArgument(),
                           Q_ARG(bool, false), Q_ARG(PaintItem*, item));
 }

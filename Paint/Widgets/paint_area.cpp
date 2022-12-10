@@ -29,7 +29,7 @@
 #include<QClipboard>
 #include <QScreen>
 
-Paint_area::Paint_area(QObject* parent, bool enable_clip) : QGraphicsScene(parent)
+Paint_area::Paint_area(QWidget* parent, bool enable_clip) : QGraphicsScene(parent)
 {
     is_save = false;
     is_clip = enable_clip;
@@ -45,7 +45,7 @@ Paint_area::Paint_area(QObject* parent, bool enable_clip) : QGraphicsScene(paren
     else
     {
         pic_layer = NULL;
-        clip_layer = new ClipLayer();
+        clip_layer = new ClipLayer(parent, this);
         connect(clip_layer, &ClipLayer::requestImage, this, [=](){
             prepareSave();
             QRectF bound = clip_layer->getClipRect();
@@ -64,6 +64,34 @@ Paint_area::Paint_area(QObject* parent, bool enable_clip) : QGraphicsScene(paren
             Window_manager::get_window("Paint_window")->set_pic(QPixmap::fromImage(image), bound.toRect());
             endSave();
         });
+        connect(clip_layer, &ClipLayer::needClip, this, [=](){
+            save2Clipboard();
+            Window_manager::change_window("tray");
+        });
+        connect(clip_layer, &ClipLayer::needSave, this, [=](){
+            QString file_name = QFileDialog::getSaveFileName(parent,
+                                                             "保存",
+                                                             History::instance()->get_last_directory(),
+                                                             "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+            if(file_name != "")
+            {
+                if(save(History_data::Persist, file_name))
+                    Window_manager::change_window("tray");
+            }
+        });
+        connect(clip_layer, &ClipLayer::paintShape, this, [=](SHAPE_TYPE type){
+            if(type == DELETE_SHAPE)
+                deleteShape();
+            else
+                paintShape(type);
+        });
+        connect(clip_layer, &ClipLayer::stateChange, this, [=](PAINT_STATE state){
+            stateChange(state);
+        });
+        connect(clip_layer, &ClipLayer::mosaicChange, this, [=](bool is_range, int value){
+            shape_layer->changeBlur(is_range, value);
+        });
+        connect(clip_layer, &ClipLayer::needReset, this, [=](){reset();});
         addItem(clip_layer);
     }
     paint_layer = new Paint_layer();
@@ -71,6 +99,8 @@ Paint_area::Paint_area(QObject* parent, bool enable_clip) : QGraphicsScene(paren
     addItem(paint_layer);
     shape_layer = new ShapeLayer();
     shape_layer->setZValue(2);
+    if(is_clip)
+        shape_layer->reset();
     addItem(shape_layer);
 }
 
@@ -100,7 +130,7 @@ void Paint_area::setPic(QPixmap pic, QRect rect)
     setSceneRect(0, 0, rect.width()*2, rect.height()*2);
     pic_layer->setPos(rect.width() / 2, rect.height() / 2);
     pic_layer->setPixmap(pic);
-    shape_layer->setPic(pic);
+    shape_layer->setPic(pic, QPoint(pic.width() / 2, pic.height() / 2));
     for(QColor color : History::instance()->get_color())
     {
         pic_layer->setSaveDisableColor(-1, color);
@@ -111,6 +141,7 @@ void Paint_area::setPic(QPixmap pic, QRect rect)
 void Paint_area::setClipPic(QPixmap pix)
 {
     clip_layer->setPic(pix);
+    shape_layer->setPic(pix, QPoint(0, 0));
 }
 
 void Paint_area::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -190,6 +221,7 @@ void Paint_area::stateChange(PAINT_STATE state)
     switch(this->state)
     {
     case ERASE:
+        shape_layer->setEnable(false);
         paint_layer->setErase(false);
         break;
     case PAINT:
@@ -198,6 +230,10 @@ void Paint_area::stateChange(PAINT_STATE state)
     case ARROW:
         if(!is_clip)
             pic_layer->setEnableMove(false);
+        else
+        {
+            clip_layer->setEnable(false);
+        }
         shape_layer->setGrabFocus(false);
         break;
     case SHAPE:
@@ -214,11 +250,15 @@ void Paint_area::stateChange(PAINT_STATE state)
         paint_layer->setEnableDraw(true);
         break;
     case ERASE:
+        shape_layer->setEnable(true);
+        shape_layer->setShape(DELETE_SHAPE);
         paint_layer->setErase(true);
         break;
     case ARROW:
         if(!is_clip)
             pic_layer->setEnableMove(true);
+        else
+            clip_layer->setEnable(true);
         shape_layer->setGrabFocus(true);
         break;
     case SHAPE:
@@ -357,4 +397,16 @@ void Paint_area::sendRequestImage()
 {
     if(clip_layer != NULL)
         clip_layer->sendRequestImage();
+}
+
+void Paint_area::onViewSet(QWidget* view)
+{
+    if(clip_layer != NULL)
+        clip_layer->setWidgetParent(view);
+}
+
+void Paint_area::clipButtonEnter(int id)
+{
+    if(clip_layer != NULL)
+        clip_layer->buttonEnter(id);
 }

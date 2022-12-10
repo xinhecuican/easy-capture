@@ -1,6 +1,6 @@
 {
 	"auto_copy_to_clipboard": true,
-	"capture_interval": 300,
+	"capture_interval": 200,
 	"capture_multi_window_combine": false,
 	"capture_multi_window_separate": false,
 	"capture_one_window": true,
@@ -23,5 +23,7 @@
 	"update_interval": 10080,
 	"update_week": true,
 	"test_setting": 0,
-	"total_capture_save_path": "Data/ScreenShot/"
+	"total_capture_save_path": "Data/ScreenShot/",
+	"middle_button_type": 1,
+	"version": "0.4.2"
 }

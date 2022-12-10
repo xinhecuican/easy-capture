@@ -41,7 +41,9 @@ public:
               show_close_dialog,
               auto_copy_to_clipboard,//自动复制到剪切板
               capture_interval,//滚动截屏时间间隔
-              total_capture_save_path
+              total_capture_save_path,
+              middle_button_type,
+              version
               );
     Config();
     static Config*& instance()
@@ -61,9 +63,11 @@ public:
     template<typename T>
     static T getConfig(setting type)
     {
-        if(all_settings[type].canConvert<T>())
+        if(instance()->all_settings.find(type) == instance()->all_settings.end())
+            return T();
+        if(instance()->all_settings[type].canConvert<T>())
         {
-            return all_settings[type].value<T>();
+            return instance()->all_settings[type].value<T>();
         }
         return T();
 
@@ -71,9 +75,11 @@ public:
     template<typename T>
     static T getConfig(int type)
     {
-        if(all_settings[type].canConvert<T>())
+        if(instance()->all_settings.find(type) == instance()->all_settings.end())
+            return T();
+        if(instance()->all_settings[type].canConvert<T>())
         {
-            return all_settings[type].value<T>();
+            return instance()->all_settings[type].value<T>();
         }
         return T();
     }
@@ -84,7 +90,7 @@ public:
 private:
     bool is_loading_translate = false;
     static Config* _instance;
-    static QMap<int, QVariant> all_settings;
+    QMap<int, QVariant> all_settings;
     bool is_update_config;
     setting update_setting;
     QString read_translate(int type);

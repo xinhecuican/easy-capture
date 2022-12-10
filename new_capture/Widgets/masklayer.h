@@ -17,6 +17,7 @@ public:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
+    void setEnable(bool enable);
     void prepareSave();
     void endSave();
     void reset();
@@ -24,6 +25,8 @@ public:
     int getRegionCount();
     QRectF getClipRect();
     QPainterPath getPath();
+signals:
+    void regionChanged();
 private:
     void addRegion(QPolygonF polygon);
     QPainterPath path;
@@ -35,8 +38,8 @@ private:
     QPointF end_point;
     bool is_drag;
     bool begin_clip;
-    int drag_index;
     bool is_save;
+    bool is_enable;
     QPixmap mask_pix;
     QPainterPath free_capture_path;
 };

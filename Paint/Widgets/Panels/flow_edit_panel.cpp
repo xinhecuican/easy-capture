@@ -16,6 +16,8 @@ Flow_edit_panel::Flow_edit_panel()
 {
     color = QColor(0, 0, 0);
     font = default_font;
+    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+    setWindowFlag(Qt::WindowSystemMenuHint, false);
     QToolButton* brush_button = new QToolButton(this);
     brush_button->setIcon(QIcon(":/image/brush.png"));
     brush_button->setToolTip("格式刷");

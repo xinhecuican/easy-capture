@@ -7,6 +7,8 @@
 #include "Paint/Widgets/recorder.h"
 #include "arrowlayer.h"
 #include "string.h"
+#include "Paint/Widgets/style_manager.h"
+#include "Paint/Widgets/Recorder_element/shaperecord.h"
 
 ShapeLayer::ShapeLayer(QGraphicsItem* parent) : QGraphicsObject(parent)
 {
@@ -15,6 +17,7 @@ ShapeLayer::ShapeLayer(QGraphicsItem* parent) : QGraphicsObject(parent)
     is_focus = false;
     focus_item = NULL;
     shape = RECTANGLE;
+    blur_layer = NULL;
 //    blur_layer = new BlurLayer(this);
 }
 
@@ -39,9 +42,10 @@ QRectF ShapeLayer::boundingRect() const
     return QRectF();
 }
 
-void ShapeLayer::setPic(const QPixmap &pix)
+void ShapeLayer::setPic(const QPixmap &pix, QPoint point)
 {
     this->pix = pix;
+    this->point = point;
 }
 
 void ShapeLayer::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -71,7 +75,7 @@ void ShapeLayer::mousePressEvent(QGraphicsSceneMouseEvent *event)
         is_press = true;
         if(!blur_layer->isSetPic())
         {
-            blur_layer->setPix(pix);
+            blur_layer->setPix(pix, point);
         }
     }
 }
@@ -126,11 +130,12 @@ void ShapeLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             if(rect.width() < 10 || rect.height() < 10)
                 break;
             Rect_layer* rect_layer = new Rect_layer(this, rect);
-            rect_layer->setStyle(Rect_layer::RED);
+            rect_layer->setStyle(Rect_layer::CUSTOM, Style_manager::instance()->get_now());
             rect_layer->setEnableMove(true);
             rect_layer->setEnableSizeChange(true);
             connect(rect_layer, &Rect_layer::requestFocus, this, &ShapeLayer::onRequestFocus);
             setFocus(rect_layer, rect_layer);
+            Recorder::instance()->record(new ShapeRecord(this, rect_layer, "undoRedoShapeFunc", false));
             break;
         }
         case TEXT:
@@ -148,6 +153,7 @@ void ShapeLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         {
             ArrowLayer* arrow_layer = new ArrowLayer(this, begin_point, point);
             setFocus(arrow_layer, arrow_layer);
+            Recorder::instance()->record(new ShapeRecord(this, arrow_layer, "undoRedoShapeFunc", false));
             break;
         }
         case DELETE_SHAPE:
@@ -183,13 +189,13 @@ void ShapeLayer::onRequestFocus(BaseLayer* object, QGraphicsObject* object2)
         focus_item_func = object;
         object->getFocusFunc();
     }
-    if(shape == DELETE_SHAPE && is_enable)
-    {
-        Recorder::instance()->removeRecord(object2);
-        delete object2;
-        focus_item = NULL;
-        focus_item_func = NULL;
-    }
+//    if(shape == DELETE_SHAPE && is_enable)
+//    {
+//        Recorder::instance()->removeRecord(object2);
+//        delete object2;
+//        focus_item = NULL;
+//        focus_item_func = NULL;
+//    }
 }
 
 void ShapeLayer::deleteShape()
@@ -237,7 +243,11 @@ bool ShapeLayer::childContains(QPointF point)
     for(QGraphicsItem* item : items)
     {
         QPointF point1 = item->mapFromParent(point);
-        if(item->contains(point1))
+        QGraphicsObject* object = qgraphicsitem_cast<QGraphicsObject*>(item);
+        bool ans;
+        QGenericReturnArgument arg = Reflect::invokeMethod(object->metaObject()->className(), object, "acceptFocus", Q_RETURN_ARG(bool, ans));
+        ans = *(bool*)arg.data();
+        if(item->contains(point1) && item->isVisible() && ans)
         {
             return true;
         }
@@ -251,7 +261,7 @@ void ShapeLayer::deleteChildrens(QPointF point)
     for(QGraphicsItem* item : items)
     {
         QPointF point1 = item->mapFromParent(point);
-        if(item->contains(point1))
+        if(item->contains(point1) && item->isVisible())
         {
             if(item == focus_item)
             {
@@ -263,8 +273,10 @@ void ShapeLayer::deleteChildrens(QPointF point)
             {
                 continue;
             }
-            Recorder::instance()->removeRecord(object);
-            delete item;
+            item->hide();
+            Recorder::instance()->record(new ShapeRecord(this, object, "undoRedoShapeFunc", true));
+//            Recorder::instance()->removeRecord(object);
+//            delete item;
         }
     }
 }
@@ -300,4 +312,29 @@ void ShapeLayer::setFocus(QGraphicsObject *object, BaseLayer *func)
     focus_item = object;
     focus_item_func = func;
     func->getFocusFunc();
+}
+
+void ShapeLayer::changeBlur(bool is_range, int value)
+{
+    if(is_range)
+        blur_layer->setRange(value);
+    else
+        blur_layer->setUnitSize(value);
+}
+
+void ShapeLayer::undoRedoShapeFunc(bool show, QGraphicsObject *object)
+{
+    if(show)
+    {
+        object->show();
+    }
+    else
+    {
+        object->hide();
+    }
+}
+
+int ShapeLayer::type() const
+{
+    return 65543;
 }

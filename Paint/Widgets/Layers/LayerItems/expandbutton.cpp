@@ -104,6 +104,13 @@ QRectF ExpandButton::boundingRect() const
     return QRectF(-QPointF(radius, radius), QPointF(radius, radius));
 }
 
+QPainterPath ExpandButton::shape() const
+{
+    QPainterPath path;
+    path.addEllipse(QRectF(-QPointF(radius, radius), QPointF(radius, radius)));
+    return path;
+}
+
 void ExpandButton::setLimit(QRectF rect)
 {
     is_limit = true;

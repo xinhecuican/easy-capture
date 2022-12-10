@@ -81,13 +81,13 @@ void Paint_setting_panel::init_shape_setting()
     connect(text_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(TEXT);
     });
-    QToolButton* delete_button = new QToolButton(this);
-//    delete_button->setCheckable(true);
-    delete_button->setToolTip("删除形状");
-    delete_button->setIcon(QIcon(":/image/delete.svg"));
-    connect(delete_button, &QToolButton::clicked, this, [=](){
-        emit paint_shape(DELETE_SHAPE);
-    });
+//    QToolButton* delete_button = new QToolButton(this);
+////    delete_button->setCheckable(true);
+//    delete_button->setToolTip("删除形状");
+//    delete_button->setIcon(QIcon(":/image/delete.svg"));
+//    connect(delete_button, &QToolButton::clicked, this, [=](){
+//        emit paint_shape(DELETE_SHAPE);
+//    });
     QToolButton* rect_button = new QToolButton(this);
 //    rect_button->setCheckable(true);
     rect_button->setToolTip("矩形");
@@ -98,7 +98,7 @@ void Paint_setting_panel::init_shape_setting()
     QToolButton* arrow_button = new QToolButton(this);
 //    arrow_button->setCheckable(true);
     arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
-    arrow_button->setToolTip("箭头");
+    arrow_button->setToolTip("{D7HSBXWTLj}箭头");
     connect(arrow_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(PAINT_ARROW);
     });
@@ -127,7 +127,7 @@ void Paint_setting_panel::init_shape_setting()
 //    });
     shape_layout->setOriginCorner(Qt::TopLeftCorner);
     shape_layout->addWidget(text_button, 0, 0);
-    shape_layout->addWidget(delete_button, 1, 2);
+//    shape_layout->addWidget(delete_button, 1, 2);
     shape_layout->addWidget(rect_button, 0, 1);
     shape_layout->addWidget(arrow_button, 0, 2);
     shape_layout->addWidget(mosaic_button, 1, 1);

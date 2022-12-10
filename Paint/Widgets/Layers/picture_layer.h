@@ -32,6 +32,7 @@ public:
                QWidget *widget = nullptr) override;
     void prepareSave();
     void endSave();
+    int type() const override;
     Q_INVOKABLE void undoRedoSizeFunc(bool is_undo, QRectF before_rect, QRectF after_rect);
 private:
 

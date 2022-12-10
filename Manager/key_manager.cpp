@@ -5,6 +5,7 @@
 #include<QDomDocument>
 #include<QFile>
 #include<QKeyEvent>
+#include "update.h"
 
 Key_manager::Key_manager()
 {
@@ -20,10 +21,15 @@ bool Key_manager::is_windowchange = false;
 QList<QString> Key_manager::key_settings = {
     "MainWindow:main_capture;16777249,78",
     "Capture_window:leave;16777216",//Escape,可以通过Qt::Key_Escape查看键值
-    "Capture_window:one_window;49",
-    "Capture_window:multi_window_separate;50",
-    "Capture_window:multi_window_combine;51",
-//    "Capture_window:move_all;16777249",//ctrl
+    "Capture_window:capture_rect;49",
+    "Capture_window:capture_mosaic;50",
+    "Capture_window:capture_cursor;51",
+    "Capture_window:capture_pencil;52",
+    "Capture_window:capture_highlighter;53",
+    "Capture_window:capture_text;54",
+    "Capture_window:capture_erase;55",
+    "Capture_window:capture_undo;16777249,90",
+    "Capture_window:capture_redo;16777249,88",
     "Capture_window:enter_capture;16777220",//enter
     "Capture_window:save2file;16777249,83",
     "Capture_window:save2clip;16777249,69",
@@ -256,6 +262,7 @@ void Key_manager::save()
     doc.appendChild(instruction);
     //添加根节点
     QDomElement root=doc.createElement("key_setting");
+    root.setAttribute("version", Update::now_version.get_version());
     doc.appendChild(root);
 
     QHashIterator<QString, window> iter(all_key);
@@ -325,7 +332,7 @@ void Key_manager::load()
         file.close();
 
         QDomElement root = doc.documentElement();
-        if(root.tagName().compare("key_setting") == 0)
+        if(root.tagName().compare("key_setting") == 0 && (root.attribute("version").compare(Update::now_version.get_version()) == 0))
         {
             QDomNodeList childs = root.childNodes();
             for(int i=0; i<childs.size(); i++)
@@ -345,6 +352,31 @@ void Key_manager::load()
                     }
                     add_key(window_name, obj_name, keys);
                 }
+            }
+        }
+        else
+        {
+            for(int i=0; i<key_settings.size(); i++)
+            {
+                int first_index = key_settings[i].indexOf(':');
+                int second_index = key_settings[i].indexOf(';');
+                QList<int> using_key = QList<int>();
+                QString temp;
+                for(int k=second_index+1; k<key_settings[i].size(); k++)
+                {
+                    if(key_settings[i][k] == ',')
+                    {
+                        using_key.append(temp.toInt());
+                        temp.clear();
+                    }
+                    else
+                    {
+                        temp.append(key_settings[i][k]);
+                    }
+                }
+                using_key.append(temp.toInt());
+                add_key(key_settings[i].mid(0, first_index),
+                        key_settings[i].mid(first_index+1, second_index-first_index-1), using_key);
             }
         }
     }

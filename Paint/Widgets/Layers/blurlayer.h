@@ -13,21 +13,33 @@ public:
     ~BlurLayer();
     QRectF boundingRect()const override;
     QPainterPath shape()const override;
-    void setPix(const QPixmap& pix);
+    void setPix(const QPixmap& pix, QPoint pos);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     void addPoint(QPoint point);
     void deletePoint(QPoint point);
     bool isSetPic();
+    void setRange(int range);
+    void setUnitSize(int unit_size);
+    void reset();
+    int type() const override;
     Q_INVOKABLE void hideNormal() override;
     Q_INVOKABLE void showNormal() override;
+    Q_INVOKABLE bool acceptFocus() override;
 private:
+    struct BlurElement{
+        QRect bound;
+        QColor color;
+    };
+    void resetMaskSetting();
     bool is_setpic;
     bool is_allocate;
     bool** mask_use;
     QPoint left_top;
     QImage pix;
     QImage mask;
-    const int range=15;
+    int range=15;
+    int unit_size=5;
+    bool is_save;
 };
 
 #endif // BLUELAYER_H
