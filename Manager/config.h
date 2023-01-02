@@ -43,9 +43,11 @@ public:
               capture_interval,//滚动截屏时间间隔
               total_capture_save_path,
               middle_button_type,
-              version
+              version,
+              clip_voice
               );
     Config();
+    ~Config();
     static Config*& instance()
     {
         if(_instance == NULL)

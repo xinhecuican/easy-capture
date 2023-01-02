@@ -48,6 +48,7 @@ Setting::Setting(QWidget *parent) :
                 for(int i=0; i<ready_setting.size(); i++)
                 {
                     Config::setConfig(ready_setting[i].type, ready_setting[i].sum);
+                    postUpdate((Config::setting)ready_setting[i].type, ready_setting[i].sum);
                 }
                 Config::save_to_config();
             }
@@ -72,6 +73,17 @@ Setting::Setting(QWidget *parent) :
 Setting::~Setting()
 {
     delete ui;
+}
+
+void Setting::postUpdate(Config::setting type, QVariant data)
+{
+    switch(type)
+    {
+    case Config::chinese:
+    case Config::english:
+        MString::load_from_file("Data/Languages/");
+        break;
+    }
 }
 
 void Setting::normal_settings()
@@ -142,6 +154,10 @@ void Setting::normal_settings()
 //    });
     normal_setting->add_bool_option("copy_clipboard", "{g2X3jHOVbU}自动复制到剪切板", Config::auto_copy_to_clipboard, [=](bool ans){
         ready_setting.append(data(Config::auto_copy_to_clipboard, ans));
+        normal_setting->set_dirty(true);
+    });
+    normal_setting->add_bool_option("clip_voice", "{sqFHDuafTm}启用截屏声音", Config::clip_voice, [=](bool ans){
+        ready_setting.append(data(Config::clip_voice, ans));
         normal_setting->set_dirty(true);
     });
     normal_setting->done();

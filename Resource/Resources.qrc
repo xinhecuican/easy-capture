@@ -57,4 +57,7 @@
         <file>default.json</file>
         <file>Languages/chinese.xml</file>
     </qresource>
+    <qresource prefix="/audio">
+        <file>screenshot.wav</file>
+    </qresource>
 </RCC>

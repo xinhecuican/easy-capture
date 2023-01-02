@@ -170,6 +170,14 @@ Flow_edit_panel* Flow_edit_panel::instance()
     return _instance;
 }
 
+void Flow_edit_panel::reset()
+{
+    setParent(NULL);
+    color = QColor(0, 0, 0);
+    font = default_font;
+    set_format(font, color);
+}
+
 void Flow_edit_panel::set_format(QFont font, QColor color)
 {
     this->color = color;

@@ -41,10 +41,10 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.4.2",
-"http://121.37.81.150:8200/easycapture/update/0.4.2.zip", "",
-                                              "1. 修复bug\n"
-                                              "2. 重写截图界面");
+Update_data Update::now_version = Update_data("0.4.3",
+"http://121.37.81.150:8200/easycapture/update/0.4.3.zip", "",
+                                              "1. 加快滚动截屏效率，允许手动设置滚动区域\n"
+                                              "2. 添加截全屏时的音效");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {

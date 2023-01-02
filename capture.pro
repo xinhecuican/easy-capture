@@ -1,4 +1,4 @@
-QT       += core gui xml network
+QT       += core gui xml network multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -60,6 +60,7 @@ SOURCES += \
     Panel/Widgets/tab_widget.cpp \
     Panel/Widgets/bool_tab.cpp \
     Panel/setting.cpp \
+    Style_widget/bubbletipswidget.cpp \
     Style_widget/colorwidget.cpp \
     Style_widget/framelesshelper.cpp \
     Style_widget/rotate_view.cpp \
@@ -148,6 +149,7 @@ HEADERS += \
     Panel/Widgets/num_tab.h \
     Panel/Widgets/tab_widget.h \
     Panel/setting.h \
+    Style_widget/bubbletipswidget.h \
     Style_widget/colorwidget.h \
     Style_widget/framelesshelper.h \
     Style_widget/rotate_view.h \
@@ -176,6 +178,7 @@ FORMS += \
     Paint/paint_window.ui \
     Panel/setting.ui \
     Style_widget/ColorWidget.ui \
+    Style_widget/bubbletipswidget.ui \
     Tests/testwidget.ui \
     mainwindow.ui \
     new_capture/capture_window.ui
@@ -232,7 +235,7 @@ win32:CONFIG(release, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-ms
 -lopencv_core451 -lopencv_flann451 -lopencv_calib3d451 -lopencv_features2d451
 else:win32:CONFIG(debug, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
 -lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
--lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d
+-lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d -lopencv_highgui451d
 else:unix: LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
 -lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
 -lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d

@@ -79,6 +79,7 @@
     <string id="capture_undo" text="撤销"/>
     <string id="capture_redo" text="恢复"/>
     <string id="capture_erase" text="擦除"/>
+    <string id="capture_scrollrect" text="设置滚动区域"/>
     <string id="FcOnYo1uUa" text="滚动时间间隔"/>
     <string id="g2X3jHOVbU" text="自动复制到剪切板"/>
     <string id="save2file" text="保存"/>
@@ -91,4 +92,9 @@
     <string id="Sx1TD3igtj" text="跳转到剪切板"/>
     <string id="ePbIenISyt" text="保存到文件"/>
     <string id="PnHYo4i9Gu" text="鼠标中键作用"/>
+    <string id="sqFHDuafTm" text="启用截屏声音"/>
+    <string id="yrlS5RFyAi" text="按Ctrl键可以自行设置滚动大小"/>
+    <string id="jjSL6uTMUW" text="在设置-捕获中可以调节滚动速度哦"/>
+    <string id="YZbdqyumbs" text="点击滚动区域进行滚动"/>
+    <string id="NWZ0wFsHVM" text="按Esc中止\n请不要移动鼠标"/>
 </strings>

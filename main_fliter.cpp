@@ -10,6 +10,7 @@
 #include<QScreen>
 #include <QDir>
 #include <QDateTime>
+#include <QSound>
 
 Main_fliter* Main_fliter::_instance = NULL;
 
@@ -90,6 +91,8 @@ bool Main_fliter::nativeEventFilter(const QByteArray &eventType, void *message, 
             }
             QString file_name = QDateTime::currentDateTime().toString("dd_mm_yyyy_hh_mm_ss") + ".png";
             map.save(save_path + file_name);
+            if(Config::getConfig<bool>(Config::clip_voice))
+                QSound::play(":/audio/screenshot.wav");
         });
     }
     return false;
@@ -162,6 +165,8 @@ void Main_fliter::setTrayContextMenu()
                 Window_manager::change_window("Paint_window");
                 Window_manager::get_window("Paint_window")->
                         set_pic(map, screen->geometry());
+                if(Config::getConfig<bool>(Config::clip_voice))
+                    QSound::play(":/audio/screenshot.wav");
             });
         }
 

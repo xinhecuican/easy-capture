@@ -22,6 +22,11 @@ Config::Config()
     all_settings = QMap<int, QVariant>();
 }
 
+Config::~Config()
+{
+    qDebug() << "config delete";
+}
+
 QString Config::read_translate(int type)
 {
     if(!is_loading_translate)

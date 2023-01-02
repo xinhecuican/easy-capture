@@ -3,6 +3,12 @@
 #include<iostream>
 #include<QProcess>
 #include<QPair>
+#include "opencv2/core/core.hpp"
+#include "opencv2/opencv.hpp"
+#include <opencv2/features2d/features2d.hpp>
+#include "opencv2/xfeatures2d/nonfree.hpp"
+#include "opencv2/xfeatures2d.hpp"
+
 class Scroll_handler_global
 {
 public:
@@ -60,6 +66,7 @@ public:
     int num_core;
 private:
     static Scroll_handler_global* _instance;
+    cv::Mat mask;
 };
 
 #endif // SCROLL_HANDLER_GLOBAL_H

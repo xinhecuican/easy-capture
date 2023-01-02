@@ -22,6 +22,8 @@
 #include "Paint/Widgets/history.h"
 #include "Paint/Widgets/style_manager.h"
 #include "Paint/Widgets/recorder.h"
+#include "Paint/Widgets/Panels/flow_edit_panel.h"
+#include "Helper/math.h"
 
 bool Capture_window::end_scroll = false;
 
@@ -47,9 +49,11 @@ Capture_window::Capture_window(QWidget *parent) :
     showFullScreen();
     this->setMouseTracking(true);
     this->ui->centralwidget->setMouseTracking(true);
-//    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+#ifdef QT_NO_DEBUG
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+#endif
 
-    ui->centralwidget->setGeometry(QGuiApplication::primaryScreen()->geometry());
+//    ui->centralwidget->setGeometry(QGuiApplication::primaryScreen()->geometry());
     setGeometry(QGuiApplication::primaryScreen()->geometry());
     area = new Paint_area(this, true);
     area->stateChange(ARROW);
@@ -65,6 +69,13 @@ Capture_window::Capture_window(QWidget *parent) :
     view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     setCentralWidget(view);
     area->onViewSet(view);
+    bubbleTipsWidget = new BubbleTipsWidget(this);
+    QList<QString> tips = {"{yrlS5RFyAi}按Ctrl键可以自行设置滚动大小", "{jjSL6uTMUW}在设置-捕获中可以调节滚动速度哦"};
+    for(QString tip : tips)
+    {
+        bubbleTipsWidget->addContent(tip);
+    }
+    bubbleTipsWidget->hide();
 
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [=](){
@@ -82,9 +93,7 @@ Capture_window::~Capture_window()
     delete ui;
     if(Config::getConfig<bool>(Config::scroll_capture))
     {
-        delete dispatcher;
         scroll_timer->stop();
-        delete scroll_timer;
     }
     timer->stop();
     delete timer;
@@ -116,7 +125,7 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
         painter.setCompositionMode(QPainter::CompositionMode_Source);
         if(is_enter)
         {
-            if(window_valid)
+            if(window_valid && !isScrollRectEnter)
             {
                 QRect rect = active_window_bound;
                 painter.drawRect(rect);
@@ -130,7 +139,7 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
                 rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
                 painter.drawRect(rect);
                 painter.drawText(active_window_bound.left(),
-                                 active_window_bound.top() + active_window_bound.height()+20, "按Esc中止\n请不要移动鼠标");
+                                 active_window_bound.top() + active_window_bound.height()+20, MString::search("{NWZ0wFsHVM}按Esc中止\n请不要移动鼠标"));
             }
         }
         else
@@ -143,9 +152,9 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
 
 void Capture_window::load_key_event(QString name)
 {
-    if(!Key_manager::is_contains_window(name))
-    {
-        Key_manager::add_func(name, "leave", [=](bool is_enter){
+//    if(!Key_manager::is_contains_window(name))
+//    {
+        Key_manager::add_func(this, name, "leave", [=](QObject* receiver, bool is_enter){
             if(is_enter)
             {
                 if(Config::getConfig<bool>(Config::scroll_capture))
@@ -156,43 +165,51 @@ void Capture_window::load_key_event(QString name)
                 Window_manager::pop_window();
             }
         });
-        Key_manager::add_func(name, "capture_rect", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_rect", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
-                area->clipButtonEnter(0);
+                current->area->clipButtonEnter(0);
         });
-        Key_manager::add_func(name, "capture_mosaic", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_mosaic", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
-                area->clipButtonEnter(1);
+                current->area->clipButtonEnter(1);
         });
-        Key_manager::add_func(name, "capture_cursor", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_cursor", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
-                area->clipButtonEnter(2);
+                current->area->clipButtonEnter(2);
         });
-        Key_manager::add_func(name, "capture_pencil", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_pencil", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
-                area->clipButtonEnter(3);
+                current->area->clipButtonEnter(3);
         });
-        Key_manager::add_func(name, "capture_highlighter", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_highlighter", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
-                area->clipButtonEnter(4);
+                current->area->clipButtonEnter(4);
         });
-        Key_manager::add_func(name, "capture_text", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_text", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
-                area->clipButtonEnter(5);
+                current->area->clipButtonEnter(5);
         });
-        Key_manager::add_func(name, "capture_erase", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_erase", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
-                area->clipButtonEnter(7);
+                current->area->clipButtonEnter(7);
         });
-        Key_manager::add_func(name, "capture_undo", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_undo", [=](QObject* receiver, bool is_enter){
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
                 Recorder::instance()->back();
         });
-        Key_manager::add_func(name, "capture_redo", [=](bool is_enter){
+        Key_manager::add_func(this, name, "capture_redo", [=](QObject* receiver, bool is_enter){
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
                 Recorder::instance()->forward();
         });
-        Key_manager::add_func(name, "save2file", [=](bool is_enter){
+        Key_manager::add_func(this, name, "save2file", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
             {
                 QString file_name = QFileDialog::getSaveFileName(this,
@@ -201,26 +218,35 @@ void Capture_window::load_key_event(QString name)
                                                                  "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
                 if(file_name != "")
                 {
-                    if(area->save(History_data::Persist, file_name))
+                    if(current->area->save(History_data::Persist, file_name))
                         Window_manager::change_window("tray");
                 }
             }
         });
-        Key_manager::add_func(name, "save2clip", [=](bool is_enter){
+        Key_manager::add_func(this, name, "save2clip", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
             {
-                if(area->save2Clipboard())
+                if(current->area->save2Clipboard())
                     Window_manager::change_window("tray");
             }
         });
-        Key_manager::add_func(name, "enter_capture", [=](bool is_enter)
+        Key_manager::add_func(this, name, "enter_capture", [=](QObject* receiver, bool is_enter)
         {
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
             if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
             {
-                area->sendRequestImage();
+                current->area->sendRequestImage();
             }
         });
-    }
+        Key_manager::add_func(this, name, "capture_scrollrect", [=](QObject* receiver, bool is_enter){
+            Capture_window* current = qobject_cast<Capture_window*>(receiver);
+            if(is_enter && Config::getConfig<bool>(Config::scroll_capture))
+                current->isScrollRect = true;
+            else if(!is_enter)
+                current->isScrollRect = false;
+        });
+//    }
 }
 
 void Capture_window::mouseMoveEvent(QMouseEvent *event)
@@ -253,11 +279,12 @@ void Capture_window::on_window_cancal()
 {
     button_click = false;
 //    is_first_capture = true;
-    area->reset();
+//    area->reset();
     free_paint_path = QPainterPath();
     active_window_bound = QRect();
-    Style_manager::instance()->reset();
-    Recorder::instance()->reset();
+    bubbleTipsWidget->hide();
+//    Style_manager::instance()->reset();
+//    Recorder::instance()->reset();
 }
 
 enum window_search_mode {
@@ -299,82 +326,6 @@ static inline HWND next_window(HWND window, enum window_search_mode mode)
 void Capture_window::on_window_select()
 {
 //    Window_fliter::instance()->SnapshotAllWinRect();
-    /*if(Config::get_config(Config::active_window_capture))
-    {
-        is_enter = false;
-        if(xHook->installMouseHook())
-        {
-            connect(xHook, &XGlobalHook::mouseEvent, this,
-                    [=](XGlobalHook::button_type type, PMOUSEHOOKSTRUCT pMouseHookStruct, bool* is_shield){
-                *is_shield = true;
-                if(type == XGlobalHook::MOUSE_MOVE)
-                {
-                    *is_shield = false;
-                    POINT point;
-                    POINT point2;
-                    point2.x = 0;
-                    point2.y = 0;
-                    GetCursorPos(&point);
-                    HWND hwnd = WindowFromPoint(point);
-                    RECT rect2;
-                    GetClientRect(hwnd, &rect2);
-                    ClientToScreen(hwnd, &point2);
-                    ScreenToClient(hwnd, &point);
-                    if(point.x < 0 || point.y < 0 || point.x > rect2.right || point.y > rect2.bottom)
-                    {
-                        int title_width = GetSystemMetrics(SM_CYCAPTION);
-                        point2.y -=  title_width;
-                        rect2.bottom += title_width;
-                    }
-
-                    active_window_bound = QRect(QPoint(point2.x, point2.y), QSize(rect2.right, rect2.bottom));
-                    update();
-                }
-                else if(type == XGlobalHook::LBUTTON && !is_enter)
-                {
-                    is_enter = true;
-                    Window_manager::hide_now();
-                    QScreen *screen = QGuiApplication::primaryScreen();
-                    QPixmap map = screen->grabWindow(0);
-                    Window_manager::show_now();
-                    POINT point;
-                    POINT point2;
-                    point2.x = 0;
-                    point2.y = 0;
-                    GetCursorPos(&point);
-
-                    HWND hwnd = WindowFromPoint(point);
-                    RECT rect2;
-                    GetClientRect(hwnd, &rect2);
-                    ClientToScreen(hwnd, &point2);
-                    ScreenToClient(hwnd, &point);
-                    if(point.x < 0 || point.y < 0 || point.x > rect2.right || point.y > rect2.bottom)
-                    {
-                        int title_width = GetSystemMetrics(SM_CYCAPTION);
-                        point2.y -=  title_width;
-                        rect2.bottom += title_width;
-                    }
-
-                    QRect qrect = QRect(QPoint(point2.x, point2.y), QSize(rect2.right, rect2.bottom));
-                    QRect temp = qrect;
-                    temp.moveTo(0, 0);
-
-                    Window_manager::change_window("Paint_window");
-                    Window_manager::get_window("Paint_window")->
-                                set_pic(map.copy(qrect), temp);
-                    Window_manager::close_window("Capture_window");
-                    timer->start(50);//延时卸载钩子，先屏蔽按下事件
-
-                }
-                else if(type == XGlobalHook::RBUTTON)
-                {
-                    Window_manager::pop_window();
-                    Window_manager::close_window("Capture_window");
-                    timer->start(50);
-                }
-            });
-        }
-    }*/
     if(Config::getConfig<bool>(Config::scroll_capture))
     {
         is_enter = false;
@@ -382,10 +333,19 @@ void Capture_window::on_window_select()
         view->hide();
         if(xHook->installMouseHook())
         {
+            // is_shield: 屏蔽鼠标事件
             connect(xHook, &XGlobalHook::mouseEvent, this,
                     [=](XGlobalHook::button_type type, PMOUSEHOOKSTRUCT pMouseHookStruct, bool* is_shield){
                 *is_shield = false;
                 if(type == XGlobalHook::MOUSE_MOVE && !is_enter)
+                {
+                    POINT point;
+                    GetCursorPos(&point);
+                    end_point.setX(point.x);
+                    end_point.setY(point.y);
+                    bubbleTipsWidget->move(end_point);
+                }
+                if(type == XGlobalHook::MOUSE_MOVE && !is_enter && !isScrollRectEnter)
                 {
                     POINT point;
                     POINT point2;
@@ -407,10 +367,19 @@ void Capture_window::on_window_select()
                     active_window_bound = QRect(QPoint(point2.x, point2.y), QSize(rect2.right, rect2.bottom));
                     update();
                 }
+                else if(type == XGlobalHook::MOUSE_MOVE && !is_enter && isScrollRectEnter && !isScrollRectEnd)
+                {
+                    active_window_bound = Math::buildRect(cursor_point, end_point).toRect();
+                    update();
+                }
+                else if(type == XGlobalHook::LBUTTON_UP && !is_enter && isScrollRectEnter)
+                {
+                    isScrollRectEnd = true;
+                    bubbleTipsWidget->setFixContent("{YZbdqyumbs}点击滚动区域进行滚动");
+                }
                 else if(type == XGlobalHook::LBUTTON && !is_enter)
                 {
                     end_scroll = false;
-                    is_enter = true;
                     *is_shield = true;
                     POINT point;
                     POINT point2;
@@ -419,50 +388,69 @@ void Capture_window::on_window_select()
                     GetCursorPos(&point);
                     cursor_point.setX(point.x);
                     cursor_point.setY(point.y);
-                    scroll_hwnd = WindowFromPoint(point);
-                    QScreen * screen = QGuiApplication::primaryScreen();
-                    QPixmap pix = screen->grabWindow(WId(scroll_hwnd));
-                    QImage image = pix.toImage();
-//                    image.save("f:/dinfo/temp.png");
-                    for(int i=0; i<image.height(); i++)
+                    // 手动设置滚动截屏区域
+                    if(!isScrollRectEnter && isScrollRect)
                     {
-                        for(int k=0; k<image.width(); k++)
+                        isScrollRectEnter = true;
+                    }
+                    else
+                    {
+                        bubbleTipsWidget->hide();
+                        is_enter = true;
+                        scroll_hwnd = WindowFromPoint(point);
+                        QScreen * screen = QGuiApplication::primaryScreen();
+                        QPixmap pix = screen->grabWindow(WId(scroll_hwnd));
+                        QImage image = pix.toImage();
+                        //                    image.save("f:/dinfo/temp.png");
+                        for(int i=0; i<image.height(); i+=5)
                         {
-                            if(image.pixel(k, i) != 0xff000000)
+                            for(int k=0; k<image.width(); k+=5)
                             {
-                                window_valid = true;
-                                goto WINDOW_VALID_OUT;
+                                if(image.pixel(k, i) != 0xff000000)
+                                {
+                                    window_valid = true;
+                                    goto WINDOW_VALID_OUT;
+                                }
                             }
                         }
-                    }
-                    window_valid = false;
+                        window_valid = false;
 
 WINDOW_VALID_OUT:;
-                    update();
-                    int time = Config::getConfig<int>(Config::capture_interval);
-//                    if(!window_valid)
-//                    {
-//                        time = 300;
-//                    }
-                    scroll_timer->start(time);
-                    time = QDateTime::currentMSecsSinceEpoch();
+                        update();
+                        int time = Config::getConfig<int>(Config::capture_interval);
+                        scroll_timer->start(time);
+                        time = QDateTime::currentMSecsSinceEpoch();
+                    }
                 }
                 else if(type == XGlobalHook::RBUTTON && !is_enter)
                 {
                     *is_shield = true;
-                    Window_manager::pop_window();
-                    timer->start(50);
+                    if(isScrollRectEnter)
+                    {
+                        bubbleTipsWidget->setFix(false);
+                        isScrollRectEnter = false;
+                        isScrollRectEnd = false;
+                    }
+                    else
+                    {
+                        Window_manager::pop_window();
+                        timer->start(50);
+                    }
                 }
             });
         }
     }
     else
     {
+        area->reset();
+        Flow_edit_panel::instance()->reset();
+        Style_manager::instance()->reset();
+        Recorder::instance()->reset();
+        view->show();
         QScreen* screen = QGuiApplication::primaryScreen();
         QPixmap p = screen->grabWindow(0);
         area->setClipPic(p);
         area->stateChange(ARROW);
-        view->show();
     }
 }
 
@@ -470,7 +458,12 @@ void Capture_window::set_scroll_info()
 {
     if(Config::getConfig<bool>(Config::scroll_capture))
     {
+        isScrollRect = false;
+        isScrollRectEnter = false;
+        isScrollRectEnd = false;
         dispatcher = new Scroll_dispatcher(this);
+        bubbleTipsWidget->setFix(false);
+        bubbleTipsWidget->show();
         connect(dispatcher, &Scroll_dispatcher::finish, this, [=](QImage image){
             Window_manager::change_window("Paint_window");
             QPixmap pixmap;
@@ -480,11 +473,11 @@ void Capture_window::set_scroll_info()
             timer->start(50);
 
         });
-        scroll_timer = new QTimer();
+        scroll_timer = new QTimer(this);
         connect(scroll_timer, &QTimer::timeout, this, [=](){
             QScreen * screen = QGuiApplication::primaryScreen();
             QPixmap pix;
-            if(!window_valid)
+            if(!window_valid || isScrollRectEnter)
             {
                 pix = screen->grabWindow(0, active_window_bound.x(), active_window_bound.y(),
                                                  active_window_bound.width(), active_window_bound.height());

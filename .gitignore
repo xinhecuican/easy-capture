@@ -70,4 +70,12 @@ Thumbs.db
 # --------
 *.dll
 *.exe
+debug/
+.vs/
+release/
+capture.sln
+capture.vcxproj
+capture.vcxproj.fliters
+capture.vcxproj.user
+
 

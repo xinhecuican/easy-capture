@@ -7,6 +7,7 @@
 #include "Base/Window_base.h"
 #include<QCloseEvent>
 #include "Helper/plist.h"
+#include "Manager/config.h"
 
 namespace Ui {
 class Setting;
@@ -45,6 +46,7 @@ private:
     void normal_settings();
     void capture_settings();
     void key_settings();
+    void postUpdate(Config::setting type, QVariant num);
 };
 
 #endif // SETTING_H

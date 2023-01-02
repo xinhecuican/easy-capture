@@ -15,7 +15,7 @@ class Key_manager
 public:
 
     Key_manager();
-    static void add_func(QString window_name, QString obj_name, std::function<void(bool)> const &f);
+    static void add_func(QObject* receiver, QString window_name, QString obj_name, std::function<void(QObject*, bool)> const &f);
     static void add_key(QString window_name, QString obj_name, QList<int> keys);
     static void on_key_count_change(bool is_enter, int key);//按键按下或松开时的处理函数
     static void key_enter(int key);
@@ -28,6 +28,7 @@ public:
     static void update_all();
     static void onWindowChangeBegin(QString old_window, QString new_window);
     static void onWindowChangeEnd();
+    static void onWindowClose(QString windowName);
     static QList<int> get_keys(QString window_name, QString key_name);
     static void set_keys(QString window_name, QString key_name, QList<int> keys);
     static QList<QString> get_window_names();
@@ -37,14 +38,16 @@ public:
 private:
     struct node
     {
-        std::function<void(bool)> func;
+        std::function<void(QObject*, bool)> func;
+        QObject* receiver;
         QList<int> keys;
         node()
         {
             func = NULL;
             keys = QList<int>();
+            receiver = NULL;
         }
-        node(std::function<void(bool)> const &f, QList<int> &key)
+        node(std::function<void(QObject*, bool)> const &f, QList<int> &key)
         {
             func = f;
             keys = key;
@@ -52,6 +55,8 @@ private:
 
         bool is_key_equal(QList<int> &key)
         {
+            if(key.size() != keys.size())
+                return false;
             for(int i=0; i<keys.size(); i++)
             {
                 bool equal = false;
@@ -79,7 +84,7 @@ private:
             func = QHash<QString, node>();
         }
 
-        void insert(QString name, std::function<void(bool)> fun, QList<int> keys)
+        void insert(QString name, std::function<void(QObject*, bool)> fun, QList<int> keys)
         {
             if(func.find(name) == func.end())
             {
@@ -87,7 +92,7 @@ private:
                 {
                     if(iter->is_key_equal(keys))
                     {
-                        Debug::debug_print_warning("按键重复\n位置：key_manager::window::insert");
+                        Debug::debug_print_warning("按键重复\n位置：key_manager::window::insert " + iter.key() + " " + name);
                         return;
                     }
                 }
@@ -105,7 +110,7 @@ private:
             {
                 if(iter->is_key_equal(availiable_key) && iter->func != NULL)
                 {
-                    iter->func(false);
+                    iter->func(iter->receiver, false);
                     break;
                 }
             }
@@ -122,7 +127,7 @@ private:
             {
                 if(iter->is_key_equal(availiable_key) && iter->func != NULL)
                 {
-                    iter->func(true);
+                    iter->func(iter->receiver, true);
                     break;
                 }
             }

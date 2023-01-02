@@ -17,6 +17,7 @@ public:
     QFont get_font();
     QColor get_color();
     void set_format(QFont font, QColor color);
+    void reset();
 signals:
     void font_change();
     void text_brush();//格式刷

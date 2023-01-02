@@ -125,7 +125,6 @@ int main(int argc, char *argv[])
         GlobalDeleteAtom( fliter->global_key_id );
         GlobalDeleteAtom(fliter->global_capture_id);
         Update::instance()->onFinish();
-        delete Config::instance();
         fliter->deleteLater();
     });
 //    Update::instance()->save();

@@ -7,7 +7,6 @@
 #include "Paint/Data/Ilayer.h"
 #include "Helper/plist.h"
 #include "Paint/Data/stretch_button.h"
-#include "text_edit.h"
 #include "Paint/Data/Common.h"
 #include<QGraphicsTextItem>
 #include "baselayer.h"

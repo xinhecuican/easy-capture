@@ -19,6 +19,7 @@
 #include <QGraphicsScene>
 #include "Manager/config.h"
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
+#include <QTimer>
 
 ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsItem* parent) : QGraphicsObject(parent),
     is_drag(false),
@@ -36,8 +37,21 @@ ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsIte
     rect_setting = Style_manager::default_pencil;
     pencil_setting = Style_manager::default_pencil;
     highlighter_setting = Style_manager::default_highlighter;
-    setToolBar();
-    setAttributeToolbar();
+    widgetParent = NULL;
+    toolbar = NULL;
+    attribute_toolbar = NULL;
+    // toolbar初始化耗时较长，使用回调避免首次启动阻塞
+    QTimer::singleShot(0, this, [=](){
+        setToolBar();
+        setAttributeToolbar();
+        if(widgetParent != NULL)
+        {
+            toolbar->setParent(widgetParent);
+            attribute_toolbar->setParent(widgetParent);
+        }
+    });
+//    setToolBar();
+//    setAttributeToolbar();
 }
 
 ClipLayer::~ClipLayer()
@@ -100,7 +114,7 @@ void ClipLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void ClipLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!is_enable)
+//    if(!is_enable)
     {
         calBarPos();
     }
@@ -165,6 +179,7 @@ void ClipLayer::capture(QPixmap pix)
 void ClipLayer::setPic(QPixmap pix)
 {
     this->pix = pix;
+    update();
 }
 
 QRectF ClipLayer::getClipRect()
@@ -185,8 +200,10 @@ void ClipLayer::reset()
 {
     is_save = false;
     mask_layer->reset();
-    toolbar->hide();
-    attribute_toolbar->hide();
+    if(toolbar != NULL)
+        toolbar->hide();
+    if(attribute_toolbar != NULL)
+        attribute_toolbar->hide();
 }
 
 void ClipLayer::sendRequestImage()
@@ -405,7 +422,7 @@ void ClipLayer::updateAttributeToolbar(int id)
         color_widget->setCurrentStyle(rect_setting.color);
         Style_manager::instance()->change_color(rect_setting.color);
         Style_manager::instance()->change_width(rect_setting.width);
-        width_button->setEditText(QString::number(rect_setting.width));
+        width_button->setValue(rect_setting.width);
         attribute_toolbar->add(width_button);
         attribute_toolbar->add(color_widget);
         break;
@@ -422,7 +439,7 @@ void ClipLayer::updateAttributeToolbar(int id)
         color_widget->setCurrentStyle(pencil_setting.color);
         Style_manager::instance()->change_color(pencil_setting.color);
         Style_manager::instance()->change_width(pencil_setting.width);
-        width_button->setEditText(QString::number(pencil_setting.width));
+        width_button->setValue(pencil_setting.width);
         attribute_toolbar->add(width_button);
         attribute_toolbar->add(color_widget);
         break;
@@ -430,7 +447,7 @@ void ClipLayer::updateAttributeToolbar(int id)
         color_widget->setCurrentStyle(highlighter_setting.color);
         Style_manager::instance()->change_color(highlighter_setting.color);
         Style_manager::instance()->change_width(highlighter_setting.width);
-        width_button->setEditText(QString::number(highlighter_setting.width));
+        width_button->setValue(highlighter_button->width());
         attribute_toolbar->add(width_button);
         attribute_toolbar->add(color_widget);
         break;
@@ -451,20 +468,18 @@ void ClipLayer::setAttributeToolbar()
     attribute_toolbar->setWindowFlag(Qt::WindowSystemMenuHint, false);
     attribute_toolbar->setStyleSheet(getQSS(":/qss/toolbar.qss"));
 
+
     color_widget = new ColorWidget(attribute_toolbar);
-    width_button = new QComboBox(attribute_toolbar);
-    QList<QString> width_text = {"4", "8", "12", "16", "20", "24", "28", "40", "50"};
-    width_button->addItems(width_text);
-    width_button->setEditable(true);
-    connect(width_button, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
-            , this, [=](const QString& text){
-        bool success = false;
-        int num = text.toInt(&success);
-        if(success && num > 0)
-        {
-            Style_manager::instance()->change_width(num);
-        }
+    width_button = new QSpinBox(attribute_toolbar);
+    width_button->setRange(1, 50);
+    width_button->setValue(3);
+    width_button->setAccelerated(true);
+    width_button->setWrapping(true);
+    width_button->setKeyboardTracking(true);
+    connect(width_button, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int value){
+        Style_manager::instance()->change_width(value);
     });
+
 
     mosaic_sample = new MosicSample(attribute_toolbar);
     mosaic_size = new QSpinBox(attribute_toolbar);
@@ -545,8 +560,12 @@ void ClipLayer::setAttributeToolbar()
 
 void ClipLayer::setWidgetParent(QWidget *parent)
 {
-    toolbar->setParent(parent);
-    attribute_toolbar->setParent(parent);
+    widgetParent = parent;
+    if(attribute_toolbar != NULL)
+    {
+        toolbar->setParent(parent);
+        attribute_toolbar->setParent(parent);
+    }
 }
 
 void ClipLayer::buttonEnter(int id)

@@ -27,6 +27,7 @@
 #include "Style_widget/framelesshelper.h"
 #include "Paint/Widgets/Layers/baselayer.h"
 #include "Paint/Data/History_data.h"
+#include <QSound>
 
 Paint_window::Paint_window(QWidget *parent) :
     Window_base(parent, this, "Paint_window"),
@@ -78,8 +79,6 @@ Paint_window::Paint_window(QWidget *parent) :
     set_toolbar();
     initSettingPanel();
     addToolBarBreak();
-    addToolBar(Flow_edit_panel::instance());
-    Flow_edit_panel::instance()->hide();
     load_key_event("Paint_window");
 }
 
@@ -90,34 +89,38 @@ Paint_window::~Paint_window()
 
 void Paint_window::load_key_event(QString name)
 {
-    if(!Key_manager::is_contains_window("Paint_window"))
-    {
-        Key_manager::add_func(name, "undo", [=](bool is_enter){if(is_enter) Recorder::instance()->back();});
-        Key_manager::add_func(name, "redo", [=](bool is_enter){if(is_enter) Recorder::instance()->forward();});
-        Key_manager::add_func(name, "save", [=](bool is_enter){
+//    if(!Key_manager::is_contains_window("Paint_window"))
+//    {
+        Key_manager::add_func(this, name, "undo", [=](QObject* receiver, bool is_enter){if(is_enter) Recorder::instance()->back();});
+        Key_manager::add_func(this, name, "redo", [=](QObject* receiver, bool is_enter){if(is_enter) Recorder::instance()->forward();});
+        Key_manager::add_func(this, name, "save", [=](QObject* receiver, bool is_enter){
+            Paint_window* current = qobject_cast<Paint_window*>(receiver);
             if(is_enter)
             {
                 QString file_name = QFileDialog::getSaveFileName(this,"保存",
                 History::instance()->get_last_directory(), "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
                 if(file_name != "")
                 {
-                    area->save(History_data::Persist, file_name);
+                    current->area->save(History_data::Persist, file_name);
                     Window_manager::change_window("tray");
                 }
             }
         });
-        Key_manager::add_func(name, "new_capture", [=](bool is_enter){
+        Key_manager::add_func(this, name, "new_capture", [=](QObject* receiver, bool is_enter){
             if(is_enter)
             {
+                Paint_window* current = qobject_cast<Paint_window*>(receiver);
                 if(Config::getConfig<bool>(Config::total_capture))
                 {
-                    QTimer::singleShot(200, this, [=](){
+                    QTimer::singleShot(200, current, [=](){
                         Config::setConfig(Config::total_capture, false);
                         QScreen *screen = QGuiApplication::primaryScreen();
                         QPixmap map = screen->grabWindow(0);
                         Window_manager::change_window("Paint_window");
                         Window_manager::get_window("Paint_window")->
                                 set_pic(map, QGuiApplication::primaryScreen()->geometry());
+                        if(Config::getConfig<bool>(Config::clip_voice))
+                            QSound::play(":/audio/screenshot.wav");
                     });
 
                     return;
@@ -129,13 +132,13 @@ void Paint_window::load_key_event(QString name)
                 Config::setConfig(Config::rect_capture, true);
             }
         });
-        Key_manager::add_func(name, "delete_shape", [=](bool is_enter){
+        Key_manager::add_func(this, name, "delete_shape", [=](QObject* current, bool is_enter){
             if(is_enter)
             {
 //                area->delete_shape();
             }
         });
-    }
+//    }
 }
 
 void Paint_window::set_menubar()
@@ -568,6 +571,9 @@ void Paint_window::reset()
     }
     pencil_button->setChecked(true);
     area->reset();
+    Flow_edit_panel::instance()->reset();
+    addToolBar(Flow_edit_panel::instance());
+    Flow_edit_panel::instance()->hide();
     Style_manager::instance()->reset();
     Recorder::instance()->reset();
 }
@@ -583,9 +589,9 @@ void Paint_window::on_paint_panel_close()
 
 void Paint_window::on_window_close()
 {
-    delete Style_manager::instance();
-    delete Recorder::instance();
-    delete History::instance();
+//    delete Style_manager::instance();
+//    delete Recorder::instance();
+//    delete History::instance();
     delete Paint_setting_panel::instance();
     QClipboard *clip=QApplication::clipboard();
     if(Config::getConfig<bool>(Config::auto_copy_to_clipboard))

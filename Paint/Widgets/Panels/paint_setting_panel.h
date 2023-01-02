@@ -6,7 +6,6 @@
 #include<QDockWidget>
 #include<QComboBox>
 #include "Paint/Widgets/Layer_list/list_widget.h"
-#include "Paint/Widgets/IControl_layer_change.h"
 #include "Paint/Data/Common.h"
 
 class Paint_setting_panel : public QDockWidget

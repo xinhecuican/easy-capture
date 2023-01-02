@@ -5,7 +5,6 @@
 #include<QKeyEvent>
 #include<QMouseEvent>
 #include<QPushButton>
-#include "new_capture/Widgets/capture_area.h"
 #include "Base/Window_base.h"
 #include<QTimer>
 #define WIN32_LEAN_AND_MEAN
@@ -17,6 +16,7 @@
 #include <QGraphicsView>
 #include "Paint/Widgets/Paint_area.h"
 #include "Helper/EnumReflect.h"
+#include "Style_widget/bubbletipswidget.h"
 
 namespace Ui {
 class Capture_window;
@@ -54,6 +54,7 @@ private:
     int height_char;
     QPoint cursor_point;
     QPoint now_point;
+    QPoint end_point;
     QImage scroll_image;
     bool begin_waiting;
     //bool combine_image(QImage image);
@@ -64,6 +65,10 @@ private:
     bool window_valid;
     QGraphicsView* view;
     Paint_area* area;
+    bool isScrollRect;
+    bool isScrollRectEnter;
+    bool isScrollRectEnd;
+    BubbleTipsWidget* bubbleTipsWidget;
 };
 
 #endif // CAPTURE_WINDOW_H

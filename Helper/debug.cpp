@@ -4,6 +4,10 @@
 #include<QMainWindow>
 #include<QLabel>
 #include<QScrollArea>
+#include<QDateTime>
+#include <QThread>
+
+QMap<int, QList<Debug::TimerElement>> Debug::timerName = QMap<int, QList<TimerElement>>();
 
 void Debug::show_error_message(QString message)
 {
@@ -26,4 +30,33 @@ void Debug::showImage(QImage image)
     sa->setWidget(label);
     sa->resize(400,400);
     mw.show();
+}
+
+void Debug::beginTimer(QString name)
+{
+    TimerElement timerElement;
+    timerElement.name = name;
+    timerElement.beginTime = QDateTime::currentMSecsSinceEpoch();
+    int threadId = (int)QThread::currentThreadId();
+    if(!timerName.contains(threadId))
+    {
+        QList<TimerElement> timerList;
+        timerName[threadId] = timerList;
+    }
+    timerName[threadId].append(timerElement);
+}
+
+void Debug::endTimer()
+{
+    int threadId = (int)QThread::currentThreadId();
+    if(timerName[threadId].size() == 0)
+        return;
+    TimerElement timerElement = timerName[threadId].last();
+    timerName[threadId].pop_back();
+    qDebug() << "timer " << timerElement.name << ": " << QDateTime::currentMSecsSinceEpoch() - timerElement.beginTime;
+}
+
+qint64 Debug::getTime()
+{
+    return QDateTime::currentMSecsSinceEpoch();
 }

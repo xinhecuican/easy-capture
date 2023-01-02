@@ -33,6 +33,7 @@ QList<QString> Key_manager::key_settings = {
     "Capture_window:enter_capture;16777220",//enter
     "Capture_window:save2file;16777249,83",
     "Capture_window:save2clip;16777249,69",
+    "Capture_window:capture_scrollrect;16777249",
     "Paint_window:undo;16777249,90",
     "Paint_window:redo;16777249,88",
     "Paint_window:save;16777249,83",
@@ -42,6 +43,7 @@ QList<QString> Key_manager::key_settings = {
 
 void Key_manager::add_key(QString window_name, QString obj_name, QList<int> keys)
 {
+    int key = Qt::Key_Control;
     if(all_key.find(window_name) == all_key.end())
     {
         window temp = window();
@@ -54,7 +56,7 @@ void Key_manager::add_key(QString window_name, QString obj_name, QList<int> keys
     }
 }
 
-void Key_manager::add_func(QString window_name, QString obj_name, std::function<void(bool)> const &f)
+void Key_manager::add_func(QObject* receiver, QString window_name, QString obj_name, std::function<void(QObject*, bool)> const &f)
 {
     if(!using_window_set.contains(window_name))
     {
@@ -63,6 +65,7 @@ void Key_manager::add_func(QString window_name, QString obj_name, std::function<
     if(all_key.contains(window_name) && all_key[window_name].func.contains(obj_name))
     {
         all_key[window_name].func[obj_name].func = f;
+        all_key[window_name].func[obj_name].receiver = receiver;
     }
     else
     {
@@ -392,7 +395,7 @@ void Key_manager::onWindowChangeBegin(QString old_window, QString new_window)
         {
             if(iter->is_key_equal(availiable_key) && iter->func != NULL)
             {
-                iter->func(false);
+                iter->func(iter->receiver, false);
                 break;
             }
         }
@@ -404,6 +407,11 @@ void Key_manager::onWindowChangeBegin(QString old_window, QString new_window)
 void Key_manager::onWindowChangeEnd()
 {
     is_windowchange = false;
+}
+
+void Key_manager::onWindowClose(QString windowName)
+{
+
 }
 
 quint32 Key_manager::nativeKeycode(Qt::Key keycode, bool &ok)

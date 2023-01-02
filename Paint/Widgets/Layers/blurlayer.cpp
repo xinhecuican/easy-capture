@@ -12,7 +12,7 @@ void BlurLayer::setPix(const QPixmap& pix, QPoint pos)
 {
     if(is_allocate)
     {
-        for(int i=0; i<pix.width() / range + 1; i++)
+        for(int i=0; i<pix.height() / range + 1; i++)
         {
             delete [] mask_use[i];
         }

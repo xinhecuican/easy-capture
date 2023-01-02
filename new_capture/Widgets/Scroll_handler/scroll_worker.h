@@ -7,6 +7,7 @@
 #include <opencv2/features2d/features2d.hpp>
 #include "opencv2/xfeatures2d/nonfree.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include "opencv2/highgui/highgui.hpp"
 #include<QObject>
 #include<QImage>
 #include<QMutex>
@@ -46,6 +47,8 @@ public:
     bool second_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans);
     int process_width;
     int delta_width;
+    cv::Mat maskImage;
+    void initMask(int cols, int rows);
 };
 
 #endif // SCROLL_WORKER_H

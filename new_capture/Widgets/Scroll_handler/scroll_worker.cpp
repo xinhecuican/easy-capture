@@ -12,6 +12,7 @@ Scroll_worker::Scroll_worker(QObject* object) : QObject(object)
 {
     process_width = 0;
     delta_width = 0;
+    maskImage = cv::Mat();
 }
 
 Scroll_worker::~Scroll_worker()
@@ -22,12 +23,12 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
 {
     cv::Mat img1 = Image_helper::QImage2Mat(image1);
     cv::Mat img2 = Image_helper::QImage2Mat(image2);
-
     cv::Mat temp_img1 = img1(cv::Rect(0, image1.height()-img_height, image1.width(), img_height));
     cv::Mat temp_img2 = img2(cv::Rect(0, 0, image2.width(), img_height));
     cv::Mat scroll_image1, scroll_image2;
     cv::rotate(temp_img1, scroll_image1, cv::ROTATE_90_COUNTERCLOCKWISE);
     cv::rotate(temp_img2, scroll_image2, cv::ROTATE_90_COUNTERCLOCKWISE);
+    initMask(scroll_image1.cols, scroll_image1.rows);
     if (temp_img1.empty() || temp_img2.empty())
     {
         qDebug() << "Read image failed, please check again!" << endl;
@@ -57,7 +58,6 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
         }
     }
 
-
     cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
     cv::cvtColor(img1, img1, cv::COLOR_RGBA2RGB);
     cv::cvtColor(img2, img2, cv::COLOR_RGBA2RGB);
@@ -78,6 +78,7 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
         img2(cv::Rect(0, img_height, img2.cols, img2.rows-img_height))
             .copyTo(ans_image1(cv::Rect(0, img1.rows+image.rows - img_height, img2.cols, img2.rows-img_height)));
     }
+    // QImage高上限为32700，因此长图需要通过Mat进行转换
     QImage ans_image = Image_helper::Mat2QImage(ans_image1);
     emit work_finish(ans_image);
 }
@@ -185,18 +186,19 @@ void Scroll_worker::CalcCorners(const cv::Mat& H, const cv::Mat src)
 
 bool Scroll_worker::first_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans)
 {
-    cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create(20);
+    cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create(60);
     // Detect the keypoints
     std::vector<cv::KeyPoint> keyPointR, keyPointL;
     cv::Mat imageDescR, imageDescL;
-    detector->detect(grayL, keyPointL);
-    detector->detect(grayR, keyPointR);
+    detector->detect(grayL, keyPointL, maskImage);
+    detector->detect(grayR, keyPointR, maskImage);
     //cv::Ptr<cv::xfeatures2d::BriefDescriptorExtractor> Descriptor =
     //        cv::xfeatures2d::BriefDescriptorExtractor::create(32);
     cv::Ptr<cv::ORB> Descriptor = cv::ORB::create();
     Descriptor->compute(grayL, keyPointL, imageDescL); //找出图一的关键点描述符 SiftDescriptorExtractor
     Descriptor->compute(grayR, keyPointR, imageDescR); //找出图二的关键点描述符 SiftDescriptorExtractor
-
+    if (imageDescL.cols == 0 || imageDescR.cols == 0)
+        return false;
 
 
     //cv::BFMatcher matcher;
@@ -248,7 +250,7 @@ bool Scroll_worker::first_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans)
 
     //画出匹配图
 //    cv::Mat first_match;
-//    cv::drawMatches(imageL, keyPointL, imageR, keyPointR, GoodMatchePoints, first_match,
+//    cv::drawMatches(grayL, keyPointL, grayR, keyPointR, GoodMatchePoints, first_match,
 //                   cv::Scalar::all(-1), cv::Scalar::all(-1), std::vector<char>(),
 //                    cv::DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 //    cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", first_match);
@@ -296,8 +298,10 @@ bool Scroll_worker::second_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans)
 
     std::vector<cv::KeyPoint> keyPointR, keyPointL;
     cv::Mat imageDescR, imageDescL;
-    m_surf_det->detectAndCompute(grayL, cv::Mat(), keyPointL, imageDescL);
-    m_surf_det->detectAndCompute(grayR, cv::Mat(), keyPointR, imageDescR);
+    m_surf_det->detectAndCompute(grayL, maskImage, keyPointL, imageDescL);
+    m_surf_det->detectAndCompute(grayR, maskImage, keyPointR, imageDescR);
+    if (imageDescL.cols == 0 || imageDescR.cols == 0)
+        return false;
 
     cv::FlannBasedMatcher matcher;  //匹配点
     std::vector<std::vector<cv::DMatch>> matchePoints;//DMatch用于保存匹配结果
@@ -394,10 +398,10 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans, int img_he
     if(!first_match(grayL, grayR, H))
     {
         test_again = true;
-        if(!second_match(grayL, grayR, H))
-        {
+        //if(!second_match(grayL, grayR, H))
+        //{
             return -1;
-        }
+        //}
     }
 
     //计算配准图的四个顶点坐标
@@ -466,8 +470,30 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans, int img_he
         ans = dst;
         Scroll_handler_global::instance()->cal_middle_width(process_width);
         Scroll_handler_global::instance()->cal_delta_width(delta_width);
-        //cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", ans);
+//        cv::imwrite("F:/dinfo/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", ans);
         return 0;
 //    }
+}
+
+void Scroll_worker::initMask(int cols, int rows)
+{
+    if(maskImage.rows != rows || maskImage.cols != cols)
+    {
+        maskImage = cv::Mat(rows, cols, CV_8UC1);
+        for(int i=0; i<rows; i++)
+        {
+            for(int k=0; k<cols; k++)
+            {
+                maskImage.ptr<uchar>(i)[k] = 0;
+            }
+        }
+        for(int i=0; i<rows; i+=10)
+        {
+            for(int k=0; k<cols; k++)
+            {
+                maskImage.ptr<uchar>(i)[k] = 255;
+            }
+        }
+    }
 }
 

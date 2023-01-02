@@ -9,7 +9,6 @@
 #include<QDockWidget>
 #include<QToolButton>
 #include "Paint/Widgets/Panels/paint_setting_panel.h"
-#include "Widgets/IControl_layer_change.h"
 #include<QMenuBar>
 #include<QGraphicsView>
 #include <QTimer>

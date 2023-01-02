@@ -35,6 +35,7 @@ void Window_manager::control_window_close()
 #ifdef QT_DEBUG
             qDebug() << "delete " << iter.key();
 #endif
+            Key_manager::onWindowClose(iter.key());
             iter = window_list.erase(iter);
         }
         else

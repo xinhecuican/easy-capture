@@ -97,7 +97,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::load_key_event(QString name)
 {
-    Key_manager::add_func(name, "main_capture", [=](bool is_enter){
+    Key_manager::add_func(this, name, "main_capture", [=](QObject* current, bool is_enter){
         if(is_enter)
         {
             onCaptureButtonEnter();

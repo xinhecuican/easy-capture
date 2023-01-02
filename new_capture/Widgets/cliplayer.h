@@ -93,7 +93,7 @@ private:
     QToolButton* mosaic_button;
     QButtonGroup* button_group;
 
-    QComboBox* width_button;
+    QSpinBox* width_button;
     Paint_data rect_setting;
     Paint_data pencil_setting;
     Paint_data highlighter_setting;
@@ -104,6 +104,7 @@ private:
     QToolButton* rect_capture;
     QToolButton* free_capture;
     QToolButton* arrow_button;
+    QWidget* widgetParent;
 };
 
 #endif // CLIPREGION_H

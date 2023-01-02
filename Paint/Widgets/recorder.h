@@ -52,6 +52,9 @@ private:
             {
                 delete data[i];
             }
+            data.clear();
+            limit = 0;
+            point = 0;
         }
 
         void reset()
@@ -60,6 +63,7 @@ private:
             {
                 delete data[i];
             }
+            data.clear();
             limit = 0;
             point = 0;
         }

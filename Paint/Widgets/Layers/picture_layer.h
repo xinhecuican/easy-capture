@@ -4,8 +4,6 @@
 #include<QPixmap>
 #include<QPolygon>
 #include<QPainter>
-#include "new_capture/Widgets/Ipoint_position_change.h"
-#include "new_capture/Widgets/capture_region.h"
 #include "Helper/plist.h"
 #include "Paint/Data/Ilayer.h"
 #include "paint_layer.h"
