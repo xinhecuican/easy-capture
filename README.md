@@ -55,6 +55,10 @@
 * 透明
 
 	目前仅可以做到对某一个色素透明，对于渐变和拍屏无效。并且由于文字都是由不同种类像素组成因此无法做到选取文字（正好下学期有图像处理，看看通过反锯齿可以直接把文字的范围弄出来）。
+	
+* ocr
+
+  使用[RapidOCR](https://github.com/RapidAI/RapidOCR)引擎进行识别![](https://xinhecuican.tech/images/简截9.png)
 
 # 快捷键
 
