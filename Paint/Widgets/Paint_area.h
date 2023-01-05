@@ -13,6 +13,7 @@
 #include "Paint/Widgets/Layers/shapelayer.h"
 #include "Paint/Data/History_data.h"
 #include "new_capture/Widgets/cliplayer.h"
+#include <QProcess>
 
 class Paint_area : public QGraphicsScene
 {
@@ -36,9 +37,11 @@ public:
     void sendRequestImage();
     void onViewSet(QWidget* view);
     void clipButtonEnter(int id);
+    void startOcr();
 private:
     void setOtherLayer();
     void initSettingPanel();
+    void initProcess();
 
     const int DEFAULT_LAYER_NUM = 1;
     SHAPE_TYPE shape_type;
@@ -50,6 +53,8 @@ private:
     ClipLayer* clip_layer;
     bool is_save;
     bool is_clip;
+    QProcess ocrProcess;
+    QProcess showOcrResultProcess;
 };
 
 #endif // PAINT_AREA_H

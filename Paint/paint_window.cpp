@@ -347,6 +347,17 @@ void Paint_window::set_toolbar()
         }
     });
 
+    QToolButton* ocrButton = new QToolButton(this);
+    ocrButton->setIcon(QIcon(":/image/ocr.png"));
+    ocrButton->setToolTip(MString::search("{SvJhCjRGF0}提取文字"));
+    connect(ocrButton, &QToolButton::clicked, this, [=](){
+        if(area->save(History_data::Editable, "ocr/1.png"))
+        {
+            area->startOcr();
+        }
+    });
+    ui->toolBar->addWidget(ocrButton);
+
     ui->toolBar->addSeparator();
     paint_button_group = new QButtonGroup(this);
     paint_button_group->setExclusive(true);

@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QSound>
+#include "Manager/update.h"
 
 Main_fliter* Main_fliter::_instance = NULL;
 
@@ -33,6 +34,14 @@ Main_fliter::Main_fliter()
     }
     Config::setConfig(Config::rect_capture, true);
     setTrayContextMenu();
+
+    Update::instance()->update();
+    if(!Config::getConfig<bool>(Config::need_update) && Config::getConfig<int>(Config::update_interval) != -1 &&
+            Config::getConfig<int>(Config::last_update_time) + Config::getConfig<int>(Config::update_interval) <
+            QDateTime::currentSecsSinceEpoch()/60)
+    {
+        Update::instance()->check_update();
+    }
 }
 
 Main_fliter::~Main_fliter()

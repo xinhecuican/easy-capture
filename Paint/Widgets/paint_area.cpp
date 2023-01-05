@@ -28,6 +28,8 @@
 #include<QApplication>
 #include<QClipboard>
 #include <QScreen>
+#include <QProcess>
+#include "new_capture/Widgets/Scroll_handler/Scroll_handler_global.h"
 
 Paint_area::Paint_area(QWidget* parent, bool enable_clip) : QGraphicsScene(parent)
 {
@@ -35,6 +37,7 @@ Paint_area::Paint_area(QWidget* parent, bool enable_clip) : QGraphicsScene(paren
     is_clip = enable_clip;
     state = PAINT;
     shape_type = RECTANGLE;
+    initProcess();
     if(!is_clip)
     {
         pic_layer = new Picture_layer();
@@ -77,6 +80,13 @@ Paint_area::Paint_area(QWidget* parent, bool enable_clip) : QGraphicsScene(paren
             {
                 if(save(History_data::Persist, file_name))
                     Window_manager::change_window("tray");
+            }
+        });
+        connect(clip_layer, &ClipLayer::requestOcr, this, [=](){
+            if(save(History_data::Editable, "ocr/1.png"))
+            {
+                Window_manager::change_window("tray");
+                startOcr();
             }
         });
         connect(clip_layer, &ClipLayer::paintShape, this, [=](SHAPE_TYPE type){
@@ -123,6 +133,38 @@ void Paint_area::reset()
         clip_layer->reset();
     }
     is_save = false;
+}
+
+void Paint_area::initProcess()
+{
+    QStringList args;
+    QDir dir("ocr/models");
+    QDir dir2("ocr");
+    args << "--models" << dir.absolutePath()
+         << "--det" << "ch_PP-OCRv3_det_infer.onnx"
+         << "--cls" << "ch_ppocr_mobile_v2.0_cls_infer.onnx"
+         << "--rec" << "ch_PP-OCRv3_rec_infer.onnx"
+         << "--keys" << "ppocr_keys_v1.txt"
+         << "--image" << dir2.absoluteFilePath("1.png")
+         << "--numThread" << QString::number(Scroll_handler_global::instance()->num_core)
+         << "--padding" << "50"
+         << "--maxSideLen" << "1024"
+         << "--boxScoreThresh" << "0.5"
+         << "--boxThresh" << "0.3"
+         << "--unClipRatio" << "1.6"
+         << "--doAngle" << "1"
+         << "--mostAngle" << "1";
+    ocrProcess.setProgram("ocr/RapidOcrOnnx.exe");
+    ocrProcess.setArguments(args);
+    ocrProcess.setWorkingDirectory(dir2.absolutePath());
+    connect(&ocrProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [=](int exitCode, QProcess::ExitStatus exitStatus){
+        if(exitStatus == QProcess::NormalExit)
+        {
+            showOcrResultProcess.startDetached();
+        }
+    });
+    showOcrResultProcess.setProgram("OcrViewer.exe");
+    showOcrResultProcess.setWorkingDirectory(QDir::currentPath());
 }
 
 void Paint_area::setPic(QPixmap pic, QRect rect)
@@ -409,4 +451,9 @@ void Paint_area::clipButtonEnter(int id)
 {
     if(clip_layer != NULL)
         clip_layer->buttonEnter(id);
+}
+
+void Paint_area::startOcr()
+{
+    ocrProcess.start();
 }

@@ -162,7 +162,7 @@ void Capture_window::load_key_event(QString name)
                     end_scroll = true;
                     return;
                 }
-                Window_manager::pop_window();
+                Window_manager::change_window("tray");
             }
         });
         Key_manager::add_func(this, name, "capture_rect", [=](QObject* receiver, bool is_enter){

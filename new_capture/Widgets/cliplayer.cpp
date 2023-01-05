@@ -20,6 +20,8 @@
 #include "Manager/config.h"
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include <QTimer>
+#include <QProcess>
+#include "Scroll_handler/Scroll_handler_global.h"
 
 ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsItem* parent) : QGraphicsObject(parent),
     is_drag(false),
@@ -219,6 +221,13 @@ void ClipLayer::setToolBar()
     toolbar->setStyleSheet(getQSS(":/qss/toolbar.qss"));
     toolbar->hide();
 
+    ocrButton = new QToolButton(toolbar);
+    ocrButton->setIcon(QIcon(":/image/ocr.png"));
+    ocrButton->setToolTip(MString::search("{SvJhCjRGF0}提取文字"));
+    connect(ocrButton, &QToolButton::clicked, this, [=](){
+        emit requestOcr();
+    });
+
     save_button = new QToolButton(toolbar);
     save_button->setIcon(QIcon(":/image/save.png"));
     save_button->setToolTip(MString::search("{pJqTHhEQdb}保存"));
@@ -344,6 +353,7 @@ void ClipLayer::setToolBar()
     toolbar->addSeparator();
     toolbar->addWidget(undo_button);
     toolbar->addWidget(redo_button);
+    toolbar->addWidget(ocrButton);
     toolbar->addWidget(clip_button);
     toolbar->addWidget(save_button);
     toolbar->addWidget(ok_button);

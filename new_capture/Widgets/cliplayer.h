@@ -52,6 +52,7 @@ signals:
     void stateChange(PAINT_STATE state);
     void mosaicChange(bool is_range, int value);
     void needReset();
+    void requestOcr();
 private:
     void setToolBar();
     void setAttributeToolbar();
@@ -77,6 +78,7 @@ private:
     QToolBar* toolbar;
     QGraphicsScene* scene;
     AttributeToolbar* attribute_toolbar;
+    QToolButton* ocrButton;
     QToolButton* save_button;
     QToolButton* clip_button;
     QToolButton* erase_button;
