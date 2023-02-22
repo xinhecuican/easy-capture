@@ -36,6 +36,7 @@ Setting::Setting(QWidget *parent) :
             Config::setConfig(ready_setting[i].type, ready_setting[i].sum);
         }
         Config::save_to_config();
+        Key_manager::save();
         Window_manager::pop_window();
     });
     close->connect(close, &QPushButton::clicked, this, [=](){
@@ -51,6 +52,10 @@ Setting::Setting(QWidget *parent) :
                     postUpdate((Config::setting)ready_setting[i].type, ready_setting[i].sum);
                 }
                 Config::save_to_config();
+                Key_manager::save();
+            }
+            else{
+                key_setting->restore();
             }
         }
         Window_manager::pop_window();
@@ -190,6 +195,7 @@ void Setting::capture_settings()
     });
     capture_setting->add_file_option("global_capture_file", "{HBqaqm8LIK}全屏保存位置", Config::total_capture_save_path, [=](QString path){
         ready_setting.append(data(Config::total_capture_save_path, path));
+        capture_setting->set_dirty(true);
     });
     capture_setting->done();
     all_setting.append(capture_setting);
@@ -198,20 +204,25 @@ void Setting::capture_settings()
 
 void Setting::key_settings()
 {
-    Tab_widget* key_setting = new Tab_widget("快捷键", this);
+    key_setting = new Tab_widget("快捷键", this);
     key_setting->add_spacer("{LvA0JggRsZ}全局快捷键");
-    QHBoxLayout* hlayout = new QHBoxLayout();
-    QLabel* label1 = new QLabel(MString::search("{iy3cIujuw5}打开截屏窗口"), key_setting);
-    QLabel* label2 = new QLabel("Ctrl+F1", key_setting);
-    QHBoxLayout* hlayout2 = new QHBoxLayout();
-    QLabel* label3 = new QLabel(MString::search("{0NHvAJ2fEQ}截取全屏"), key_setting);
-    QLabel* label4 = new QLabel("Ctrl+F2", key_setting);
-    hlayout->addWidget(label1);
-    hlayout->addWidget(label2);
-    hlayout2->addWidget(label3);
-    hlayout2->addWidget(label4);
-    key_setting->add_layout(hlayout);
-    key_setting->add_layout(hlayout2);
+//    QHBoxLayout* hlayout = new QHBoxLayout();
+//    QLabel* label1 = new QLabel(MString::search("{iy3cIujuw5}打开截屏窗口"), key_setting);
+//    QLabel* label2 = new QLabel("Ctrl+F1", key_setting);
+//    QHBoxLayout* hlayout2 = new QHBoxLayout();
+//    QLabel* label3 = new QLabel(MString::search("{0NHvAJ2fEQ}截取全屏"), key_setting);
+//    QLabel* label4 = new QLabel("Ctrl+F2", key_setting);
+//    hlayout->addWidget(label1);
+//    hlayout->addWidget(label2);
+//    hlayout2->addWidget(label3);
+//    hlayout2->addWidget(label4);
+//    key_setting->add_layout(hlayout);
+//    key_setting->add_layout(hlayout2);
+    QList<QString> globalKeyNames = Key_manager::getGlobalKeyName();
+    for(int i=0; i<globalKeyNames.size(); i++){
+        key_setting->addGlobalKeyOption(i, "{" + globalKeyNames[i] + "}" + globalKeyNames[i], globalKeyNames[i]);
+    }
+
     QList<QString> window_name = Key_manager::get_window_names();
     window_name.sort();
     for(int i=0; i<window_name.size(); i++)
@@ -233,6 +244,7 @@ void Setting::key_settings()
 
 void Setting::closeEvent(QCloseEvent *event)
 {
+    key_setting->restore();
     Window_manager::pop_window();
     event->accept();
 }
@@ -247,10 +259,12 @@ void Setting::on_window_cancal()
             all_setting[i]->reset();
         }
     }
+    Key_manager::registerAll();
 }
 
 void Setting::on_window_select()
 {
     ui->tabWidget->setCurrentIndex(0);
+    Key_manager::unRegisterAll();
     update();
 }

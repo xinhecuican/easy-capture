@@ -104,7 +104,7 @@
 
 本软件提供了便利的翻译方式，翻译文件位于Data/Languages下。翻译方式为将该目录下chinese.xml复制并且重命名为对应语言，例如english.xml。然后将文件里面的中文换成对应语言。以Data/Languages/MainWindow/chinese.xml为例
 
-```
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <strings language="chinese">//将language标签替换成对应语言，目前只有english,如果想翻译其他语言请先和作者联系
     <string id="cR3jOHb9Qw" text="新建"/>//中文翻译为对应语言

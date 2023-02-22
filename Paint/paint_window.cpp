@@ -160,7 +160,7 @@ void Paint_window::set_menubar()
             QPixmap pixmap;
             if(!pixmap.load(file_name))
             {
-                Debug::show_error_message("文件打开失败");
+                qWarning("文件打开失败");
                 return;
             }
             QRect rect = pixmap.rect();
@@ -203,7 +203,7 @@ void Paint_window::set_menubar()
 
                     if(!pixmap.load(data.file_name))
                     {
-                        Debug::show_error_message("文件不存在");
+                        qWarning("文件不存在");
                         return;
                     }
                     QRect rect = pixmap.rect();

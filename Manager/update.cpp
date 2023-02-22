@@ -14,12 +14,14 @@
 
 Update::Update()
 {
-    timeout = NULL;
     newest_data = Update_data();
     manager = new QNetworkAccessManager(this);
     reconnect_times = 0;
     timer = new QTimer(this);
-    timeout = new Reply_timeout(10000, this);
+    currentReceive = 0;
+    timerReceive = 0;
+    updateState = IDLE;
+    timeoutTimer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [=](){
         reconnect_times++;
         if(reconnect_times > 5)
@@ -29,6 +31,16 @@ Update::Update()
             return;
         }
         check_update();
+    });
+    connect(timeoutTimer, &QTimer::timeout, this, [=](){
+        if(timerReceive == currentReceive){
+            reply->abort();
+            updateState = IDLE;
+            updateStateChange(updateState);
+        }
+        else{
+            timerReceive = currentReceive;
+        }
     });
 }
 
@@ -41,7 +53,7 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.4.4",
+Update_data Update::now_version = Update_data("0.4.3",
 "http://121.37.81.150:8200/easycapture/update/0.4.4.zip", "",
                                               "1. 添加ocr功能");
 
@@ -76,6 +88,8 @@ void Update::deserialized(QJsonObject *json)
 
 void Update::check_update()
 {
+    updateState = CHECKING;
+    emit updateStateChange(updateState);
     Config::setConfig(Config::last_update_time, QDateTime::currentSecsSinceEpoch() / 60);
     start_request(QUrl("http://121.37.81.150:8200/easycapture/update/update.json?download=true"));
 }
@@ -88,15 +102,18 @@ void Update::start_request(const QUrl &url)
     request.setRawHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
     manager->clearAccessCache();
     reply = manager->get(request);
-    timeout->reset(reply, 500000);
-    connect(timeout, &Reply_timeout::timeout, this, [=](){
-        qDebug() << "timeout";
+    timeoutTimer->start(30000);
+    connect(reply, &QNetworkReply::downloadProgress, this, [=](qint64 bytesReceived, qint64 bytesTotal){
+        currentReceive = bytesReceived;
     });
     connect(reply, &QNetworkReply::finished, this, [=](){
         if (reply->error())
         {
+            qDebug() << "error";
             timer->start(2000);
             reply->deleteLater();
+            updateState = IDLE;
+            updateStateChange(updateState);
             return;
         }
         int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -122,15 +139,33 @@ void Update::start_request(const QUrl &url)
             Serialize::deserialize("Data/Temp/update_msg.json", this);
             if(newest_data > now_version)
             {
-                dialog = new Update_dialog(data_list, this);
-                connect(dialog, &Update_dialog::download_finished, this, [=](){
-                    on_update();
-                });
-                dialog->show();
+                if(Config::getConfig<bool>(Config::show_update_box)){
+                    dialog = new Update_dialog(data_list, this);
+                    connect(dialog, &Update_dialog::download_finished, this, [=](){
+                        on_update();
+                    });
+                    dialog->show();
+                }
+                else{
+                    UpdateDownloader* downloader = new UpdateDownloader(data_list, this);
+                    downloader->start();
+                    connect(downloader, &UpdateDownloader::success, this, [=](){
+                        on_update();
+                    });
+                    connect(downloader, &UpdateDownloader::failure, this, [=](){
+                        updateState = IDLE;
+                        emit updateStateChange(updateState);
+                    });
+                }
+                updateState = UPDATING;
+                updateStateChange(updateState);
             }
             if(timer->isActive())
             {
                 timer->stop();
+            }
+            if(timeoutTimer->isActive()){
+                timeoutTimer->stop();
             }
         }
         else if(statusCode >= 300 && statusCode < 400)
@@ -173,13 +208,26 @@ void Update::on_update()
 
     if(Config::getConfig<bool>(Config::need_update) == 1)
     {
-        int ans = QMessageBox::question(this, "更新提示", "是否进行更新");
-        if(ans == QMessageBox::Yes)
-        {
-            if(QProcess::startDetached("Upgrate.exe"))//开启更新程序
+        if(Config::getConfig<bool>(Config::show_update_box)){
+            int ans = QMessageBox::question(this, "更新提示", "是否进行更新");
+            if(ans == QMessageBox::Yes)
+            {
+                qInfo() << "正在更新";
+                if(QProcess::startDetached("Upgrate.exe"))//开启更新程序
+                    Window_manager::close();
+                else
+                    qWarning("更新程序未启动");
+                onFinish();
+            }
+        }
+        else{
+            qInfo() << "正在更新";
+            QStringList args;
+            args << "terminal";
+            if(QProcess::startDetached("Upgrate.exe", args))//开启更新程序
                 Window_manager::close();
             else
-                Debug::debug_print_warning("更新程序未启动");
+                qWarning("更新程序未启动");
             onFinish();
         }
     }

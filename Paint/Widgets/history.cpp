@@ -42,7 +42,7 @@ void History::log(History_data::save_type type, QString file_name)
     {
         if(!file.open(QIODevice::ReadWrite))
         {
-            Debug::debug_print_warning("历史文件打开失败");
+            qWarning("历史文件打开失败");
             return;
         }
         qint64 time = QDateTime::currentDateTime().currentSecsSinceEpoch();
@@ -68,7 +68,7 @@ void History::log(History_data::save_type type, QString file_name)
     {
         if(!file.open(QIODevice::ReadWrite))
         {
-            Debug::debug_print_warning("历史文件打开失败");
+            qWarning("历史文件打开失败");
             return;
         }
         if(!doc.setContent(&file))
@@ -146,7 +146,7 @@ void History::log_color(QColor color)
     {
         if(!file.open(QIODevice::ReadWrite))
         {
-            Debug::debug_print_warning("历史文件打开失败");
+            qWarning("历史文件打开失败");
             return;
         }
         colors.append(color);
@@ -160,7 +160,7 @@ void History::log_color(QColor color)
     {
         if(!file.open(QIODevice::ReadWrite))
         {
-            Debug::debug_print_warning("历史文件打开失败");
+            qWarning("历史文件打开失败");
             return;
         }
         if(!doc.setContent(&file))
@@ -198,7 +198,7 @@ void History::remove_color(QColor color)
     doc = QDomDocument();
     if(!file.open(QIODevice::ReadWrite))
     {
-        Debug::debug_print_warning("历史文件打开失败");
+        qWarning("历史文件打开失败");
         return;
     }
     if(!doc.setContent(&file))

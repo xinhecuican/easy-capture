@@ -18,10 +18,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Helper/debug.cpp \
     Helper/image_helper.cpp \
+    Helper/log.cpp \
     Helper/math.cpp \
     Helper/mstring.cpp \
     Manager/Data/update_data.cpp \
     Manager/Data/update_dialog.cpp \
+    Manager/Data/updatedownloader.cpp \
     Manager/config.cpp \
     Manager/key_manager.cpp \
     Manager/update.cpp \
@@ -55,6 +57,7 @@ SOURCES += \
     Paint/paint_window.cpp \
     Panel/Widgets/combo_tab.cpp \
     Panel/Widgets/filechooser.cpp \
+    Panel/Widgets/globalkeytab.cpp \
     Panel/Widgets/key_tab.cpp \
     Panel/Widgets/num_tab.cpp \
     Panel/Widgets/tab_widget.cpp \
@@ -71,7 +74,6 @@ SOURCES += \
     Tests/testwidget.cpp \
     main.cpp \
     main_fliter.cpp \
-    mainwindow.cpp \
     new_capture/Widgets/Scroll_handler/Scroll_handle_global.cpp \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.cpp \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.cpp \
@@ -99,12 +101,14 @@ HEADERS += \
     Helper/debug.h \
     Helper/dump.h \
     Helper/image_helper.h \
+    Helper/log.h \
     Helper/math.h \
     Helper/mstring.h \
     Helper/plist.h \
     Manager/Data/Reply_timeout.h \
     Manager/Data/update_data.h \
     Manager/Data/update_dialog.h \
+    Manager/Data/updatedownloader.h \
     Manager/IKey_listener.h \
     Manager/config.h \
     Manager/key_manager.h \
@@ -145,6 +149,7 @@ HEADERS += \
     Panel/Widgets/bool_tab.h \
     Panel/Widgets/combo_tab.h \
     Panel/Widgets/filechooser.h \
+    Panel/Widgets/globalkeytab.h \
     Panel/Widgets/key_tab.h \
     Panel/Widgets/num_tab.h \
     Panel/Widgets/tab_widget.h \
@@ -160,7 +165,6 @@ HEADERS += \
     Tests/configtest.h \
     Tests/testwidget.h \
     main_fliter.h \
-    mainwindow.h \
     new_capture/Widgets/Scroll_handler/Scroll_handler_global.h \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.h \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
@@ -180,7 +184,6 @@ FORMS += \
     Style_widget/ColorWidget.ui \
     Style_widget/bubbletipswidget.ui \
     Tests/testwidget.ui \
-    mainwindow.ui \
     new_capture/capture_window.ui
 
 TRANSLATIONS += \
@@ -191,12 +194,17 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
-QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
+#QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
+#QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
+DEFINES += QT_MESSAGELOGCONTEXT
 
 
 RESOURCES += \
     Resource/Resources.qrc\
+
+win32:CONFIG(release, debug|release): include(F:/capture/qBreakpad/qBreakpad.pri)
+win32:CONFIG(release, debug|release): QMAKE_LIBDIR += F:/capture/qBreakpad/handler
+win32:CONFIG(release, debug|release): LIBS += -lqBreakpad
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Release/release/ -lHook
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/debug/ -lHook

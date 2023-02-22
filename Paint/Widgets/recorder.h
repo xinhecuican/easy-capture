@@ -74,7 +74,7 @@ private:
             {
                 return data[--point];
             }
-            Debug::debug_print_warning("下标过小\n位置Recorder::MVector::pop()");
+            qWarning("下标过小\n位置Recorder::MVector::pop()");
             return NULL;
         }
 
@@ -120,7 +120,7 @@ private:
         {
             if(i > limit-1)
             {
-                Debug::debug_print_warning("数组下标超界\n位置Recorder::MVector::get()");
+                qWarning("数组下标超界\n位置Recorder::MVector::get()");
                 return NULL;
             }
             return data[i];

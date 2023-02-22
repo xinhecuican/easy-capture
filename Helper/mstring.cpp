@@ -17,10 +17,7 @@ QList<QString> MString::loading_list = QList<QString>();
  */
 void MString::load_from_file(QString path)
 {
-    if(loading_list.contains(path))
-    {
-        return;
-    }
+    strings.clear();
     QString language;
     for(int i=Config::languages_begin; i<Config::languages_end; i++)
     {
@@ -98,7 +95,8 @@ QString MString::search(QString id)
     }
     if(end_index == 0)
     {
-        Debug::show_error_message("字符串格式错误\n字符串为" + id);
+        if(id[0] == "{")
+            qWarning() << "字符串格式错误\n字符串为" + id;
         return id;
     }
     else

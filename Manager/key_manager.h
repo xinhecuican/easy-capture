@@ -26,6 +26,7 @@ public:
     static void save();
     static void load();
     static void update_all();
+    static void updateGlobalKey();
     static void onWindowChangeBegin(QString old_window, QString new_window);
     static void onWindowChangeEnd();
     static void onWindowClose(QString windowName);
@@ -34,8 +35,27 @@ public:
     static QList<QString> get_window_names();
     static QList<QString> get_key_names(QString window_name);
     static QList<QString> detect_key_conflict(QString window_name, QString key_name, QList<int> keys);
-    quint32 nativeKeycode(Qt::Key keycode, bool& ok);
+
+    static quint32 nativeKeycode(Qt::Key keycode);
+    static quint32 nativeModKeyCode(Qt::Key keycode);
+    static QList<ATOM> getGlobalKeyId();
+    static QList<QString> getGlobalKeyName();
+    static QString getGlobalKeyName(int index);
+    static void addGlobalKey(QString name, int modKey, int key);
+    static void registerGlobalKey(QString name);
+    static int getGlobalModKey(int index);
+    static int getGlobalKey(int index);
+    static bool isGloablKeyRegistered(int index);
+    static void unRegisterAll();
+    static void registerAll();
 private:
+    struct GlobalKeyItem{
+        bool registered;
+        ATOM keyId;
+        int modKey;
+        int key;
+        QString name;
+    };
     struct node
     {
         std::function<void(QObject*, bool)> func;
@@ -92,7 +112,7 @@ private:
                 {
                     if(iter->is_key_equal(keys))
                     {
-                        Debug::debug_print_warning("按键重复\n位置：key_manager::window::insert " + iter.key() + " " + name);
+                        qWarning() << "按键重复\n位置：key_manager::window::insert " + iter.key() + " " + name;
                         return;
                     }
                 }
@@ -100,7 +120,7 @@ private:
             }
             else
             {
-                Debug::debug_print_warning("按键命名重复\n位置Key_manager::add_event");
+                qWarning("按键命名重复\n位置Key_manager::add_event");
             }
         }
 
@@ -145,6 +165,7 @@ private:
     static QSet<QString> using_window_set;
     static QList<listener_data> listeners;
     static bool is_windowchange;
+    static QList<GlobalKeyItem> globalKeys;
 public:
     static QHash<int, QString> key_type;
 };

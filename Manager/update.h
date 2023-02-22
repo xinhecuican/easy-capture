@@ -6,10 +6,11 @@
 #include<QNetworkReply>
 #include<QWidget>
 
-class Update : QWidget, Serializable
+class Update : public QWidget, Serializable
 {
     Q_OBJECT
 public:
+    enum update_state_t{IDLE, CHECKING, UPDATING};
     Update();
     ~Update();
     static Update* instance()
@@ -28,13 +29,15 @@ public:
     void deserialized(QJsonObject *json) override;
     void onFinish();
     static Update_data now_version;
+signals:
+    void updateStateChange(update_state_t);
 private slots:
     void on_update();
 private:
-
+    update_state_t updateState;
     static Update* _instance;
     Update_data newest_data;
-    QNetworkReply* reply;
+    QPointer<QNetworkReply> reply;
     QNetworkRequest request;
     void start_request(const QUrl& url);
     QNetworkAccessManager* manager;
@@ -42,7 +45,9 @@ private:
     QList<Update_data> data_list;
     int reconnect_times;
     QTimer* timer;
-    Reply_timeout* timeout;
+    QTimer* timeoutTimer;
+    qint64 currentReceive;
+    qint64 timerReceive;
 };
 
 #endif // UPDATE_H

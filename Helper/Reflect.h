@@ -31,7 +31,7 @@ public:
         Q_ASSERT( metaObjects().contains(className) );
         if(!metaObjects().contains(className))
         {
-            Debug::show_error_message("未将" + className + "添加入窗口管理中\n位置： Reflect::newInstance<T>()");
+           qWarning() << "未将" + className + "添加入窗口管理中\n位置： Reflect::newInstance<T>()";
         }
         return metaObjects().value(className).newInstance(val0, val1, val2, val3, val4,
                                                           val5, val6, val7, val8, val9);
@@ -53,8 +53,8 @@ public:
     {
         if(!metaObjects().contains(className))
         {
-            Debug::debug_print_warning(className);
-            Debug::debug_print_warning(method_name);
+            qWarning() << className;
+            qWarning(method_name);
         }
         metaObjects().value(className).invokeMethod(object, method_name, Qt::AutoConnection, ret, val0,
                                                            val1, val2, val3, val4, val5, val6, val7, val8, val9);

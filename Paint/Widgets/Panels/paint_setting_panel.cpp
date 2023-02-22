@@ -402,7 +402,7 @@ void Paint_setting_panel::closeEvent(QCloseEvent *event)
     }
     else
     {
-        Debug::debug_print_warning("warning: paint_setting_panel close after paint window\nPaint"
+        qWarning("warning: paint_setting_panel close after paint window\nPaint"
                                    "_setting_panel:close_event");
     }
     event->accept();

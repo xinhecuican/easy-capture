@@ -23,18 +23,14 @@ void Window_manager::control_window_close()
     qint64 current_time = QDateTime::currentDateTime().currentSecsSinceEpoch();
     QList<Window_base*> temp_list = QList<Window_base*>();
     if(active_window == "Setting")return;
-#ifdef QT_DEBUG
-    qDebug() << active_window << endl;
-#endif
+    qInfo() << active_window << endl;
     for(auto iter=window_list.begin(); iter!=window_list.end();)
     {
         if(current_time-iter.value().time >= time&&
                 (current_hidden || iter.key() != active_window))
         {
             temp_list.append(iter.value().window);
-#ifdef QT_DEBUG
-            qDebug() << "delete " << iter.key();
-#endif
+            qInfo() << "delete " << iter.key();
             Key_manager::onWindowClose(iter.key());
             iter = window_list.erase(iter);
         }
@@ -64,7 +60,7 @@ void Window_manager::close_window(QString name)
     }
     if(name == active_window)
     {
-        Debug::debug_print_warning("未关闭窗口调用close_window\n位置：Window_manager::close_window");
+        qWarning("未关闭窗口调用close_window\n位置：Window_manager::close_window");
     }
 }
 
@@ -75,9 +71,7 @@ void Window_manager::push_window(QString name, Window_base *widget)
 
 void Window_manager::change_window(QString name)
 {
-#ifdef QT_DEBUG
-    qDebug() << name << " " << active_window;
-#endif
+    qInfo() << name << " " << active_window;
     create_window(name);
     if(active_window != name)
     {
@@ -171,12 +165,12 @@ void Window_manager::create_window(QString name)
 
 void Window_manager::close()
 {
-    QApplication::quit();
     for(auto iter=window_list.begin(); iter!=window_list.end(); iter++)
     {
         iter->window->on_window_close();
         iter->window->deleteLater();
     }
+    QApplication::quit();
 }
 
 Window_manager::Window_data Window_manager::create_data(Window_base *window)

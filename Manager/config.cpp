@@ -79,7 +79,7 @@ void Config::load_config()
     {
         if(!Serialize::deserialize(":/Data/default.json", instance()))
         {
-            Debug::debug_print_warning("配置文件解析失败");
+            qWarning("配置文件解析失败");
         }
         save_to_config();
     }
@@ -104,7 +104,7 @@ void Config::update_all()
     instance()->all_settings = QMap<int, QVariant>();
     if(!Serialize::deserialize(":/Data/default.json", instance()))
     {
-        Debug::debug_print_warning("配置文件解析失败");
+        qWarning("配置文件解析失败");
     }
     for(int i=0; i<COUNT; i++)
     {

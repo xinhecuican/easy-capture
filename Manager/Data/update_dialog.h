@@ -7,6 +7,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include "Reply_timeout.h"
+#include "updatedownloader.h"
 class Update_dialog : public QDialog
 {
     Q_OBJECT
@@ -17,14 +18,7 @@ public:
 signals:
     void download_finished();
 private:
-    QList<Update_data> data;
-    QList<QString> file_names;
-    QNetworkRequest request;
-    QNetworkAccessManager manager;
-    QNetworkReply* reply;
-    Reply_timeout* timeout;
-    int update_sum;
-    void get_one_update();
+    UpdateDownloader* downloader;
 };
 
 #endif // UPDATE_DIALOG_H

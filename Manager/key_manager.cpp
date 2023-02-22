@@ -6,6 +6,9 @@
 #include<QFile>
 #include<QKeyEvent>
 #include "update.h"
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include "main_fliter.h"
 
 Key_manager::Key_manager()
 {
@@ -18,6 +21,7 @@ QList<int> Key_manager::availiable_key = QList<int>();
 QSet<QString> Key_manager::using_window_set = QSet<QString>();
 QList<Key_manager::listener_data> Key_manager::listeners = QList<listener_data>();
 bool Key_manager::is_windowchange = false;
+QList<Key_manager::GlobalKeyItem> Key_manager::globalKeys = QList<Key_manager::GlobalKeyItem>();
 QList<QString> Key_manager::key_settings = {
     "MainWindow:main_capture;16777249,78",
     "Capture_window:leave;16777216",//Escape,可以通过Qt::Key_Escape查看键值
@@ -41,9 +45,13 @@ QList<QString> Key_manager::key_settings = {
     "Paint_window:delete_shape;16777223"
 };
 
+QList<QString> globalKeySetting = {
+    "awake_capture:16777249;16777264",
+    "fullscreen_capture:16777249;16777265"
+};
+
 void Key_manager::add_key(QString window_name, QString obj_name, QList<int> keys)
 {
-    int key = Qt::Key_Control;
     if(all_key.find(window_name) == all_key.end())
     {
         window temp = window();
@@ -69,7 +77,7 @@ void Key_manager::add_func(QObject* receiver, QString window_name, QString obj_n
     }
     else
     {
-        Debug::show_error_message("未找到对应按键\n位置：Key_manager::add_func");
+        qWarning("未找到对应按键\n位置：Key_manager::add_func");
     }
 }
 
@@ -104,7 +112,32 @@ void Key_manager::update_all()
         {
             add_key(window_name, key_name, using_key);
         }
+    }
+    updateGlobalKey();
+}
 
+void Key_manager::updateGlobalKey(){
+    for(int i=0; i<globalKeySetting.size(); i++){
+        int firstIndex = globalKeySetting[i].indexOf(':');
+        int secondIndex = globalKeySetting[i].indexOf(';');
+        QString temp;
+        QList<int> using_key = QList<int>();
+        for(int k=secondIndex+1; k<globalKeySetting[i].size(); k++){
+            if(globalKeySetting[i][k] == ',')
+            {
+                using_key.append(temp.toInt());
+                temp.clear();
+            }
+            else
+            {
+                temp.append(globalKeySetting[i][k]);
+            }
+        }
+        using_key.append(temp.toInt());
+        QString name = globalKeySetting[i].mid(0, firstIndex);
+        int modKey = globalKeySetting[i].mid(firstIndex+1, secondIndex - firstIndex - 1).toInt();
+        addGlobalKey(name, modKey, using_key.size() != 0 ? using_key[0] : 0);
+        registerGlobalKey(name);
     }
 }
 
@@ -256,7 +289,7 @@ void Key_manager::save()
     QFile file("Data/keys.xml");
     if(!file.open(QIODevice::ReadWrite | QIODevice::Truncate))
     {
-        Debug::show_error_message("按键配置文件无法打开\n位置：Key_manager::save");
+        qWarning("按键配置文件无法打开\n位置：Key_manager::save");
         return;
     }
     QDomDocument doc;
@@ -290,6 +323,15 @@ void Key_manager::save()
         }
         root.appendChild(element);
     }
+    QDomElement element = doc.createElement("global_keys");
+    for(GlobalKeyItem keyItem : globalKeys){
+        QDomElement element2 = doc.createElement("global_key");
+        element2.setAttribute("name", keyItem.name);
+        element2.setAttribute("mod_key", keyItem.modKey);
+        element2.setAttribute("key", keyItem.key);
+        element.appendChild(element2);
+    }
+    root.appendChild(element);
 
     QTextStream out_stream(&file);
     doc.save(out_stream,4); //缩进4格
@@ -301,28 +343,7 @@ void Key_manager::load()
     QFile file("Data/keys.xml");
     if(!file.open(QIODevice::ReadOnly))
     {
-        for(int i=0; i<key_settings.size(); i++)
-        {
-            int first_index = key_settings[i].indexOf(':');
-            int second_index = key_settings[i].indexOf(';');
-            QList<int> using_key = QList<int>();
-            QString temp;
-            for(int k=second_index+1; k<key_settings[i].size(); k++)
-            {
-                if(key_settings[i][k] == ',')
-                {
-                    using_key.append(temp.toInt());
-                    temp.clear();
-                }
-                else
-                {
-                    temp.append(key_settings[i][k]);
-                }
-            }
-            using_key.append(temp.toInt());
-            add_key(key_settings[i].mid(0, first_index),
-                    key_settings[i].mid(first_index+1, second_index-first_index-1), using_key);
-        }
+        update_all();
     }
     else
     {
@@ -338,49 +359,46 @@ void Key_manager::load()
         if(root.tagName().compare("key_setting") == 0 && (root.attribute("version").compare(Update::now_version.get_version()) == 0))
         {
             QDomNodeList childs = root.childNodes();
+            bool globalKeySet = false;
             for(int i=0; i<childs.size(); i++)
             {
                 QDomElement element = childs.at(i).toElement();
-                QString window_name = element.attribute("name");
-                QDomNodeList list = element.childNodes();
-                for(int k=0; k<list.size(); k++)
-                {
-                    QDomElement element2 = list.at(k).toElement();
-                    QString obj_name = element2.attribute("name");
-                    QDomNodeList key_list = element2.childNodes();
-                    QList<int> keys = QList<int>();
-                    for(int j=0; j<key_list.size(); j++)
+                if(element.tagName().compare("window") == 0){
+                    QString window_name = element.attribute("name");
+                    QDomNodeList list = element.childNodes();
+                    for(int k=0; k<list.size(); k++)
                     {
-                        keys.append(key_list.at(j).toElement().attribute("id").toInt());
+                        QDomElement element2 = list.at(k).toElement();
+                        QString obj_name = element2.attribute("name");
+                        QDomNodeList key_list = element2.childNodes();
+                        QList<int> keys = QList<int>();
+                        for(int j=0; j<key_list.size(); j++)
+                        {
+                            keys.append(key_list.at(j).toElement().attribute("id").toInt());
+                        }
+                        add_key(window_name, obj_name, keys);
                     }
-                    add_key(window_name, obj_name, keys);
                 }
+                else if(element.tagName().compare("global_keys") == 0){
+                    globalKeySet = true;
+                    QDomNodeList list = element.childNodes();
+                    for(int k=0; k<list.size(); k++){
+                        QDomElement element2 = list.at(k).toElement();
+                        QString name = element2.attribute("name");
+                        int modKey = element2.attribute("mod_key").toInt();
+                        int key = element2.attribute("key").toInt();
+                        addGlobalKey(name, modKey, key);
+                        registerGlobalKey(name);
+                    }
+                }
+            }
+            if(!globalKeySet){
+                updateGlobalKey();
             }
         }
         else
         {
-            for(int i=0; i<key_settings.size(); i++)
-            {
-                int first_index = key_settings[i].indexOf(':');
-                int second_index = key_settings[i].indexOf(';');
-                QList<int> using_key = QList<int>();
-                QString temp;
-                for(int k=second_index+1; k<key_settings[i].size(); k++)
-                {
-                    if(key_settings[i][k] == ',')
-                    {
-                        using_key.append(temp.toInt());
-                        temp.clear();
-                    }
-                    else
-                    {
-                        temp.append(key_settings[i][k]);
-                    }
-                }
-                using_key.append(temp.toInt());
-                add_key(key_settings[i].mid(0, first_index),
-                        key_settings[i].mid(first_index+1, second_index-first_index-1), using_key);
-            }
+            update_all();
         }
     }
 
@@ -414,9 +432,96 @@ void Key_manager::onWindowClose(QString windowName)
 
 }
 
-quint32 Key_manager::nativeKeycode(Qt::Key keycode, bool &ok)
+QList<ATOM> Key_manager::getGlobalKeyId(){
+    QList<ATOM> ans;
+    for(GlobalKeyItem keyItem : globalKeys){
+        ans.append(keyItem.keyId);
+    }
+    return ans;
+}
+
+int Key_manager::getGlobalKey(int index){
+    return globalKeys[index].key;
+}
+
+int Key_manager::getGlobalModKey(int index){
+    return globalKeys[index].modKey;
+}
+
+bool Key_manager::isGloablKeyRegistered(int index){
+    return globalKeys[index].registered;
+}
+
+QString Key_manager::getGlobalKeyName(int index){
+    return globalKeys[index].name;
+}
+
+QList<QString> Key_manager::getGlobalKeyName(){
+    QList<QString> ans;
+    for(int i=0; i<globalKeys.size(); i++){
+        ans.append(globalKeys[i].name);
+    }
+    return ans;
+}
+
+void Key_manager::addGlobalKey(QString name, int modKey, int key){
+    for(int i=0; i<globalKeys.size(); i++){
+        if(globalKeys[i].name == name){
+            globalKeys[i].modKey = modKey;
+            globalKeys[i].key = key;
+            return;
+        }
+    }
+    GlobalKeyItem keyItem;
+    keyItem.name = name;
+    keyItem.modKey = modKey;
+    keyItem.key = key;
+    keyItem.registered = false;
+    keyItem.keyId = GlobalAddAtomA(keyItem.name.toStdString().c_str());
+    globalKeys.append(keyItem);
+}
+
+void Key_manager::registerGlobalKey(QString name){
+    for(int i=0; i<globalKeys.size(); i++){
+        if(globalKeys[i].name == name){
+            if(globalKeys[i].registered){
+                UnregisterHotKey((HWND)Main_fliter::instance()->winId(), globalKeys[i].keyId);
+            }
+            globalKeys[i].registered = RegisterHotKey((HWND)Main_fliter::instance()->winId(), globalKeys[i].keyId, nativeModKeyCode((Qt::Key)globalKeys[i].modKey), nativeKeycode((Qt::Key)globalKeys[i].key));
+        }
+    }
+}
+
+quint32 Key_manager::nativeModKeyCode(Qt::Key keycode){
+    switch(keycode){
+    case Qt::Key_Alt: return MOD_ALT;
+    case Qt::Key_Control: return MOD_CONTROL;
+    case Qt::Key_Shift: return MOD_SHIFT;
+    case Qt::Key_Meta: return MOD_WIN;
+    }
+    return 0;
+}
+
+void Key_manager::unRegisterAll(){
+    for(int i=0; i<globalKeys.size(); i++){
+        if(globalKeys[i].registered){
+            UnregisterHotKey((HWND)Main_fliter::instance()->winId(), globalKeys[i].keyId);
+            globalKeys[i].registered = false;
+
+        }
+    }
+}
+
+void Key_manager::registerAll(){
+    for(int i=0; i<globalKeys.size(); i++){
+        if(!globalKeys[i].registered){
+            globalKeys[i].registered = RegisterHotKey((HWND)Main_fliter::instance()->winId(), globalKeys[i].keyId, nativeModKeyCode((Qt::Key)globalKeys[i].modKey), nativeKeycode((Qt::Key)globalKeys[i].key));
+        }
+    }
+}
+
+quint32 Key_manager::nativeKeycode(Qt::Key keycode)
 {
-    ok = true;
     if(keycode <= 0xFFFF) {//Try to obtain the key from it's "character"
         const SHORT vKey = VkKeyScanW(static_cast<WCHAR>(keycode));
         if(vKey > -1)
@@ -584,7 +689,6 @@ quint32 Key_manager::nativeKeycode(Qt::Key keycode, bool &ok)
         if(keycode <= 0xFFFF)
             return (byte)keycode;
         else {
-            ok = false;
             return 0;
         }
     }

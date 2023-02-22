@@ -97,4 +97,11 @@
     <string id="jjSL6uTMUW" text="在设置-捕获中可以调节滚动速度哦"/>
     <string id="YZbdqyumbs" text="点击滚动区域进行滚动"/>
     <string id="NWZ0wFsHVM" text="按Esc中止\n请不要移动鼠标"/>
+    <string id="awake_capture" text="唤醒截屏"/>
+    <string id="fullscreen_capture" text="全屏"/>
+    <string id="FuBCvgW4BE" text="关闭"/>
+    <string id="De720dAaY1" text="设置"/>
+    <string id="vOmXOswvHv" text="检查更新"/>
+    <string id="MKFr8c7gW9" text="正在检查"/>
+    <string id="d6AUxGzHMJ" text="正在更新"/>
 </strings>

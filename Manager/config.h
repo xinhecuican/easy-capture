@@ -44,7 +44,8 @@ public:
               total_capture_save_path,
               middle_button_type,
               version,
-              clip_voice
+              clip_voice,
+              show_update_box
               );
     Config();
     ~Config();

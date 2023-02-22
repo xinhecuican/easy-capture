@@ -2,6 +2,7 @@
 #define DEBUG_H
 #include<QString>
 #include<QImage>
+#include <QDebug>
 
 class Debug
 {

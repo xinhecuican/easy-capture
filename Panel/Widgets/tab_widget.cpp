@@ -9,6 +9,7 @@
 #include<QMessageBox>
 #include "num_tab.h"
 #include "filechooser.h"
+#include "globalkeytab.h"
 
 Tab_widget::Tab_widget()
 {
@@ -61,8 +62,7 @@ void Tab_widget::add_bool_option(QString tab_name, QString name, int index, std:
     update();
 }
 
-void Tab_widget::add_combo_option(QString tab_name, QString text, QVector<QString> name, int begin_index, int end_index,
-                                  const std::function<void (int)> &f)
+void Tab_widget::add_combo_option(QString tab_name, QString text, QVector<QString> name, int begin_index, int end_index, const std::function<void (int)> &f)
 {
     Combo_tab* temp = new Combo_tab(tab_name, name, begin_index, end_index, f,  base);
     widgets.push_back(temp);
@@ -89,6 +89,16 @@ void Tab_widget::add_key_option(int index, QString tab_name, QString window_name
     });
     QLabel* label = new QLabel(MString::search(tab_name), this);
     QHBoxLayout*  hlayout = new QHBoxLayout();
+    hlayout->addWidget(label);
+    hlayout->addWidget(element);
+    layout->addLayout(hlayout);
+}
+
+void Tab_widget::addGlobalKeyOption(int index, QString tabName, QString keyName){
+    GlobalKeyTab* element = new GlobalKeyTab(index, tabName, keyName, this);
+    widgets.push_back(element);
+    QLabel* label = new QLabel(MString::search(tabName), this);
+    QHBoxLayout* hlayout = new QHBoxLayout();
     hlayout->addWidget(label);
     hlayout->addWidget(element);
     layout->addLayout(hlayout);
@@ -170,4 +180,10 @@ void Tab_widget::set_dirty(bool dirty)
 void Tab_widget::add_layout(QLayout *hlayout)
 {
     layout->addLayout(hlayout);
+}
+
+void Tab_widget::restore(){
+    for(Tab_base* widget : widgets){
+        widget->restore();
+    }
 }

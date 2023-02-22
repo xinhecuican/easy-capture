@@ -47,6 +47,7 @@ private:
     void capture_settings();
     void key_settings();
     void postUpdate(Config::setting type, QVariant num);
+    Tab_widget* key_setting;
 };
 
 #endif // SETTING_H

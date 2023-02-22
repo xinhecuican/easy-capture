@@ -11,12 +11,12 @@ QMap<int, QList<Debug::TimerElement>> Debug::timerName = QMap<int, QList<TimerEl
 
 void Debug::show_error_message(QString message)
 {
-    QMessageBox::critical(NULL, "错误", message);
+    qCritical() << message;
 }
 
 void Debug::debug_print_warning(QString message)
 {
-    qDebug() <<  "\033[32m" << message << "\033[0m";
+    qWarning() << message;
 }
 
 void Debug::showImage(QImage image)

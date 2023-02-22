@@ -6,6 +6,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "Style_widget/tray.h"
+#include <QProcess>
 
 class Main_fliter : public QWidget, public QAbstractNativeEventFilter
 {
@@ -32,9 +33,11 @@ public slots:
     void window_manager_thread();
 private:
     void setTrayContextMenu();
+    void checkCrash();
     Tray* tray;
     QTimer* timer;
     static Main_fliter* _instance;
+    QProcess* crashUploadProcess;
 };
 
 #endif // MAIN_FLITER_H

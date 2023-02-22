@@ -19,6 +19,8 @@ Key_tab::Key_tab(int index, QString window_name, QString key_name, QWidget* pare
         temp_keys = QList<int>();
         Key_manager::add_key_listener(this);
     });
+    originKeys = keys;
+    dirty = false;
 }
 
 void Key_tab::get_key(int key)
@@ -51,8 +53,8 @@ void Key_tab::key_end()
     {
         setChecked(false);
         Key_manager::set_keys(window_name, key_name, temp_keys);
-        Key_manager::save();
         keys = temp_keys;
+        dirty = true;
     }
     else
     {
@@ -88,4 +90,10 @@ int Key_tab::get_default_index()
 QString Key_tab::get_name()
 {
     return window_name + key_name;
+}
+
+void Key_tab::restore(){
+    if(dirty){
+        Key_manager::set_keys(window_name, key_name, originKeys);
+    }
 }
