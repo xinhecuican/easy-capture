@@ -26,6 +26,7 @@ public:
     Q_INVOKABLE void showNormal() override;
     Q_INVOKABLE bool acceptFocus() override;
 private:
+    void clearMaskUse();
     struct BlurElement{
         QRect bound;
         QColor color;
@@ -37,9 +38,12 @@ private:
     QPoint left_top;
     QImage pix;
     QImage mask;
-    int range=15;
-    int unit_size=5;
+    int range=12;
+    int unit_size=4;
+    const int maskUnitSize=4;
     bool is_save;
+    int maskUseWidth;
+    int maskUseHeight;
 };
 
 #endif // BLUELAYER_H

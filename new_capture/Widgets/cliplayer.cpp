@@ -508,8 +508,9 @@ void ClipLayer::initAttributeToolbarWidget(int id){
         if(mosaic_sample == NULL){
             mosaic_sample = new MosicSample(attribute_toolbar);
             mosaic_size = new QSpinBox(attribute_toolbar);
-            mosaic_size->setRange(1, 15);
-            mosaic_size->setValue(5);
+            mosaic_size->setRange(4, 20);
+            mosaic_size->setValue(4);
+            mosaic_size->setSingleStep(4);
             mosaic_size->setAccelerated(true);
             mosaic_size->setWrapping(true);
             mosaic_size->setKeyboardTracking(true);
@@ -518,11 +519,12 @@ void ClipLayer::initAttributeToolbarWidget(int id){
                 emit mosaicChange(false, value);
             });
             mosaic_range = new QSlider(attribute_toolbar);
-            mosaic_range->setValue(15);
-            mosaic_range->setMinimum(1);
-            mosaic_range->setMaximum(50);
+            mosaic_range->setValue(12);
+            mosaic_range->setMinimum(4);
+            mosaic_range->setMaximum(48);
+            mosaic_range->setSingleStep(4);
             mosaic_range->setOrientation(Qt::Horizontal);
-            mosaic_range->setToolTip("15");
+            mosaic_range->setToolTip("12");
             connect(mosaic_range, &QSlider::valueChanged, this, [=](){
                 emit mosaicChange(true, mosaic_range->value());
                 mosaic_size->setMaximum(mosaic_range->value());

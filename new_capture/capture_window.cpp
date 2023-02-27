@@ -184,7 +184,7 @@ void Capture_window::load_key_event(QString name)
         });
         Key_manager::add_func(this, name, "capture_rect", [=](QObject* receiver, bool is_enter){
             Capture_window* current = qobject_cast<Capture_window*>(receiver);
-            if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+            if(current->area->hasFocus() && is_enter && !Config::getConfig<bool>(Config::scroll_capture))
                 current->area->clipButtonEnter(0);
         });
         Key_manager::add_func(this, name, "capture_mosaic", [=](QObject* receiver, bool is_enter){

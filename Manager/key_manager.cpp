@@ -25,13 +25,13 @@ QList<Key_manager::GlobalKeyItem> Key_manager::globalKeys = QList<Key_manager::G
 QList<QString> Key_manager::key_settings = {
     "MainWindow:main_capture;16777249,78",
     "Capture_window:leave;16777216",//Escape,可以通过Qt::Key_Escape查看键值
-    "Capture_window:capture_rect;49",
-    "Capture_window:capture_mosaic;50",
-    "Capture_window:capture_cursor;51",
-    "Capture_window:capture_pencil;52",
-    "Capture_window:capture_highlighter;53",
-    "Capture_window:capture_text;54",
-    "Capture_window:capture_erase;55",
+    "Capture_window:capture_rect;16777249,49",
+    "Capture_window:capture_mosaic;16777249,50",
+    "Capture_window:capture_cursor;16777249,51",
+    "Capture_window:capture_pencil;16777249,52",
+    "Capture_window:capture_highlighter;16777249,53",
+    "Capture_window:capture_text;16777249,54",
+    "Capture_window:capture_erase;16777249,55",
     "Capture_window:capture_undo;16777249,90",
     "Capture_window:capture_redo;16777249,88",
     "Capture_window:enter_capture;16777220",//enter
