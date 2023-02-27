@@ -103,4 +103,4 @@
 
 如果你觉得本软件对你有帮助，可以请作者喝一杯咖啡 ^_^
 
-![image-20230227150805951](https://image.xinhecuican.tech/img/image-20230227150805951.png)
+<img src="https://image.xinhecuican.tech/img/%E8%B5%9E%E8%B5%8F%E7%A0%81.png" alt="赞赏码" style="zoom:50%;" />

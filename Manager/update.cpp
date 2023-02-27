@@ -59,7 +59,7 @@ Update_data Update::now_version = Update_data("0.5.0",
                                               "2. 全局快捷键可自定义\n"
                                               "3. 取消更新提示框\n"
                                               "4. crash handler优化\n"
-                                              "5. 修复更改马赛克设置后崩溃");
+                                              "5. 修复更改马赛克设置后崩溃" );
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {
