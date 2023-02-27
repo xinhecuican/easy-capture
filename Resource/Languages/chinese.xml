@@ -108,4 +108,7 @@
     <string id="MKFr8c7gW9" text="正在检查"/>
     <string id="d6AUxGzHMJ" text="正在更新"/>
     <string id="UowiwjDUIy" text="视频"/>
+    <string id="rh0LYgOmDD" text="录制声音"/>
+    <string id="nmqfWFejoz" text="选择保存目录"/>
+    <string id="SHLK0bd4wt" text="开始录屏: F5\n暂停/恢复录屏: F6\n结束录屏: F7"/>
 </strings>

@@ -10,6 +10,7 @@
 #include "windows.h"
 #include <memory>
 #include <QDebug>
+#include "Helper/mstring.h"
 #pragma comment(lib, "Winmm.lib")
 
 VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
@@ -17,7 +18,7 @@ VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
     layout = new QHBoxLayout();
 
     QRadioButton* enableAudioButton = new QRadioButton(this);
-    enableAudioButton->setText("录制声音");
+    enableAudioButton->setText(MString::search("{rh0LYgOmDD}录制声音"));
     enableAudioButton->setChecked(true);
     enableAudioButton->setCheckable(true);
     info.enableAudio = true;
@@ -62,7 +63,7 @@ VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
     pathChooseButton->setIcon(QIcon(":/image/folder.png"));
     pathChooseButton->setToolTip(History::instance()->getVideoSavePath());
     connect(pathChooseButton, &QToolButton::clicked, this, [=](){
-        QString result = QFileDialog::getExistingDirectory(this, "选择保存目录", History::instance()->getVideoSavePath());
+        QString result = QFileDialog::getExistingDirectory(this, MString::search("{nmqfWFejoz}选择保存目录"), History::instance()->getVideoSavePath());
         if(result != ""){
             History::instance()->setVideoSavePath(result);
             pathChooseButton->setToolTip(History::instance()->getVideoSavePath());
@@ -70,13 +71,13 @@ VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
     });
 
     QLineEdit* fileNameEdit = new QLineEdit(this);
-    fileNameEdit->setPlaceholderText("新建");
-    name = "新建";
+    fileNameEdit->setPlaceholderText(MString::search("{cR3jOHb9Qw}新建"));
+    name = MString::search("{cR3jOHb9Qw}新建");
     fileNameEdit->setMaxLength(20);
     connect(fileNameEdit, &QLineEdit::textChanged, this, [=](QString text){
         name = text;
         if(text == ""){
-            name = "新建";
+            name = MString::search("{cR3jOHb9Qw}新建");
         }
     });
 
@@ -95,7 +96,7 @@ VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
 
     QToolButton* helpButton = new QToolButton(this);
     helpButton->setIcon(QIcon(":/image/help.png"));
-    helpButton->setToolTip("开始录屏: F5\n暂停/恢复录屏: F6\n结束录屏: F7");
+    helpButton->setToolTip(MString::search("{SHLK0bd4wt}开始录屏: F5\n暂停/恢复录屏: F6\n结束录屏: F7"));
 
     layout->addWidget(enableAudioButton);
     layout->addWidget(deviceSelector);

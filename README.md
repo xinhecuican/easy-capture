@@ -1,14 +1,6 @@
 # 简介
 
-简截是一款截图软件。它的主要功能是图片透明化。
-
-| 透明化前|透明化后 |
-|-|-|
-| <img src="https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA1.png"> | <img src="https://xinhecuican.tech/images/%E7%AE%80%E6%88%AA2.png"> |
-
-此外他还支持多种截图模式并且可以图片上编辑
-
-
+简截是一款截图软件。它拥有基本的截图及处理功能，并且还有滚动截屏，ocr，图片透明化，录屏等功能
 
 # 环境
 
@@ -17,16 +9,13 @@
 * windows环境
 * qt 5.14.2 64位
 * opencv 4.5.1 with contrib
+* ffmpeg 5.1
 
 # 下载及代码
 
-[发布页](https://xinhecuican.github.io/post/f0fbe9f2.html#%E7%AE%80%E4%BB%8B)
+[蓝奏云]()
 
-[github地址页](https://github.com/xinhecuican/easy-capture)
-
-[源码结构及一些编写心得](https://xinhecuican.github.io/post/35b71592.html)
-
-欢迎拿走源码自己修改。也可以在评论区提意见（我设置了邮箱提醒）。
+[本地下载](121.37.81.150:8200/easycapture/downloads/easy_capture0.5.0.exe)
 
 # 功能介绍
 
@@ -60,6 +49,10 @@
 
   使用[RapidOCR](https://github.com/RapidAI/RapidOCR)引擎进行识别![](https://xinhecuican.tech/images/简截9.png)
 
+* 录屏
+
+  录屏基于[NanaRecorder](https://github.com/onlyet/NanaRecorder)改进而来
+
 # 快捷键
 
 鼠标：
@@ -74,31 +67,19 @@
 |-|-|-|
 | 全局 | Ctrl+F1 | 如果当前为隐藏，则唤醒并跳转到截图窗口。否则无效 |
 | 全局 | Ctrl+F2 | 截全屏并自动保存，可在设置中配置保存位置 |
-| 主窗口 | Ctrl+N | 打开截图窗口 |
-| 截图窗口 | 1 | 绘制矩形 |
-| 截图窗口 | 2 | 绘制马赛克 |
-| 截图窗口 | 3 | 绘制区域 |
-| 截图窗口 | 4 | 铅笔描绘 |
-| 截图窗口 | 6 | 荧光笔描绘 |
-| 截图窗口 | 7 | 绘制文本 |
-| 截图窗口 | Ctrl+Z | 撤销 |
-| 截图窗口 | Ctrl+X | 恢复 |
-| 截图窗口 | Ctrl+S | 保存 |
-| 截图窗口 | Ctrl+E | 保存到剪切板 |
-| 截图窗口 | Esc | 退出 |
-| 截图窗口 | Enter | 确认 |
-| 绘图窗口 | Ctrl+S | 保存 |
-| 绘图窗口 | Ctrl+Z | 撤销 |
-| 绘图窗口 | Ctrl+X | 恢复 |
-| 绘图窗口 | Ctrl+N | 跳转到截图窗口 |
+| 全局 | F5 | 开始录屏 |
+| 全局 | F6 | 暂停/恢复录屏 |
+| 全局 | F7 | 终止录屏 |
+
+还有许多快捷键可以在**设置-快捷键**中查看
 
 # 更新计划
 
-1. 完成滚动截屏(完成)
-2. 修bug，重构部分代码(完成)
-3. 完善绘图区域，添加文本框，箭头和水印图片，支持旋转（完成）
-4. 完成UI_manager，可以利用qss(和css语法类似)修改样式并且提供主题
-5. 完善透明度选择，除了删除某些像素外可以选择保留哪些像素，并支持渐变颜色删除。
+- [x] 完成滚动截屏
+- [x] 修bug，重构部分代码
+- [x] 完善绘图区域，添加文本框，箭头和水印图片，支持旋转
+- [ ] 完成UI_manager，可以利用qss(和css语法类似)修改样式并且提供主题
+- [ ]  完善透明度选择，除了删除某些像素外可以选择保留哪些像素，并支持渐变颜色删除。
 
 # 翻译
 

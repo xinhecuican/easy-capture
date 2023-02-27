@@ -18,7 +18,7 @@ UpdateDownloader::UpdateDownloader(QList<Update_data> data, QObject* parent) : Q
             reply->abort();
         }
         else{
-            qDebug() << currentReceive;
+            qInfo() << "下载字节数: " << currentReceive;
             timerReceive = currentReceive;
         }
     });
@@ -26,8 +26,12 @@ UpdateDownloader::UpdateDownloader(QList<Update_data> data, QObject* parent) : Q
 }
 
 void UpdateDownloader::start(){
-    request.setUrl(this->data[updateSum].get_url());
-    qInfo() << this->data[updateSum].get_url();
+    startInner(this->data[updateSum].get_url());
+}
+
+void UpdateDownloader::startInner(QUrl url){
+    request.setUrl(url);
+    qInfo() << url;
 
 //    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
 //    request.setRawHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -100,13 +104,25 @@ void UpdateDownloader::start(){
             }
             else
             {
-                start();
+                startInner(this->data[updateSum].get_url());
             }
         }
         else if(statusCode >=300 && statusCode < 400)
         {
             qWarning() << "文件需要重定向, 状态码: "  << statusCode;
-            emit failure();
+            const QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+            // 检测是否需要重定向，如果不需要则读数据
+            if (!redirectionTarget.isNull())
+            {
+                const QUrl redirectedUrl = url.resolved(redirectionTarget.toUrl());
+                reply->deleteLater();
+                reply = nullptr;
+                startInner(redirectedUrl);
+            }
+            else{
+                qCritical() << "更新文件重定向失败";
+                emit failure();
+            }
         }
     });
 }

@@ -17,6 +17,7 @@ signals:
     void success();
     void failure();
 private:
+    void startInner(QUrl url);
     QList<Update_data> data;
     QNetworkRequest request;
     QNetworkAccessManager manager;
