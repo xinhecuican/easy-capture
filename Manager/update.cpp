@@ -133,7 +133,9 @@ void Update::start_request(const QUrl &url)
             QFile file("Data/Temp/update_msg.json");
             if (!file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate))
             {
-                qDebug() << "file open error!";
+                qWarning() << "file open error!";
+                updateState = IDLE;
+                updateStateChange(updateState);
                 return ;
             }
             QTextStream out(&file);
@@ -166,6 +168,7 @@ void Update::start_request(const QUrl &url)
             }
             else{
                 updateState = IDLE;
+                updateStateChange(updateState);
             }
             if(timer->isActive())
             {
@@ -254,6 +257,7 @@ void Update::onFinish()
 {
     if(_instance != NULL)
     {
+        updateStateChange(IDLE);
         _instance->deleteLater();
     }
 }

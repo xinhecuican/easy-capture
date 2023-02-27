@@ -13,7 +13,7 @@
 
 # 下载及代码
 
-[蓝奏云]()
+[蓝奏云 密码: 9qkn](https://xinhecuican.lanzouy.com/ibWMi0oq1e0b)
 
 [本地下载](121.37.81.150:8200/easycapture/downloads/easy_capture0.5.0.exe)
 
