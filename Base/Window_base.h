@@ -40,6 +40,11 @@ public:
     virtual void set_pic(QPixmap pix, QRect rect){};
     virtual void on_paint_panel_close(){};
 
+    // Capture_window 录屏全局快捷键函数
+    virtual void startCaptureVideo(){};
+    virtual void pauseCaptureVideo(){};
+    virtual void stopCaptureVideo(){};
+
 
 
     /// 翻译流程，

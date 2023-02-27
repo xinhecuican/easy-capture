@@ -457,3 +457,9 @@ void Paint_area::startOcr()
 {
     ocrProcess.start();
 }
+
+RecordInfo Paint_area::getRecordInfo(){
+    if(clip_layer != NULL)
+        return clip_layer->getRecordInfo();
+    return RecordInfo();
+}

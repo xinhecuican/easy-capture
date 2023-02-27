@@ -20,6 +20,8 @@ public:
     bool is_change;
     void update();
     QList<QColor> get_color();
+    void setVideoSavePath(QString path);
+    QString getVideoSavePath();
 private:
     static History* _instance;
     QList<History_data> data;
@@ -30,6 +32,7 @@ private:
     QList<QColor> colors;
     QDomDocument doc;
     QString last_directory;
+    QString videoSavePath;
 };
 
 #endif // HISTORY_H

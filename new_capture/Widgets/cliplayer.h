@@ -16,6 +16,7 @@
 #include <QSpinBox>
 #include <QSlider>
 #include "Helper/EnumReflect.h"
+#include "videotoolbar.h"
 
 class ClipLayer : public QGraphicsObject
 {
@@ -44,6 +45,7 @@ public:
     void sendRequestImage();
     void setWidgetParent(QWidget* parent);
     void buttonEnter(int id);
+    RecordInfo getRecordInfo();
 signals:
     void requestImage();
     void needSave();
@@ -59,6 +61,7 @@ private:
     void calBarPos();
     void updateAttributeToolbar(int id);
     void onToolbarButtonClick(int id);
+    void initAttributeToolbarWidget(int id);
     QPolygonF polygon;
     QPointF begin_point;
     QPointF end_point;
@@ -82,6 +85,7 @@ private:
     QToolButton* save_button;
     QToolButton* clip_button;
     QToolButton* erase_button;
+    QToolButton* videoButton;
     QToolButton* ok_button;
     QToolButton* cancel_button;
     QToolButton* undo_button;
@@ -107,6 +111,7 @@ private:
     QToolButton* free_capture;
     QToolButton* arrow_button;
     QWidget* widgetParent;
+    VideoToolbar* videoToolbar;
 };
 
 #endif // CLIPREGION_H

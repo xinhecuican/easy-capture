@@ -53,7 +53,7 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.4.3",
+Update_data Update::now_version = Update_data("0.4.4",
 "http://121.37.81.150:8200/easycapture/update/0.4.4.zip", "",
                                               "1. 添加ocr功能");
 
@@ -159,6 +159,9 @@ void Update::start_request(const QUrl &url)
                 }
                 updateState = UPDATING;
                 updateStateChange(updateState);
+            }
+            else{
+                updateState = IDLE;
             }
             if(timer->isActive())
             {

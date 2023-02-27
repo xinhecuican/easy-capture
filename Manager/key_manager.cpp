@@ -47,7 +47,10 @@ QList<QString> Key_manager::key_settings = {
 
 QList<QString> globalKeySetting = {
     "awake_capture:16777249;16777264",
-    "fullscreen_capture:16777249;16777265"
+    "fullscreen_capture:16777249;16777265",
+    "capture_video_start:0;16777268",
+    "capture_video_pause:0;16777269",
+    "capture_video_stop:0;16777270"
 };
 
 void Key_manager::add_key(QString window_name, QString obj_name, QList<int> keys)

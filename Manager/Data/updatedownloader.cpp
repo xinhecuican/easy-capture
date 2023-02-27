@@ -105,7 +105,7 @@ void UpdateDownloader::start(){
         }
         else if(statusCode >=300 && statusCode < 400)
         {
-            qWarning("文件需要重定向\n位置:Update_dialog");
+            qWarning() << "文件需要重定向, 状态码: "  << statusCode;
             emit failure();
         }
     });

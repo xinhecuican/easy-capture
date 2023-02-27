@@ -42,6 +42,8 @@ Capture_window::Capture_window(QWidget *parent) :
     is_finish = false;
     begin_waiting = false;
     window_valid = false;
+    videoCapture = new VideoCaptureHandler(this);
+    isVideoCapture = false;
 
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
@@ -106,17 +108,17 @@ Capture_window::~Capture_window()
 void Capture_window::paintEvent(QPaintEvent *paint_event)
 {
     QPainter painter(this);
-    if(Config::getConfig<bool>(Config::free_capture) && button_click)
-    {
-        QPen pen;
-        pen.setStyle(Qt::DashLine);
-        pen.setColor(QColor(123, 123, 233));
-        pen.setWidth(3);
-        painter.setPen(pen);
-        painter.drawPath(free_paint_path);
-        return;
-    }
-    else if(Config::getConfig<bool>(Config::scroll_capture))
+//    if(Config::getConfig<bool>(Config::free_capture) && button_click)
+//    {
+//        QPen pen;
+//        pen.setStyle(Qt::DashLine);
+//        pen.setColor(QColor(123, 123, 233));
+//        pen.setWidth(3);
+//        painter.setPen(pen);
+//        painter.drawPath(free_paint_path);
+//        return;
+//    }
+    if(Config::getConfig<bool>(Config::scroll_capture))
     {
         QPen pen;
         pen.setColor(QColor(255, 0, 0));
@@ -147,6 +149,21 @@ void Capture_window::paintEvent(QPaintEvent *paint_event)
             painter.drawRect(active_window_bound);
         }
         return;
+    }
+    else if(Config::getConfig<bool>(Config::rect_capture) && isVideoCapture){
+        QPen pen;
+        pen.setWidth(3);
+        if(videoCapture->getIsPause()){
+            pen.setColor(QColor(247,186,11));
+        }
+        else{
+            pen.setColor(QColor(255, 0, 0));
+        }
+        painter.setPen(pen);
+        QRect rect = videoCapture->getBound();
+        rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
+        rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
+        painter.drawRect(rect);
     }
 }
 
@@ -538,3 +555,30 @@ void Capture_window::set_scroll_info()
     }
 }
 
+void Capture_window::startCaptureVideo(){
+    if(!Config::getConfig<bool>(Config::scroll_capture)){
+        videoCapture->setCaptureInfo(area->getRecordInfo());
+        if(videoCapture->isValid() && !isVideoCapture){
+            isVideoCapture = true;
+            view->hide();
+            update();
+            videoCapture->startCapture();
+        }
+    }
+}
+
+void Capture_window::pauseCaptureVideo(){
+    if(!Config::getConfig<bool>(Config::scroll_capture) && videoCapture->isValid() && isVideoCapture){
+            videoCapture->pauseOrResume();
+            update();
+    }
+}
+
+void Capture_window::stopCaptureVideo(){
+    if(!Config::getConfig<bool>(Config::scroll_capture) && videoCapture->isValid() && isVideoCapture){
+        isVideoCapture = false;
+        videoCapture->stopCapture();
+        Window_manager::change_window("tray");
+        view->show();
+    }
+}

@@ -23,7 +23,6 @@
 #include "Paint/Widgets/Layers/blurlayer.h"
 #include "Paint/Widgets/Layers/arrowlayer.h"
 #include "new_capture/Widgets/cliplayer.h"
-#include "Helper/dump.h"
 #include "Helper/log.h"
 #include<QPair>
 #ifndef QT_DEBUG

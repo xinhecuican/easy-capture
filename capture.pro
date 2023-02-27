@@ -79,11 +79,13 @@ SOURCES += \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.cpp \
     new_capture/Widgets/Scroll_handler/scroll_handle.cpp \
     new_capture/Widgets/Scroll_handler/scroll_worker.cpp \
+    new_capture/Widgets/VideoHandler/videocapture.cpp \
     new_capture/Widgets/attributetoolbar.cpp \
     new_capture/Widgets/cliplayer.cpp \
     new_capture/Widgets/clipregion.cpp \
     new_capture/Widgets/masklayer.cpp \
     new_capture/Widgets/mosicsample.cpp \
+    new_capture/Widgets/videotoolbar.cpp \
     new_capture/Window_fliter.cpp \
     new_capture/capture_window.cpp
 
@@ -99,7 +101,6 @@ HEADERS += \
     Helper/Serialize.h \
     Helper/common.h \
     Helper/debug.h \
-    Helper/dump.h \
     Helper/image_helper.h \
     Helper/log.h \
     Helper/math.h \
@@ -170,11 +171,13 @@ HEADERS += \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
     new_capture/Widgets/Scroll_handler/scroll_handle.h \
     new_capture/Widgets/Scroll_handler/scroll_worker.h \
+    new_capture/Widgets/VideoHandler/videocapture.h \
     new_capture/Widgets/attributetoolbar.h \
     new_capture/Widgets/cliplayer.h \
     new_capture/Widgets/clipregion.h \
     new_capture/Widgets/masklayer.h \
     new_capture/Widgets/mosicsample.h \
+    new_capture/Widgets/videotoolbar.h \
     new_capture/capture_window.h \
     new_capture/window_fliter.h
 
@@ -259,3 +262,10 @@ win32:CONFIG(release, debug|release): LIBS += -LC:/usr/software/Visual_Leak_Dete
 
 DISTFILES += \
 	Resource/toolbar.qss
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lECVideoCapture
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lECVideoCapture
+else:unix: LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/ -lECVideoCapture
+
+INCLUDEPATH += $$PWD/../ECVideoCapture
+DEPENDPATH += $$PWD/../ECVideoCapture

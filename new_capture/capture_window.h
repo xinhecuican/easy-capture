@@ -17,6 +17,7 @@
 #include "Paint/Widgets/Paint_area.h"
 #include "Helper/EnumReflect.h"
 #include "Style_widget/bubbletipswidget.h"
+#include "Widgets/VideoHandler/videocapture.h"
 
 namespace Ui {
 class Capture_window;
@@ -37,6 +38,9 @@ public:
     void on_window_cancal() override;
     void on_window_select() override;
     void load_key_event(QString name) override;
+    void startCaptureVideo();
+    void pauseCaptureVideo();
+    void stopCaptureVideo();
 
 private:
     Ui::Capture_window *ui;
@@ -69,6 +73,8 @@ private:
     bool isScrollRectEnter;
     bool isScrollRectEnd;
     BubbleTipsWidget* bubbleTipsWidget;
+    VideoCaptureHandler* videoCapture;
+    bool isVideoCapture;
 };
 
 #endif // CAPTURE_WINDOW_H

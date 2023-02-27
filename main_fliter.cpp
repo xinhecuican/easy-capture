@@ -106,6 +106,22 @@ bool Main_fliter::nativeEventFilter(const QByteArray &eventType, void *message, 
                             QSound::play(":/audio/screenshot.wav");
                     });
                     break;
+                case 2:
+                    if(Window_manager::get_now_window() == "Capture_window"){
+                        Window_manager::get_window("Capture_window")->startCaptureVideo();
+                    }
+                    break;
+                case 3:
+                    if(Window_manager::get_now_window() == "Capture_window"){
+                        Window_manager::get_window("Capture_window")->pauseCaptureVideo();
+                    }
+                    break;
+                case 4:
+                    if(Window_manager::get_now_window() == "Capture_window"){
+                        Window_manager::get_window("Capture_window")->stopCaptureVideo();
+                    }
+                    break;
+
                 }
                 break;
             }

@@ -247,6 +247,11 @@ void ClipLayer::setToolBar()
     erase_button->setToolTip(MString::search("{7cwKObEhcx}擦除"));
     erase_button->setCheckable(true);
 
+    videoButton = new QToolButton(toolbar);
+    videoButton->setIcon(QIcon(":/image/videocam.png"));
+    videoButton->setToolTip(MString::search("{UowiwjDUIy}视频"));
+    videoButton->setCheckable(true);
+
     ok_button = new QToolButton(toolbar);
     ok_button->setIcon(QIcon(":/image/ok.svg"));
     connect(ok_button, &QToolButton::clicked, this, [=](){
@@ -337,6 +342,7 @@ void ClipLayer::setToolBar()
     button_group->addButton(text_button, 5);
     button_group->addButton(shape_button, 6);
     button_group->addButton(erase_button, 7);
+    button_group->addButton(videoButton, 8);
     connect(button_group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
             , this, [=](int id){
         onToolbarButtonClick(id);
@@ -350,6 +356,7 @@ void ClipLayer::setToolBar()
     toolbar->addWidget(text_button);
     toolbar->addWidget(shape_button);
     toolbar->addWidget(erase_button);
+    toolbar->addWidget(videoButton);
     toolbar->addSeparator();
     toolbar->addWidget(undo_button);
     toolbar->addWidget(redo_button);
@@ -426,6 +433,7 @@ void ClipLayer::updateAttributeToolbar(int id)
         break;
     }
     attribute_toolbar->removeAll();
+    initAttributeToolbarWidget(id);
     switch(id)
     {
     case 0: // rect
@@ -467,8 +475,128 @@ void ClipLayer::updateAttributeToolbar(int id)
     case 6:
         attribute_toolbar->add(arrow_button);
         break;
+    case 8:
+        attribute_toolbar->add(videoToolbar);
+        break;
     }
     calBarPos();
+}
+
+void ClipLayer::initAttributeToolbarWidget(int id){
+    switch(id){
+    case 0:
+    case 3:
+    case 4:
+        if(color_widget == NULL){
+            color_widget = new ColorWidget(attribute_toolbar);
+            color_widget->hide();
+        }
+        if(width_button == NULL){
+            width_button = new QSpinBox(attribute_toolbar);
+            width_button->setRange(1, 50);
+            width_button->setValue(3);
+            width_button->setAccelerated(true);
+            width_button->setWrapping(true);
+            width_button->setKeyboardTracking(true);
+            connect(width_button, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int value){
+                Style_manager::instance()->change_width(value);
+            });
+            width_button->hide();
+        }
+        break;
+    case 1:
+        if(mosaic_sample == NULL){
+            mosaic_sample = new MosicSample(attribute_toolbar);
+            mosaic_size = new QSpinBox(attribute_toolbar);
+            mosaic_size->setRange(1, 15);
+            mosaic_size->setValue(5);
+            mosaic_size->setAccelerated(true);
+            mosaic_size->setWrapping(true);
+            mosaic_size->setKeyboardTracking(true);
+            connect(mosaic_size, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int value){
+                mosaic_sample->setUnitSize(value);
+                emit mosaicChange(false, value);
+            });
+            mosaic_range = new QSlider(attribute_toolbar);
+            mosaic_range->setValue(15);
+            mosaic_range->setMinimum(1);
+            mosaic_range->setMaximum(50);
+            mosaic_range->setOrientation(Qt::Horizontal);
+            mosaic_range->setToolTip("15");
+            connect(mosaic_range, &QSlider::valueChanged, this, [=](){
+                emit mosaicChange(true, mosaic_range->value());
+                mosaic_size->setMaximum(mosaic_range->value());
+                mosaic_range->setToolTip(QString::number(mosaic_range->value()));
+            });
+            mosaic_sample->hide();
+            mosaic_size->hide();
+            mosaic_range->hide();
+        }
+        break;
+    case 2:
+        if(rect_capture == NULL){
+            QButtonGroup* mode_group = new QButtonGroup(attribute_toolbar);
+            mode_group->setExclusive(true);
+
+            rect_capture = new QToolButton(attribute_toolbar);
+            rect_capture->setIcon(QIcon(QPixmap(":/image/rect.png").scaled(42, 42)));
+            rect_capture->setToolTip(MString::search("{OBwjJUhTkh}矩形窗口"));
+            rect_capture->setChecked(true);
+            rect_capture->setCheckable(true);
+            rect_capture->setIconSize(QSize(36, 36));
+            free_capture = new QToolButton(attribute_toolbar);
+            free_capture->setIcon(QIcon(QPixmap(":/image/painterpath.png").scaled(42,42)));
+            free_capture->setIconSize(QSize(36, 36));
+            free_capture->setCheckable(true);
+            mode_group->addButton(rect_capture, 0);
+            mode_group->addButton(free_capture, 1);
+            connect(mode_group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
+                    , this, [=](int id){
+                if(id == 0)
+                {
+                    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
+                    {
+                        Config::setConfig(i, false);
+                    }
+                    Config::setConfig(Config::rect_capture, true);
+                }
+                else if(id == 1)
+                {
+                    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
+                    {
+                        Config::setConfig(i, false);
+                    }
+                    Config::setConfig(Config::free_capture, true);
+                }
+            });
+            rect_capture->hide();
+            free_capture->hide();
+        }
+        break;
+    case 5:
+        if(Flow_edit_panel::instance()->parent() != attribute_toolbar){
+            Flow_edit_panel::instance()->setParent(attribute_toolbar);
+            Flow_edit_panel::instance()->hide();
+        }
+        break;
+    case 6:
+        if(arrow_button == NULL){
+            arrow_button = new QToolButton(attribute_toolbar);
+            arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
+            arrow_button->setToolTip("{D7HSBXWTLj}箭头");
+            connect(arrow_button, &QToolButton::clicked, this, [=](){
+                emit paintShape(PAINT_ARROW);
+            });
+            arrow_button->hide();
+        }
+        break;
+    case 8: // video
+        if(videoToolbar == NULL){
+            videoToolbar = new VideoToolbar(attribute_toolbar);
+            videoToolbar->hide();
+        }
+        break;
+    }
 }
 
 void ClipLayer::setAttributeToolbar()
@@ -478,92 +606,15 @@ void ClipLayer::setAttributeToolbar()
     attribute_toolbar->setWindowFlag(Qt::WindowSystemMenuHint, false);
     attribute_toolbar->setStyleSheet(getQSS(":/qss/toolbar.qss"));
 
-
-    color_widget = new ColorWidget(attribute_toolbar);
-    width_button = new QSpinBox(attribute_toolbar);
-    width_button->setRange(1, 50);
-    width_button->setValue(3);
-    width_button->setAccelerated(true);
-    width_button->setWrapping(true);
-    width_button->setKeyboardTracking(true);
-    connect(width_button, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int value){
-        Style_manager::instance()->change_width(value);
-    });
-
-
-    mosaic_sample = new MosicSample(attribute_toolbar);
-    mosaic_size = new QSpinBox(attribute_toolbar);
-    mosaic_size->setRange(1, 15);
-    mosaic_size->setValue(5);
-    mosaic_size->setAccelerated(true);
-    mosaic_size->setWrapping(true);
-    mosaic_size->setKeyboardTracking(true);
-    connect(mosaic_size, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int value){
-        mosaic_sample->setUnitSize(value);
-        emit mosaicChange(false, value);
-    });
-    mosaic_range = new QSlider(attribute_toolbar);
-    mosaic_range->setValue(15);
-    mosaic_range->setMinimum(1);
-    mosaic_range->setMaximum(50);
-    mosaic_range->setOrientation(Qt::Horizontal);
-    mosaic_range->setToolTip("15");
-    connect(mosaic_range, &QSlider::valueChanged, this, [=](){
-        emit mosaicChange(true, mosaic_range->value());
-        mosaic_size->setMaximum(mosaic_range->value());
-        mosaic_range->setToolTip(QString::number(mosaic_range->value()));
-    });
-    QButtonGroup* mode_group = new QButtonGroup(attribute_toolbar);
-    mode_group->setExclusive(true);
-
-    rect_capture = new QToolButton(attribute_toolbar);
-    rect_capture->setIcon(QIcon(QPixmap(":/image/rect.png").scaled(42, 42)));
-    rect_capture->setToolTip(MString::search("{OBwjJUhTkh}矩形窗口"));
-    rect_capture->setChecked(true);
-    rect_capture->setCheckable(true);
-    rect_capture->setIconSize(QSize(36, 36));
-    free_capture = new QToolButton(attribute_toolbar);
-    free_capture->setIcon(QIcon(QPixmap(":/image/painterpath.png").scaled(42,42)));
-    free_capture->setIconSize(QSize(36, 36));
-    free_capture->setCheckable(true);
-    mode_group->addButton(rect_capture, 0);
-    mode_group->addButton(free_capture, 1);
-    connect(mode_group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
-            , this, [=](int id){
-        if(id == 0)
-        {
-            for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
-            {
-                Config::setConfig(i, false);
-            }
-            Config::setConfig(Config::rect_capture, true);
-        }
-        else if(id == 1)
-        {
-            for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
-            {
-                Config::setConfig(i, false);
-            }
-            Config::setConfig(Config::free_capture, true);
-        }
-    });
-    Flow_edit_panel::instance()->setParent(attribute_toolbar);
-    arrow_button = new QToolButton(attribute_toolbar);
-    arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
-    arrow_button->setToolTip("{D7HSBXWTLj}箭头");
-    connect(arrow_button, &QToolButton::clicked, this, [=](){
-        emit paintShape(PAINT_ARROW);
-    });
-
-    color_widget->hide();
-    width_button->hide();
-    mosaic_sample->hide();
-    mosaic_size->hide();
-    mosaic_range->hide();
-    rect_capture->hide();
-    free_capture->hide();
-    arrow_button->hide();
-    Flow_edit_panel::instance()->hide();
+    color_widget = NULL;
+    width_button = NULL;
+    mosaic_sample = NULL;
+    mosaic_size = NULL;
+    mosaic_range = NULL;
+    rect_capture = NULL;
+    free_capture = NULL;
+    arrow_button = NULL;
+    videoToolbar = NULL;
 
     updateAttributeToolbar(2);
 }
@@ -616,4 +667,28 @@ void ClipLayer::onToolbarButtonClick(int id)
         emit stateChange(ERASE);
         break;
     }
+}
+
+RecordInfo ClipLayer::getRecordInfo(){
+    RecordInfo ans;
+    if(videoToolbar == NULL){
+        ans.fps = 20;
+        ans.channel = 2;
+        ans.enableAudio = true;
+        ans.audioDeviceIndex = 0;
+        ans.recordPath = QDir::cleanPath(History::instance()->getVideoSavePath() + "/" + "新建.mp4");
+    }
+    else{
+        ans = videoToolbar->getRecordInfo();
+    }
+    ans.bound = getClipRect().toRect();
+    if((ans.bound.width() & 1) != 0){
+        ans.bound.setWidth(ans.bound.width() - 1);
+    }
+    if((ans.bound.height() & 1) != 0){
+        ans.bound.setHeight(ans.bound.height() -1);
+    }
+    ans.outWidth = ans.bound.width();
+    ans.outHeight = ans.bound.height();
+    return ans;
 }

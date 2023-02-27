@@ -267,6 +267,7 @@ void History::load_info()
                 {
                     history_num = base_element.attribute("history_num").toInt();
                     last_directory = base_element.attribute("directory");
+                    videoSavePath = base_element.attribute("video_save_path");
                     QDomNodeList childs = base_element.childNodes();
                     for(int i=0; i<childs.size(); i++)
                     {
@@ -323,6 +324,57 @@ void History::load_info()
 QString History::get_last_directory()
 {
     return last_directory;
+}
+
+QString History::getVideoSavePath(){
+    return videoSavePath;
+}
+
+void History::setVideoSavePath(QString path){
+    videoSavePath = path;
+
+    is_change = true;
+    QFile file("Data/history.xml");
+    doc = QDomDocument();
+    if(!file.exists("Data/history.xml"))
+    {
+        if(!file.open(QIODevice::ReadWrite))
+        {
+            qWarning("历史文件打开失败");
+            return;
+        }
+        init();
+        QDomNodeList list = doc.elementsByTagName("history");
+        list.at(0).toElement().setAttribute("video_save_path", videoSavePath);
+        QTextStream out_stream(&file);
+        doc.save(out_stream,4); //缩进4格
+        file.close();
+    }
+    else
+    {
+        if(!file.open(QIODevice::ReadWrite))
+        {
+            qWarning("历史文件打开失败");
+            return;
+        }
+        if(!doc.setContent(&file))
+        {
+            file.close();
+            return;
+        }
+        file.close();
+        QDomElement root = doc.documentElement();
+        QDomNodeList list = doc.elementsByTagName("history");
+        QDomElement history = list.at(0).toElement();
+        history.setAttribute("video_save_path", videoSavePath);
+        if(!file.open(QFile::WriteOnly|QFile::Truncate))
+        {
+            return;
+        }
+        QTextStream out_stream(&file);
+        doc.save(out_stream,4); //缩进4格
+        file.close();
+    }
 }
 
 int History::get_history_num()

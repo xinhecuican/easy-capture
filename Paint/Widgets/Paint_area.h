@@ -38,6 +38,7 @@ public:
     void onViewSet(QWidget* view);
     void clipButtonEnter(int id);
     void startOcr();
+    RecordInfo getRecordInfo();
 private:
     void setOtherLayer();
     void initSettingPanel();

@@ -80,6 +80,9 @@
     <string id="capture_redo" text="恢复"/>
     <string id="capture_erase" text="擦除"/>
     <string id="capture_scrollrect" text="设置滚动区域"/>
+    <string id="capture_video_start" text="开始录屏"/>
+    <string id="capture_video_pause" text="暂停录屏"/>
+    <string id="capture_video_stop" text="终止录屏"/>
     <string id="FcOnYo1uUa" text="滚动时间间隔"/>
     <string id="g2X3jHOVbU" text="自动复制到剪切板"/>
     <string id="save2file" text="保存"/>
@@ -104,4 +107,5 @@
     <string id="vOmXOswvHv" text="检查更新"/>
     <string id="MKFr8c7gW9" text="正在检查"/>
     <string id="d6AUxGzHMJ" text="正在更新"/>
+    <string id="UowiwjDUIy" text="视频"/>
 </strings>
