@@ -15,7 +15,7 @@
 
 [蓝奏云 密码: 9qkn](https://xinhecuican.lanzouy.com/ibWMi0oq1e0b)
 
-[本地下载](121.37.81.150:8200/easycapture/downloads/easy_capture0.5.0.exe)
+[本地下载](http://121.37.81.150:8200/easycapture/downloads/easy_capture0.5.0.exe)
 
 # 功能介绍
 
@@ -98,3 +98,9 @@
 </strings>
 ```
 如果先练练英文或其他语言的可以尝试一下
+
+
+
+如果你觉得本软件对你有帮助，可以请作者喝一杯咖啡 ^_^
+
+![image-20230227150805951](https://image.xinhecuican.tech/img/image-20230227150805951.png)
