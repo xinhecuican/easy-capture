@@ -43,6 +43,7 @@ public:
     static QString getGlobalKeyName(int index);
     static void addGlobalKey(QString name, int modKey, int key);
     static void registerGlobalKey(QString name);
+    static void unRegisterGlobalKey(QString name);
     static int getGlobalModKey(int index);
     static int getGlobalKey(int index);
     static bool isGloablKeyRegistered(int index);

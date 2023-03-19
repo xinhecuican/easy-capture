@@ -3,6 +3,7 @@
 #include<QPoint>
 #include<QString>
 #include<QFile>
+#include <QDir>
 
 struct MRect
 {
@@ -20,6 +21,12 @@ static QString getQSS(QString path)
     QString str = file.readAll();
     file.close();
     return str;
+}
+
+static void createDirWithFile(QString filePath){
+    int index = filePath.lastIndexOf('/');
+    QDir dir(filePath.mid(0, index));
+    dir.mkpath(dir.absolutePath());
 }
 
 #endif // COMMON_H

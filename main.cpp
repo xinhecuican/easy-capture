@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
 #endif
     Config::load_config();
     Key_manager::load();
+    Key_manager::registerGlobalKey("awake_capture");
+    Key_manager::registerGlobalKey("fullscreen_capture");
     MString::load_from_file("Data/Languages/");
     registerClasses();
 
@@ -60,19 +62,7 @@ int main(int argc, char *argv[])
     a.installEventFilter(fliter);//捕获全局键盘事件
     a.installNativeEventFilter(fliter); // 捕获程序键盘事件
     a.setQuitOnLastWindowClosed(false);
-//    MainWindow* main_window = new MainWindow();
-//    Window_manager::push_window("MainWindow", main_window);
-//    Window_manager::change_window("MainWindow");
-
-//    if(argc > 1 && argv[1] == MainWindow::tr("autoStart"))
-//    {
-//        Window_manager::hide_now();
-//    }
     a.connect(&a, &QApplication::aboutToQuit, &a, [=](){
-//        UnregisterHotKey((HWND)fliter->winId(), fliter->global_key_id);
-//        UnregisterHotKey((HWND)fliter->winId(), fliter->global_capture_id);
-//        GlobalDeleteAtom( fliter->global_key_id );
-//        GlobalDeleteAtom(fliter->global_capture_id);
         Key_manager::unRegisterAll();
         Update::instance()->onFinish();
         fliter->deleteLater();

@@ -53,13 +53,11 @@ Update::~Update()
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.5.0",
-"http://121.37.81.150:8200/easycapture/update/0.5.0.zip", "",
-                                              "1. 添加录屏功能\n"
-                                              "2. 全局快捷键可自定义\n"
-                                              "3. 取消更新提示框\n"
-                                              "4. crash handler优化\n"
-                                              "5. 修复更改马赛克设置后崩溃" );
+Update_data Update::now_version = Update_data("0.5.1",
+"http://121.37.81.150:8200/easycapture/update/0.5.1.zip", "",
+                                              "1. 修复filter忘记初始化导致录屏崩溃的bug\n"
+                                              "2. 录屏相关全局按键只有在需要时才会被注册\n"
+                                              "3. 添加手动滚动");
 
 void Update::serialized(QJsonObject *json)//append增添版本时用
 {

@@ -43,6 +43,7 @@ public:
     void stopCaptureVideo();
 
 private:
+    enum ScrollState{IDLE, SCROLLRECT_SETTING, SCROLLRECT_SETTED, SCROLL_AUTO, SCROLL_MANUAL};
     Ui::Capture_window *ui;
     bool button_click;
     QPainterPath free_paint_path;
@@ -72,8 +73,12 @@ private:
     bool isScrollRect;
     bool isScrollRectEnter;
     bool isScrollRectEnd;
+    bool isScrollManual;
     BubbleTipsWidget* bubbleTipsWidget;
+    ScrollState scrollState;
+    ScrollState beforeState;
     VideoCaptureHandler* videoCapture;
+    qint64 lastCaptureTime;
     bool isVideoCapture;
 };
 

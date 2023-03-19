@@ -53,6 +53,12 @@ QList<QString> globalKeySetting = {
     "capture_video_stop:0;16777270"
 };
 
+bool fastRegister[] = {true,
+                       true,
+                       false,
+                       false,
+                       false};
+
 void Key_manager::add_key(QString window_name, QString obj_name, QList<int> keys)
 {
     if(all_key.find(window_name) == all_key.end())
@@ -140,7 +146,8 @@ void Key_manager::updateGlobalKey(){
         QString name = globalKeySetting[i].mid(0, firstIndex);
         int modKey = globalKeySetting[i].mid(firstIndex+1, secondIndex - firstIndex - 1).toInt();
         addGlobalKey(name, modKey, using_key.size() != 0 ? using_key[0] : 0);
-        registerGlobalKey(name);
+        if(fastRegister[i])
+            registerGlobalKey(name);
     }
 }
 
@@ -391,7 +398,6 @@ void Key_manager::load()
                         int modKey = element2.attribute("mod_key").toInt();
                         int key = element2.attribute("key").toInt();
                         addGlobalKey(name, modKey, key);
-                        registerGlobalKey(name);
                     }
                 }
             }
@@ -491,6 +497,17 @@ void Key_manager::registerGlobalKey(QString name){
                 UnregisterHotKey((HWND)Main_fliter::instance()->winId(), globalKeys[i].keyId);
             }
             globalKeys[i].registered = RegisterHotKey((HWND)Main_fliter::instance()->winId(), globalKeys[i].keyId, nativeModKeyCode((Qt::Key)globalKeys[i].modKey), nativeKeycode((Qt::Key)globalKeys[i].key));
+            break;
+        }
+    }
+}
+
+void Key_manager::unRegisterGlobalKey(QString name){
+    for(int i=0; i<globalKeys.size(); i++){
+        if(globalKeys[i].name == name){
+            UnregisterHotKey((HWND)Main_fliter::instance()->winId(), globalKeys[i].keyId);
+            globalKeys[i].registered = false;
+            break;
         }
     }
 }
@@ -517,7 +534,7 @@ void Key_manager::unRegisterAll(){
 
 void Key_manager::registerAll(){
     for(int i=0; i<globalKeys.size(); i++){
-        if(!globalKeys[i].registered){
+        if(!globalKeys[i].registered && fastRegister[i]){
             globalKeys[i].registered = RegisterHotKey((HWND)Main_fliter::instance()->winId(), globalKeys[i].keyId, nativeModKeyCode((Qt::Key)globalKeys[i].modKey), nativeKeycode((Qt::Key)globalKeys[i].key));
         }
     }

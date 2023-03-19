@@ -21,6 +21,7 @@ private:
     std::unique_ptr<ECVideoCapture> handler;
     bool isInit;
     bool isPause;
+    bool isStart;
     QRect bound;
 };
 

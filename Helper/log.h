@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
+#include "common.h"
 
 void logSysInit(QString filePath);
 void logSysInit();

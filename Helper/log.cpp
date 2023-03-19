@@ -29,6 +29,7 @@ void log(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 
 void logSysInit(QString filePath)
 {
+    createDirWithFile(filePath);
     gFileLog = new QFile(filePath);
     if (!gFileLog->open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)){
         return;

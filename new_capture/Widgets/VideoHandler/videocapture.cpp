@@ -3,6 +3,7 @@
 VideoCaptureHandler::VideoCaptureHandler(QObject* parent) : QObject(parent)
 {
     isInit = false;
+    isStart = false;
 }
 
 void VideoCaptureHandler::initHandler(RecordInfo info){
@@ -28,8 +29,12 @@ void VideoCaptureHandler::startCapture(){
     if(!isInit){
         return;
     }
+    if(isStart){
+        stopCapture();
+    }
     handler->startRecord();
     isPause = false;
+    isStart = true;
 }
 
 void VideoCaptureHandler::stopCapture(){
@@ -38,6 +43,7 @@ void VideoCaptureHandler::stopCapture(){
     }
     handler->stopRecord();
     isPause = true;
+    isStart = false;
 }
 
 void VideoCaptureHandler::resumeCapture(){

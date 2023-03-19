@@ -119,6 +119,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE: type=3;break;
     case WM_LBUTTONUP: type=4;break;
     case WM_RBUTTONUP: type=5;break;
+	case WM_MOUSEWHEEL: type=6;break;
     default: type=-1;break;
     }
     PMOUSEHOOKSTRUCT pmshs = reinterpret_cast<PMOUSEHOOKSTRUCT>(lParam);
