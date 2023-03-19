@@ -25,7 +25,7 @@
 	"test_setting": 0,
 	"total_capture_save_path": "Data/ScreenShot/",
 	"middle_button_type": 1,
-	"version": "0.5.0",
+	"version": "0.5.1",
 	"clip_voice": true,
 	"show_update_box": false
 }
