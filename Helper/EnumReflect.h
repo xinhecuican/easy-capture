@@ -64,6 +64,7 @@ static void SplitEnumArgs(const char* szArgs, std::string Array[], int nMax)
     }
 };
 // This will to define an enum that is wrapped in a namespace of the same name along with ToString(), FromString(), and COUNT
+
 #define MAKE_ENUM(ename, ...) \
     enum ename { __VA_ARGS__, COUNT }; \
     static std::string _Strings[COUNT]; \

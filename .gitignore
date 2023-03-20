@@ -77,5 +77,6 @@ capture.sln
 capture.vcxproj
 capture.vcxproj.fliters
 capture.vcxproj.user
+doc/
 
 

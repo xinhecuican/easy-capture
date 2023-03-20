@@ -25,10 +25,17 @@ UpdateDownloader::UpdateDownloader(QList<Update_data> data, QObject* parent) : Q
     qDebug() << "开始更新";
 }
 
+/**
+ * @brief UpdateDownloader::start
+ */
 void UpdateDownloader::start(){
     startInner(this->data[updateSum].get_url());
 }
 
+/**
+ * @brief UpdateDownloader::startInner 下载更新文件
+ * @param url
+ */
 void UpdateDownloader::startInner(QUrl url){
     request.setUrl(url);
     qInfo() << url;
@@ -83,6 +90,7 @@ void UpdateDownloader::startInner(QUrl url){
             {
                 JlCompress::extractFile(file_name,
                                         "Upgrate.exe", "Upgrate.exe");
+                qInfo() << "extract update program";
             }
             updateSum--;
             if(updateSum < 0)

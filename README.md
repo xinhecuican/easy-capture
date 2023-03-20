@@ -2,6 +2,8 @@
 
 简截是一款截图软件。它拥有基本的截图及处理功能，并且还有滚动截屏，ocr，图片透明化，录屏等功能
 
+[文档](https://doc.easycapture.xinhecuican.tech)
+
 # 环境
 
 
@@ -10,6 +12,9 @@
 * qt 5.14.2 64位
 * opencv 4.5.1 with contrib
 * ffmpeg 5.1
+* quazip0.7.3
+* zlib
+* qbreakpad
 
 # 下载及代码
 
