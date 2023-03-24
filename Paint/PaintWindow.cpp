@@ -1,8 +1,8 @@
-#include "paint_window.h"
-#include "ui_paint_window.h"
+#include "PaintWindow.h"
+//#include "ui_paint_window.h"
 #include<QBoxLayout>
 #include<QScrollArea>
-#include "Manager/window_manager.h"
+#include "Manager/WindowManager.h"
 #include <QToolButton>
 #include<QScrollBar>
 #include<QDesktopWidget>
@@ -14,7 +14,7 @@
 #include<QListWidget>
 #include "Manager/config.h"
 #include<QClipboard>
-#include "Manager/key_manager.h"
+#include "Manager/KeyManager.h"
 #include<QScreen>
 #include<QMouseEvent>
 #include<QButtonGroup>
@@ -28,12 +28,18 @@
 #include "Paint/Widgets/Layers/baselayer.h"
 #include "Paint/Data/History_data.h"
 #include <QSound>
+#include <QGuiApplication>
+#include <QApplication>
 
-Paint_window::Paint_window(QWidget *parent) :
-    Window_base(parent, this, "Paint_window"),
-    ui(new Ui::Paint_window)
+PaintWindow::PaintWindow(QWidget *parent) :
+    WindowBase(parent, this, "PaintWindow")
+//    ui(new Ui::PaintWindow)
 {
-    ui->setupUi(this);
+//    ui->setupUi(this);
+    centralWidget = new QWidget(this);
+    toolbar = new QToolBar(this);
+    setCentralWidget(centralWidget);
+    addToolBar(Qt::TopToolBarArea, toolbar);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     Titlebar* title_bar = new Titlebar(this);
     installEventFilter(title_bar);
@@ -45,8 +51,8 @@ Paint_window::Paint_window(QWidget *parent) :
     setWindowFlags (Qt::FramelessWindowHint);
     setWindowTitle("简截");
     setWindowIcon(QIcon(":/image/avator.png"));
-    connect(title_bar, &Titlebar::minimize, this, [=](){
-        Window_manager::change_window("tray");
+    connect(title_bar, &Titlebar::minimize, this, [=]() {
+        WindowManager::changeWindow("tray");
     });
     qRegisterMetaType<BaseLayer>("BaseLayer");
     menu_bar = new QMenuBar(this);
@@ -59,7 +65,7 @@ Paint_window::Paint_window(QWidget *parent) :
     menu_widget->setStyleSheet("background-color: rgb(255, 255, 255)");
     setMenuWidget(menu_widget);
 
-    layout = new QHBoxLayout(ui->centralwidget);
+    layout = new QHBoxLayout(centralWidget);
     Paint_setting_panel::instance(this);
 
     this->area = new Paint_area(this);
@@ -74,142 +80,128 @@ Paint_window::Paint_window(QWidget *parent) :
     pen_cursor = QCursor(QPixmap(":/image/pencil.png"), 0, 24);
 
     layout->addWidget(paint_panel);
-    ui->centralwidget->setLayout(layout);
+    centralWidget->setLayout(layout);
     set_menubar();
     set_toolbar();
     initSettingPanel();
     addToolBarBreak();
-    load_key_event("Paint_window");
+    loadKeyEvent("PaintWindow");
 }
 
-Paint_window::~Paint_window()
-{
-    delete ui;
+PaintWindow::~PaintWindow() {
+//    delete ui;
 }
 
-void Paint_window::load_key_event(QString name)
-{
-//    if(!Key_manager::is_contains_window("Paint_window"))
+void PaintWindow::loadKeyEvent(QString name) {
+//    if(!KeyManager::isContainsWindow("PaintWindow"))
 //    {
-        Key_manager::add_func(this, name, "undo", [=](QObject* receiver, bool is_enter){if(is_enter) Recorder::instance()->back();});
-        Key_manager::add_func(this, name, "redo", [=](QObject* receiver, bool is_enter){if(is_enter) Recorder::instance()->forward();});
-        Key_manager::add_func(this, name, "save", [=](QObject* receiver, bool is_enter){
-            Paint_window* current = qobject_cast<Paint_window*>(receiver);
-            if(is_enter)
-            {
-                QString file_name = QFileDialog::getSaveFileName(this,"保存",
-                History::instance()->get_last_directory(), "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-                if(file_name != "")
-                {
-                    current->area->save(History_data::Persist, file_name);
-                    Window_manager::change_window("tray");
-                }
+    KeyManager::addFunc(this, name, "undo", [=](QObject* receiver, bool is_enter) {
+        if(is_enter) Recorder::instance()->back();
+    });
+    KeyManager::addFunc(this, name, "redo", [=](QObject* receiver, bool is_enter) {
+        if(is_enter) Recorder::instance()->forward();
+    });
+    KeyManager::addFunc(this, name, "save", [=](QObject* receiver, bool is_enter) {
+        PaintWindow* current = qobject_cast<PaintWindow*>(receiver);
+        if(is_enter) {
+            QString file_name = QFileDialog::getSaveFileName(this,"保存",
+                                History::instance()->get_last_directory(), "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+            if(file_name != "") {
+                current->area->save(History_data::Persist, file_name);
+                WindowManager::changeWindow("tray");
             }
-        });
-        Key_manager::add_func(this, name, "new_capture", [=](QObject* receiver, bool is_enter){
-            if(is_enter)
-            {
-                Paint_window* current = qobject_cast<Paint_window*>(receiver);
-                if(Config::getConfig<bool>(Config::total_capture))
-                {
-                    QTimer::singleShot(200, current, [=](){
-                        Config::setConfig(Config::total_capture, false);
-                        QScreen *screen = QGuiApplication::primaryScreen();
-                        QPixmap map = screen->grabWindow(0);
-                        Window_manager::change_window("Paint_window");
-                        Window_manager::get_window("Paint_window")->
-                                set_pic(map, QGuiApplication::primaryScreen()->geometry());
-                        if(Config::getConfig<bool>(Config::clip_voice))
-                            QSound::play(":/audio/screenshot.wav");
-                    });
+        }
+    });
+    KeyManager::addFunc(this, name, "new_capture", [=](QObject* receiver, bool is_enter) {
+        if(is_enter) {
+            PaintWindow* current = qobject_cast<PaintWindow*>(receiver);
+            if(Config::getConfig<bool>(Config::total_capture)) {
+                QTimer::singleShot(200, current, [=]() {
+                    Config::setConfig(Config::total_capture, false);
+                    QScreen *screen = QGuiApplication::primaryScreen();
+                    QPixmap map = screen->grabWindow(0);
+                    WindowManager::changeWindow("PaintWindow");
+                    WindowManager::getWindow("PaintWindow")->
+                    setPic(map, QGuiApplication::primaryScreen()->geometry());
+                    if(Config::getConfig<bool>(Config::clip_voice))
+                        QSound::play(":/audio/screenshot.wav");
+                });
 
-                    return;
-                }
-                else
-                {
-                    Window_manager::change_window("Capture_window");
-                }
-                Config::setConfig(Config::rect_capture, true);
+                return;
+            } else {
+                WindowManager::changeWindow("CaptureWindow");
             }
-        });
-        Key_manager::add_func(this, name, "delete_shape", [=](QObject* current, bool is_enter){
-            if(is_enter)
-            {
+            Config::setConfig(Config::rect_capture, true);
+        }
+    });
+    KeyManager::addFunc(this, name, "delete_shape", [=](QObject* current, bool is_enter) {
+        if(is_enter) {
 //                area->delete_shape();
-            }
-        });
+        }
+    });
 //    }
 }
 
-void Paint_window::set_menubar()
-{
+void PaintWindow::set_menubar() {
     QMenu* file_setting_menu = new QMenu(this);
     file_setting_menu->setTitle(MString::search("{m2Llo9nJ9o}文件"));
     QAction* open_action = new QAction(MString::search("{zA7Twj1QhJ}打开"), file_setting_menu);
-    file_setting_menu->addAction(MString::search("{zA7Twj1QhJ}打开"), open_action, [=](){
+    file_setting_menu->addAction(MString::search("{zA7Twj1QhJ}打开"), open_action, [=]() {
         QString file_name = QFileDialog::getOpenFileName(this,
-                                     "打开",
-                                     History::instance()->get_last_directory(),
-                                     "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-        if(file_name.isEmpty())
-        {
+                            "打开",
+                            History::instance()->get_last_directory(),
+                            "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+        if(file_name.isEmpty()) {
             return;
-        }
-        else
-        {
+        } else {
             QPixmap pixmap;
-            if(!pixmap.load(file_name))
-            {
+            if(!pixmap.load(file_name)) {
                 qWarning("文件打开失败");
                 return;
             }
             QRect rect = pixmap.rect();
             rect.moveTo(0, 0);
-            set_pic(pixmap, rect);
+            setPic(pixmap, rect);
         }
     });
     QAction* save_action = new QAction(MString::search("{0EtTa6lKzl}另存为"), file_setting_menu);
-    file_setting_menu->addAction(MString::search("{0EtTa6lKzl}另存为"), save_action, [=](){
+    file_setting_menu->addAction(MString::search("{0EtTa6lKzl}另存为"), save_action, [=]() {
         QString file_name = QFileDialog::getSaveFileName(this,
-                                                         "保存",
-                                                         History::instance()->get_last_directory(),
-                                                         "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-        if(file_name != "")
-        {
+                            "保存",
+                            History::instance()->get_last_directory(),
+                            "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+        if(file_name != "") {
             area->save(History_data::Persist, file_name);
-            Window_manager::change_window("tray");
+            WindowManager::changeWindow("tray");
         }
     });
     QAction* history_action = new QAction(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
     QMenu* history_menu = new QMenu(MString::search("{Mo0LoFqQqT}历史"), menu_bar);
-    connect(history_action, &QAction::hovered, this, [=](){//动态生成菜单项
-        if(History::instance()->is_change)//hovered会一直触发，防止重复调用函数导致闪屏
-        {
+    connect(history_action, &QAction::hovered, this, [=]() { //动态生成菜单项
+        if(History::instance()->is_change) { //hovered会一直触发，防止重复调用函数导致闪屏
             History::instance()->is_change = false;
             history_menu->clear();
             QList<QAction*> history_actions;
             int history_num = History::instance()->get_history_num();
-            for(int i=history_num-1; i>=0; i--)
-            {
+            for(int i=history_num-1; i>=0; i--) {
                 History_data data = History::instance()->get(i);
                 QString file_name = data.type == History_data::Persist ?
-                            data.file_name.mid(data.file_name.lastIndexOf('/')+1) :
-                            QDateTime::fromSecsSinceEpoch(data.time).toString("yyyy.MM.dd hh:mm:ss");
+                                    data.file_name.mid(data.file_name.lastIndexOf('/')+1) :
+                                    QDateTime::fromSecsSinceEpoch(data.time).toString("yyyy.MM.dd hh:mm:ss");
 
                 QAction* action = new QAction(history_menu);
                 action->setText(file_name);
-                connect(action, &QAction::triggered, this, [=](){
+                connect(action, &QAction::triggered, this, [=]() {
                     QPixmap pixmap;
 
-                    if(!pixmap.load(data.file_name))
-                    {
+                    if(!pixmap.load(data.file_name)) {
                         qWarning("文件不存在");
                         return;
                     }
                     QRect rect = pixmap.rect();
                     rect.moveTo(0, 0);
 //                    area->pic_save = true;//不需要添加记录
-                    set_pic(pixmap, rect);
+                    setPic(pixmap, rect);
                 });
                 history_actions.append(action);
             }
@@ -221,31 +213,27 @@ void Paint_window::set_menubar()
     menu_bar->addMenu(file_setting_menu);
 }
 
-void Paint_window::set_toolbar()
-{
+void PaintWindow::set_toolbar() {
     QToolButton* new_button = new QToolButton(this);
-    connect(new_button, &QToolButton::clicked, this, [=](){
-        if(Config::getConfig<bool>(Config::total_capture))
-        {
-            Window_manager::change_window("tray");
-            QTimer::singleShot(200, this, [=](){
+    connect(new_button, &QToolButton::clicked, this, [=]() {
+        if(Config::getConfig<bool>(Config::total_capture)) {
+            WindowManager::changeWindow("tray");
+            QTimer::singleShot(200, this, [=]() {
                 QScreen *screen = QGuiApplication::primaryScreen();
                 QPixmap map = screen->grabWindow(0);
-                Window_manager::change_window("Paint_window");
-                Window_manager::get_window("Paint_window")->
-                        set_pic(map, screen->geometry());
+                WindowManager::changeWindow("PaintWindow");
+                WindowManager::getWindow("PaintWindow")->
+                setPic(map, screen->geometry());
             });
             return;
-        }
-        else
-        {
-            Window_manager::change_window("Capture_window");
+        } else {
+            WindowManager::changeWindow("CaptureWindow");
         }
     });
     new_button->setText(MString::search("{cR3jOHb9Qw}新建"));
     new_button->setIcon(QIcon(":/image/capture.png"));
     new_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->toolBar->addWidget(new_button);
+    toolbar->addWidget(new_button);
 
     QToolButton* mode_button = new QToolButton(this);
     mode_button->setText(MString::search(MString::search("{7yUWnx82jI}模式")));
@@ -258,91 +246,79 @@ void Paint_window::set_toolbar()
     mode_menu->addAction(MString::search("{fnGapBU4vo}自由截图"));
     mode_menu->addAction(MString::search("{ETY295cnab}滚动截屏"));
     QList<QAction*> actions = mode_menu->actions();
-    for(int i=0; i<actions.size(); i++)
-    {
+    for(int i=0; i<actions.size(); i++) {
         actions[i]->setCheckable(true);
         actions[i]->setData(QVariant(i));
     }
-    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
-    {
-        if(Config::getConfig<bool>(i))
-        {
+    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++) {
+        if(Config::getConfig<bool>(i)) {
             actions[i-Config::capture_mode_begin]->setChecked(true);
             break;
         }
     }
-    connect(mode_menu, &QMenu::triggered, this, [=](QAction* action){
+    connect(mode_menu, &QMenu::triggered, this, [=](QAction* action) {
         QVariant index_var = action->data();
         int index = index_var.toInt();
-        for(int i=0; i<actions.size(); i++)
-        {
+        for(int i=0; i<actions.size(); i++) {
             actions[i]->setChecked(false);
         }
         action->setChecked(true);
-        for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++)
-        {
+        for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++) {
             Config::setConfig(i, false);
         }
         Config::setConfig(Config::capture_mode_begin+index, true);
     });
     mode_button->setMenu(mode_menu);
-    ui->toolBar->addWidget(mode_button);
+    toolbar->addWidget(mode_button);
 
     QToolButton* clipboard_button = new QToolButton(this);
     clipboard_button->setIcon(QIcon(":/image/clipboard.png"));
     clipboard_button->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
-    connect(clipboard_button, &QToolButton::clicked, this, [=](){
+    connect(clipboard_button, &QToolButton::clicked, this, [=]() {
         area->save2Clipboard();
     });
-    ui->toolBar->addWidget(clipboard_button);
+    toolbar->addWidget(clipboard_button);
 
     QToolButton* save_button = new QToolButton(this);
     save_button->setIcon(QIcon(":/image/save.png"));
     save_button->setToolTip(MString::search("{pJqTHhEQdb}保存"));
-    connect(save_button, &QToolButton::clicked, this, [=](){
+    connect(save_button, &QToolButton::clicked, this, [=]() {
         QString file_name = QFileDialog::getSaveFileName(this,
-                                                         "保存",
-                                                         History::instance()->get_last_directory(),
-                                                         "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-        if(file_name != "")
-        {
+                            "保存",
+                            History::instance()->get_last_directory(),
+                            "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+        if(file_name != "") {
             area->save(History_data::Persist, file_name);
-            Window_manager::change_window("tray");
+            WindowManager::changeWindow("tray");
         }
     });
-    ui->toolBar->addWidget(save_button);
-    ui->toolBar->addSeparator();
+    toolbar->addWidget(save_button);
+    toolbar->addSeparator();
 
     QToolButton* undo_button = new QToolButton(this);
     undo_button->setIcon(QIcon(":/image/undo.png"));
     undo_button->setToolTip(MString::search("{h5KymvIMTN}撤销"));
-    connect(undo_button, &QPushButton::clicked, this, [=](){
+    connect(undo_button, &QPushButton::clicked, this, [=]() {
         Recorder::instance()->back();
     });
-    ui->toolBar->addWidget(undo_button);
+    toolbar->addWidget(undo_button);
     QToolButton* redo_button = new QToolButton(this);
     redo_button->setToolTip(MString::search("{a7CaC7NOL5}恢复"));
     redo_button->setIcon(QIcon(":/image/redo.png"));
-    connect(redo_button, &QPushButton::clicked, this, [=](){
+    connect(redo_button, &QPushButton::clicked, this, [=]() {
         Recorder::instance()->forward();
     });
-    ui->toolBar->addWidget(redo_button);
+    toolbar->addWidget(redo_button);
 
-    connect(Recorder::instance(), &Recorder::recordChange, this, [=](){
-        if(!Recorder::instance()->undoAvaliable())
-        {
+    connect(Recorder::instance(), &Recorder::recordChange, this, [=]() {
+        if(!Recorder::instance()->undoAvaliable()) {
             undo_button->setEnabled(false);
-        }
-        else
-        {
+        } else {
             undo_button->setEnabled(true);
         }
-        if(!Recorder::instance()->redoAvaliable())
-        {
+        if(!Recorder::instance()->redoAvaliable()) {
             redo_button->setEnabled(false);
-        }
-        else
-        {
+        } else {
             redo_button->setEnabled(true);
         }
     });
@@ -350,15 +326,14 @@ void Paint_window::set_toolbar()
     QToolButton* ocrButton = new QToolButton(this);
     ocrButton->setIcon(QIcon(":/image/ocr.png"));
     ocrButton->setToolTip(MString::search("{SvJhCjRGF0}提取文字"));
-    connect(ocrButton, &QToolButton::clicked, this, [=](){
-        if(area->save(History_data::Editable, "ocr/1.png"))
-        {
+    connect(ocrButton, &QToolButton::clicked, this, [=]() {
+        if(area->save(History_data::Editable, "ocr/1.png")) {
             area->startOcr();
         }
     });
-    ui->toolBar->addWidget(ocrButton);
+    toolbar->addWidget(ocrButton);
 
-    ui->toolBar->addSeparator();
+    toolbar->addSeparator();
     paint_button_group = new QButtonGroup(this);
     paint_button_group->setExclusive(true);
     cursor_button = new QToolButton(this);
@@ -367,7 +342,7 @@ void Paint_window::set_toolbar()
     cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
     cursor_button->setCheckable(true);
     paint_button_group->addButton(cursor_button, 0);
-    ui->toolBar->addWidget(cursor_button);
+    toolbar->addWidget(cursor_button);
 
     pencil_button = new QToolButton(this);
     pencil_button->setIcon(QIcon(":/image/pencil.png"));
@@ -380,22 +355,19 @@ void Paint_window::set_toolbar()
     pen_menu->addAction(MString::search("{ndvChZ2O6z}笔"));
     pen_menu->addAction(MString::search("{j54u1kWtCx}荧光笔"));
     QList<QAction*> penactions = pen_menu->actions();
-    for(int i=0; i<penactions.size(); i++)
-    {
+    for(int i=0; i<penactions.size(); i++) {
         penactions[i]->setCheckable(true);
         penactions[i]->setData(QVariant(i));
     }
     penactions[0]->setChecked(true);
-    connect(pen_menu, &QMenu::triggered, this, [=](QAction* action){
+    connect(pen_menu, &QMenu::triggered, this, [=](QAction* action) {
         QVariant index_var = action->data();
         int index = index_var.toInt();
-        for(int i=0; i<penactions.size(); i++)
-        {
+        for(int i=0; i<penactions.size(); i++) {
             penactions[i]->setChecked(false);
         }
         action->setChecked(true);
-        switch(index)
-        {
+        switch(index) {
         case 0:
             Style_manager::instance()->change_pen(Style_manager::default_pencil);
             pen_cursor = QCursor(QPixmap(":/image/pencil.png"), 0, 24);
@@ -410,32 +382,31 @@ void Paint_window::set_toolbar()
     pencil_button->setMenu(pen_menu);
 //    area->setCursor(QCursor(QPixmap(":/image/pencil.png"), 0, 24));
     paint_button_group->addButton(pencil_button, 1);
-    ui->toolBar->addWidget(pencil_button);
+    toolbar->addWidget(pencil_button);
 
 //    QToolButton* highlighter_button = new QToolButton(this);
 //    highlighter_button->setToolTip(MString::search("{j54u1kWtCx}荧光笔"));
 //    highlighter_button->setIcon(QIcon(":/image/highlighter.png"));
 //    highlighter_button->setCheckable(true);
 //    paint_button_group->addButton(highlighter_button, 2);
-//    ui->toolBar->addWidget(highlighter_button);
+//    toolbar->addWidget(highlighter_button);
 
     QToolButton* shape_button = new QToolButton(this);
     shape_button->setToolTip(MString::search("{25JzGpOvFt}形状"));
     shape_button->setIcon(QIcon(":/image/shape.png"));
     shape_button->setCheckable(true);
     paint_button_group->addButton(shape_button, 2);
-    ui->toolBar->addWidget(shape_button);
+    toolbar->addWidget(shape_button);
 
     QToolButton* erase_button = new QToolButton(this);
     erase_button->setToolTip(MString::search("{7cwKObEhcx}擦除"));
     erase_button->setIcon(QIcon(":/image/eraser.png"));
     erase_button->setCheckable(true);
     paint_button_group->addButton(erase_button, 3);
-    ui->toolBar->addWidget(erase_button);
+    toolbar->addWidget(erase_button);
     connect(paint_button_group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
-            , this, [=](int id){
-        switch (id)
-        {
+    , this, [=](int id) {
+        switch (id) {
         case 0:
             area->stateChange(ARROW);
             cursor_button->setChecked(true);
@@ -465,17 +436,17 @@ void Paint_window::set_toolbar()
     QToolButton* more_button = new QToolButton(this);
     more_button->setToolTip(MString::search("{dAIlC0hPf5}更多画图选项"));
     more_button->setIcon(QIcon(":/image/more.png"));
-    connect(more_button, &QToolButton::clicked, this, &Paint_window::showSettingPanel);
-    ui->toolBar->addWidget(more_button);
+    connect(more_button, &QToolButton::clicked, this, &PaintWindow::showSettingPanel);
+    toolbar->addWidget(more_button);
 
     QToolButton* setting_button = new QToolButton(this);
     setting_button->setToolTip(MString::search("{dTUpYwhZRM}设置"));
     setting_button->setIcon(QIcon(":/image/setting.svg"));
-    connect(setting_button, &QToolButton::clicked, this, [=](){
-        Window_manager::open_window("Setting");
+    connect(setting_button, &QToolButton::clicked, this, [=]() {
+        WindowManager::openWindow("Setting");
     });
-    ui->toolBar->addWidget(setting_button);
-    ui->toolBar->addSeparator();
+    toolbar->addWidget(setting_button);
+    toolbar->addSeparator();
 
 //    QToolButton* test_button = new QToolButton(this);
 //    test_button->setText("test");
@@ -502,34 +473,29 @@ void Paint_window::set_toolbar()
 //        compression_params.push_back(IMWRITE_PNG_STRATEGY_FILTERED);
 //        imwrite("F:/dinfo/test.png", ans_image, compression_params);
 //    });
-//    ui->toolBar->addWidget(test_button);
+//    toolbar->addWidget(test_button);
 }
 
-void Paint_window::set_pic(QPixmap pix, QRect rect)
-{
+void PaintWindow::setPic(QPixmap pix, QRect rect) {
     reset();
     area->setPic(pix, rect);//在这个函数中还设置了paint_panel的大小
     paint_panel->update();
     paint_button_group->buttonClicked(1);
-    if(Config::getConfig<bool>(Config::auto_copy_to_clipboard))
-    {
+    if(Config::getConfig<bool>(Config::auto_copy_to_clipboard)) {
         QClipboard *clip=QApplication::clipboard();
         clip->setPixmap(pix);
     }
     QScreen* screen = QGuiApplication::primaryScreen();
     if(rect.width()+100 >= (double)screen->geometry().width()
-            || rect.height()+140 >= (double)screen->geometry().height())
-    {
+            || rect.height()+140 >= (double)screen->geometry().height()) {
         showMaximized();
-    }
-    else
-    {
+    } else {
         resize(rect.width()+100, rect.height()+140);//设置主窗口大小，否则窗口大小不会变化
         //左上角移动到指定位置，截图越大越向(0, 0)点接近
         move(pos().x() * (1-(rect.width()/(double)screen->geometry().width()>1
-                            ?1:rect.width()/(double)screen->geometry().width()
-        )), pos().y() * (1 - (rect.height()/(double)screen->geometry().height()>1
-                             ?1:rect.height()/(double)screen->geometry().height())));
+                             ?1:rect.width()/(double)screen->geometry().width()
+                            )), pos().y() * (1 - (rect.height()/(double)screen->geometry().height()>1
+                                             ?1:rect.height()/(double)screen->geometry().height())));
     }
 
     paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
@@ -539,42 +505,34 @@ void Paint_window::set_pic(QPixmap pix, QRect rect)
 
 }
 
-void Paint_window::closeEvent(QCloseEvent *event)
-{
+void PaintWindow::closeEvent(QCloseEvent *event) {
     event->ignore();
 //    if(Config::get_config(Config::show_close_dialog))
 //    {
 //        Close_dialog* close_dialog = new Close_dialog(area, this);
 //        connect(close_dialog, &Close_dialog::hide_paint, this, [=](){
-//            Window_manager::change_window("MainWindow");
-//            Window_manager::hide_now();
+//            WindowManager::changeWindow("MainWindow");
+//            WindowManager::hideNow();
 //        });
 //        close_dialog->show();
 //    }
-    if(Config::getConfig<bool>(Config::hide_to_tray))
-    {
-        Window_manager::change_window("tray");
+    if(Config::getConfig<bool>(Config::hide_to_tray)) {
+        WindowManager::changeWindow("tray");
 
-    }
-    else
-    {
-        Window_manager::close();
+    } else {
+        WindowManager::close();
     }
 }
 
-void Paint_window::reset()
-{
-    if(area->needSave())
-    {
+void PaintWindow::reset() {
+    if(area->needSave()) {
         QDir dir;
-        if(!dir.exists("Data/Temp"))
-        {
+        if(!dir.exists("Data/Temp")) {
             dir.mkpath("Data/Temp");
         }
         QDateTime time = QDateTime::currentDateTime();
         QString path = "Data/Temp/" + time.toString("dd_mm_yyyy_hh_mm_ss") + "/";
-        if(!dir.exists(path))
-        {
+        if(!dir.exists(path)) {
             dir.mkpath(path);
         }
         path += "main.png";
@@ -589,51 +547,39 @@ void Paint_window::reset()
     Recorder::instance()->reset();
 }
 
-void Paint_window::on_window_cancal()
-{
+void PaintWindow::onWindowCancel() {
 
 }
 
-void Paint_window::on_paint_panel_close()
-{
+void PaintWindow::onPaintWindowClose() {
 }
 
-void Paint_window::on_window_close()
-{
+void PaintWindow::onWindowClose() {
 //    delete Style_manager::instance();
 //    delete Recorder::instance();
 //    delete History::instance();
     delete Paint_setting_panel::instance();
     QClipboard *clip=QApplication::clipboard();
-    if(Config::getConfig<bool>(Config::auto_copy_to_clipboard))
-    {
+    if(Config::getConfig<bool>(Config::auto_copy_to_clipboard)) {
         clip->clear();
     }
 }
 
-void Paint_window::showSettingPanel()
-{
-    if(Paint_setting_panel::instance()->isVisible())
-    {
+void PaintWindow::showSettingPanel() {
+    if(Paint_setting_panel::instance()->isVisible()) {
         Paint_setting_panel::instance()->hide();
-    }
-    else
-    {
+    } else {
         addDockWidget(Qt::RightDockWidgetArea, Paint_setting_panel::instance());
         Paint_setting_panel::instance()->show();
     }
 }
 
-void Paint_window::initSettingPanel()
-{
+void PaintWindow::initSettingPanel() {
     connect(Paint_setting_panel::instance(), &Paint_setting_panel::paint_shape, this,
-            [=](SHAPE_TYPE type){
-        if(type == DELETE_SHAPE)
-        {
+    [=](SHAPE_TYPE type) {
+        if(type == DELETE_SHAPE) {
             area->stateChange(ERASE);
-        }
-        else
-        {
+        } else {
             area->paintShape(type);
             paint_button_group->buttonClicked(2);
         }

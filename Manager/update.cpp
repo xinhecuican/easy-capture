@@ -8,8 +8,8 @@
 #include "Data/Reply_timeout.h"
 #include<QTextCodec>
 #include<QMessageBox>
-#include "key_manager.h"
-#include "window_manager.h"
+#include "KeyManager.h"
+#include "WindowManager.h"
 #include "Paint/Widgets/history.h"
 
 Update::Update()
@@ -30,7 +30,7 @@ Update::Update()
             onFinish();
             return;
         }
-        check_update();
+        checkUpdate();
     });
     connect(timeoutTimer, &QTimer::timeout, this, [=](){
         if(timerReceive == currentReceive){
@@ -88,7 +88,7 @@ void Update::deserialized(QJsonObject *json)
     }
 }
 
-void Update::check_update()
+void Update::checkUpdate()
 {
     updateState = CHECKING;
     emit updateStateChange(updateState);
@@ -205,11 +205,11 @@ void Update::on_update()
         int ans = file.readAll().toInt();
         if(file.exists() && ans)
         {
-            Config::update_all();
-            Key_manager::update_all();
+            Config::updateAll();
+            KeyManager::updateAll();
             History::instance()->update();
             Config::setConfig(Config::need_update, 0);
-            Config::update_config(Config::need_update);
+            Config::updateConfig(Config::need_update);
             file.remove();
         }
     }
@@ -222,7 +222,7 @@ void Update::on_update()
             {
                 qInfo() << "正在更新";
                 if(QProcess::startDetached("Upgrate.exe"))//开启更新程序
-                    Window_manager::close();
+                    WindowManager::close();
                 else
                     qWarning("更新程序未启动");
                 onFinish();
@@ -233,7 +233,7 @@ void Update::on_update()
             QStringList args;
             args << "terminal";
             if(QProcess::startDetached("Upgrate.exe", args))//开启更新程序
-                Window_manager::close();
+                WindowManager::close();
             else
                 qWarning("更新程序未启动");
             onFinish();

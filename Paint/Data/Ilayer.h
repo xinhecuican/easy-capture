@@ -2,7 +2,7 @@
 #define ILAYER_H
 #include<QImage>
 #include "paint_data.h"
-#include "Base/Record_element.h"
+#include "Base/RecordElement.h"
 #include<QPixmap>
 #include "Common.h"
 #include<QDebug>

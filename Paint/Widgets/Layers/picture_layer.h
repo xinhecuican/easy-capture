@@ -7,7 +7,7 @@
 #include "Helper/plist.h"
 #include "Paint/Data/Ilayer.h"
 #include "paint_layer.h"
-#include "Base/Record_element.h"
+#include "Base/RecordElement.h"
 #include "Paint/Data/stretch_button.h"
 #include "Helper/plist.h"
 #include <QGraphicsObject>

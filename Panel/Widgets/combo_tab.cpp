@@ -24,17 +24,17 @@ Combo_tab::Combo_tab(QString tab_name, QVector<QString> name, int begin_index, i
     connect(this, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, f);
 }
 
-QString Combo_tab::get_name()
+QString Combo_tab::getName()
 {
     return tab_name;
 }
 
-int Combo_tab::get_begin_index()
+int Combo_tab::getBeginIndex()
 {
     return begin_index;
 }
 
-int Combo_tab::get_default_index()
+int Combo_tab::getDefaultIndex()
 {
     return begin_index + default_index;
 }

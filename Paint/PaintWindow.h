@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include<QWidget>
-#include "Base/Window_base.h"
+#include "Base/WindowBase.h"
 #include "Paint/Widgets/Paint_area.h"
 #include<QScrollArea>
 #include<QDockWidget>
@@ -13,27 +13,26 @@
 #include<QGraphicsView>
 #include <QTimer>
 
-namespace Ui {
-class Paint_window;
-}
+//namespace Ui {
+//class PaintWindow;
+//}
 
-class Paint_window : public Window_base
-{
+class PaintWindow : public WindowBase {
     Q_OBJECT
 
 public:
     friend class Paint_setting_panel;
-    Q_INVOKABLE explicit Paint_window(QWidget *parent = nullptr);
-    ~Paint_window();
+    Q_INVOKABLE explicit PaintWindow(QWidget *parent = nullptr);
+    ~PaintWindow();
     void set_menubar();
     void set_toolbar();
-    void load_key_event(QString name) override;
+    void loadKeyEvent(QString name) override;
     void reset();
-    void set_pic(QPixmap pix, QRect rect)override;
-    void on_window_cancal() override;
+    void setPic(QPixmap pix, QRect rect)override;
+    void onWindowCancel() override;
     void closeEvent(QCloseEvent* event)override;
-    void on_paint_panel_close() override;
-    void on_window_close() override;
+    void onPaintWindowClose() override;
+    void onWindowClose() override;
 public slots:
 //    void append_layer();
 //    void remove_layer(int index);
@@ -42,7 +41,9 @@ public slots:
 //    QStringList get_layer_name();
     void showSettingPanel();
 private:
-    Ui::Paint_window *ui;
+//    Ui::PaintWindow *ui;
+    QWidget* centralWidget;
+    QToolBar* toolbar;
     Paint_area* area;
     QGraphicsView* paint_panel;
     QHBoxLayout* layout;

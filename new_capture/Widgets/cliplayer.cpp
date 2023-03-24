@@ -5,7 +5,7 @@
 #include "Helper/plist.h"
 #include <QGuiApplication>
 #include <QScreen>
-#include "Manager/window_manager.h"
+#include "Manager/WindowManager.h"
 #include <QPixmap>
 #include <QBitmap>
 #include <QFile>
@@ -81,7 +81,7 @@ void ClipLayer::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         if(mask_layer->getRegionCount() == 0)
         {
-            Window_manager::change_window("tray");
+            WindowManager::changeWindow("tray");
         }
         else
         {
@@ -174,8 +174,8 @@ void ClipLayer::capture(QPixmap pix)
     rect = path.boundingRect().toRect();
     ans = pix.copy(rect);
     rect.moveTo(0, 0);
-    Window_manager::change_window("Paint_window");
-    Window_manager::get_window("Paint_window")->set_pic(ans, rect);
+    WindowManager::changeWindow("PaintWindow");
+    WindowManager::getWindow("PaintWindow")->setPic(ans, rect);
 }
 
 void ClipLayer::setPic(QPixmap pix)
@@ -261,7 +261,7 @@ void ClipLayer::setToolBar()
     cancel_button = new QToolButton(toolbar);
     cancel_button->setIcon(QIcon(":/image/cancel.svg"));
     connect(cancel_button, &QToolButton::clicked, this, [=](){
-        Window_manager::change_window("tray");
+        WindowManager::changeWindow("tray");
     });
 
     undo_button = new QToolButton(toolbar);

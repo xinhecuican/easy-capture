@@ -3,17 +3,17 @@
 #include <QWidget>
 #include <QLabel>
 #include <QLineEdit>
-#include "Base/Tab_base.h"
+#include "Base/TabBase.h"
 
-class FileChooser : public QWidget, public Tab_base
+class FileChooser : public QWidget, public TabBase
 {
 public:
     FileChooser();
     FileChooser(QString tab_name, QString name, int index, std::function<void (QString)> const &f, QWidget* parent);
-    QString get_name() override;
+    QString getName() override;
     void reset() override;
-    int get_begin_index() override;
-    int get_default_index() override;
+    int getBeginIndex() override;
+    int getDefaultIndex() override;
 private:
     void init();
     QString tab_name;

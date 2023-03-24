@@ -9,18 +9,15 @@
 
 QMap<int, QList<Debug::TimerElement>> Debug::timerName = QMap<int, QList<TimerElement>>();
 
-void Debug::show_error_message(QString message)
-{
+void Debug::show_error_message(QString message) {
     qCritical() << message;
 }
 
-void Debug::debug_print_warning(QString message)
-{
+void Debug::debug_print_warning(QString message) {
     qWarning() << message;
 }
 
-void Debug::showImage(QImage image)
-{
+void Debug::showImage(QImage image) {
     QMainWindow mw;
 
     QLabel *label=new QLabel();
@@ -32,22 +29,19 @@ void Debug::showImage(QImage image)
     mw.show();
 }
 
-void Debug::beginTimer(QString name)
-{
+void Debug::beginTimer(QString name) {
     TimerElement timerElement;
     timerElement.name = name;
     timerElement.beginTime = QDateTime::currentMSecsSinceEpoch();
     int threadId = (int)QThread::currentThreadId();
-    if(!timerName.contains(threadId))
-    {
+    if(!timerName.contains(threadId)) {
         QList<TimerElement> timerList;
         timerName[threadId] = timerList;
     }
     timerName[threadId].append(timerElement);
 }
 
-void Debug::endTimer()
-{
+void Debug::endTimer() {
     int threadId = (int)QThread::currentThreadId();
     if(timerName[threadId].size() == 0)
         return;
@@ -56,7 +50,6 @@ void Debug::endTimer()
     qDebug() << "timer " << timerElement.name << ": " << QDateTime::currentMSecsSinceEpoch() - timerElement.beginTime;
 }
 
-qint64 Debug::getTime()
-{
+qint64 Debug::getTime() {
     return QDateTime::currentMSecsSinceEpoch();
 }

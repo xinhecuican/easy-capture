@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include "Panel/Widgets/tab_widget.h"
 #include<QMap>
-#include "Base/Window_base.h"
+#include "Base/WindowBase.h"
 #include<QCloseEvent>
 #include "Helper/plist.h"
 #include "Manager/config.h"
@@ -13,29 +13,25 @@ namespace Ui {
 class Setting;
 }
 
-class Setting : public Window_base
-{
+class Setting : public WindowBase {
     Q_OBJECT
 
 public:
     Q_INVOKABLE explicit Setting(QWidget *parent = nullptr);
     ~Setting();
     void closeEvent(QCloseEvent* event)override;
-    void on_window_cancal() override;
-    void on_window_select() override;
+    void onWindowCancel() override;
+    void onWindowSelect() override;
 
 private:
-    struct data
-    {
+    struct data {
         int type;
         QVariant sum;
-        data(int t, QVariant s)
-        {
+        data(int t, QVariant s) {
             type = t;
             sum = s;
         }
-        data()
-        {
+        data() {
             type = 0;
             sum = false;
         }
@@ -45,9 +41,9 @@ private:
     QList<data> ready_setting;
     void normal_settings();
     void capture_settings();
-    void key_settings();
+    void keySettings();
     void postUpdate(Config::setting type, QVariant num);
-    Tab_widget* key_setting;
+    Tab_widget* keySetting;
 };
 
 #endif // SETTING_H

@@ -8,7 +8,7 @@ public:
     virtual void undo()=0;
     virtual void redo()=0;
     virtual ~RecordElement(){}
-    QObject* base_object;
+    QObject* baseObject;
 };
 
 #endif // RECORD_ELEMENT_H

@@ -24,17 +24,17 @@ void Num_tab::reset()
     setValue(Config::getConfig<int>(Config::setting(index)));
 }
 
-int Num_tab::get_begin_index()
+int Num_tab::getBeginIndex()
 {
     return index;
 }
 
-int Num_tab::get_default_index()
+int Num_tab::getDefaultIndex()
 {
     return index;
 }
 
-QString Num_tab::get_name()
+QString Num_tab::getName()
 {
     return name;
 }

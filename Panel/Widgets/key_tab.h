@@ -1,22 +1,22 @@
 #ifndef KEY_TAB_H
 #define KEY_TAB_H
 #include<QPushButton>
-#include "Manager/IKey_listener.h"
-#include "Base/Tab_base.h"
+#include "Manager/IKeyListener.h"
+#include "Base/TabBase.h"
 
-class Key_tab : public QPushButton, IKey_listener, public Tab_base
+class Key_tab : public QPushButton, IKeyListener, public TabBase
 {
     Q_OBJECT
 public:
     Key_tab();
     Key_tab(int index, QString window_name, QString key_name, QWidget* parent);
-    void key_end() override;
-    void get_key(int key) override;
+    void keyEnd() override;
+    void getKey(int key) override;
     void reset() override;
     void restore() override;
-    QString get_name() override;
-    int get_begin_index() override;
-    int get_default_index() override;
+    QString getName() override;
+    int getBeginIndex() override;
+    int getDefaultIndex() override;
 
 signals:
     void key_conflict(QList<QString> key_names);

@@ -5,7 +5,7 @@
 #include<QKeyEvent>
 #include<QMouseEvent>
 #include<QPushButton>
-#include "Base/Window_base.h"
+#include "Base/WindowBase.h"
 #include<QTimer>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -19,32 +19,32 @@
 #include "Style_widget/bubbletipswidget.h"
 #include "Widgets/VideoHandler/videocapture.h"
 
-namespace Ui {
-class Capture_window;
-}
+//namespace Ui {
+//class CaptureWindow;
+//}
 
-class Capture_window : public Window_base
-{
+class CaptureWindow : public WindowBase {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE explicit Capture_window(QWidget *parent = nullptr);
-    ~Capture_window();
+    Q_INVOKABLE explicit CaptureWindow(QWidget *parent = nullptr);
+    ~CaptureWindow();
     void paintEvent(QPaintEvent*) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
     //void keyPressEvent(QKeyEvent* event) override;
-    void on_window_cancal() override;
-    void on_window_select() override;
-    void load_key_event(QString name) override;
-    void startCaptureVideo();
-    void pauseCaptureVideo();
-    void stopCaptureVideo();
+    void onWindowCancel() override;
+    void onWindowSelect() override;
+    void loadKeyEvent(QString name) override;
+    void startCaptureVideo() override;
+    void pauseCaptureVideo() override;
+    void stopCaptureVideo() override;
 
 private:
-    enum ScrollState{IDLE, SCROLLRECT_SETTING, SCROLLRECT_SETTED, SCROLL_AUTO, SCROLL_MANUAL};
-    Ui::Capture_window *ui;
+    enum ScrollState {IDLE, SCROLLRECT_SETTING, SCROLLRECT_SETTED, SCROLL_AUTO, SCROLL_MANUAL};
+//    Ui::CaptureWindow *ui;
+    QWidget* centralWidget;
     bool button_click;
     QPainterPath free_paint_path;
     QRect active_window_bound;

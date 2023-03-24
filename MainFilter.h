@@ -8,35 +8,37 @@
 #include "Style_widget/tray.h"
 #include <QProcess>
 
-class Main_fliter : public QWidget, public QAbstractNativeEventFilter
-{
+/**
+ * @brief The MainFilter class
+ * 用于注册快捷键，全局快捷键和托盘，它会处理全局快捷键事件，并且将本进程的键盘事件传递给@ref KeyManager
+ * 此外还会检查更新及启用定时器来调用 @ref WindowManager::controlWindowClose()
+ */
+class MainFilter : public QWidget, public QAbstractNativeEventFilter {
     Q_OBJECT
 public:
-    Main_fliter();
-    ~Main_fliter();
-    static Main_fliter* instance()
-    {
-        if(_instance == NULL)
-        {
-            _instance = new Main_fliter();
+    MainFilter();
+    ~MainFilter();
+    static MainFilter* instance() {
+        if(_instance == NULL) {
+            _instance = new MainFilter();
         }
         return _instance;
     }
     bool eventFilter(QObject* o, QEvent* e)override;
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *result)override;
-    void stop_timer();
-    void start_timer();
-    bool is_timer_run();
+    void stopTimer();
+    void startTimer();
+    bool isTimerRun();
     ATOM global_key_id;
     ATOM global_capture_id;
 public slots:
-    void window_manager_thread();
+    void windowMnaagerThread();
 private:
     void setTrayContextMenu();
     void checkCrash();
     Tray* tray;
     QTimer* timer;
-    static Main_fliter* _instance;
+    static MainFilter* _instance;
     QProcess* crashUploadProcess;
 };
 

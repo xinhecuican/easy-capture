@@ -96,7 +96,7 @@ void UpdateDownloader::startInner(QUrl url){
             if(updateSum < 0)
             {
                 Config::setConfig(Config::need_update, true);
-                Config::update_config(Config::need_update);
+                Config::updateConfig(Config::need_update);
                 emit success();
                 QFile file("Data/Update/update_list.txt");
                 if(!file.open(QIODevice::ReadWrite | QIODevice::Truncate))

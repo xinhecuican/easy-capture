@@ -7,7 +7,7 @@ PaintDeleteRecord::PaintDeleteRecord(Paint_layer* layer, PaintItem* item, const 
     this->layer = layer;
     this->item = item;
     this->func = func_name;
-    this->base_object = item;
+    this->baseObject = item;
 }
 
 void PaintDeleteRecord::undo()

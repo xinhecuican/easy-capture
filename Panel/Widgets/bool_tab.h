@@ -4,17 +4,17 @@
 #include<QString>
 #include<QRadioButton>
 #include<functional>
-#include "Base/Tab_base.h"
+#include "Base/TabBase.h"
 
-class Bool_tab : public QRadioButton, public Tab_base
+class Bool_tab : public QRadioButton, public TabBase
 {
 public:
     Bool_tab();
     Bool_tab(QString tab_name, int index,
              std::function<void (bool)> const  &f, QWidget* parent);
-    QString get_name() override;
-    int get_begin_index() override;
-    int get_default_index() override;
+    QString getName() override;
+    int getBeginIndex() override;
+    int getDefaultIndex() override;
     void reset() override;
 private:
     QString tab_name;

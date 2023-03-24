@@ -3,7 +3,7 @@
 
 #include<QHash>
 #include<QPainterPath>
-#include "Base/Record_element.h"
+#include "Base/RecordElement.h"
 #include "Paint/Data/paint_data.h"
 #include "Paint/Data/Ilayer.h"
 #include<QWidget>

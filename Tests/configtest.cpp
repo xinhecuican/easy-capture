@@ -4,7 +4,7 @@
 
 //void ConfigTest::case1_update()
 //{
-//    Config::instance()->update_all();
+//    Config::instance()->updateAll();
 //    delete Config::instance();
 //}
 

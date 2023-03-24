@@ -18,17 +18,17 @@ FileChooser::FileChooser(QString tab_name, QString name, int index, std::functio
     init();
 }
 
-QString FileChooser::get_name()
+QString FileChooser::getName()
 {
     return tab_name;
 }
 
-int FileChooser::get_begin_index()
+int FileChooser::getBeginIndex()
 {
     return index;
 }
 
-int FileChooser::get_default_index()
+int FileChooser::getDefaultIndex()
 {
     return index;
 }

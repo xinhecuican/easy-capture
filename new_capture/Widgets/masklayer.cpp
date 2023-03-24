@@ -4,7 +4,7 @@
 #include <QScreen>
 #include <QPainterPath>
 #include <QGraphicsSceneMouseEvent>
-#include "Manager/window_manager.h"
+#include "Manager/WindowManager.h"
 #include "Helper/math.h"
 #include "Helper/plist.h"
 #include "Manager/config.h"

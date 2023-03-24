@@ -21,15 +21,17 @@ SOURCES += \
     Helper/log.cpp \
     Helper/math.cpp \
     Helper/mstring.cpp \
+    MainFilter.cpp \
     Manager/Data/update_data.cpp \
     Manager/Data/update_dialog.cpp \
     Manager/Data/updatedownloader.cpp \
+    Manager/KeyManager.cpp \
+    Manager/WindowManager.cpp \
     Manager/config.cpp \
-    Manager/key_manager.cpp \
     Manager/update.cpp \
-    Manager/window_manager.cpp \
     Paint/Data/scroll_button.cpp \
     Paint/Data/stretch_button.cpp \
+    Paint/PaintWindow.cpp \
     Paint/Widgets/Layer_list/list_item.cpp \
     Paint/Widgets/Layer_list/list_widget.cpp \
     Paint/Widgets/Layers/LayerItems/expandbutton.cpp \
@@ -54,7 +56,6 @@ SOURCES += \
     Paint/Widgets/paint_area.cpp \
     Paint/Widgets/recorder.cpp \
     Paint/Widgets/style_manager.cpp \
-    Paint/paint_window.cpp \
     Panel/Widgets/combo_tab.cpp \
     Panel/Widgets/filechooser.cpp \
     Panel/Widgets/globalkeytab.cpp \
@@ -73,7 +74,7 @@ SOURCES += \
     Tests/configtest.cpp \
     Tests/testwidget.cpp \
     main.cpp \
-    main_fliter.cpp \
+    new_capture/CaptureWindow.cpp \
     new_capture/Widgets/Scroll_handler/Scroll_handle_global.cpp \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.cpp \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.cpp \
@@ -86,15 +87,14 @@ SOURCES += \
     new_capture/Widgets/masklayer.cpp \
     new_capture/Widgets/mosicsample.cpp \
     new_capture/Widgets/videotoolbar.cpp \
-    new_capture/Window_fliter.cpp \
-    new_capture/capture_window.cpp
+    new_capture/Window_fliter.cpp
 
 HEADERS += \
     Base/MPool.h \
-    Base/Record_element.h \
+    Base/RecordElement.h \
     Base/Serializable.h \
-    Base/Tab_base.h \
-    Base/Window_base.h \
+    Base/TabBase.h \
+    Base/WindowBase.h \
     Helper/EnumReflect.h \
     Helper/GraphicsViewPatch.h \
     Helper/Reflect.h \
@@ -106,21 +106,23 @@ HEADERS += \
     Helper/math.h \
     Helper/mstring.h \
     Helper/plist.h \
+    MainFilter.h \
     Manager/Data/Reply_timeout.h \
     Manager/Data/update_data.h \
     Manager/Data/update_dialog.h \
     Manager/Data/updatedownloader.h \
-    Manager/IKey_listener.h \
+    Manager/IKeyListener.h \
+    Manager/KeyManager.h \
+    Manager/WindowManager.h \
     Manager/config.h \
-    Manager/key_manager.h \
     Manager/update.h \
-    Manager/window_manager.h \
     Paint/Data/Common.h \
     Paint/Data/History_data.h \
     Paint/Data/Ilayer.h \
     Paint/Data/paint_data.h \
     Paint/Data/scroll_button.h \
     Paint/Data/stretch_button.h \
+    Paint/PaintWindow.h \
     Paint/Widgets/Layer_list/list_item.h \
     Paint/Widgets/Layer_list/list_widget.h \
     Paint/Widgets/Layers/LayerItems/expandbutton.h \
@@ -146,7 +148,6 @@ HEADERS += \
     Paint/Widgets/paint_area.h \
     Paint/Widgets/recorder.h \
     Paint/Widgets/style_manager.h \
-    Paint/paint_window.h \
     Panel/Widgets/bool_tab.h \
     Panel/Widgets/combo_tab.h \
     Panel/Widgets/filechooser.h \
@@ -165,7 +166,7 @@ HEADERS += \
     Tests/AllTests.h \
     Tests/configtest.h \
     Tests/testwidget.h \
-    main_fliter.h \
+    new_capture/CaptureWindow.h \
     new_capture/Widgets/Scroll_handler/Scroll_handler_global.h \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.h \
     new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
@@ -178,16 +179,13 @@ HEADERS += \
     new_capture/Widgets/masklayer.h \
     new_capture/Widgets/mosicsample.h \
     new_capture/Widgets/videotoolbar.h \
-    new_capture/capture_window.h \
     new_capture/window_fliter.h
 
 FORMS += \
-    Paint/paint_window.ui \
     Panel/setting.ui \
     Style_widget/ColorWidget.ui \
     Style_widget/bubbletipswidget.ui \
-    Tests/testwidget.ui \
-    new_capture/capture_window.ui
+    Tests/testwidget.ui
 
 TRANSLATIONS += \
     capture_zh_CN.ts

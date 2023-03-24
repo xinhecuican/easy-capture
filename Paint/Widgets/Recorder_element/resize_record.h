@@ -1,6 +1,6 @@
 #ifndef RESIZE_RECORD_H
 #define RESIZE_RECORD_H
-#include "Base/Record_element.h"
+#include "Base/RecordElement.h"
 #include<QGraphicsObject>
 
 class ResizeRecord : public RecordElement

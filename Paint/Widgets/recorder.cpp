@@ -50,7 +50,7 @@ void Recorder::removeRecord(QObject* layer)
 {
     for(int i=0; i<data.size(); i++)
     {
-        if(data.get(i)->base_object == layer)
+        if(data.get(i)->baseObject == layer)
         {
             data.remove(i);
             i--;

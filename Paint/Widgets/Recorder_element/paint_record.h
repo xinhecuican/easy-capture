@@ -1,6 +1,6 @@
 #ifndef PAINT_RECORD_H
 #define PAINT_RECORD_H
-#include "Base/Record_element.h"
+#include "Base/RecordElement.h"
 #include "Paint/Data/Common.h"
 #include "Paint/Widgets/Layers/LayerItems/paintitem.h"
 

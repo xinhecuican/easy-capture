@@ -1,17 +1,17 @@
 #include "Panel/setting.h"
-#include "new_capture/capture_window.h"
-#include "Manager/window_manager.h"
+#include "new_capture/CaptureWindow.h"
+#include "Manager/WindowManager.h"
 
 #include <QApplication>
 #include<QTextCodec>
 #include "Manager/config.h"
-#include "Manager/key_manager.h"
-#include "Paint/paint_window.h"
+#include "Manager/KeyManager.h"
+#include "Paint/PaintWindow.h"
 #include "JlCompress.h"
 #include "Manager/update.h"
 #include "Style_widget/tray.h"
 #include <windows.h>
-#include "main_fliter.h"
+#include "MainFilter.h"
 #include "Paint/Widgets/history.h"
 #include<dbghelp.h>
 #include "Helper/debug.h"
@@ -40,8 +40,7 @@ void registerClasses();
 #include <QTest>
 QTEST_MAIN(ConfigTest);
 #else
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     // 设置PWD
     QString applicationDirPathStr = QCoreApplication::applicationDirPath();
@@ -51,19 +50,19 @@ int main(int argc, char *argv[])
     QBreakpadInstance.mainVersion = Update::now_version.get_version();
     logSysInit("Data/Temp/log.txt");
 #endif
-    Config::load_config();
-    Key_manager::load();
-    Key_manager::registerGlobalKey("awake_capture");
-    Key_manager::registerGlobalKey("fullscreen_capture");
+    Config::loadConfig();
+    KeyManager::load();
+    KeyManager::registerGlobalKey("awake_capture");
+    KeyManager::registerGlobalKey("fullscreen_capture");
     MString::load_from_file("Data/Languages/");
     registerClasses();
 
-    Main_fliter* fliter = Main_fliter::instance();
+    MainFilter* fliter = MainFilter::instance();
     a.installEventFilter(fliter);//捕获全局键盘事件
     a.installNativeEventFilter(fliter); // 捕获程序键盘事件
     a.setQuitOnLastWindowClosed(false);
-    a.connect(&a, &QApplication::aboutToQuit, &a, [=](){
-        Key_manager::unRegisterAll();
+    a.connect(&a, &QApplication::aboutToQuit, &a, [=]() {
+        KeyManager::unRegisterAll();
         Update::instance()->onFinish();
         fliter->deleteLater();
     });
@@ -75,11 +74,10 @@ int main(int argc, char *argv[])
 #endif
 
 
-void registerClasses()
-{
+void registerClasses() {
     Reflect::registerClass<Setting>();
-    Reflect::registerClass<Capture_window>();
-    Reflect::registerClass<Paint_window>();
+    Reflect::registerClass<CaptureWindow>();
+    Reflect::registerClass<PaintWindow>();
     Reflect::registerClass<Rect_layer>();
     Reflect::registerClass<Text_layer>();
     Reflect::registerClass<Picture_layer>();

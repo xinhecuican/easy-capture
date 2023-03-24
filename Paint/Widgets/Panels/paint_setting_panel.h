@@ -12,7 +12,7 @@ class Paint_setting_panel : public QDockWidget
 {
     Q_OBJECT
 public:
-    friend class Paint_window;
+    friend class PaintWindow;
     static Paint_setting_panel* instance(QWidget* parent=nullptr);
     Paint_setting_panel();
     Paint_setting_panel(QWidget* parent = nullptr);

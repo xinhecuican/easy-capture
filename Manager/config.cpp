@@ -15,22 +15,18 @@ DEFINE_STRING(Config);
 
 Config* Config::_instance = NULL;
 
-Config::Config()
-{
+Config::Config() {
     is_loading_translate = false;
     is_update_config = false;
     all_settings = QMap<int, QVariant>();
 }
 
-Config::~Config()
-{
+Config::~Config() {
     qDebug() << "config delete";
 }
 
-QString Config::read_translate(int type)
-{
-    if(!is_loading_translate)
-    {
+QString Config::readTranslate(int type) {
+    if(!is_loading_translate) {
         //MString::load_from_file(":/Data/Languages/Config/");
 //        MString::load_from_file("Data/Languages/Config/");
         is_loading_translate = true;
@@ -38,103 +34,82 @@ QString Config::read_translate(int type)
     return MString::search("{" + eto_string((setting)type) + "}");
 }
 
-void Config::serialized(QJsonObject* json)
-{
-    if(is_update_config)
-    {
+void Config::serialized(QJsonObject* json) {
+    if(is_update_config) {
         QJsonValue value = QJsonValue::fromVariant(all_settings[update_setting]);
         if(json->contains(eto_string(update_setting)))
             (*json)[eto_string(update_setting)] = value;
         else
             json->insert(eto_string(update_setting), value);
-    }
-    else
-    {
-        for(setting i=capture_one_window; i<setting::COUNT; i = setting(i + 1))
-        {
+    } else {
+        for(setting i=capture_one_window; i<setting::COUNT; i = setting(i + 1)) {
             QJsonValue value = QJsonValue::fromVariant(all_settings[i]);
             json->insert(eto_string((setting)i), value);
         }
     }
 }
 
-void Config::deserialized(QJsonObject* json)
-{
-    for(int i=0; i<COUNT; i++)
-    {
+void Config::deserialized(QJsonObject* json) {
+    for(int i=0; i<COUNT; i++) {
         if((*json).find(eto_string((setting)i)) != (*json).end())
             all_settings[i] = (*json)[eto_string((setting)i)].toVariant();
     }
 }
 
-void Config::save_to_config()
-{
+void Config::saveToConfig() {
     instance()->is_update_config = false;
     Serialize::serialize("Data/config.json", instance());
 }
 
-void Config::load_config()
-{
-    if(!Serialize::deserialize("Data/config.json", instance()))
-    {
-        if(!Serialize::deserialize(":/Data/default.json", instance()))
-        {
+void Config::loadConfig() {
+    if(!Serialize::deserialize("Data/config.json", instance())) {
+        if(!Serialize::deserialize(":/Data/default.json", instance())) {
             qWarning("配置文件解析失败");
         }
-        save_to_config();
+        saveToConfig();
     }
-    if(getConfig<QString>(version) != Update::now_version.get_version())
-    {
-        update_all();
+    if(getConfig<QString>(version) != Update::now_version.get_version()) {
+        updateAll();
     }
 }
 
-void Config::update_config(setting type)
-{
+void Config::updateConfig(setting type) {
     instance()->update_setting = type;
     instance()->is_update_config = true;
     Serialize::append("Data/config.json", instance());
     instance()->is_update_config = false;
 }
 
-void Config::update_all()
-{
+void Config::updateAll() {
     QMap<int, QVariant> temp_setting;
     temp_setting = instance()->all_settings;
     instance()->all_settings = QMap<int, QVariant>();
-    if(!Serialize::deserialize(":/Data/default.json", instance()))
-    {
+    if(!Serialize::deserialize(":/Data/default.json", instance())) {
         qWarning("配置文件解析失败");
     }
-    for(int i=0; i<COUNT; i++)
-    {
-        if(temp_setting.find(i) == temp_setting.end())
-        {
+    for(int i=0; i<COUNT; i++) {
+        if(temp_setting.find(i) == temp_setting.end()) {
             temp_setting[i] = instance()->all_settings[i];
-            update_config((setting)i);
+            updateConfig((setting)i);
         }
     }
     instance()->all_settings = temp_setting;
 }
 
-void Config::setConfig(setting type, QVariant data)
-{
+void Config::setConfig(setting type, QVariant data) {
     instance()->all_settings[type] = data;
 }
 
-void Config::setConfig(int type, QVariant data)
-{
+void Config::setConfig(int type, QVariant data) {
     instance()->all_settings[type] = data;
 }
 
-QString Config::get_config_name(setting type)
-{
-    return instance()->read_translate(type);
+QString Config::getConfigName(setting type) {
+    return instance()->readTranslate(type);
 }
 
-QString Config::get_config_name(int type)
-{
-    return instance()->read_translate(type);
+QString Config::getConfigName(int type) {
+    return instance()->readTranslate(type);
 }
 
 //template<typename T>

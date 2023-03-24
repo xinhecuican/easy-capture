@@ -1,5 +1,5 @@
 #include "globalkeytab.h"
-#include "Manager/key_manager.h"
+#include "Manager/KeyManager.h"
 
 GlobalKeyTab::GlobalKeyTab()
 {
@@ -14,8 +14,8 @@ GlobalKeyTab::GlobalKeyTab(int index, QString name, QString keyName, QWidget* pa
     this->index = index;
     this->name = name;
     this->keyName = keyName;
-    key = Key_manager::getGlobalKey(index);
-    modKey = Key_manager::getGlobalModKey(index);
+    key = KeyManager::getGlobalKey(index);
+    modKey = KeyManager::getGlobalModKey(index);
     originKey = key;
     originModKey = modKey;
     dirty = false;
@@ -23,26 +23,26 @@ GlobalKeyTab::GlobalKeyTab(int index, QString name, QString keyName, QWidget* pa
     keyButton = new QPushButton(this);
     modKeyButton->setCheckable(true);
     keyButton->setCheckable(true);
-    modKeyButton->setText(Key_manager::key_type[modKey]);
-    keyButton->setText(Key_manager::key_type[key]);
+    modKeyButton->setText(KeyManager::keyType[modKey]);
+    keyButton->setText(KeyManager::keyType[key]);
     listenKey = false;
     icon = new QLabel(this);
     ok = QPixmap(":/image/ok.svg");
     ok = ok.scaled(32, 32);
     cancel = QPixmap(":/image/cancel.svg");
     cancel = cancel.scaled(32, 32);
-    icon->setPixmap(Key_manager::isGloablKeyRegistered(index) ? ok : cancel);
+    icon->setPixmap(KeyManager::isGloablKeyRegistered(index) ? ok : cancel);
     connect(keyButton, &QPushButton::clicked, this, [=](){
         keyButton->setText("");
         modKeyButton->setEnabled(false);
         listenKey = true;
-        Key_manager::add_key_listener(this);
+        KeyManager::addKeyListener(this);
     });
     connect(modKeyButton, &QPushButton::clicked, this, [=](){
         modKeyButton->setText("");
         keyButton->setEnabled(false);
         listenKey = false;
-        Key_manager::add_key_listener(this);
+        KeyManager::addKeyListener(this);
     });
     root = new QHBoxLayout();
     root->addWidget(modKeyButton);
@@ -51,18 +51,18 @@ GlobalKeyTab::GlobalKeyTab(int index, QString name, QString keyName, QWidget* pa
     setLayout(root);
 }
 
-void GlobalKeyTab::get_key(int key){
+void GlobalKeyTab::getKey(int key){
     tempKey = key;
     if(listenKey){
-        keyButton->setText(Key_manager::key_type[key]);
+        keyButton->setText(KeyManager::keyType[key]);
     }
     else{
-        modKeyButton->setText(Key_manager::key_type[key]);
+        modKeyButton->setText(KeyManager::keyType[key]);
     }
 }
 
-void GlobalKeyTab::key_end(){
-    Key_manager::remove_key_listener(this);
+void GlobalKeyTab::keyEnd(){
+    KeyManager::remvoeKeyListener(this);
     if(listenKey){
         modKeyButton->setEnabled(true);
         keyButton->setChecked(false);
@@ -71,7 +71,7 @@ void GlobalKeyTab::key_end(){
         }
         this->key = tempKey;
         dirty = true;
-        Key_manager::addGlobalKey(keyName, modKey, key);
+        KeyManager::addGlobalKey(keyName, modKey, key);
         detectKeyConflict();
     }
     else{
@@ -81,21 +81,21 @@ void GlobalKeyTab::key_end(){
             return;
         }
         dirty = true;
-        if(Key_manager::nativeModKeyCode((Qt::Key)tempKey) == 0){
+        if(KeyManager::nativeModKeyCode((Qt::Key)tempKey) == 0){
             modKeyButton->setText("");
             this->modKey = 0;
         }
         else{
             this->modKey = tempKey;
         }
-        Key_manager::addGlobalKey(keyName, modKey, key);
+        KeyManager::addGlobalKey(keyName, modKey, key);
         detectKeyConflict();
     }
 }
 
 void GlobalKeyTab::detectKeyConflict(){
     ATOM testId = GlobalAddAtomA("easycapture_test");
-    bool result = RegisterHotKey((HWND)this->winId(), testId, Key_manager::nativeModKeyCode((Qt::Key)modKey), Key_manager::nativeKeycode((Qt::Key)key));
+    bool result = RegisterHotKey((HWND)this->winId(), testId, KeyManager::nativeModKeyCode((Qt::Key)modKey), KeyManager::nativeKeycode((Qt::Key)key));
     icon->setPixmap(result ? ok : cancel);
     UnregisterHotKey((HWND)this->winId(), testId);
 }
@@ -105,22 +105,22 @@ void GlobalKeyTab::reset()
 
 }
 
-int GlobalKeyTab::get_begin_index()
+int GlobalKeyTab::getBeginIndex()
 {
     return 0;
 }
 
-int GlobalKeyTab::get_default_index()
+int GlobalKeyTab::getDefaultIndex()
 {
     return index;
 }
 
-QString GlobalKeyTab::get_name(){
+QString GlobalKeyTab::getName(){
     return name;
 }
 
 void GlobalKeyTab::restore(){
     if(dirty){
-        Key_manager::addGlobalKey(keyName, originModKey, originKey);
+        KeyManager::addGlobalKey(keyName, originModKey, originKey);
     }
 }

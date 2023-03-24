@@ -1,24 +1,24 @@
 #ifndef GLOBALKEYTAB_H
 #define GLOBALKEYTAB_H
 #include <QPushButton>
-#include "Manager/IKey_listener.h"
-#include "Base/Tab_base.h"
+#include "Manager/IKeyListener.h"
+#include "Base/TabBase.h"
 #include <QLabel>
 #include <QHBoxLayout>
 
-class GlobalKeyTab : public QWidget, IKey_listener, public Tab_base
+class GlobalKeyTab : public QWidget, IKeyListener, public TabBase
 {
     Q_OBJECT
 public:
     GlobalKeyTab();
     ~GlobalKeyTab();
     GlobalKeyTab(int index, QString name, QString keyName, QWidget* parent);
-    void key_end() override;
-    void get_key(int key) override;
+    void keyEnd() override;
+    void getKey(int key) override;
     void reset() override;
-    QString get_name() override;
-    int get_begin_index() override;
-    int get_default_index() override;
+    QString getName() override;
+    int getBeginIndex() override;
+    int getDefaultIndex() override;
     void restore() override;
 private:
     void detectKeyConflict();

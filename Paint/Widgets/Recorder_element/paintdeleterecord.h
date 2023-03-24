@@ -1,6 +1,6 @@
 #ifndef PAINTDELETERECORD_H
 #define PAINTDELETERECORD_H
-#include "Base/Record_element.h"
+#include "Base/RecordElement.h"
 #include "Paint/Widgets/Layers/paint_layer.h"
 #include "Paint/Widgets/Layers/LayerItems/paintitem.h"
 

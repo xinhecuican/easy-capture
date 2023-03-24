@@ -19,17 +19,17 @@ Bool_tab::Bool_tab(QString tab_name, int index, std::function<void (bool)> const
 
 
 
-QString Bool_tab::get_name()
+QString Bool_tab::getName()
 {
     return tab_name;
 }
 
-int Bool_tab::get_begin_index()
+int Bool_tab::getBeginIndex()
 {
     return index;
 }
 
-int Bool_tab::get_default_index()
+int Bool_tab::getDefaultIndex()
 {
     return index;
 }

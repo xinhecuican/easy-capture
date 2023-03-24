@@ -3,17 +3,17 @@
 #include<QVector>
 #include<functional>
 #include<QComboBox>
-#include "Base/Tab_base.h"
+#include "Base/TabBase.h"
 
-class Combo_tab : public QComboBox, public Tab_base
+class Combo_tab : public QComboBox, public TabBase
 {
 public:
     Combo_tab();
     Combo_tab(QString tab_name, QVector<QString> name, int begin_index, int end_index,
               std::function<void (int)> const &f, QWidget* parent);
-    QString get_name() override;
-    int get_begin_index() override;
-    int get_default_index() override;
+    QString getName() override;
+    int getBeginIndex() override;
+    int getDefaultIndex() override;
     void reset() override;
 private:
     QString tab_name;

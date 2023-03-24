@@ -28,15 +28,15 @@ public:
     void add_file_option(QString tab_name, QString name, int index, std::function<void(QString)> const &f);
     void add_spacer(QString text = QString());
     void add_layout(QLayout* layout);
-    int get_default_index(QString name);
+    int getDefaultIndex(QString name);
     void done();
     void reset();
     void restore();
     bool is_dirty();
     void set_dirty(bool dirty);
-    int get_begin_index(QString name);
+    int getBeginIndex(QString name);
 private:
-    QVector<Tab_base*> widgets;
+    QVector<TabBase*> widgets;
     QString widget_name;
     QVBoxLayout* layout;
     QWidget* base;

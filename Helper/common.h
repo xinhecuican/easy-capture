@@ -5,17 +5,15 @@
 #include<QFile>
 #include <QDir>
 
-struct MRect
-{
+struct MRect {
     QPoint topleft;
     QPoint topright;
     QPoint bottomleft;
     QPoint bottomright;
-    MRect(){};
+    MRect() {};
 };
 
-static QString getQSS(QString path)
-{
+static QString getQSS(QString path) {
     QFile file(path);
     file.open(QFile::ReadOnly);
     QString str = file.readAll();
@@ -23,7 +21,7 @@ static QString getQSS(QString path)
     return str;
 }
 
-static void createDirWithFile(QString filePath){
+static void createDirWithFile(QString filePath) {
     int index = filePath.lastIndexOf('/');
     QDir dir(filePath.mid(0, index));
     dir.mkpath(dir.absolutePath());

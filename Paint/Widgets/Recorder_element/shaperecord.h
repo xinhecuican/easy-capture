@@ -1,6 +1,6 @@
 #ifndef SHAPERECORD_H
 #define SHAPERECORD_H
-#include "Base/Record_element.h"
+#include "Base/RecordElement.h"
 #include <QGraphicsObject>
 
 class ShapeRecord : public RecordElement

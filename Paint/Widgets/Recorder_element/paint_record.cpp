@@ -4,7 +4,7 @@
 PaintRecord::PaintRecord(PaintItem* item)
 {
     this->item = item;
-    this->base_object = item;
+    this->baseObject = item;
 }
 
 void PaintRecord::undo()

@@ -4,9 +4,9 @@
 #include<QDebug>
 #include<QLabel>
 #include "Paint/Widgets/style_manager.h"
-#include "Manager/window_manager.h"
+#include "Manager/WindowManager.h"
 #include "Helper/debug.h"
-#include "Base/Window_base.h"
+#include "Base/WindowBase.h"
 #include "Style_widget/spacer.h"
 #include<QAction>
 #include "Paint/Widgets/Panels/color_selector.h"
@@ -395,10 +395,10 @@ void Paint_setting_panel::init_layer_setting()
 
 void Paint_setting_panel::closeEvent(QCloseEvent *event)
 {
-    Window_base* window;
-    if((window = Window_manager::get_window("Paint_window")) != NULL)
+    WindowBase* window;
+    if((window = WindowManager::getWindow("PaintWindow")) != NULL)
     {
-        window->on_paint_panel_close();
+        window->onPaintWindowClose();
     }
     else
     {

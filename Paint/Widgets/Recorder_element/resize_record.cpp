@@ -3,12 +3,12 @@
 
 ResizeRecord::ResizeRecord(QGraphicsObject* object, const char* func_name, QRectF before_rect, QRectF after_rect)
 {
-    base_object = object;
+    baseObject = object;
     this->object = object;
     this->func_name = func_name;
     this->before_rect = before_rect;
     this->after_rect = after_rect;
-    this->base_object = object;
+    this->baseObject = object;
 }
 
 void ResizeRecord::redo()

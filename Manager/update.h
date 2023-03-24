@@ -6,22 +6,19 @@
 #include<QNetworkReply>
 #include<QWidget>
 
-class Update : public QWidget, Serializable
-{
+class Update : public QWidget, Serializable {
     Q_OBJECT
 public:
-    enum update_state_t{IDLE, CHECKING, UPDATING};
+    enum update_state_t {IDLE, CHECKING, UPDATING};
     Update();
     ~Update();
-    static Update* instance()
-    {
-        if(_instance == NULL)
-        {
+    static Update* instance() {
+        if(_instance == NULL) {
             _instance = new Update();
         }
         return _instance;
     }
-    void check_update();
+    void checkUpdate();
     void save();
     void load();
     void update();

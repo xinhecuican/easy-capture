@@ -4,7 +4,7 @@
 #include<QRadioButton>
 #include<QDialogButtonBox>
 #include<QPushButton>
-#include "Manager/window_manager.h"
+#include "Manager/WindowManager.h"
 #include<QMessageBox>
 #include<QFileDialog>
 #include "Paint/Widgets/history.h"
@@ -50,7 +50,7 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
         {
             Config::setConfig(Config::hide_to_tray, false);
         }
-        Config::update_config(Config::hide_to_tray);
+        Config::updateConfig(Config::hide_to_tray);
     });
 
     hide_layout->addWidget(hide_button);
@@ -90,12 +90,12 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
 //                                                                 "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
 //                area->save(file_name);
 //                hide();
-//                Window_manager::close();
+//                WindowManager::close();
 //            }
 //            else if(ans == QMessageBox::No)
 //            {
 //                hide();
-//                Window_manager::close();
+//                WindowManager::close();
 //            }
 //            else
 //            {
@@ -104,7 +104,7 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
 //        }
         else
         {
-            Window_manager::close();
+            WindowManager::close();
         }
     });
     connect(close, &QPushButton::clicked, this, [=](){
@@ -119,7 +119,7 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
     next_show_button->setChecked(!Config::getConfig<bool>(Config::show_close_dialog));
     connect(next_show_button, &QRadioButton::toggled, this, [=](bool clicked){
         Config::setConfig(Config::show_close_dialog, !clicked);
-        Config::update_config(Config::show_close_dialog);
+        Config::updateConfig(Config::show_close_dialog);
     });
     button_layout->addWidget(next_show_label);
     button_layout->addWidget(next_show_button);
@@ -133,5 +133,5 @@ Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
 void Close_dialog::closeEvent(QCloseEvent* event)
 {
     if(is_close)
-        Window_manager::close();
+        WindowManager::close();
 }

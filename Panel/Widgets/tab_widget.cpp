@@ -133,25 +133,25 @@ void Tab_widget::add_spacer(QString text)
     layout->addWidget(spacer);
 }
 
-int Tab_widget::get_default_index(QString name)
+int Tab_widget::getDefaultIndex(QString name)
 {
     for(int i=0; i<widgets.size(); i++)
     {
-        if(widgets[i]->get_name() == name)
+        if(widgets[i]->getName() == name)
         {
-            return widgets[i]->get_default_index();
+            return widgets[i]->getDefaultIndex();
         }
     }
     return 0;
 }
 
-int Tab_widget::get_begin_index(QString name)
+int Tab_widget::getBeginIndex(QString name)
 {
     for(int i=0; i<widgets.size(); i++)
     {
-        if(widgets[i]->get_name() == name)
+        if(widgets[i]->getName() == name)
         {
-            return widgets[i]->get_begin_index();
+            return widgets[i]->getBeginIndex();
         }
     }
     return 0;
@@ -183,7 +183,7 @@ void Tab_widget::add_layout(QLayout *hlayout)
 }
 
 void Tab_widget::restore(){
-    for(Tab_base* widget : widgets){
+    for(TabBase* widget : widgets){
         widget->restore();
     }
 }
