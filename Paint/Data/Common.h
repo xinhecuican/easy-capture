@@ -4,48 +4,41 @@
 #include<QPainterPath>
 #include<QFont>
 #include<cmath>
-enum SHAPE_TYPE{TEXT, DELETE_SHAPE, BLUR, RECTANGLE, PAINT_ARROW, MASK};
-enum PAINT_STATE{IDLE, PAINT, ARROW, SHAPE, ERASE};
-enum direction{NW, NE, SW, SE, N, W, S, E};
+enum SHAPE_TYPE {TEXT, DELETE_SHAPE, BLUR, RECTANGLE, PAINT_ARROW, MASK};
+enum PAINT_STATE {IDLE, PAINT, ARROW, SHAPE, ERASE};
+enum direction {NW, NE, SW, SE, N, W, S, E};
 
-struct font_data
-{
+struct font_data {
     QFont font;
     QColor color;
 };
 
-struct paint_node
-{
+struct paint_node {
     int len;
     font_data data;
     paint_node* next;
 };
 
-struct paint_info
-{
-    paint_info(){};
-    paint_info(Paint_data* style, QPainterPath paint_path)
-    {
+struct PaintInfo {
+    PaintInfo() {};
+    PaintInfo(PaintData* style, QVector<QPointF> paint_path) {
         style_info = style;
         path = paint_path;
     }
-    Paint_data* style_info;
-    QPainterPath path;
+    PaintData* style_info;
+    QVector<QPointF> path;
 };
 
-struct Line
-{
+struct Line {
     QPoint bp;
     QPoint ep;
-    Line(){};
-    Line(QPoint begin, QPoint end)
-    {
+    Line() {};
+    Line(QPoint begin, QPoint end) {
         bp = begin;
         ep = end;
     }
 
-    float cross_product(Line line)
-    {
+    float cross_product(Line line) {
         int x1 = ep.x() - bp.x();
         int y1 = ep.y() - bp.y();
         int x2 = line.ep.x() - line.bp.x();
@@ -53,8 +46,7 @@ struct Line
         return x1 * y2 - x2 * y1;
     }
 
-    float cross_product(Line l1, Line l2)
-    {
+    float cross_product(Line l1, Line l2) {
         int x1 = l1.ep.x() - l1.bp.x();
         int y1 = l1.ep.y() - l1.bp.y();
         int x2 = l2.ep.x() - l2.bp.x();
@@ -62,8 +54,7 @@ struct Line
         return x1 * y2 - x2 * y1;
     }
 
-    Line normalize(Line line)
-    {
+    Line normalize(Line line) {
         QPoint v = line.ep - line.bp;
         float len = v.x() * v.x() + v.y() * v.y();
         v.setX((float)v.x() / len);
@@ -74,8 +65,7 @@ struct Line
         return ans;
     }
 
-    Line normalize()
-    {
+    Line normalize() {
         QPoint v = ep - bp;
         float len = v.x() * v.x() + v.y() * v.y();
         v.setX((float)v.x() / len);
@@ -86,8 +76,7 @@ struct Line
         return ans;
     }
 
-    float angle(Line line)
-    {
+    float angle(Line line) {
         Line normal = normalize(line);
         Line this_normal = normalize();
         return asin(cross_product(this_normal, normal));

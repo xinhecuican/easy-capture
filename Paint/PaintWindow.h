@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include<QWidget>
 #include "Base/WindowBase.h"
-#include "Paint/Widgets/Paint_area.h"
+#include "Paint/Widgets/PaintArea.h"
 #include<QScrollArea>
 #include<QDockWidget>
 #include<QToolButton>
@@ -44,7 +44,7 @@ private:
 //    Ui::PaintWindow *ui;
     QWidget* centralWidget;
     QToolBar* toolbar;
-    Paint_area* area;
+    PaintArea* area;
     QGraphicsView* paint_panel;
     QHBoxLayout* layout;
     QToolButton* pencil_button;

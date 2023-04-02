@@ -9,26 +9,30 @@
 #include<QPainter>
 #include<QWidget>
 
-class Ilayer : public QWidget
-{
+/**
+ * @deprecated
+ */
+class Ilayer : public QWidget {
 public:
-    Ilayer(QWidget* parent=nullptr):QWidget(parent){};
+    Ilayer(QWidget* parent=nullptr):QWidget(parent) {};
     virtual void paint(QPainter* painter, QList<QColor> disable_color, bool is_save)=0;
-    virtual void set_name(QString name)=0;
+    virtual void setName(QString name)=0;
     virtual QPolygon bounded_rect()=0;
-    virtual QString get_name()=0;
-    virtual ~Ilayer(){};
-    virtual void get_focus(){};
-    virtual void lose_focus(){};
-    virtual bool focuseable(){return false;};
+    virtual QString getName()=0;
+    virtual ~Ilayer() {};
+    virtual void getFocus() {};
+    virtual void loseFocus() {};
+    virtual bool focuseable() {
+        return false;
+    };
 
-    virtual void mouse_enter(int key_code){};
-    virtual void mouse_move(int dx, int dy){};
-    virtual void mouse_release(){};
-    virtual void double_click(){};
+    virtual void mouseEnter(int key_code) {};
+    virtual void mouseMove(int dx, int dy) {};
+    virtual void mouseRelease() {};
+    virtual void doubleClick() {};
 
-    virtual void on_size_change(int index, int dx, int dy){};
-    virtual void on_paint_change(int index, paint_info info){};
+    virtual void onSizeChange(int index, int dx, int dy) {};
+    virtual void onPaintChange(int index, PaintInfo info) {};
 signals:
     void update_rect(QRect rect);
 };

@@ -7,8 +7,8 @@
 
 Picture_layer::Picture_layer(QGraphicsItem* parent): QGraphicsObject(parent)
 {
-    rect_layer = new Rect_layer(this, boundingRect());
-    connect(rect_layer, &Rect_layer::sizeChange, this, [=](){
+    rect_layer = new RectLayer(this, boundingRect());
+    connect(rect_layer, &RectLayer::sizeChange, this, [=](){
         prepareGeometryChange();
         ResizeRecord* record = new ResizeRecord(this, "undoRedoSizeFunc",
                                                 mask, rect_layer->boundingRect());

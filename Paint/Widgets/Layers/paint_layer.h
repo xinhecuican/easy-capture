@@ -12,8 +12,7 @@
 #include "Paint/Data/Common.h"
 #include<QGraphicsItem>
 
-class Paint_layer : public QGraphicsObject
-{
+class Paint_layer : public QGraphicsObject {
     Q_OBJECT
 public:
     Paint_layer(QGraphicsItem* parent=nullptr);
@@ -37,6 +36,7 @@ private:
     bool is_enable;
     bool is_press;
     bool is_erase;
+    int updateAnchor;
 };
 
 #endif // PAINT_LAYER_H

@@ -11,8 +11,8 @@ public:
     enum button_type{UP, DOWN, CLOSE, APPEND};
     List_item();
     List_item(QWidget* parent, QString text, bool useable);
-    void set_name(QString name);
-    QString get_name();
+    void setName(QString name);
+    QString getName();
 signals:
     void text_change(QString text);
     void button_click(button_type index);

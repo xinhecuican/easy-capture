@@ -16,7 +16,7 @@ Close_dialog::Close_dialog()
     is_close = true;
 }
 
-Close_dialog::Close_dialog(Paint_area* area, QWidget* parent) : QDialog(parent)
+Close_dialog::Close_dialog(PaintArea* area, QWidget* parent) : QDialog(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout* layout = new QVBoxLayout(this);

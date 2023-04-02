@@ -6,12 +6,11 @@
 #include<QGraphicsObject>
 #include "baselayer.h"
 
-class Rect_layer : public QGraphicsObject, public BaseLayer
-{
+class RectLayer : public QGraphicsObject, public BaseLayer {
     Q_OBJECT
 public:
-    enum RECT_STYLE{NORMAL, RED, CUSTOM};
-    Rect_layer(QGraphicsItem* parent, QRectF rect);
+    enum RECT_STYLE {NORMAL, RED, CUSTOM};
+    RectLayer(QGraphicsItem* parent, QRectF rect);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     QPainterPath shape() const override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
@@ -29,9 +28,10 @@ public:
     void setEnableScroll(bool enable);
     void getFocusFunc() override;
     void loseFocusFunc() override;
-    void setStyle(RECT_STYLE style, Paint_data data=Paint_data(QColor(161, 47, 47), 3));
+    void setStyle(RECT_STYLE style, PaintData data=PaintData(QColor(161, 47, 47), 3));
     bool contains(const QPointF& point)const override;
     int type() const override;
+    void setRect(QRectF rect);
     Q_INVOKABLE void hideNormal() override;
     Q_INVOKABLE void showNormal() override;
     Q_INVOKABLE bool acceptFocus() override;
@@ -51,7 +51,7 @@ private:
     ScrollItem* scroll_item;
     QPointF begin_point;
     RECT_STYLE style;
-    Paint_data data;
+    PaintData data;
     bool enable_move;
     bool enable_size_change;
     bool enable_scroll;

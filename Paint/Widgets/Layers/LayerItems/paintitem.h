@@ -10,18 +10,19 @@
 #include "Paint/Data/Common.h"
 #include<QGraphicsItem>
 
-class PaintItem : public QGraphicsObject
-{
+class PaintItem : public QGraphicsObject {
 public:
-    PaintItem(){}
-    PaintItem(paint_info info, QGraphicsItem* parent=nullptr);
+    PaintItem() {}
+    PaintItem(PaintInfo info, QGraphicsItem* parent=nullptr);
     QRectF boundingRect() const override;
-    void setPath(QPainterPath path);
-    void addPoint(QPointF point);
+    void addPoint(QPointF point, bool needUpdate=false);
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget=nullptr)override;
 private:
-    paint_info info;
+    PaintInfo info;
+    QVector<QPointF> points;
+    QPen pen;
+    QRectF boundRect;
 };
 
 #endif // PAINTITEM_H

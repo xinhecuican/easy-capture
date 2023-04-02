@@ -66,7 +66,7 @@ public:
     /// 建立Data/Languages/${window_name}/语言种类(如chinese/english等).xml
     /// 该文件夹下复制chinese.xml
     /// 将里面的中文翻译成对应语言，并且language标签变成对应语言
-    WindowBase(QWidget* parent, QMainWindow* superWindow, QString typeName):QMainWindow(parent) {
+    WindowBase(QWidget* parent, WindowBase* superWindow, QString typeName):QMainWindow(parent) {
         superWindow->setWindowTitle("简截");
         superWindow->setWindowIcon(QIcon(":/image/avator.png"));
         //MString::load_from_file(":/Data/Languages/" + type_name + "/");

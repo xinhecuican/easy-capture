@@ -2,22 +2,19 @@
 #define PAINT_DATA_H
 #include<QColor>
 
-struct Paint_data
-{
+struct PaintData {
 public:
-    Paint_data(){};
-    Paint_data(QColor color, double width, QColor back_color=QColor(255, 255, 255),
-               Qt::PenCapStyle cap_style=Qt::SquareCap,
-               Qt::PenJoinStyle join_style=Qt::BevelJoin)
-    {
+    PaintData() {};
+    PaintData(QColor color, double width, QColor back_color=QColor(255, 255, 255),
+              Qt::PenCapStyle cap_style=Qt::SquareCap,
+              Qt::PenJoinStyle join_style=Qt::RoundJoin) {
         this->color = color;
         this->width = width;
         this->cap_style = cap_style;
         this->join_style = join_style;
         this->back_color = back_color;
     }
-    void copy_to(Paint_data* data)
-    {
+    void copy_to(PaintData* data) {
         data->color = color;
         data->width = width;
         data->cap_style = cap_style;

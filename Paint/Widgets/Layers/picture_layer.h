@@ -34,7 +34,7 @@ public:
     Q_INVOKABLE void undoRedoSizeFunc(bool is_undo, QRectF before_rect, QRectF after_rect);
 private:
 
-    Rect_layer* rect_layer;
+    RectLayer* rect_layer;
     QPixmap pix;
     QRectF bound;
     QRectF mask;

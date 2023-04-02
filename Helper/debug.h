@@ -3,9 +3,9 @@
 #include<QString>
 #include<QImage>
 #include <QDebug>
+#include <QMutex>
 
-class Debug
-{
+class Debug {
 public:
     static void show_error_message(QString message);
     static void debug_print_warning(QString message);
@@ -14,12 +14,12 @@ public:
     static void endTimer();
     static qint64 getTime();
 private:
-    struct TimerElement
-    {
+    struct TimerElement {
         QString name;
         qint64 beginTime;
     };
     static QMap<int, QList<TimerElement>> timerName;
+    static QMutex* mutex;
 };
 
 #endif // DEBUG_H

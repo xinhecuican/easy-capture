@@ -50,12 +50,12 @@ List_item::List_item(QWidget* parent, QString text, bool useable) :QWidget(paren
     setLayout(layout);
 }
 
-QString List_item::get_name()
+QString List_item::getName()
 {
     return name->text();
 }
 
-void List_item::set_name(QString name)
+void List_item::setName(QString name)
 {
     this->name->setText(name);
     update();

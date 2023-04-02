@@ -15,11 +15,13 @@
 #include "new_capture/Widgets/cliplayer.h"
 #include <QProcess>
 
-class Paint_area : public QGraphicsScene
-{
+/**
+ * @brief 绘图管理类，用来控制图片的显示，保存，状态管理等
+ */
+class PaintArea : public QGraphicsScene {
     Q_OBJECT
 public:
-    Paint_area(QWidget* parent=nullptr, bool enable_clip=false);
+    PaintArea(QWidget* parent=nullptr, bool enable_clip=false);
     void setPic(QPixmap pic, QRect rect);
     void setClipPic(QPixmap pix);
     void deleteShape();

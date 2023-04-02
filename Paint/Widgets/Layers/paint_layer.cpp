@@ -9,8 +9,7 @@
 #include "Paint/Widgets/recorder.h"
 #include "Paint/Widgets/Recorder_element/paintdeleterecord.h"
 
-Paint_layer::Paint_layer(QGraphicsItem* parent) : QGraphicsObject(parent)
-{
+Paint_layer::Paint_layer(QGraphicsItem* parent) : QGraphicsObject(parent) {
     this->parent = parent;
     is_enable = true;
     is_press = false;
@@ -18,57 +17,47 @@ Paint_layer::Paint_layer(QGraphicsItem* parent) : QGraphicsObject(parent)
     setAcceptedMouseButtons(Qt::NoButton);
 }
 
-Paint_layer::~Paint_layer()
-{
+Paint_layer::~Paint_layer() {
     reset();
 }
 
-void Paint_layer::reset()
-{
-    for(QGraphicsItem* line : lines)
-    {
+void Paint_layer::reset() {
+    for(QGraphicsItem* line : lines) {
         delete line;
     }
     lines.clear();
 }
 
-void Paint_layer::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
+void Paint_layer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     path = QPainterPath();
-    if(event->button() == Qt::LeftButton)
-    {
+    updateAnchor = 0;
+    if(event->button() == Qt::LeftButton) {
         is_press = true;
     }
-    if(is_enable)
-    {
-        path.moveTo(mapFromScene(event->scenePos()));
-        Paint_data* paint_data = Style_manager::instance()->get();
-        paint_info info(paint_data, path);
+    if(is_enable) {
+        PaintData* paint_data = Style_manager::instance()->get();
+        PaintInfo info;
+        info.style_info = paint_data;
+        info.path.append(mapFromScene(event->scenePos()));
         current_item = new PaintItem(info, this); // 添加一个线条
     }
-    if(is_erase)
-    {
+    if(is_erase) {
         removeLines(mapFromScene(event->scenePos()));
     }
 }
 
-void Paint_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(is_enable && is_press)
-    {
-        current_item->addPoint(mapFromScene(event->scenePos()));
+void Paint_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+    if(is_enable && is_press) {
+        current_item->addPoint(mapFromScene(event->scenePos()), true);
     }
-    if(is_erase && is_press)
-    {
+    if(is_erase && is_press) {
         removeLines(mapFromScene(event->scenePos()));
     }
 }
 
-void Paint_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(is_enable && is_press)
-    {
-        current_item->addPoint(mapFromScene(event->scenePos()));
+void Paint_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    if(is_enable && is_press) {
+        current_item->addPoint(mapFromScene(event->scenePos()), true);
         lines.append(current_item);
         path = QPainterPath();
         PaintRecord* record = new PaintRecord(current_item);
@@ -77,47 +66,39 @@ void Paint_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     is_press = false;
 }
 
-void Paint_layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-    painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
-    Paint_data* paint_data = Style_manager::instance()->get();
-    QPen pen;
-    pen.setColor(paint_data->color);
-    pen.setWidth(paint_data->width);
-    pen.setCapStyle(paint_data->cap_style);
-    pen.setJoinStyle(paint_data->join_style);
-    painter->setPen(pen);
-    painter->drawPath(path);
+void Paint_layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+//    painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
+//    PaintData* paint_data = Style_manager::instance()->get();
+//    QPen pen;
+//    pen.setColor(paint_data->color);
+//    pen.setWidth(paint_data->width);
+//    pen.setCapStyle(paint_data->cap_style);
+//    pen.setJoinStyle(paint_data->join_style);
+//    painter->setPen(pen);
+//    painter->drawPath(path);
 }
 
-void Paint_layer::setEnableDraw(bool enable)
-{
+void Paint_layer::setEnableDraw(bool enable) {
     this->is_enable = enable;
 }
 
-QRectF Paint_layer::boundingRect() const
-{
+QRectF Paint_layer::boundingRect() const {
     return path.boundingRect();
 }
 
-void Paint_layer::setErase(bool enable)
-{
+void Paint_layer::setErase(bool enable) {
     is_erase = enable;
 }
 
-void Paint_layer::removeLines(QPointF point)
-{
+void Paint_layer::removeLines(QPointF point) {
     QRectF rect(point - QPointF(3, 3), point + QPointF(3, 3));
     QList<PaintItem*> items;
-    for(PaintItem* item : lines)
-    {
-        if(item->shape().intersects(rect))
-        {
+    for(PaintItem* item : lines) {
+        if(item->shape().intersects(rect)) {
             items.append(item);
         }
     }
-    for(PaintItem* item: items)
-    {
+    for(PaintItem* item: items) {
         PaintDeleteRecord* record = new PaintDeleteRecord(this, item, "undoRedoPaintFunc");
         Recorder::instance()->record(record);
         lines.removeOne(item);
@@ -125,21 +106,16 @@ void Paint_layer::removeLines(QPointF point)
     update();
 }
 
-void Paint_layer::undoRedoPaintFunc(bool is_undo, PaintItem *item)
-{
-    if(is_undo)
-    {
+void Paint_layer::undoRedoPaintFunc(bool is_undo, PaintItem *item) {
+    if(is_undo) {
         item->show();
         lines.append(item);
-    }
-    else
-    {
+    } else {
         item->hide();
         lines.removeOne(item);
     }
 }
 
-int Paint_layer::type() const
-{
+int Paint_layer::type() const {
     return 65539;
 }

@@ -68,7 +68,7 @@ PaintWindow::PaintWindow(QWidget *parent) :
     layout = new QHBoxLayout(centralWidget);
     Paint_setting_panel::instance(this);
 
-    this->area = new Paint_area(this);
+    this->area = new PaintArea(this);
     paint_panel = new QGraphicsView(this->area, this);
     paint_panel->setFrameShape(QFrame::NoFrame);
     paint_panel->setBackgroundRole(QPalette::Light);

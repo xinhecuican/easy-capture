@@ -2,9 +2,9 @@
 
 Style_manager::Style_manager()
 {
-    data = PList<Paint_data*>();
+    data = PList<PaintData*>();
     now_data = Style_manager::default_pencil;
-    Paint_data* temp_data = new Paint_data();
+    PaintData* temp_data = new PaintData();
     now_data.copy_to(temp_data);
     data.append(temp_data);
     is_change = false;
@@ -18,8 +18,8 @@ Style_manager::~Style_manager()
 
 Style_manager* Style_manager::_instance = NULL;
 
-Paint_data Style_manager::default_pencil = Paint_data(QColor(150, 50, 50), 3);
-Paint_data Style_manager::default_highlighter = Paint_data(
+PaintData Style_manager::default_pencil = PaintData(QColor(150, 50, 50), 3);
+PaintData Style_manager::default_highlighter = PaintData(
             QColor(255, 255, 0, 100), 12, QColor(255, 255, 255), Qt::RoundCap, Qt::RoundJoin);
 
 
@@ -36,7 +36,7 @@ void Style_manager::reset()
 {
     data.clear_all();
     now_data = default_pencil;
-    Paint_data* temp_data = new Paint_data();
+    PaintData* temp_data = new PaintData();
     now_data.copy_to(temp_data);
     data.append(temp_data);
     is_change = false;
@@ -72,7 +72,7 @@ void Style_manager::change_join_style(Qt::PenJoinStyle style)
     is_change = true;
 }
 
-void Style_manager::change_pen(Paint_data data)
+void Style_manager::change_pen(PaintData data)
 {
     if(now_data.color != data.color)
         change_color(data.color);
@@ -84,7 +84,7 @@ void Style_manager::change_pen(Paint_data data)
         change_join_style(data.join_style);
 }
 
-Paint_data* Style_manager::get()
+PaintData* Style_manager::get()
 {
     if(!is_change)
     {
@@ -92,7 +92,7 @@ Paint_data* Style_manager::get()
     }
     else
     {
-        Paint_data* temp_data = new Paint_data();
+        PaintData* temp_data = new PaintData();
         now_data.copy_to(temp_data);
         data.push_back(temp_data);
         is_change = false;
@@ -100,11 +100,11 @@ Paint_data* Style_manager::get()
     }
 }
 
-Paint_data Style_manager::get_now()
+PaintData Style_manager::get_now()
 {
     if(is_change)
     {
-        Paint_data* temp_data = new Paint_data();
+        PaintData* temp_data = new PaintData();
         now_data.copy_to(temp_data);
         data.push_back(temp_data);
         is_change = false;

@@ -16,7 +16,7 @@
 #include<QBitmap>
 #include<stdio.h>
 #include <QGraphicsView>
-#include "Paint/Widgets/Paint_area.h"
+#include "Paint/Widgets/PaintArea.h"
 #include "Helper/GraphicsViewPatch.h"
 #include <QFileDialog>
 #include "Paint/Widgets/history.h"
@@ -53,6 +53,7 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     setWindowFlag(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_OpaquePaintEvent );
     showFullScreen();
     this->setMouseTracking(true);
     centralWidget->setMouseTracking(true);
@@ -62,7 +63,7 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
 
 //    ui->centralwidget->setGeometry(QGuiApplication::primaryScreen()->geometry());
     setGeometry(QGuiApplication::primaryScreen()->geometry());
-    area = new Paint_area(this, true);
+    area = new PaintArea(this, true);
     area->stateChange(ARROW);
     view = new QGraphicsView(area, this);
     view->setStyleSheet(".QGraphicsView{background: transparent;border:0px;}");

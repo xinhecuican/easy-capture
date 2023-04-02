@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
         Update::instance()->onFinish();
         fliter->deleteLater();
     });
-//    Update::instance()->save();
+    Update::instance()->save();
     int ans = a.exec();
 
     return ans;
@@ -78,7 +78,7 @@ void registerClasses() {
     Reflect::registerClass<Setting>();
     Reflect::registerClass<CaptureWindow>();
     Reflect::registerClass<PaintWindow>();
-    Reflect::registerClass<Rect_layer>();
+    Reflect::registerClass<RectLayer>();
     Reflect::registerClass<Text_layer>();
     Reflect::registerClass<Picture_layer>();
     Reflect::registerClass<Paint_layer>();

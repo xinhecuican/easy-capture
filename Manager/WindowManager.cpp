@@ -85,7 +85,6 @@ void WindowManager::changeWindow(QString name) {
         }
         KeyManager::onWindowChangeEnd();
     }
-
     if(!MainFilter::instance()->isTimerRun()) {
         MainFilter::instance()->startTimer();
     }

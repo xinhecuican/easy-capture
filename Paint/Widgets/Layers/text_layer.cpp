@@ -10,10 +10,10 @@ Text_layer::Text_layer(QRectF rect, QGraphicsItem* parent) : QGraphicsTextItem(p
     is_brush = false;
     setPos(rect.topLeft());
     setFont(Flow_edit_panel::instance()->default_font);
-    rect_layer = new Rect_layer(this, QRectF(QPointF(0, 0), boundingRect().size()));
+    rect_layer = new RectLayer(this, QRectF(QPointF(0, 0), boundingRect().size()));
     rect_layer->setEnableMove(true);
     is_enable = true;
-    connect(rect_layer, &Rect_layer::move, this, [=](qreal dx, qreal dy){
+    connect(rect_layer, &RectLayer::move, this, [=](qreal dx, qreal dy){
         moveBy(dx, dy);
         rect_layer->setPos(0, 0);
     });

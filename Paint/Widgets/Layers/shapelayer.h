@@ -6,9 +6,12 @@
 #include <QPixmap>
 #include "baselayer.h"
 #include "blurlayer.h"
+#include "rect_layer.h"
 
-class ShapeLayer : public QGraphicsObject
-{
+/**
+ * @brief 绘制矩形，箭头，马赛克等形状的管理类
+ */
+class ShapeLayer : public QGraphicsObject {
     Q_OBJECT
 public:
     ShapeLayer(QGraphicsItem* parent=nullptr);
@@ -46,6 +49,8 @@ private:
     BaseLayer* focus_item_func;
     QPixmap pix;
     QPoint point;
+    QPointF currentPoint;
+    bool isRect;
 };
 
 #endif // SHAPELAYER_H

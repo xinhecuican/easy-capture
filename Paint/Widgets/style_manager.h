@@ -15,16 +15,16 @@ public:
     void change_width(double width);
     void change_cap_style(Qt::PenCapStyle style);
     void change_join_style(Qt::PenJoinStyle style);
-    void change_pen(Paint_data data);
+    void change_pen(PaintData data);
     void change_back_color(QColor color);
-    Paint_data* get();
-    Paint_data get_now();
-    static Paint_data default_pencil;
-    static Paint_data default_highlighter;
+    PaintData* get();
+    PaintData get_now();
+    static PaintData default_pencil;
+    static PaintData default_highlighter;
 private:
     static Style_manager* _instance;
-    PList<Paint_data*> data;
-    Paint_data now_data;
+    PList<PaintData*> data;
+    PaintData now_data;
     bool is_change;//设置改变了就需要加入data备份中
 };
 

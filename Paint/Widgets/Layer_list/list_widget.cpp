@@ -97,9 +97,9 @@ void List_widget::swap_item(int first_row, int second_row)
         QListWidgetItem* item2 = item(second_row);
         List_item* widget1 = static_cast<List_item*>(itemWidget(item1));
         List_item* widget2 = static_cast<List_item*>(itemWidget(item2));
-        QString name1 = widget1->get_name();
-        widget1->set_name(widget2->get_name());
-        widget2->set_name(name1);
+        QString name1 = widget1->getName();
+        widget1->setName(widget2->getName());
+        widget2->setName(name1);
     }
 }
 /*

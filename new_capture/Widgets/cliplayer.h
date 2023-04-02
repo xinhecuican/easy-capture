@@ -18,15 +18,17 @@
 #include "Helper/EnumReflect.h"
 #include "videotoolbar.h"
 
-class ClipLayer : public QGraphicsObject
-{
+/**
+ * @brief 普通截图的核心类，用来控制工具栏展现,截屏区域显示及图片的显示
+ */
+class ClipLayer : public QGraphicsObject {
     Q_OBJECT
 public:
     MAKE_ENUM(MiddleButtonType,
-            PaintWindow,
-            Save2Clip,
-            Save2File
-    )
+              PaintWindow,
+              Save2Clip,
+              Save2File
+             )
     ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsItem* parent=nullptr);
     ~ClipLayer();
     QRectF boundingRect()const override;
@@ -100,9 +102,9 @@ private:
     QButtonGroup* button_group;
 
     QSpinBox* width_button;
-    Paint_data rect_setting;
-    Paint_data pencil_setting;
-    Paint_data highlighter_setting;
+    PaintData rect_setting;
+    PaintData pencil_setting;
+    PaintData highlighter_setting;
     ColorWidget* color_widget;
     MosicSample* mosaic_sample;
     QSpinBox* mosaic_size;

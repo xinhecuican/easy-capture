@@ -44,6 +44,7 @@ SOURCES += \
     Paint/Widgets/Layers/rect_layer.cpp \
     Paint/Widgets/Layers/shapelayer.cpp \
     Paint/Widgets/Layers/text_layer.cpp \
+    Paint/Widgets/PaintArea.cpp \
     Paint/Widgets/Panels/close_dialog.cpp \
     Paint/Widgets/Panels/color_selector.cpp \
     Paint/Widgets/Panels/flow_edit_panel.cpp \
@@ -53,7 +54,6 @@ SOURCES += \
     Paint/Widgets/Recorder_element/resize_record.cpp \
     Paint/Widgets/Recorder_element/shaperecord.cpp \
     Paint/Widgets/history.cpp \
-    Paint/Widgets/paint_area.cpp \
     Paint/Widgets/recorder.cpp \
     Paint/Widgets/style_manager.cpp \
     Panel/Widgets/combo_tab.cpp \
@@ -119,7 +119,7 @@ HEADERS += \
     Paint/Data/Common.h \
     Paint/Data/History_data.h \
     Paint/Data/Ilayer.h \
-    Paint/Data/paint_data.h \
+	Paint/Data/PaintArea.h \
     Paint/Data/scroll_button.h \
     Paint/Data/stretch_button.h \
     Paint/PaintWindow.h \
@@ -145,7 +145,7 @@ HEADERS += \
     Paint/Widgets/Recorder_element/resize_record.h \
     Paint/Widgets/Recorder_element/shaperecord.h \
     Paint/Widgets/history.h \
-    Paint/Widgets/paint_area.h \
+	Paint/Widgets/PaintArea.h \
     Paint/Widgets/recorder.h \
     Paint/Widgets/style_manager.h \
     Panel/Widgets/bool_tab.h \

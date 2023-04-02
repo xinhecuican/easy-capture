@@ -14,7 +14,7 @@
 #include<QPointer>
 #include <QHBoxLayout>
 #include <QGraphicsView>
-#include "Paint/Widgets/Paint_area.h"
+#include "Paint/Widgets/PaintArea.h"
 #include "Helper/EnumReflect.h"
 #include "Style_widget/bubbletipswidget.h"
 #include "Widgets/VideoHandler/videocapture.h"
@@ -69,7 +69,7 @@ private:
     void set_scroll_info();
     bool window_valid;
     QGraphicsView* view;
-    Paint_area* area;
+    PaintArea* area;
     bool isScrollRect;
     bool isScrollRectEnter;
     bool isScrollRectEnd;

@@ -40,7 +40,7 @@ private:
     void initFlowEditPanel();
     void onCursorPositionChange(int current);
     QRectF rect;
-    Rect_layer* rect_layer;
+    RectLayer* rect_layer;
     bool force_focus;
     bool is_enable;
     bool is_commit_string;

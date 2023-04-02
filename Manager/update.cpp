@@ -12,8 +12,7 @@
 #include "WindowManager.h"
 #include "Paint/Widgets/history.h"
 
-Update::Update()
-{
+Update::Update() {
     newest_data = Update_data();
     manager = new QNetworkAccessManager(this);
     reconnect_times = 0;
@@ -22,45 +21,40 @@ Update::Update()
     timerReceive = 0;
     updateState = IDLE;
     timeoutTimer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [=](){
+    connect(timer, &QTimer::timeout, this, [=]() {
         reconnect_times++;
-        if(reconnect_times > 5)
-        {
+        if(reconnect_times > 5) {
             timer->stop();
             onFinish();
             return;
         }
         checkUpdate();
     });
-    connect(timeoutTimer, &QTimer::timeout, this, [=](){
-        if(timerReceive == currentReceive){
+    connect(timeoutTimer, &QTimer::timeout, this, [=]() {
+        if(timerReceive == currentReceive) {
             reply->abort();
             updateState = IDLE;
             updateStateChange(updateState);
-        }
-        else{
+        } else {
             timerReceive = currentReceive;
         }
     });
 }
 
-Update::~Update()
-{
-    if(_instance != NULL)
-    {
+Update::~Update() {
+    if(_instance != NULL) {
         _instance = NULL;
     }
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.5.1",
-"http://121.37.81.150:8200/easycapture/update/0.5.1.zip", "",
-                                              "1. 修复filter忘记初始化导致录屏崩溃的bug\n"
-                                              "2. 录屏相关全局按键只有在需要时才会被注册\n"
-                                              "3. 添加手动滚动");
+Update_data Update::now_version = Update_data("0.5.2",
+                                  "http://121.37.81.150:8200/easycapture/update/0.5.2.zip", "",
+                                  "1. 添加一些文档\n"
+                                  "2. 修复画笔绘制过多后卡顿的bug\n"
+                                  "3. 绘制长方形途中会显示");
 
-void Update::serialized(QJsonObject *json)//append增添版本时用
-{
+void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;
     now_version.set_time(QDateTime::currentDateTime().toString());
     now_version.serialized(&child);
@@ -68,19 +62,16 @@ void Update::serialized(QJsonObject *json)//append增添版本时用
     (*json)["update_sum"] = (*json)["update_sum"].toInt() + 1;//更新数量增加
 }
 
-void Update::deserialized(QJsonObject *json)
-{
+void Update::deserialized(QJsonObject *json) {
     int newest_num = (*json)["update_sum"].toInt();
     QJsonObject newest_version =
-            (*json)[QString::number(newest_num-1)].toObject();
+        (*json)[QString::number(newest_num-1)].toObject();
     newest_data.deserialized(&newest_version);
-    for(int i=newest_num-1; i>=0; i--)//将所有比当前版本新的版本都记录
-    {
+    for(int i=newest_num-1; i>=0; i--) { //将所有比当前版本新的版本都记录
         Update_data data;
         QJsonObject version = (*json)[QString::number(i)].toObject();
         data.deserialized(&version);
-        if(data == now_version)
-        {
+        if(data == now_version) {
             break;
         }
         qDebug() << data.get_version();
@@ -88,16 +79,14 @@ void Update::deserialized(QJsonObject *json)
     }
 }
 
-void Update::checkUpdate()
-{
+void Update::checkUpdate() {
     updateState = CHECKING;
     emit updateStateChange(updateState);
     Config::setConfig(Config::last_update_time, QDateTime::currentSecsSinceEpoch() / 60);
     start_request(QUrl("http://121.37.81.150:8200/easycapture/update/update.json?download=true"));
 }
 
-void Update::start_request(const QUrl &url)
-{
+void Update::start_request(const QUrl &url) {
     request.setUrl(url);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     request.setRawHeader("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
@@ -105,12 +94,11 @@ void Update::start_request(const QUrl &url)
     manager->clearAccessCache();
     reply = manager->get(request);
     timeoutTimer->start(30000);
-    connect(reply, &QNetworkReply::downloadProgress, this, [=](qint64 bytesReceived, qint64 bytesTotal){
+    connect(reply, &QNetworkReply::downloadProgress, this, [=](qint64 bytesReceived, qint64 bytesTotal) {
         currentReceive = bytesReceived;
     });
-    connect(reply, &QNetworkReply::finished, this, [=](){
-        if (reply->error())
-        {
+    connect(reply, &QNetworkReply::finished, this, [=]() {
+        if (reply->error()) {
             qDebug() << "error";
             timer->start(2000);
             reply->deleteLater();
@@ -120,17 +108,14 @@ void Update::start_request(const QUrl &url)
         }
         int statusCode  = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         // <3>判断是否需要重定向
-        if (statusCode >= 200 && statusCode <300)
-        {
+        if (statusCode >= 200 && statusCode <300) {
             QTextCodec *codec = QTextCodec::codecForName("utf8");
             QDir dir("Data/Temp");
-            if(!dir.exists())
-            {
+            if(!dir.exists()) {
                 dir.mkpath(dir.absolutePath());
             }
             QFile file("Data/Temp/update_msg.json");
-            if (!file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate))
-            {
+            if (!file.open(QIODevice::ReadWrite | QIODevice::Text | QIODevice::Truncate)) {
                 qWarning() << "file open error!";
                 updateState = IDLE;
                 updateStateChange(updateState);
@@ -141,47 +126,40 @@ void Update::start_request(const QUrl &url)
             out<< codec->toUnicode(reply->readAll());
             file.close();
             Serialize::deserialize("Data/Temp/update_msg.json", this);
-            if(newest_data > now_version)
-            {
-                if(Config::getConfig<bool>(Config::show_update_box)){
+            if(newest_data > now_version) {
+                if(Config::getConfig<bool>(Config::show_update_box)) {
                     dialog = new Update_dialog(data_list, this);
-                    connect(dialog, &Update_dialog::download_finished, this, [=](){
+                    connect(dialog, &Update_dialog::download_finished, this, [=]() {
                         on_update();
                     });
                     dialog->show();
-                }
-                else{
+                } else {
                     UpdateDownloader* downloader = new UpdateDownloader(data_list, this);
                     downloader->start();
-                    connect(downloader, &UpdateDownloader::success, this, [=](){
+                    connect(downloader, &UpdateDownloader::success, this, [=]() {
                         on_update();
                     });
-                    connect(downloader, &UpdateDownloader::failure, this, [=](){
+                    connect(downloader, &UpdateDownloader::failure, this, [=]() {
                         updateState = IDLE;
                         emit updateStateChange(updateState);
                     });
                 }
                 updateState = UPDATING;
                 updateStateChange(updateState);
-            }
-            else{
+            } else {
                 updateState = IDLE;
                 updateStateChange(updateState);
             }
-            if(timer->isActive())
-            {
+            if(timer->isActive()) {
                 timer->stop();
             }
-            if(timeoutTimer->isActive()){
+            if(timeoutTimer->isActive()) {
                 timeoutTimer->stop();
             }
-        }
-        else if(statusCode >= 300 && statusCode < 400)
-        {
+        } else if(statusCode >= 300 && statusCode < 400) {
             const QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
             // 检测是否需要重定向，如果不需要则读数据
-            if (!redirectionTarget.isNull()) 
-            {
+            if (!redirectionTarget.isNull()) {
                 const QUrl redirectedUrl = url.resolved(redirectionTarget.toUrl());
                 reply->deleteLater();
                 reply = nullptr;
@@ -192,19 +170,15 @@ void Update::start_request(const QUrl &url)
     });
 }
 
-void Update::update()
-{
+void Update::update() {
     QTimer::singleShot(1000, this, SLOT(on_update()));
 }
 
-void Update::on_update()
-{
+void Update::on_update() {
     QFile file("Data/update_res.txt");
-    if(file.open(QIODevice::ReadOnly))
-    {
+    if(file.open(QIODevice::ReadOnly)) {
         int ans = file.readAll().toInt();
-        if(file.exists() && ans)
-        {
+        if(file.exists() && ans) {
             Config::updateAll();
             KeyManager::updateAll();
             History::instance()->update();
@@ -214,12 +188,10 @@ void Update::on_update()
         }
     }
 
-    if(Config::getConfig<bool>(Config::need_update) == 1)
-    {
-        if(Config::getConfig<bool>(Config::show_update_box)){
+    if(Config::getConfig<bool>(Config::need_update) == 1) {
+        if(Config::getConfig<bool>(Config::show_update_box)) {
             int ans = QMessageBox::question(this, "更新提示", "是否进行更新");
-            if(ans == QMessageBox::Yes)
-            {
+            if(ans == QMessageBox::Yes) {
                 qInfo() << "正在更新";
                 if(QProcess::startDetached("Upgrate.exe"))//开启更新程序
                     WindowManager::close();
@@ -227,8 +199,7 @@ void Update::on_update()
                     qWarning("更新程序未启动");
                 onFinish();
             }
-        }
-        else{
+        } else {
             qInfo() << "正在更新";
             QStringList args;
             args << "terminal";
@@ -241,20 +212,16 @@ void Update::on_update()
     }
 }
 
-void Update::save()
-{
+void Update::save() {
     Serialize::append("Data/update.json", this);
 }
 
-void Update::load()
-{
+void Update::load() {
 
 }
 
-void Update::onFinish()
-{
-    if(_instance != NULL)
-    {
+void Update::onFinish() {
+    if(_instance != NULL) {
         updateStateChange(IDLE);
         _instance->deleteLater();
     }
