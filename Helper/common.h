@@ -4,6 +4,7 @@
 #include<QString>
 #include<QFile>
 #include <QDir>
+#include <QDebug>
 
 struct MRect {
     QPoint topleft;
@@ -15,7 +16,11 @@ struct MRect {
 
 static QString getQSS(QString path) {
     QFile file(path);
-    file.open(QFile::ReadOnly);
+    if(!file.open(QFile::ReadOnly)) {
+        qCritical() << path << "无法获得qss";
+        file.close();
+        return "";
+    }
     QString str = file.readAll();
     file.close();
     return str;

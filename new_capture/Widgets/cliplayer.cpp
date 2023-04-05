@@ -515,15 +515,9 @@ void ClipLayer::initAttributeToolbarWidget(int id) {
             connect(mode_group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
             , this, [=](int id) {
                 if(id == 0) {
-                    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++) {
-                        Config::setConfig(i, false);
-                    }
-                    Config::setConfig(Config::rect_capture, true);
+                    Config::setConfig(Config::capture_mode, Config::RECT_CAPTURE);
                 } else if(id == 1) {
-                    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++) {
-                        Config::setConfig(i, false);
-                    }
-                    Config::setConfig(Config::free_capture, true);
+                    Config::setConfig(Config::capture_mode, Config::FREE_CAPTURE);
                 }
             });
             rect_capture->hide();

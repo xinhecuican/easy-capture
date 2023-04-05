@@ -4,12 +4,11 @@
 #include "Manager/IKeyListener.h"
 #include "Base/TabBase.h"
 
-class Key_tab : public QPushButton, IKeyListener, public TabBase
-{
+class KeyOption : public QPushButton, IKeyListener, public TabBase {
     Q_OBJECT
 public:
-    Key_tab();
-    Key_tab(int index, QString window_name, QString key_name, QWidget* parent);
+    KeyOption();
+    KeyOption(int index, QString window_name, QString key_name, QWidget* parent, std::function<void (QString, QString, QList<int>)> const &f);
     void keyEnd() override;
     void getKey(int key) override;
     void reset() override;
@@ -29,6 +28,7 @@ private:
     void set_key_string();
     int index;
     bool dirty;
+    std::function<void (QString, QString, QList<int>)> f;
 };
 
 #endif // KEY_TAB_H

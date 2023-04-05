@@ -5,21 +5,20 @@
 #include<QComboBox>
 #include "Base/TabBase.h"
 
-class Combo_tab : public QComboBox, public TabBase
-{
+class ComboOption : public QComboBox, public TabBase {
+    Q_OBJECT
 public:
-    Combo_tab();
-    Combo_tab(QString tab_name, QVector<QString> name, int begin_index, int end_index,
-              std::function<void (int)> const &f, QWidget* parent);
+    ComboOption();
+    ComboOption(QString tab_name, QVector<QString> name, int index,
+                std::function<void (int)> const &f, QWidget* parent);
     QString getName() override;
     int getBeginIndex() override;
     int getDefaultIndex() override;
     void reset() override;
 private:
     QString tab_name;
-    int default_index;
-    int begin_index;
-    int end_index;
+    int index;
+    int defaultIndex;
 };
 
 #endif // COMBO_TAB_H

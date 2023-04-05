@@ -6,12 +6,12 @@
 #include<functional>
 #include "Base/TabBase.h"
 
-class Bool_tab : public QRadioButton, public TabBase
-{
+class BoolOption : public QRadioButton, public TabBase {
+    Q_OBJECT
 public:
-    Bool_tab();
-    Bool_tab(QString tab_name, int index,
-             std::function<void (bool)> const  &f, QWidget* parent);
+    BoolOption();
+    BoolOption(QString tab_name, int index,
+               std::function<void (bool)> const  &f, QWidget* parent);
     QString getName() override;
     int getBeginIndex() override;
     int getDefaultIndex() override;

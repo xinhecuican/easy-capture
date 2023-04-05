@@ -49,9 +49,10 @@ void WindowManager::closeWindow(QString name) {
         windowList[name].window->onWindowClose();
         windowList[name].window->deleteLater();
         windowList.remove(name);
+        qInfo() << "关闭窗口" << name;
     }
     if(name == activeWindow) {
-        qWarning("未关闭窗口调用close_window");
+        qWarning("未关闭窗口调用closeWindow");
     }
 }
 
@@ -132,6 +133,7 @@ void WindowManager::createWindow(QString name) {
     if(windowList.find(name) == windowList.end()) {
         windowList[name] = createData(static_cast<WindowBase*>(
                                           Reflect::newInstance(name)));
+        windowList[name].window->afterInitialize(name);
     }
 }
 

@@ -32,7 +32,7 @@
 #include <QApplication>
 
 PaintWindow::PaintWindow(QWidget *parent) :
-    WindowBase(parent, this, "PaintWindow")
+    WindowBase(parent)
 //    ui(new Ui::PaintWindow)
 {
 //    ui->setupUi(this);
@@ -85,7 +85,6 @@ PaintWindow::PaintWindow(QWidget *parent) :
     set_toolbar();
     initSettingPanel();
     addToolBarBreak();
-    loadKeyEvent("PaintWindow");
 }
 
 PaintWindow::~PaintWindow() {
@@ -115,9 +114,8 @@ void PaintWindow::loadKeyEvent(QString name) {
     KeyManager::addFunc(this, name, "new_capture", [=](QObject* receiver, bool is_enter) {
         if(is_enter) {
             PaintWindow* current = qobject_cast<PaintWindow*>(receiver);
-            if(Config::getConfig<bool>(Config::total_capture)) {
+            if(Config::getConfig<int>(Config::capture_mode) == (int)Config::TOTAL_CAPTURE) {
                 QTimer::singleShot(200, current, [=]() {
-                    Config::setConfig(Config::total_capture, false);
                     QScreen *screen = QGuiApplication::primaryScreen();
                     QPixmap map = screen->grabWindow(0);
                     WindowManager::changeWindow("PaintWindow");
@@ -131,7 +129,7 @@ void PaintWindow::loadKeyEvent(QString name) {
             } else {
                 WindowManager::changeWindow("CaptureWindow");
             }
-            Config::setConfig(Config::rect_capture, true);
+            Config::setConfig(Config::capture_mode, Config::RECT_CAPTURE);
         }
     });
     KeyManager::addFunc(this, name, "delete_shape", [=](QObject* current, bool is_enter) {
@@ -216,7 +214,7 @@ void PaintWindow::set_menubar() {
 void PaintWindow::set_toolbar() {
     QToolButton* new_button = new QToolButton(this);
     connect(new_button, &QToolButton::clicked, this, [=]() {
-        if(Config::getConfig<bool>(Config::total_capture)) {
+        if(Config::getConfig<int>(Config::capture_mode) == Config::TOTAL_CAPTURE) {
             WindowManager::changeWindow("tray");
             QTimer::singleShot(200, this, [=]() {
                 QScreen *screen = QGuiApplication::primaryScreen();
@@ -250,12 +248,7 @@ void PaintWindow::set_toolbar() {
         actions[i]->setCheckable(true);
         actions[i]->setData(QVariant(i));
     }
-    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++) {
-        if(Config::getConfig<bool>(i)) {
-            actions[i-Config::capture_mode_begin]->setChecked(true);
-            break;
-        }
-    }
+    actions[Config::getConfig<int>(Config::capture_mode)]->setChecked(true);
     connect(mode_menu, &QMenu::triggered, this, [=](QAction* action) {
         QVariant index_var = action->data();
         int index = index_var.toInt();
@@ -263,10 +256,7 @@ void PaintWindow::set_toolbar() {
             actions[i]->setChecked(false);
         }
         action->setChecked(true);
-        for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++) {
-            Config::setConfig(i, false);
-        }
-        Config::setConfig(Config::capture_mode_begin+index, true);
+        Config::setConfig(Config::capture_mode, index);
     });
     mode_button->setMenu(mode_menu);
     toolbar->addWidget(mode_button);

@@ -1,4 +1,4 @@
-#include "Panel/setting.h"
+#include "Setting/setting.h"
 #include "new_capture/CaptureWindow.h"
 #include "Manager/WindowManager.h"
 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
         Update::instance()->onFinish();
         fliter->deleteLater();
     });
-    Update::instance()->save();
+//    Update::instance()->save();
     int ans = a.exec();
 
     return ans;

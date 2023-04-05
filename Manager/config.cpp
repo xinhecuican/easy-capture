@@ -13,7 +13,8 @@
 
 DEFINE_STRING(Config);
 
-Config* Config::_instance = NULL;
+std::atomic<Config*> Config::_instance = {nullptr};
+std::mutex Config::mutex;
 
 Config::Config() {
     is_loading_translate = false;
@@ -42,7 +43,7 @@ void Config::serialized(QJsonObject* json) {
         else
             json->insert(eto_string(update_setting), value);
     } else {
-        for(setting i=capture_one_window; i<setting::COUNT; i = setting(i + 1)) {
+        for(setting i=language; i<setting::COUNT; i = setting(i + 1)) {
             QJsonValue value = QJsonValue::fromVariant(all_settings[i]);
             json->insert(eto_string((setting)i), value);
         }

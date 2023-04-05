@@ -5,35 +5,19 @@
 #include "Base/Serializable.h"
 #include "Helper/EnumReflect.h"
 #include <QJsonValue>
+#include <atomic>
+#include <mutex>
 
 class Config : Serializable {
 public:
     MAKE_ENUM(setting,//使用宏解析，可以生成对应的字符串
-              capture_window_num_begin,//begin
-              capture_one_window = capture_window_num_begin,
-              capture_multi_window_separate,
-              capture_multi_window_combine,
-              capture_window_num_end = capture_multi_window_combine,//end
-              languages_begin,
-              chinese = languages_begin,
-              english,
-              languages_end = english,
+              language,
               clear_interval,
               history_num,
-              capture_mode_begin,
-              rect_capture = capture_mode_begin,
-              total_capture,/// 在Capture_button_action中
-              free_capture,/// 在Capture_window中
-              scroll_capture,
-              capture_mode_end = scroll_capture,
+              capture_mode, ///< CaptureMode
               need_update,/// 需要更新
               update_interval,/// 更新检查时间间隔，-1表示永不更新
-              update_checktime_begin,
-              never_update = update_checktime_begin,
-              update_day,
-              update_everytime,
-              update_week,
-              update_checktime_end = update_week,
+              update_checktime, ///< UpdateCheckTime
               last_update_time,/// 上次更新时间,注意以分钟为单位（秒为单位太小了，会超界）
               start_instantly,/// 开机启动
               hide_to_tray,
@@ -44,15 +28,47 @@ public:
               middle_button_type,
               version,
               clip_voice,
-              show_update_box
+              show_update_box,
+              ui_theme_name
              );
+
+    /**
+     * @brief 截图模式
+     */
+    enum CaptureMode {
+        RECT_CAPTURE, /// 普通模式
+        TOTAL_CAPTURE, /// 截全屏
+        FREE_CAPTURE, /// 自由形状截图
+        SCROLL_CAPTURE /// 滚动截屏
+    };
+
+    /**
+     * @brief 更新模式
+     */
+    enum UpdateCheckTime {
+        NEVER_UPDATE, /// 永不更新
+        UPDATE_DAY, /// 每日检查一次更新
+        UPDATE_EVERYTIME, /// 每次启动检查更新
+        UPDATE_WEEK /// 每周检查一次更新
+    };
+
+    enum Language {
+        CHINESE,
+        ENGLISH,
+        LANGUAGE_END
+    };
+
     Config();
     ~Config();
-    static Config*& instance() {
-        if(_instance == NULL) {
-            _instance = new Config();
+    static Config* instance() {
+        Config* p = _instance;
+        if (p == nullptr) {
+            std::lock_guard<std::mutex> lock{ mutex };
+            if ((p = _instance) == nullptr) {
+                _instance = p = new Config();
+            }
         }
-        return _instance;
+        return p;
     }
     void deserialized(QJsonObject* json) override;
     void serialized(QJsonObject* json) override;
@@ -91,7 +107,8 @@ public:
     static QString getConfigName(int type);
 private:
     bool is_loading_translate = false;
-    static Config* _instance;
+    static std::atomic<Config*> _instance;
+    static std::mutex mutex;
     QMap<int, QVariant> all_settings;
     bool is_update_config;
     setting update_setting;

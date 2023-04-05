@@ -21,7 +21,7 @@ public:
     static void keyRelease(int key);
     static bool isContainsWindow(QString window_name);
     static void addKeyListener(IKeyListener* listener);
-    static void remvoeKeyListener(IKeyListener* listener);
+    static void removeKeyListener(IKeyListener* listener);
     static void save();
     static void load();
     static void updateAll();

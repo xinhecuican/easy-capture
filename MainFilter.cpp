@@ -29,10 +29,7 @@ MainFilter::MainFilter() {
     int time = Config::getConfig<int>(Config::clear_interval);
     timer->start(time * 1000);
 
-    for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++) {
-        Config::setConfig(i, false);
-    }
-    Config::setConfig(Config::rect_capture, true);
+    Config::setConfig(Config::capture_mode, Config::RECT_CAPTURE);
     setTrayContextMenu();
 
     Update::instance()->update();
@@ -184,14 +181,11 @@ void MainFilter::setTrayContextMenu() {
     connect(mode, &QMenu::triggered, this, [=](QAction* action) {
         QVariant index_var = action->data();
         int index = index_var.toInt();
-        for(int i=Config::capture_mode_begin; i<=Config::capture_mode_end; i++) {
-            Config::setConfig(i, false);
-        }
-        Config::setConfig(Config::capture_mode_begin+index, true);
-        if(Config::getConfig<bool>(Config::rect_capture) || Config::getConfig<bool>(Config::free_capture)
-                || Config::getConfig<bool>(Config::scroll_capture))
+        Config::setConfig(Config::capture_mode, index);
+        if(index == (int)Config::RECT_CAPTURE || index == (int)Config::FREE_CAPTURE
+                || index == (int)Config::SCROLL_CAPTURE)
             WindowManager::changeWindow("CaptureWindow");
-        else if(Config::getConfig<bool>(Config::total_capture)) {
+        else if(index == Config::TOTAL_CAPTURE) {
             WindowManager::changeWindow("tray");
             QTimer::singleShot(200, this, [=]() {
                 QScreen *screen = QGuiApplication::primaryScreen();

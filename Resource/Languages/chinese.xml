@@ -7,10 +7,10 @@
     <string id="english" text="英文"/>
     <string id="clear_interval" text="内存清理检查间隔"/>
     <string id="history_num" text="历史记录最大数量"/>
-    <string id="never_update" text="永不更新"/>
-    <string id="update_day" text="每日检查更新"/>
-    <string id="update_week" text="每周检查更新"/>
-    <string id="update_everytime" text="每次启动检查更新"/>
+    <string id="ZmjIc1nu8Q" text="永不更新"/>
+    <string id="3EhZoQBZHg" text="每日检查更新"/>
+    <string id="4Xoj7GVwjR" text="每周检查更新"/>
+    <string id="F9JiJznbwk" text="每次启动检查更新"/>
     <string id="multi_window_separate" text="允许多个分离的矩形"/>
     <string id="multi_window_combine" text="允许多个可合并的矩形"/>
     <string id="move_all" text="移动所有"/>
@@ -52,7 +52,7 @@
     <string id="YRHJ1nexv6" text="快捷键"/>
     <string id="leave" text="退出"/>
     <string id="one_window" text="只允许一个矩形"/>
-    <string id="Capture_window" text="捕获窗口"/>
+	<string id="CaptureWindow" text="捕获窗口"/>
     <string id="E33TP7yq9G" text="语言"/>
     <string id="VwuLzPpyI3" text="历史记录数量"/>
     <string id="3BIidMbkAm" text="开机启动"/>
@@ -62,7 +62,7 @@
     <string id="iy3cIujuw5" text="打开截屏窗口"/>
     <string id="dcvOkViWtX" text="内存清理检查时间"/>
     <string id="MainWindow" text="主窗口"/>
-    <string id="Paint_window" text="绘图窗口"/>
+	<string id="PaintWindow" text="绘图窗口"/>
     <string id="main_capture" text="打开截图窗口"/>
     <string id="undo" text="撤销"/>
     <string id="redo" text="恢复"/>
@@ -112,4 +112,5 @@
     <string id="nmqfWFejoz" text="选择保存目录"/>
     <string id="SHLK0bd4wt" text="开始录屏: F5\n暂停/恢复录屏: F6\n结束录屏: F7"/>
     <string id="sI4UKVCDun" text="按鼠标中键手动滚动"/>
+	<string id="akRpWUEmtc" text="默认"/>
 </strings>

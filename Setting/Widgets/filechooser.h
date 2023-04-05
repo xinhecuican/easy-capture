@@ -5,8 +5,8 @@
 #include <QLineEdit>
 #include "Base/TabBase.h"
 
-class FileChooser : public QWidget, public TabBase
-{
+class FileChooser : public QWidget, public TabBase {
+    Q_OBJECT
 public:
     FileChooser();
     FileChooser(QString tab_name, QString name, int index, std::function<void (QString)> const &f, QWidget* parent);

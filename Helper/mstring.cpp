@@ -4,8 +4,7 @@
 #include<QDomDocument>
 #include "debug.h"
 
-MString::MString()
-{
+MString::MString() {
 
 }
 
@@ -15,27 +14,28 @@ QList<QString> MString::loading_list = QList<QString>();
 /*
  * xml格式可以直接看:/Languages/Config/chinese.xml
  */
-void MString::load_from_file(QString path)
-{
+void MString::load_from_file(QString path) {
     strings.clear();
     QString language;
-    for(int i=Config::languages_begin; i<Config::languages_end; i++)
-    {
-        if(Config::getConfig<bool>(i))
-        {
-            language = Config::eto_string((Config::setting)i);
-            break;
-        }
+    int index = Config::getConfig<int>(Config::language);
+    switch(index) {
+    case Config::CHINESE:
+        language = "chinese";
+        break;
+    case Config::ENGLISH:
+        language = "english";
+        break;
+    default:
+        language = "chinese";
+        break;
     }
     QFile file(path + language + ".xml");
-    if(!file.open(QIODevice::ReadOnly))
-    {
+    if(!file.open(QIODevice::ReadOnly)) {
         return;
     }
 
     QDomDocument doc;
-    if(!doc.setContent(&file))
-    {
+    if(!doc.setContent(&file)) {
         file.close();
         return;
     }
@@ -44,17 +44,13 @@ void MString::load_from_file(QString path)
     QDomElement root = doc.documentElement();
     QDomNode node = root.firstChild();
 
-    if(root.tagName() == "strings" && root.attribute("language").compare(language) == 0)
-    {
+    if(root.tagName() == "strings" && root.attribute("language").compare(language) == 0) {
         QDomNodeList list = root.childNodes();
-        for(int i=0; i<list.size(); i++)
-        {
+        for(int i=0; i<list.size(); i++) {
             QDomNode n = list.at(i);
-            if(n.isElement())
-            {
+            if(n.isElement()) {
                 QDomElement element = n.toElement();
-                if(element.tagName() == "string")
-                {
+                if(element.tagName() == "string") {
                     strings.insert(element.attribute("id"), element.attribute("text"));
                 }
             }
@@ -70,43 +66,29 @@ void MString::load_from_file(QString path)
  * 可以不加括号，但是不能只写一半括号
  * string的id不能重复，建议通过https://www.random.org/strings/等随机字符串生成网站获得
  */
-QString MString::search(QString id)
-{
+QString MString::search(QString id) {
     QString id_name = "";
     int end_index = 0;
-    if(id[0] == "{")
-    {
-        for(int i=1; i<id.size(); i++)
-        {
-            if(id[i] != "}")
-            {
+    if(id[0] == "{") {
+        for(int i=1; i<id.size(); i++) {
+            if(id[i] != "}") {
                 id_name.append(id[i]);
-            }
-            else
-            {
+            } else {
                 end_index = i;
                 break;
             }
         }
-    }
-    else
-    {
+    } else {
         return id;
     }
-    if(end_index == 0)
-    {
+    if(end_index == 0) {
         if(id[0] == "{")
             qWarning() << "字符串格式错误\n字符串为" + id;
         return id;
-    }
-    else
-    {
-        if(id_name != "" && strings.contains(id_name))
-        {
+    } else {
+        if(id_name != "" && strings.contains(id_name)) {
             return strings[id_name];
-        }
-        else
-        {
+        } else {
             return id.mid(end_index + 1);
         }
     }

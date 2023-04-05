@@ -4,10 +4,20 @@
 #include<QDebug>
 #include "Helper/Reflect.h"
 #include "Helper/mstring.h"
+#include "Manager/uimanager.h"
 
 class WindowBase : public QMainWindow {
 public:
     WindowBase() {
+    }
+
+    /**
+     * @brief afterInitialize 在构造函数之后调用
+     * @param WindowName 窗体类名
+     */
+    virtual void afterInitialize(QString WindowName) {
+        loadKeyEvent(WindowName);
+        setStyleSheet(UIManager::instance()->load(WindowName));
     }
 
     /**
@@ -32,9 +42,7 @@ public:
     }
 
     virtual ~WindowBase() {};
-    /*
 
-     */
     /**
      * @brief loadKeyEvent 载入快捷键
      * @note 载入键盘输入时触发的事件
@@ -55,7 +63,7 @@ public:
     virtual void setPic(QPixmap pix, QRect rect) {};
     virtual void onPaintWindowClose() {};
 
-    // CaptureWindow 录屏全局快捷键函数
+    /// CaptureWindow 录屏全局快捷键函数
     virtual void startCaptureVideo() {};
     virtual void pauseCaptureVideo() {};
     virtual void stopCaptureVideo() {};
@@ -66,12 +74,9 @@ public:
     /// 建立Data/Languages/${window_name}/语言种类(如chinese/english等).xml
     /// 该文件夹下复制chinese.xml
     /// 将里面的中文翻译成对应语言，并且language标签变成对应语言
-    WindowBase(QWidget* parent, WindowBase* superWindow, QString typeName):QMainWindow(parent) {
-        superWindow->setWindowTitle("简截");
-        superWindow->setWindowIcon(QIcon(":/image/avator.png"));
-        //MString::load_from_file(":/Data/Languages/" + type_name + "/");
-//        MString::load_from_file("Data/Languages/" + type_name + "/");
-        //super_window->setAttribute(Qt::WA_DeleteOnClose);
+    WindowBase(QWidget* parent):QMainWindow(parent) {
+        setWindowTitle("简截");
+        setWindowIcon(QIcon(":/image/avator.png"));
     }
 
 

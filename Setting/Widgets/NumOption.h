@@ -4,11 +4,12 @@
 #include "Base/TabBase.h"
 #include<functional>
 
-class Num_tab : public QSpinBox, public TabBase
-{
+class NumOption : public QSpinBox, public TabBase {
+    Q_OBJECT
 public:
-    Num_tab();
-    Num_tab(QString name, int index, int min, int max, std::function<void(int)> const &f, QWidget* parent);
+    NumOption();
+    NumOption(QString name, int index, int min, int max, std::function<void(int)> const &f, QWidget* parent);
+    void paintEvent(QPaintEvent* event) override;
     int getBeginIndex() override;
     int getDefaultIndex() override;
     void reset() override;

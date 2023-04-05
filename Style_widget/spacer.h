@@ -6,13 +6,13 @@
 #include<QToolButton>
 #include "Helper/plist.h"
 
-class Spacer : public QWidget
-{
+class Spacer : public QWidget {
     Q_OBJECT
 public:
-    enum button_state{HIDE, SHOW};
+    enum button_state {HIDE, SHOW};
     Spacer();
     Spacer(QString name, bool need_hide_button, QWidget* parent=nullptr);
+    void paintEvent(QPaintEvent *event) override;
     void set_button_state(button_state state);
     void add_widget(QWidget* widget);
     void add_layout(QLayout* layout);

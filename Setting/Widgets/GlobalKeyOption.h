@@ -6,13 +6,12 @@
 #include <QLabel>
 #include <QHBoxLayout>
 
-class GlobalKeyTab : public QWidget, IKeyListener, public TabBase
-{
+class GlobalKeyOption : public QWidget, IKeyListener, public TabBase {
     Q_OBJECT
 public:
-    GlobalKeyTab();
-    ~GlobalKeyTab();
-    GlobalKeyTab(int index, QString name, QString keyName, QWidget* parent);
+    GlobalKeyOption();
+    ~GlobalKeyOption();
+    GlobalKeyOption(int index, QString name, QString keyName, QWidget* parent, std::function<void (QString, int, int)> const &f);
     void keyEnd() override;
     void getKey(int key) override;
     void reset() override;
@@ -38,6 +37,7 @@ private:
     QPixmap ok;
     QPixmap cancel;
     QHBoxLayout* root;
+    std::function<void (QString, int, int)> f;
 };
 
 #endif // GLOBALKEYTAB_H

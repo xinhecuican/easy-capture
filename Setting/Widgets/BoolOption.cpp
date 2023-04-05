@@ -1,12 +1,12 @@
-#include "bool_tab.h"
+#include "BoolOption.h"
 #include "Manager/config.h"
 
-Bool_tab::Bool_tab()
+BoolOption::BoolOption()
 {
 
 }
 
-Bool_tab::Bool_tab(QString tab_name, int index, std::function<void (bool)> const  &f, QWidget* parent)
+BoolOption::BoolOption(QString tab_name, int index, std::function<void (bool)> const  &f, QWidget* parent)
     :QRadioButton(parent)
 {
     this->tab_name = tab_name;
@@ -19,22 +19,22 @@ Bool_tab::Bool_tab(QString tab_name, int index, std::function<void (bool)> const
 
 
 
-QString Bool_tab::getName()
+QString BoolOption::getName()
 {
     return tab_name;
 }
 
-int Bool_tab::getBeginIndex()
+int BoolOption::getBeginIndex()
 {
     return index;
 }
 
-int Bool_tab::getDefaultIndex()
+int BoolOption::getDefaultIndex()
 {
     return index;
 }
 
-void Bool_tab::reset()
+void BoolOption::reset()
 {
     default_option = Config::getConfig<int>(index);
     setChecked(default_option);

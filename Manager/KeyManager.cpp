@@ -22,7 +22,6 @@ QList<KeyManager::listener_data> KeyManager::listeners = QList<listener_data>();
 bool KeyManager::isWindowChange = false;
 QList<KeyManager::GlobalKeyItem> KeyManager::globalKeys = QList<KeyManager::GlobalKeyItem>();
 QList<QString> KeyManager::keySettings = {
-    "MainWindow:main_capture;16777249,78",
     "CaptureWindow:leave;16777216",//Escape,可以通过Qt::Key_Escape查看键值
     "CaptureWindow:capture_rect;16777249,49",
     "CaptureWindow:capture_mosaic;16777249,50",
@@ -177,7 +176,7 @@ void KeyManager::addKeyListener(IKeyListener* listener) {
     listeners.append(data);
 }
 
-void KeyManager::remvoeKeyListener(IKeyListener *listener) {
+void KeyManager::removeKeyListener(IKeyListener *listener) {
     for(int i=0; i<listeners.size(); i++) {
         if(listeners[i].listener == listener) {
             listeners.removeAt(i);
@@ -224,7 +223,7 @@ QList<QString> KeyManager::detectKeyConflict(QString window_name, QString key_na
             for(int i=0; i<keys.size(); i++) {
                 bool flag = false;
                 for(int k=0; k<iter->keys.size(); k++) {
-                    if(iter->keys[i] == keys[i]) {
+                    if(iter->keys[k] == keys[i]) {
                         flag = true;
                         break;
                     }

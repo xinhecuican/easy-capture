@@ -28,7 +28,7 @@
 bool CaptureWindow::end_scroll = false;
 
 CaptureWindow::CaptureWindow(QWidget *parent) :
-    WindowBase(parent, this, "CaptureWindow")
+    WindowBase(parent)
 //    ui(new Ui::CaptureWindow)
 {
 //    ui->setupUi(this);
@@ -91,12 +91,11 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
             WindowManager::closeWindow("CaptureWindow");
         }
     });
-    loadKeyEvent("CaptureWindow");
 }
 
 CaptureWindow::~CaptureWindow() {
 //    delete ui;
-    if(Config::getConfig<bool>(Config::scroll_capture)) {
+    if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
         scroll_timer->stop();
     }
     timer->stop();
@@ -121,7 +120,7 @@ void CaptureWindow::paintEvent(QPaintEvent *paint_event) {
 //        painter.drawPath(free_paint_path);
 //        return;
 //    }
-    if(Config::getConfig<bool>(Config::scroll_capture)) {
+    if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
         QPen pen;
         pen.setColor(QColor(255, 0, 0));
         pen.setWidth(3);
@@ -145,7 +144,7 @@ void CaptureWindow::paintEvent(QPaintEvent *paint_event) {
             painter.drawRect(active_window_bound);
         }
         return;
-    } else if(Config::getConfig<bool>(Config::rect_capture) && isVideoCapture) {
+    } else if(Config::getConfig<int>(Config::capture_mode) == Config::RECT_CAPTURE && isVideoCapture) {
         QPen pen;
         pen.setWidth(3);
         if(videoCapture->getIsPause()) {
@@ -166,7 +165,7 @@ void CaptureWindow::loadKeyEvent(QString name) {
 //    {
     KeyManager::addFunc(this, name, "leave", [=](QObject* receiver, bool is_enter) {
         if(is_enter) {
-            if(Config::getConfig<bool>(Config::scroll_capture)) {
+            if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
                 if(scrollState == SCROLL_AUTO && !xHook->isKeyHookRunning()) {
                     end_scroll = true;
                 } else if(scrollState == SCROLL_MANUAL && !xHook->isKeyHookRunning()) {
@@ -183,50 +182,50 @@ void CaptureWindow::loadKeyEvent(QString name) {
     });
     KeyManager::addFunc(this, name, "capture_rect", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(current->area->hasFocus() && is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(current->area->hasFocus() && is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             current->area->clipButtonEnter(0);
     });
     KeyManager::addFunc(this, name, "capture_mosaic", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             current->area->clipButtonEnter(1);
     });
     KeyManager::addFunc(this, name, "capture_cursor", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             current->area->clipButtonEnter(2);
     });
     KeyManager::addFunc(this, name, "capture_pencil", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             current->area->clipButtonEnter(3);
     });
     KeyManager::addFunc(this, name, "capture_highlighter", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             current->area->clipButtonEnter(4);
     });
     KeyManager::addFunc(this, name, "capture_text", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             current->area->clipButtonEnter(5);
     });
     KeyManager::addFunc(this, name, "capture_erase", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             current->area->clipButtonEnter(7);
     });
     KeyManager::addFunc(this, name, "capture_undo", [=](QObject* receiver, bool is_enter) {
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             Recorder::instance()->back();
     });
     KeyManager::addFunc(this, name, "capture_redo", [=](QObject* receiver, bool is_enter) {
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             Recorder::instance()->forward();
     });
     KeyManager::addFunc(this, name, "save2file", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture)) {
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
             QString file_name = QFileDialog::getSaveFileName(this,
                                 "保存",
                                 History::instance()->get_last_directory(),
@@ -239,20 +238,20 @@ void CaptureWindow::loadKeyEvent(QString name) {
     });
     KeyManager::addFunc(this, name, "save2clip", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture)) {
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
             if(current->area->save2Clipboard())
                 WindowManager::changeWindow("tray");
         }
     });
     KeyManager::addFunc(this, name, "enter_capture", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && !Config::getConfig<bool>(Config::scroll_capture)) {
+        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
             current->area->sendRequestImage();
         }
     });
     KeyManager::addFunc(this, name, "capture_scrollrect", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(is_enter && Config::getConfig<bool>(Config::scroll_capture))
+        if(is_enter && Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)
             current->isScrollRect = true;
         else if(!is_enter)
             current->isScrollRect = false;
@@ -263,19 +262,19 @@ void CaptureWindow::loadKeyEvent(QString name) {
 void CaptureWindow::mouseMoveEvent(QMouseEvent *event) {
     now_point = event->pos();
     mouse_move_times++;
-    if(Config::getConfig<bool>(Config::scroll_capture)) {
+    if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
         return;
     }
 }
 
 void CaptureWindow::mousePressEvent(QMouseEvent *event) {
-    if(Config::getConfig<bool>(Config::scroll_capture)) {
+    if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
         return;
     }
 }
 
 void CaptureWindow::mouseReleaseEvent(QMouseEvent *event) {
-    if(Config::getConfig<bool>(Config::scroll_capture)) {
+    if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
         return;
     }
 }
@@ -333,7 +332,7 @@ void CaptureWindow::onWindowSelect() {
     KeyManager::registerGlobalKey("capture_video_start");
     KeyManager::registerGlobalKey("capture_video_pause");
     KeyManager::registerGlobalKey("capture_video_stop");
-    if(Config::getConfig<bool>(Config::scroll_capture)) {
+    if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
         is_enter = false;
         set_scroll_info();
         view->hide();
@@ -474,7 +473,7 @@ WINDOW_VALID_OUT:
 }
 
 void CaptureWindow::set_scroll_info() {
-    if(Config::getConfig<bool>(Config::scroll_capture)) {
+    if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
         scrollState = IDLE;
         isScrollRect = false;
         isScrollRectEnter = false;
@@ -546,7 +545,7 @@ void CaptureWindow::set_scroll_info() {
 }
 
 void CaptureWindow::startCaptureVideo() {
-    if(!Config::getConfig<bool>(Config::scroll_capture)) {
+    if(!(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
         videoCapture->setCaptureInfo(area->getRecordInfo());
         if(videoCapture->isValid() && !isVideoCapture) {
             isVideoCapture = true;
@@ -558,14 +557,14 @@ void CaptureWindow::startCaptureVideo() {
 }
 
 void CaptureWindow::pauseCaptureVideo() {
-    if(!Config::getConfig<bool>(Config::scroll_capture) && videoCapture->isValid() && isVideoCapture) {
+    if(!(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) && videoCapture->isValid() && isVideoCapture) {
         videoCapture->pauseOrResume();
         update();
     }
 }
 
 void CaptureWindow::stopCaptureVideo() {
-    if(!Config::getConfig<bool>(Config::scroll_capture) && videoCapture->isValid() && isVideoCapture) {
+    if(!(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) && videoCapture->isValid() && isVideoCapture) {
         isVideoCapture = false;
         videoCapture->stopCapture();
         WindowManager::changeWindow("tray");

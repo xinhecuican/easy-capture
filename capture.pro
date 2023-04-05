@@ -28,6 +28,7 @@ SOURCES += \
     Manager/KeyManager.cpp \
     Manager/WindowManager.cpp \
     Manager/config.cpp \
+    Manager/uimanager.cpp \
     Manager/update.cpp \
     Paint/Data/scroll_button.cpp \
     Paint/Data/stretch_button.cpp \
@@ -56,14 +57,15 @@ SOURCES += \
     Paint/Widgets/history.cpp \
     Paint/Widgets/recorder.cpp \
     Paint/Widgets/style_manager.cpp \
-    Panel/Widgets/combo_tab.cpp \
-    Panel/Widgets/filechooser.cpp \
-    Panel/Widgets/globalkeytab.cpp \
-    Panel/Widgets/key_tab.cpp \
-    Panel/Widgets/num_tab.cpp \
-    Panel/Widgets/tab_widget.cpp \
-    Panel/Widgets/bool_tab.cpp \
-    Panel/setting.cpp \
+	Setting/Widgets/BoolOption.cpp \
+	Setting/Widgets/ComboOption.cpp \
+	Setting/Widgets/GlobalKeyOption.cpp \
+	Setting/Widgets/KeyOption.cpp \
+	Setting/Widgets/NumOption.cpp \
+	Setting/Widgets/TabWidget.cpp \
+	Setting/Widgets/filechooser.cpp \
+	Setting/Widgets/listwrapper.cpp \
+	Setting/setting.cpp \
     Style_widget/bubbletipswidget.cpp \
     Style_widget/colorwidget.cpp \
     Style_widget/framelesshelper.cpp \
@@ -115,11 +117,12 @@ HEADERS += \
     Manager/KeyManager.h \
     Manager/WindowManager.h \
     Manager/config.h \
+	Manager/uimanager.h \
     Manager/update.h \
     Paint/Data/Common.h \
     Paint/Data/History_data.h \
     Paint/Data/Ilayer.h \
-	Paint/Data/PaintArea.h \
+	Paint/Data/paint_data.h \
     Paint/Data/scroll_button.h \
     Paint/Data/stretch_button.h \
     Paint/PaintWindow.h \
@@ -148,14 +151,15 @@ HEADERS += \
 	Paint/Widgets/PaintArea.h \
     Paint/Widgets/recorder.h \
     Paint/Widgets/style_manager.h \
-    Panel/Widgets/bool_tab.h \
-    Panel/Widgets/combo_tab.h \
-    Panel/Widgets/filechooser.h \
-    Panel/Widgets/globalkeytab.h \
-    Panel/Widgets/key_tab.h \
-    Panel/Widgets/num_tab.h \
-    Panel/Widgets/tab_widget.h \
-    Panel/setting.h \
+	Setting/Widgets/BoolOption.h \
+	Setting/Widgets/ComboOption.h \
+	Setting/Widgets/GlobalKeyOption.h \
+	Setting/Widgets/KeyOption.h \
+	Setting/Widgets/NumOption.h \
+	Setting/Widgets/TabWidget.h \
+	Setting/Widgets/filechooser.h \
+	Setting/Widgets/listwrapper.h \
+	Setting/setting.h \
     Style_widget/bubbletipswidget.h \
     Style_widget/colorwidget.h \
     Style_widget/framelesshelper.h \
@@ -182,7 +186,7 @@ HEADERS += \
     new_capture/window_fliter.h
 
 FORMS += \
-    Panel/setting.ui \
+	Setting/setting.ui \
     Style_widget/ColorWidget.ui \
     Style_widget/bubbletipswidget.ui \
     Tests/testwidget.ui
