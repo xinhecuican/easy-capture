@@ -74,6 +74,12 @@ void Config::loadConfig() {
     }
 }
 
+void Config::resetConfig() {
+    if(!Serialize::deserialize(":/Data/default.json", instance())) {
+        qWarning("配置文件解析失败");
+    }
+}
+
 void Config::updateConfig(setting type) {
     instance()->update_setting = type;
     instance()->is_update_config = true;

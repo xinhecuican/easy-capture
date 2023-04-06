@@ -24,6 +24,7 @@ public:
     static void removeKeyListener(IKeyListener* listener);
     static void save();
     static void load();
+    static void reset();
     static void updateAll();
     static void updateGlobalKey();
     static void onWindowChangeBegin(QString old_window, QString new_window);

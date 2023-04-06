@@ -17,7 +17,6 @@ struct MRect {
 static QString getQSS(QString path) {
     QFile file(path);
     if(!file.open(QFile::ReadOnly)) {
-        qCritical() << path << "无法获得qss";
         file.close();
         return "";
     }

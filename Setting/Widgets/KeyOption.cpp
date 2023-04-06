@@ -23,7 +23,6 @@ KeyOption::KeyOption(int index, QString window_name, QString key_name, QWidget* 
             KeyManager::addKeyListener(this);
         }
     });
-    originKeys = keys;
     dirty = false;
 }
 
@@ -64,7 +63,7 @@ void KeyOption::set_key_string() {
 }
 
 void KeyOption::reset() {
-    keys = originKeys;
+    keys = KeyManager::getKeys(window_name, key_name);;
     set_key_string();
     setChecked(false);
 }

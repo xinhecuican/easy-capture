@@ -12,6 +12,7 @@
 #include<QMessageBox>
 #include<QSettings>
 #include<QDir>
+#include "Manager/update.h"
 
 Setting::Setting(QWidget *parent) :
     WindowBase(parent),
@@ -21,12 +22,29 @@ Setting::Setting(QWidget *parent) :
     all_setting = PList<TabWidget*>();
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);//右下角按钮设置
+    QPushButton* resetButton = new QPushButton(this);
+    resetButton->setText(MString::search("{4Rmr42SpQK}重置"));
+    resetButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+    connect(resetButton, &QPushButton::clicked, this, [=]() {
+        TabWidget* keyTab = getTab("{YRHJ1nexv6}快捷键");
+        if(keyTab != ui->tabWidget->currentWidget()) {
+            Config::resetConfig();
+            for(int i=0; i<all_setting.size(); i++) {
+                if(all_setting[i] != keyTab)
+                    all_setting[i]->reset();
+            }
+        } else {
+            KeyManager::reset();
+            keyTab->reset();
+        }
+    });
     QPushButton* ok = new QPushButton(this);
-    ok->setText("确认");
+    ok->setText(MString::search("{H1WPwLFDwO}确认"));
     ok->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
     QPushButton* close = new QPushButton(this);
-    close->setText("关闭");
+    close->setText(MString::search("{FuBCvgW4BE}关闭"));
     close->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+    buttonBox->addButton(resetButton, QDialogButtonBox::ResetRole);
     buttonBox->addButton(ok, QDialogButtonBox::AcceptRole);
     buttonBox->addButton(close, QDialogButtonBox::RejectRole);
     ok->connect(ok, &QPushButton::clicked, this, [=]() {
@@ -55,6 +73,7 @@ Setting::Setting(QWidget *parent) :
     normal_settings();
     capture_settings();
     keySettings();
+    aboutTab();
 }
 
 Setting::~Setting() {
@@ -120,6 +139,11 @@ void Setting::addFileOption(QString tabName, QString optionName, QString name, i
 void Setting::addSpacer(QString tabName, QString text) {
     TabWidget* tab = getTab(tabName);
     tab->add_spacer(text);
+}
+
+void Setting::addText(QString tabName, QString text, QString objectName) {
+    TabWidget* tab = getTab(tabName);
+    tab->addText(text, objectName);
 }
 
 void Setting::normal_settings() {
@@ -243,6 +267,27 @@ void Setting::keySettings() {
             });
         }
     }
+}
+
+void Setting::aboutTab() {
+    TabWidget* aboutTab = addTab("{ms01jwOir5}关于");
+    aboutTab->addText("{YQQqFBaXjV}简截", "easyCapture");
+    aboutTab->addText(MString::search("{SYdvb1dMci}版本") + ": " + Update::instance()->now_version.get_version(), "version");
+    aboutTab->addText(MString::search("{UjoYcLzhiX}更新时间") + ": " + Update::instance()->now_version.get_time(), "updateTime");
+    aboutTab->addText(MString::search("{R3hH9RwEIO}作者") + ": " + "星河璀璨", "author");
+
+    QHBoxLayout* githubLayout = new QHBoxLayout();
+    githubLayout->addWidget(new QLabel("github: ", aboutTab), 0);
+    QLabel* linkLabel = new QLabel("<a href=\"https://github.com/xinhecuican/easy-capture\">https://github.com/xinhecuican/easy-capture", aboutTab);
+    linkLabel->setOpenExternalLinks(true);
+    linkLabel->setTextFormat(Qt::RichText);
+    linkLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
+    githubLayout->addWidget(linkLabel, 1);
+    aboutTab->add_layout(githubLayout);
+
+    aboutTab->addText("{0p65BvqadC}更新日志", "updateLog");
+    aboutTab->addText(Update::instance()->now_version.get_description(), "");
+
 }
 
 void Setting::closeEvent(QCloseEvent *event) {

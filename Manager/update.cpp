@@ -72,6 +72,7 @@ void Update::deserialized(QJsonObject *json) {
         QJsonObject version = (*json)[QString::number(i)].toObject();
         data.deserialized(&version);
         if(data == now_version) {
+            now_version.set_time(data.get_time());
             break;
         }
         qDebug() << data.get_version();

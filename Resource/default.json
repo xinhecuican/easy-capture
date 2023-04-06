@@ -11,7 +11,7 @@
 	"capture_mode": 0,
 	"show_close_dialog": true,
 	"start_instantly": false,
-	"update_mode": 3,
+	"update_checktime": 3,
 	"update_interval": 10080,
 	"test_setting": 0,
 	"total_capture_save_path": "Data/ScreenShot/",

@@ -27,6 +27,7 @@ public:
                         std::function<void(int)> const &f);
     void add_file_option(QString tab_name, QString name, int index, std::function<void(QString)> const &f);
     void add_spacer(QString text = QString());
+    void addText(QString text, QString objectName);
     void add_layout(QLayout* layout);
     int getDefaultIndex(QString name);
     void reset();

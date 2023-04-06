@@ -22,7 +22,6 @@ signals:
 private:
     QString window_name;
     QString key_name;
-    QList<int> originKeys;
     QList<int> keys;
     QList<int> temp_keys;
     void set_key_string();

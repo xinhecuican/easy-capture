@@ -25,8 +25,6 @@ private:
     int modKey;
     int key;
     int tempKey;
-    int originKey;
-    int originModKey;
     bool dirty;
     QString name;
     QString keyName;

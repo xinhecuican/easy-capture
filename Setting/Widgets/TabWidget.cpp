@@ -137,6 +137,12 @@ void TabWidget::add_spacer(QString text) {
     layout->addWidget(spacer);
 }
 
+void TabWidget::addText(QString text, QString objectName) {
+    QLabel* label = new QLabel(MString::search(text), this);
+    label->setObjectName(objectName);
+    layout->addWidget(label);
+}
+
 int TabWidget::getDefaultIndex(QString name) {
     for(int i=0; i<widgets.size(); i++) {
         if(widgets[i]->getName() == name) {

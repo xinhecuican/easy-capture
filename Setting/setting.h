@@ -33,6 +33,7 @@ public:
                       std::function<void(int)> const &f);
     void addFileOption(QString tabName, QString optionName, QString name, int index, std::function<void(QString)> const &f);
     void addSpacer(QString tabName, QString text = QString());
+    void addText(QString tabName, QString text, QString objectName);
 
 public slots:
     void onClose(bool isSave);
@@ -82,6 +83,7 @@ private:
     void normal_settings();
     void capture_settings();
     void keySettings();
+    void aboutTab();
     void postUpdate(Config::setting type, QVariant num);
 };
 

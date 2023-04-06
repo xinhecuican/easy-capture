@@ -74,6 +74,7 @@ public:
     void serialized(QJsonObject* json) override;
     static void loadConfig();
     static void saveToConfig();
+    static void resetConfig();
     static void updateConfig(setting type);
     static void updateAll();
 

@@ -16,8 +16,6 @@ GlobalKeyOption::GlobalKeyOption(int index, QString name, QString keyName, QWidg
     this->f = f;
     key = KeyManager::getGlobalKey(index);
     modKey = KeyManager::getGlobalModKey(index);
-    originKey = key;
-    originModKey = modKey;
     dirty = false;
     modKeyButton = new QPushButton(this);
     keyButton = new QPushButton(this);
@@ -111,8 +109,10 @@ void GlobalKeyOption::detectKeyConflict() {
 }
 
 void GlobalKeyOption::reset() {
-    keyButton->setText(KeyManager::keyType[originKey]);
-    modKeyButton->setText(KeyManager::keyType[originModKey]);
+    key = KeyManager::getGlobalKey(index);
+    modKey = KeyManager::getGlobalModKey(index);
+    keyButton->setText(KeyManager::keyType[key]);
+    modKeyButton->setText(KeyManager::keyType[modKey]);
 }
 
 int GlobalKeyOption::getBeginIndex() {

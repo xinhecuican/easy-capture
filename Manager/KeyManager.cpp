@@ -343,6 +343,10 @@ void KeyManager::load() {
 
 }
 
+void KeyManager::reset() {
+    updateAll();
+}
+
 void KeyManager::onWindowChangeBegin(QString old_window, QString new_window) {
     if(old_window != "") {
         window old = allKey[old_window];
