@@ -20,7 +20,7 @@ Update_dialog::~Update_dialog()
 {
 }
 
-Update_dialog::Update_dialog(QList<Update_data> data, QWidget* parent) : QDialog(parent)
+Update_dialog::Update_dialog(QList<UpdateData> data, QWidget* parent) : QDialog(parent)
 {
     downloader = new UpdateDownloader(data, this);
     setAttribute(Qt::WA_DeleteOnClose, true);

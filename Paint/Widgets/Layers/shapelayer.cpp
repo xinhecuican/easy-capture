@@ -34,11 +34,19 @@ void ShapeLayer::reset() {
 void ShapeLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if(isRect && is_press) {
         QPen pen;
-        pen.setColor(QColor(161, 47, 47));
-        pen.setWidth(3);
+        pen.setColor(Style_manager::instance()->get_now().color);
+        pen.setWidth(Style_manager::instance()->get_now().width);
         pen.setJoinStyle(Qt::RoundJoin);
-        painter->setPen(pen);
-        painter->drawRect(Math::buildRect(begin_point, currentPoint));
+        switch(shape) {
+        case RECTANGLE:
+            painter->setPen(pen);
+            painter->drawRect(Math::buildRect(begin_point, currentPoint));
+            break;
+        case PAINT_ARROW:
+            painter->setPen(pen);
+            painter->drawLine(begin_point, currentPoint);
+        }
+
     }
 }
 
@@ -53,7 +61,7 @@ void ShapeLayer::setPic(const QPixmap &pix, QPoint point) {
 
 void ShapeLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     begin_point = mapFromScene(event->scenePos());
-    if(is_enable && shape != BLUR) {
+    if(is_enable && shape != BLUR && event->button() == Qt::LeftButton) {
         if(!childContains(mapFromScene(begin_point)))
             is_press = true;
     }
@@ -74,7 +82,7 @@ void ShapeLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             blur_layer->setPix(pix, point);
         }
     }
-    if(is_enable && shape == RECTANGLE) {
+    if(is_enable && (shape == RECTANGLE || shape == PAINT_ARROW)) {
         isRect = true;
     }
 }
@@ -86,7 +94,7 @@ void ShapeLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     }
     if(is_enable && is_press && shape == DELETE_SHAPE) {
         blur_layer->deletePoint(currentPoint.toPoint());
-        deleteChildrens(point);
+        deleteChildrens(currentPoint);
     }
     if(isRect) {
         update();
@@ -96,6 +104,7 @@ void ShapeLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 void ShapeLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     if(is_enable && is_press) {
         is_press = false;
+        isRect = false;
         QPointF point = mapFromScene(event->scenePos());
         qreal left = 0, top=0, bottom=0, right=0;
         if(point.x() < begin_point.x()) {
@@ -116,7 +125,6 @@ void ShapeLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
         QRectF rect(QPointF(left, top), QPointF(right, bottom));
         switch(shape) {
         case RECTANGLE: {
-            isRect = false;
             if(rect.width() < 10 || rect.height() < 10)
                 break;
             RectLayer* rect_layer = new RectLayer(this, rect);

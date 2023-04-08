@@ -2,33 +2,26 @@
 #include <QStyleOption>
 #include <QPainter>
 
-AttributeToolbar::AttributeToolbar(QWidget* parent) : QWidget(parent)
-{
+AttributeToolbar::AttributeToolbar(QWidget* parent) : QWidget(parent) {
     setAttribute(Qt::WA_StyledBackground);
-    setMaximumHeight(48);
     layout = new QHBoxLayout();
-    layout->setMargin(0);
-    layout->setSpacing(0);
-    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(3);
+    layout->setContentsMargins(3, 2, 3, 2);
     setLayout(layout);
 }
 
-void AttributeToolbar::add(QWidget *widget)
-{
+void AttributeToolbar::add(QWidget *widget) {
     widget->show();
-    widget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     layout->addWidget(widget);
     adjustSize();
 //    actions.append(QToolBar::addWidget(widget));
 }
 
-void AttributeToolbar::removeAll()
-{
+void AttributeToolbar::removeAll() {
     QLayoutItem *child;
-    while ((child = layout->takeAt(0)) != nullptr)
-    {
-        if(child->widget())
-        {
+    while ((child = layout->takeAt(0)) != nullptr) {
+        if(child->widget()) {
             layout->removeWidget(child->widget());
             child->widget()->hide();
         }
@@ -36,8 +29,7 @@ void AttributeToolbar::removeAll()
     update();
 }
 
-void AttributeToolbar::paintEvent(QPaintEvent *event)
-{
+void AttributeToolbar::paintEvent(QPaintEvent *event) {
     QStyleOption opt;
     opt.init(this);
     QPainter p(this);

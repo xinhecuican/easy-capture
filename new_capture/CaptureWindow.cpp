@@ -461,6 +461,7 @@ WINDOW_VALID_OUT:
         }
     } else {
         area->reset();
+        area->update();
         Flow_edit_panel::instance()->reset();
         Style_manager::instance()->reset();
         Recorder::instance()->reset();

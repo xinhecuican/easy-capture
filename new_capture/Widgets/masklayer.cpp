@@ -74,7 +74,7 @@ void MaskLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         if(!is_drag && begin_clip && button == Qt::LeftButton) {
             if(Config::getConfig<int>(Config::capture_mode) == Config::FREE_CAPTURE) {
                 QPen tmp_pen = pen;
-                pen.setColor(QColor(131, 175, 155));
+                pen.setColor(QColor(41, 141, 255));
                 pen.setWidth(3);
                 painter->setPen(pen);
                 painter->drawPath(free_capture_path);

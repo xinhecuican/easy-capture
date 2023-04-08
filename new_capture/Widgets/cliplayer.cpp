@@ -25,10 +25,12 @@
 
 ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsItem* parent) : QGraphicsObject(parent),
     is_drag(false),
+    pixSet(false),
     begin_clip(false),
     is_save(false),
     is_enable(true),
-    scene(scene) {
+    scene(scene),
+    currentshape(SHAPE_RECT) {
     screen_rect = QGuiApplication::primaryScreen()->geometry();
     mask_layer = new MaskLayer(this);
     connect(mask_layer, &MaskLayer::regionChanged, this, [=]() {
@@ -36,6 +38,7 @@ ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsIte
     });
     this->widget_parent = widget_parent;
     rect_setting = Style_manager::default_pencil;
+    arrowSetting = Style_manager::default_pencil;
     pencil_setting = Style_manager::default_pencil;
     highlighter_setting = Style_manager::default_highlighter;
     widgetParent = NULL;
@@ -106,10 +109,12 @@ void ClipLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void ClipLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    if(!is_save) {
-        painter->drawPixmap(QPointF(0, 0), pix);
-    } else {
-        painter->drawPixmap(QPointF(0, 0), savePix);
+    if(pixSet) {
+        if(!is_save) {
+            painter->drawPixmap(QPointF(0, 0), pix);
+        } else {
+            painter->drawPixmap(QPointF(0, 0), savePix);
+        }
     }
 }
 
@@ -154,6 +159,7 @@ void ClipLayer::capture(QPixmap pix) {
 }
 
 void ClipLayer::setPic(QPixmap pix) {
+    pixSet = true;
     this->pix = pix;
     update();
 }
@@ -173,6 +179,7 @@ QRectF ClipLayer::getClipRect() {
 
 void ClipLayer::reset() {
     is_save = false;
+    buttonEnter(2);
     mask_layer->reset();
     if(toolbar != NULL)
         toolbar->hide();
@@ -188,7 +195,6 @@ void ClipLayer::setToolBar() {
     toolbar = new QToolBar();
     toolbar->setWindowFlags(toolbar->windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     toolbar->setWindowFlag(Qt::WindowSystemMenuHint, false);
-    toolbar->setStyleSheet(getQSS(":/qss/toolbar.qss"));
     toolbar->hide();
 
     ocrButton = new QToolButton(toolbar);
@@ -260,11 +266,6 @@ void ClipLayer::setToolBar() {
         }
     });
 
-    rect_button = new QToolButton(toolbar);
-    rect_button->setToolTip("矩形");
-    rect_button->setIcon(QIcon(":/image/rect.png"));
-    rect_button->setCheckable(true);
-
     mosaic_button = new QToolButton(toolbar);
     mosaic_button->setIcon(QIcon(":/image/mosaic.png"));
     mosaic_button->setToolTip("马赛克");
@@ -298,27 +299,25 @@ void ClipLayer::setToolBar() {
 
     button_group = new QButtonGroup(toolbar);
     button_group->setExclusive(true);
-    button_group->addButton(rect_button, 0);
+    button_group->addButton(shape_button, 0);
     button_group->addButton(mosaic_button, 1);
     button_group->addButton(cursor_button, 2);
     button_group->addButton(pencil_button, 3);
     button_group->addButton(highlighter_button, 4);
     button_group->addButton(text_button, 5);
-    button_group->addButton(shape_button, 6);
-    button_group->addButton(erase_button, 7);
-    button_group->addButton(videoButton, 8);
+    button_group->addButton(erase_button, 6);
+    button_group->addButton(videoButton, 7);
     connect(button_group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
     , this, [=](int id) {
         onToolbarButtonClick(id);
     });
 
-    toolbar->addWidget(rect_button);
+    toolbar->addWidget(shape_button);
     toolbar->addWidget(mosaic_button);
     toolbar->addWidget(cursor_button);
     toolbar->addWidget(pencil_button);
     toolbar->addWidget(highlighter_button);
     toolbar->addWidget(text_button);
-    toolbar->addWidget(shape_button);
     toolbar->addWidget(erase_button);
     toolbar->addWidget(videoButton);
     toolbar->addSeparator();
@@ -376,9 +375,17 @@ void ClipLayer::setEnable(bool enable) {
 
 void ClipLayer::updateAttributeToolbar(int id) {
     switch(before_id) {
-    case 0: // rect
-        rect_setting.color = Style_manager::instance()->get_now().color;
-        rect_setting.width = Style_manager::instance()->get_now().width;
+    case 0: // shape
+        switch(currentshape) {
+        case SHAPE_RECT:
+            rect_setting.color = Style_manager::instance()->get_now().color;
+            rect_setting.width = Style_manager::instance()->get_now().width;
+            break;
+        case SHAPE_ARROW:
+            arrowSetting.color = Style_manager::instance()->get_now().color;
+            arrowSetting.width = Style_manager::instance()->get_now().width;
+            break;
+        }
         break;
     case 1: // mosaic
         break;
@@ -396,11 +403,23 @@ void ClipLayer::updateAttributeToolbar(int id) {
     attribute_toolbar->removeAll();
     initAttributeToolbarWidget(id);
     switch(id) {
-    case 0: // rect
-        color_widget->setCurrentStyle(rect_setting.color);
-        Style_manager::instance()->change_color(rect_setting.color);
-        Style_manager::instance()->change_width(rect_setting.width);
-        width_button->setValue(rect_setting.width);
+    case 0: // shape
+        switch(currentshape) {
+        case SHAPE_RECT:
+            color_widget->setCurrentStyle(rect_setting.color);
+            Style_manager::instance()->change_color(rect_setting.color);
+            Style_manager::instance()->change_width(rect_setting.width);
+            width_button->setValue(rect_setting.width);
+            break;
+        case SHAPE_ARROW:
+            color_widget->setCurrentStyle(arrowSetting.color);
+            Style_manager::instance()->change_color(arrowSetting.color);
+            Style_manager::instance()->change_width(arrowSetting.width);
+            width_button->setValue(arrowSetting.width);
+            break;
+        }
+        attribute_toolbar->add(rect_button);
+        attribute_toolbar->add(arrow_button);
         attribute_toolbar->add(width_button);
         attribute_toolbar->add(color_widget);
         break;
@@ -432,10 +451,7 @@ void ClipLayer::updateAttributeToolbar(int id) {
     case 5:
         attribute_toolbar->add(Flow_edit_panel::instance());
         break;
-    case 6:
-        attribute_toolbar->add(arrow_button);
-        break;
-    case 8:
+    case 7:
         attribute_toolbar->add(videoToolbar);
         break;
     }
@@ -445,6 +461,58 @@ void ClipLayer::updateAttributeToolbar(int id) {
 void ClipLayer::initAttributeToolbarWidget(int id) {
     switch(id) {
     case 0:
+        if(shapeGroup == NULL) {
+            shapeGroup = new QButtonGroup(attribute_toolbar);
+            shapeGroup->setExclusive(true);
+            connect(shapeGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked)
+            , this, [=](int id) {
+                switch(id) {
+                case 0:
+                    currentshape = SHAPE_RECT;
+                    break;
+                case 1:
+                    currentshape = SHAPE_ARROW;
+                    break;
+                }
+                onToolbarButtonClick(0);
+            });
+        }
+        if(rect_button == NULL) {
+            rect_button = new QToolButton(attribute_toolbar);
+            rect_button->setObjectName("rectButton");
+            rect_button->setToolTip("矩形");
+            rect_button->setIcon(QIcon(":/image/rect.png"));
+            rect_button->setCheckable(true);
+            rect_button->setChecked(true);
+            rect_button->hide();
+            shapeGroup->addButton(rect_button, 0);
+        }
+        if(arrow_button == NULL) {
+            arrow_button = new QToolButton(attribute_toolbar);
+            arrow_button->setObjectName("arrowButton");
+            arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
+            arrow_button->setToolTip("{D7HSBXWTLj}箭头");
+            arrow_button->setCheckable(true);
+            arrow_button->hide();
+            shapeGroup->addButton(arrow_button, 1);
+        }
+        if(color_widget == NULL) {
+            color_widget = new ColorWidget(attribute_toolbar);
+            color_widget->hide();
+        }
+        if(width_button == NULL) {
+            width_button = new QSpinBox(attribute_toolbar);
+            width_button->setRange(1, 50);
+            width_button->setValue(3);
+            width_button->setAccelerated(true);
+            width_button->setWrapping(true);
+            width_button->setKeyboardTracking(true);
+            connect(width_button, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int value) {
+                Style_manager::instance()->change_width(value);
+            });
+            width_button->hide();
+        }
+        break;
     case 3:
     case 4:
         if(color_widget == NULL) {
@@ -530,18 +598,7 @@ void ClipLayer::initAttributeToolbarWidget(int id) {
             Flow_edit_panel::instance()->hide();
         }
         break;
-    case 6:
-        if(arrow_button == NULL) {
-            arrow_button = new QToolButton(attribute_toolbar);
-            arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
-            arrow_button->setToolTip("{D7HSBXWTLj}箭头");
-            connect(arrow_button, &QToolButton::clicked, this, [=]() {
-                emit paintShape(PAINT_ARROW);
-            });
-            arrow_button->hide();
-        }
-        break;
-    case 8: // video
+    case 7: // video
         if(videoToolbar == NULL) {
             videoToolbar = new VideoToolbar(attribute_toolbar);
             videoToolbar->hide();
@@ -554,7 +611,6 @@ void ClipLayer::setAttributeToolbar() {
     attribute_toolbar = new AttributeToolbar();
     attribute_toolbar->setWindowFlags(toolbar->windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     attribute_toolbar->setWindowFlag(Qt::WindowSystemMenuHint, false);
-    attribute_toolbar->setStyleSheet(getQSS(":/qss/toolbar.qss"));
 
     color_widget = NULL;
     width_button = NULL;
@@ -563,6 +619,8 @@ void ClipLayer::setAttributeToolbar() {
     mosaic_range = NULL;
     rect_capture = NULL;
     free_capture = NULL;
+    rect_button = NULL;
+    shapeGroup = NULL;
     arrow_button = NULL;
     videoToolbar = NULL;
 
@@ -585,9 +643,17 @@ void ClipLayer::buttonEnter(int id) {
 void ClipLayer::onToolbarButtonClick(int id) {
     updateAttributeToolbar(id);
     switch(id) {
-    case 0: // rect
-        emit stateChange(SHAPE);
-        emit paintShape(RECTANGLE);
+    case 0: // shape
+        switch(currentshape) {
+        case SHAPE_RECT:
+            emit stateChange(SHAPE);
+            emit paintShape(RECTANGLE);
+            break;
+        case SHAPE_ARROW:
+            emit stateChange(SHAPE);
+            emit paintShape(PAINT_ARROW);
+            break;
+        }
         break;
     case 1: // mosaic
         emit stateChange(SHAPE);
@@ -605,10 +671,8 @@ void ClipLayer::onToolbarButtonClick(int id) {
     case 5: // text
         emit stateChange(SHAPE);
         emit paintShape(TEXT);
-    case 6: // shape
-        emit stateChange(SHAPE);
         break;
-    case 7:
+    case 6: // erase
         emit stateChange(ERASE);
         break;
     }

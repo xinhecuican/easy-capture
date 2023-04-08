@@ -58,6 +58,7 @@ signals:
     void needReset();
     void requestOcr();
 private:
+    enum ShapeType {SHAPE_RECT, SHAPE_ARROW};
     void setToolBar();
     void setAttributeToolbar();
     void calBarPos();
@@ -70,6 +71,7 @@ private:
     QRect screen_rect;
     QWidget* widget_parent;
     bool is_drag;
+    bool pixSet;
     bool begin_clip;
     bool is_save;
     bool is_enable;
@@ -103,6 +105,7 @@ private:
 
     QSpinBox* width_button;
     PaintData rect_setting;
+    PaintData arrowSetting;
     PaintData pencil_setting;
     PaintData highlighter_setting;
     ColorWidget* color_widget;
@@ -114,6 +117,9 @@ private:
     QToolButton* arrow_button;
     QWidget* widgetParent;
     VideoToolbar* videoToolbar;
+
+    ShapeType currentshape;
+    QButtonGroup* shapeGroup;
 };
 
 #endif // CLIPREGION_H

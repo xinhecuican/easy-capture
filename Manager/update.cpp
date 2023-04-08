@@ -13,7 +13,7 @@
 #include "Paint/Widgets/history.h"
 
 Update::Update() {
-    newest_data = Update_data();
+    newest_data = UpdateData();
     manager = new QNetworkAccessManager(this);
     reconnect_times = 0;
     timer = new QTimer(this);
@@ -48,11 +48,10 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-Update_data Update::now_version = Update_data("0.5.2",
-                                  "http://121.37.81.150:8200/easycapture/update/0.5.2.zip", "",
-                                  "1. 添加一些文档\n"
-                                  "2. 修复画笔绘制过多后卡顿的bug\n"
-                                  "3. 绘制长方形途中会显示");
+UpdateData Update::now_version = UpdateData("0.5.3",
+                                 "http://121.37.81.150:8200/easycapture/update/0.5.3.zip", "",
+                                 "1. 添加UIManager\n"
+                                 "2. 设置界面优化");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;
@@ -68,7 +67,7 @@ void Update::deserialized(QJsonObject *json) {
         (*json)[QString::number(newest_num-1)].toObject();
     newest_data.deserialized(&newest_version);
     for(int i=newest_num-1; i>=0; i--) { //将所有比当前版本新的版本都记录
-        Update_data data;
+        UpdateData data;
         QJsonObject version = (*json)[QString::number(i)].toObject();
         data.deserialized(&version);
         if(data == now_version) {

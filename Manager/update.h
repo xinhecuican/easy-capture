@@ -1,7 +1,7 @@
 #ifndef UPDATE_H
 #define UPDATE_H
 #include "Base/Serializable.h"
-#include "Data/update_data.h"
+#include "Data/UpdateData.h"
 #include "Data/update_dialog.h"
 #include<QNetworkReply>
 #include<QWidget>
@@ -25,7 +25,7 @@ public:
     void serialized(QJsonObject *json) override;
     void deserialized(QJsonObject *json) override;
     void onFinish();
-    static Update_data now_version;
+    static UpdateData now_version;
 signals:
     void updateStateChange(update_state_t);
 private slots:
@@ -33,13 +33,13 @@ private slots:
 private:
     update_state_t updateState;
     static Update* _instance;
-    Update_data newest_data;
+    UpdateData newest_data;
     QPointer<QNetworkReply> reply;
     QNetworkRequest request;
     void start_request(const QUrl& url);
     QNetworkAccessManager* manager;
     Update_dialog* dialog;
-    QList<Update_data> data_list;
+    QList<UpdateData> data_list;
     int reconnect_times;
     QTimer* timer;
     QTimer* timeoutTimer;

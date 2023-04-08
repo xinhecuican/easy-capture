@@ -45,6 +45,15 @@
         <file>folder.png</file>
         <file>videocam.png</file>
         <file>help.png</file>
+        <file>drop_down.png</file>
+        <file>drop_up.png</file>
+        <file>SpinBoxDown.png</file>
+        <file>SpinBoxDownDisabled.png</file>
+        <file>SpinBoxUp.png</file>
+        <file>SpinBoxUpDisabled.png</file>
+        <file>RadioButton.png</file>
+        <file>RadioButtonHover.png</file>
+        <file>RadioButtonPressed.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

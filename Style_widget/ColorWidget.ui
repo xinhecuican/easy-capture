@@ -44,7 +44,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 255, 0, 255);</string>
+      <string notr="true">background-color: rgba(56, 142, 60, 255);</string>
      </property>
      <property name="text">
       <string/>
@@ -94,7 +94,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(255, 255, 0, 255);</string>
+      <string notr="true">background-color: rgba(251, 192, 45, 255)</string>
      </property>
      <property name="text">
       <string/>
@@ -165,7 +165,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -237,7 +237,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -246,7 +246,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -311,7 +311,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -383,7 +383,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -392,7 +392,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -457,7 +457,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -529,7 +529,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -538,7 +538,7 @@
          <brush brushstyle="SolidPattern">
           <color alpha="255">
            <red>255</red>
-           <green>0</green>
+           <green>61</green>
            <blue>0</blue>
           </color>
          </brush>
@@ -592,7 +592,7 @@
       </palette>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(255, 0, 0, 255);</string>
+      <string notr="true">background-color: rgba(255, 61, 0, 255);</string>
      </property>
      <property name="text">
       <string/>
@@ -614,7 +614,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 0, 255, 1)</string>
+      <string notr="true">background-color: rgba(2, 136, 209, 255)</string>
      </property>
      <property name="text">
       <string/>
@@ -636,7 +636,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(0, 128, 0, 255)</string>
+      <string notr="true">background-color: rgba(123, 31, 162, 255);</string>
      </property>
      <property name="text">
       <string/>
@@ -683,7 +683,7 @@
       </size>
      </property>
      <property name="styleSheet">
-      <string notr="true">background-color: rgba(128, 0, 0, 255);</string>
+      <string notr="true">background-color: rgba(0, 121, 107, 255);</string>
      </property>
      <property name="text">
       <string/>

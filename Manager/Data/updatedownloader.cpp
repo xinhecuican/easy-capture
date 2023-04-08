@@ -6,7 +6,7 @@
 #include "JlCompress.h"
 
 
-UpdateDownloader::UpdateDownloader(QList<Update_data> data, QObject* parent) : QObject(parent)
+UpdateDownloader::UpdateDownloader(QList<UpdateData> data, QObject* parent) : QObject(parent)
 {
     this->data = data;
     updateSum = data.size() - 1;

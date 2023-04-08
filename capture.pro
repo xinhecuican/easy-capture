@@ -22,7 +22,7 @@ SOURCES += \
     Helper/math.cpp \
     Helper/mstring.cpp \
     MainFilter.cpp \
-    Manager/Data/update_data.cpp \
+	Manager/Data/UpdateData.cpp \
     Manager/Data/update_dialog.cpp \
     Manager/Data/updatedownloader.cpp \
     Manager/KeyManager.cpp \
@@ -110,7 +110,7 @@ HEADERS += \
     Helper/plist.h \
     MainFilter.h \
     Manager/Data/Reply_timeout.h \
-    Manager/Data/update_data.h \
+	Manager/Data/UpdateData.h \
     Manager/Data/update_dialog.h \
     Manager/Data/updatedownloader.h \
     Manager/IKeyListener.h \

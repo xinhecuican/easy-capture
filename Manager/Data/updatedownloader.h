@@ -1,7 +1,7 @@
 #ifndef UPDATEDOWNLOADER_H
 #define UPDATEDOWNLOADER_H
 #include <QObject>
-#include "update_data.h"
+#include "UpdateData.h"
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QTimer>
@@ -11,14 +11,14 @@ class UpdateDownloader : public QObject
 {
     Q_OBJECT
 public:
-    UpdateDownloader(QList<Update_data> data, QObject* parent=nullptr);
+    UpdateDownloader(QList<UpdateData> data, QObject* parent=nullptr);
     void start();
 signals:
     void success();
     void failure();
 private:
     void startInner(QUrl url);
-    QList<Update_data> data;
+    QList<UpdateData> data;
     QNetworkRequest request;
     QNetworkAccessManager manager;
     QPointer<QNetworkReply> reply;

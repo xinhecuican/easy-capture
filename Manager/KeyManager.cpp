@@ -81,6 +81,7 @@ void KeyManager::addFunc(QObject* receiver, QString window_name, QString obj_nam
 }
 
 void KeyManager::updateAll() {
+    allKey = QHash<QString, window>();
     for(int i=0; i<keySettings.size(); i++) {
         int first_index = keySettings[i].indexOf(':');
         int second_index = keySettings[i].indexOf(';');
