@@ -11,17 +11,19 @@
 #include "Paint/Widgets/Recorder_element/paint_record.h"
 #include "Paint/Data/Common.h"
 #include<QGraphicsItem>
+#include <QPainter>
 
-class Paint_layer : public QGraphicsObject {
+class  PaintLayer : public QGraphicsObject {
     Q_OBJECT
 public:
-    Paint_layer(QGraphicsItem* parent=nullptr);
-    ~Paint_layer();
+    PaintLayer(QGraphicsItem* parent=nullptr);
+    ~ PaintLayer();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void setEnableDraw(bool enable);
+    void setPix(const QPixmap& pix, QPoint pos);
     void reset();
     void setErase(bool enable);
     Q_INVOKABLE void undoRedoPaintFunc(bool is_undo, PaintItem* item);
@@ -29,6 +31,7 @@ public:
     int type() const override;
 private:
     void removeLines(QPointF point);
+    void updateLines();
     QList<PaintItem*> lines;
     PaintItem* current_item;
     QPainterPath path;
@@ -37,6 +40,9 @@ private:
     bool is_press;
     bool is_erase;
     int updateAnchor;
+    QPixmap pix;
+    QPainter* pixPainter;
+    bool _isPixSet;
 };
 
 #endif // PAINT_LAYER_H

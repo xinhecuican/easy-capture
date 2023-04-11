@@ -6,7 +6,7 @@
 #include<QNetworkReply>
 #include<QWidget>
 
-class Update : public QWidget, Serializable {
+class Update : public QWidget, public Serializable {
     Q_OBJECT
 public:
     enum update_state_t {IDLE, CHECKING, UPDATING};

@@ -6,7 +6,7 @@
 #include<QPainter>
 #include "Helper/plist.h"
 #include "Paint/Data/Ilayer.h"
-#include "paint_layer.h"
+#include "paintlayer.h"
 #include "Base/RecordElement.h"
 #include "Paint/Data/stretch_button.h"
 #include "Helper/plist.h"

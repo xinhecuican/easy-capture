@@ -1,7 +1,7 @@
 #include "paintdeleterecord.h"
 #include "Helper/Reflect.h"
 
-PaintDeleteRecord::PaintDeleteRecord(Paint_layer* layer, PaintItem* item, const char* func_name)
+PaintDeleteRecord::PaintDeleteRecord( PaintLayer* layer, PaintItem* item, const char* func_name)
 {
     item->hide();
     this->layer = layer;

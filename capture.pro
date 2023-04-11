@@ -40,7 +40,7 @@ SOURCES += \
     Paint/Widgets/Layers/LayerItems/scrollitem.cpp \
     Paint/Widgets/Layers/arrowlayer.cpp \
     Paint/Widgets/Layers/blurlayer.cpp \
-    Paint/Widgets/Layers/paint_layer.cpp \
+	Paint/Widgets/Layers/paintlayer.cpp \
     Paint/Widgets/Layers/picture_layer.cpp \
     Paint/Widgets/Layers/rect_layer.cpp \
     Paint/Widgets/Layers/shapelayer.cpp \
@@ -134,7 +134,7 @@ HEADERS += \
     Paint/Widgets/Layers/arrowlayer.h \
     Paint/Widgets/Layers/baselayer.h \
     Paint/Widgets/Layers/blurlayer.h \
-    Paint/Widgets/Layers/paint_layer.h \
+	Paint/Widgets/Layers/paintlayer.h \
     Paint/Widgets/Layers/picture_layer.h \
     Paint/Widgets/Layers/rect_layer.h \
     Paint/Widgets/Layers/shapelayer.h \

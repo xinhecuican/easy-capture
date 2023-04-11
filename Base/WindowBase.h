@@ -17,7 +17,11 @@ public:
      */
     virtual void afterInitialize(QString WindowName) {
         loadKeyEvent(WindowName);
-        setStyleSheet(UIManager::instance()->load(WindowName));
+        try {
+            setStyleSheet(UIManager::instance()->load(WindowName));
+        } catch(std::exception e) {
+            qCritical() << e.what();
+        }
     }
 
     /**

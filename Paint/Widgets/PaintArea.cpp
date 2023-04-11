@@ -100,7 +100,7 @@ PaintArea::PaintArea(QWidget* parent, bool enable_clip) : QGraphicsScene(parent)
         });
         addItem(clip_layer);
     }
-    paint_layer = new Paint_layer();
+    paint_layer = new  PaintLayer();
     paint_layer->setZValue(1);
     addItem(paint_layer);
     shape_layer = new ShapeLayer();
@@ -160,6 +160,7 @@ void PaintArea::setPic(QPixmap pic, QRect rect) {
     setSceneRect(0, 0, rect.width()*2, rect.height()*2);
     pic_layer->setPos(rect.width() / 2, rect.height() / 2);
     pic_layer->setPixmap(pic);
+    paint_layer->setPix(pic, QPoint(pic.width() / 2, pic.height() / 2));
     shape_layer->setPic(pic, QPoint(pic.width() / 2, pic.height() / 2));
     for(QColor color : History::instance()->get_color()) {
         pic_layer->setSaveDisableColor(-1, color);
@@ -170,6 +171,7 @@ void PaintArea::setPic(QPixmap pic, QRect rect) {
 void PaintArea::setClipPic(QPixmap pix) {
     clip_layer->setPic(pix);
     shape_layer->setPic(pix, QPoint(0, 0));
+    paint_layer->setPix(pix, QPoint(0, 0));
 }
 
 void PaintArea::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
@@ -213,7 +215,7 @@ void PaintArea::paintShape(SHAPE_TYPE type) {
 
 void PaintArea::setOtherLayer() {
     if(paint_layer == NULL && pic_layer != NULL) {
-        paint_layer = new Paint_layer(pic_layer);
+        paint_layer = new  PaintLayer(pic_layer);
     } else if(paint_layer != NULL && pic_layer != NULL) {
         paint_layer->setParentItem(pic_layer);
     }

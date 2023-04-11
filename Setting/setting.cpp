@@ -13,6 +13,7 @@
 #include<QSettings>
 #include<QDir>
 #include "Manager/update.h"
+#include "Helper/Serialize.h"
 
 Setting::Setting(QWidget *parent) :
     WindowBase(parent),
@@ -273,6 +274,9 @@ void Setting::aboutTab() {
     TabWidget* aboutTab = addTab("{ms01jwOir5}关于");
     aboutTab->addText("{YQQqFBaXjV}简截", "easyCapture");
     aboutTab->addText(MString::search("{SYdvb1dMci}版本") + ": " + Update::instance()->now_version.get_version(), "version");
+    if(Update::instance()->now_version.get_time() == "") {
+        Serialize::deserialize("Data/Temp/update_msg.json", Update::instance());
+    }
     aboutTab->addText(MString::search("{UjoYcLzhiX}更新时间") + ": " + Update::instance()->now_version.get_time(), "updateTime");
     aboutTab->addText(MString::search("{R3hH9RwEIO}作者") + ": " + "星河璀璨", "author");
 

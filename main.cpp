@@ -18,7 +18,7 @@
 #include "Paint/Widgets/Layers/rect_layer.h"
 #include "Paint/Widgets/Layers/text_layer.h"
 #include "Paint/Widgets/Layers/picture_layer.h"
-#include "Paint/Widgets/Layers/paint_layer.h"
+#include "Paint/Widgets/Layers/paintlayer.h"
 #include "Paint/Widgets/Layers/shapelayer.h"
 #include "Paint/Widgets/Layers/blurlayer.h"
 #include "Paint/Widgets/Layers/arrowlayer.h"
@@ -81,7 +81,7 @@ void registerClasses() {
     Reflect::registerClass<RectLayer>();
     Reflect::registerClass<Text_layer>();
     Reflect::registerClass<Picture_layer>();
-    Reflect::registerClass<Paint_layer>();
+    Reflect::registerClass< PaintLayer>();
     Reflect::registerClass<ShapeLayer>();
     Reflect::registerClass<BlurLayer>();
     Reflect::registerClass<ArrowLayer>();

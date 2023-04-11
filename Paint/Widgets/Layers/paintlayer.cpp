@@ -1,4 +1,4 @@
-#include "paint_layer.h"
+#include "paintlayer.h"
 #include<QDir>
 #include<QPainter>
 #include<QDebug>
@@ -9,27 +9,28 @@
 #include "Paint/Widgets/recorder.h"
 #include "Paint/Widgets/Recorder_element/paintdeleterecord.h"
 
-Paint_layer::Paint_layer(QGraphicsItem* parent) : QGraphicsObject(parent) {
+PaintLayer:: PaintLayer(QGraphicsItem* parent) : QGraphicsObject(parent) {
     this->parent = parent;
     is_enable = true;
     is_press = false;
     is_erase = false;
+    _isPixSet = false;
     setAcceptedMouseButtons(Qt::NoButton);
 }
 
-Paint_layer::~Paint_layer() {
+PaintLayer::~ PaintLayer() {
     reset();
 }
 
-void Paint_layer::reset() {
+void  PaintLayer::reset() {
     for(QGraphicsItem* line : lines) {
         delete line;
     }
     lines.clear();
+    updateLines();
 }
 
-void Paint_layer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    path = QPainterPath();
+void  PaintLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     updateAnchor = 0;
     if(event->button() == Qt::LeftButton) {
         is_press = true;
@@ -46,7 +47,7 @@ void Paint_layer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     }
 }
 
-void Paint_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+void  PaintLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     if(is_enable && is_press) {
         current_item->addPoint(mapFromScene(event->scenePos()), true);
     }
@@ -55,42 +56,37 @@ void Paint_layer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     }
 }
 
-void Paint_layer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+void  PaintLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     if(is_enable && is_press) {
+        current_item->setEnd();
         current_item->addPoint(mapFromScene(event->scenePos()), true);
+        current_item->paintLine(pixPainter);
         lines.append(current_item);
-        path = QPainterPath();
         PaintRecord* record = new PaintRecord(current_item);
         Recorder::instance()->record(record);
+        update();
     }
     is_press = false;
 }
 
-void Paint_layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-//    painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
-//    PaintData* paint_data = Style_manager::instance()->get();
-//    QPen pen;
-//    pen.setColor(paint_data->color);
-//    pen.setWidth(paint_data->width);
-//    pen.setCapStyle(paint_data->cap_style);
-//    pen.setJoinStyle(paint_data->join_style);
-//    painter->setPen(pen);
-//    painter->drawPath(path);
+void  PaintLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    if(_isPixSet)
+        painter->drawPixmap(0, 0, pix);
 }
 
-void Paint_layer::setEnableDraw(bool enable) {
+void  PaintLayer::setEnableDraw(bool enable) {
     this->is_enable = enable;
 }
 
-QRectF Paint_layer::boundingRect() const {
+QRectF  PaintLayer::boundingRect() const {
     return path.boundingRect();
 }
 
-void Paint_layer::setErase(bool enable) {
+void  PaintLayer::setErase(bool enable) {
     is_erase = enable;
 }
 
-void Paint_layer::removeLines(QPointF point) {
+void  PaintLayer::removeLines(QPointF point) {
     QRectF rect(point - QPointF(3, 3), point + QPointF(3, 3));
     QList<PaintItem*> items;
     for(PaintItem* item : lines) {
@@ -103,10 +99,11 @@ void Paint_layer::removeLines(QPointF point) {
         Recorder::instance()->record(record);
         lines.removeOne(item);
     }
+    updateLines();
     update();
 }
 
-void Paint_layer::undoRedoPaintFunc(bool is_undo, PaintItem *item) {
+void  PaintLayer::undoRedoPaintFunc(bool is_undo, PaintItem *item) {
     if(is_undo) {
         item->show();
         lines.append(item);
@@ -114,8 +111,25 @@ void Paint_layer::undoRedoPaintFunc(bool is_undo, PaintItem *item) {
         item->hide();
         lines.removeOne(item);
     }
+    updateLines();
 }
 
-int Paint_layer::type() const {
+int  PaintLayer::type() const {
     return 65539;
+}
+
+void PaintLayer::setPix(const QPixmap &pix, QPoint pos) {
+    _isPixSet = true;
+    this->pix = QPixmap(pix.width(), pix.height());
+    this->pix.fill(Qt::transparent);
+    setPos(pos);
+    pixPainter = new QPainter(&this->pix);
+    pixPainter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
+}
+
+void PaintLayer::updateLines() {
+    pix.fill(Qt::transparent);
+    for(int i=0; i<lines.size(); i++) {
+        lines.at(i)->paintLine(pixPainter);
+    }
 }

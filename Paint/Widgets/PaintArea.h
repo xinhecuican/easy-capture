@@ -4,7 +4,7 @@
 #include "Paint/Widgets/Layers/picture_layer.h"
 #include<QBoxLayout>
 #include<QVector>
-#include "Paint/Widgets/Layers/paint_layer.h"
+#include "Paint/Widgets/Layers/paintlayer.h"
 #include "Paint/Data/Ilayer.h"
 #include "Paint/Data/Common.h"
 #include<QScrollArea>
@@ -50,7 +50,7 @@ private:
     SHAPE_TYPE shape_type;
     PAINT_STATE state;
     QPointF begin_point;
-    Paint_layer* paint_layer;
+     PaintLayer* paint_layer;
     Picture_layer* pic_layer;
     ShapeLayer* shape_layer;
     ClipLayer* clip_layer;

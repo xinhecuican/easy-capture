@@ -48,10 +48,13 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-UpdateData Update::now_version = UpdateData("0.5.3",
-                                 "http://121.37.81.150:8200/easycapture/update/0.5.3.zip", "",
-                                 "1. 添加UIManager\n"
-                                 "2. 设置界面优化");
+UpdateData Update::now_version = UpdateData("0.5.4",
+                                 "http://121.37.81.150:8200/easycapture/update/0.5.4.zip", "",
+                                 "1. 优化画笔\n"
+                                 "2. UIManager可以解析颜色\n"
+                                 "3. 修复所有箭头颜色同步改变的bug\n"
+                                 "4. 马赛克不会影响边界外\n"
+                                 "5. 添加beta版本");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;

@@ -44,17 +44,12 @@ ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsIte
     widgetParent = NULL;
     toolbar = NULL;
     attribute_toolbar = NULL;
-    // toolbar初始化耗时较长，使用回调避免首次启动阻塞
-//    QTimer::singleShot(0, this, [=](){
     setToolBar();
     setAttributeToolbar();
     if(widgetParent != NULL) {
         toolbar->setParent(widgetParent);
         attribute_toolbar->setParent(widgetParent);
     }
-//    });
-//    setToolBar();
-//    setAttributeToolbar();
 }
 
 ClipLayer::~ClipLayer() {
@@ -185,6 +180,7 @@ void ClipLayer::reset() {
         toolbar->hide();
     if(attribute_toolbar != NULL)
         attribute_toolbar->hide();
+    update();
 }
 
 void ClipLayer::sendRequestImage() {
