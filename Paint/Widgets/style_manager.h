@@ -4,8 +4,7 @@
 #include "Paint/Data/paint_data.h"
 #include<QVector>
 
-class Style_manager
-{
+class Style_manager {
 public:
     Style_manager();
     static Style_manager* instance();
@@ -19,8 +18,6 @@ public:
     void change_back_color(QColor color);
     PaintData* get();
     PaintData get_now();
-    static PaintData default_pencil;
-    static PaintData default_highlighter;
 private:
     static Style_manager* _instance;
     PList<PaintData*> data;

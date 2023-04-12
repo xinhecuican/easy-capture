@@ -1,79 +1,64 @@
 #include "style_manager.h"
+#include "Manager/uimanager.h"
 
-Style_manager::Style_manager()
-{
+Style_manager* Style_manager::_instance = NULL;
+
+Style_manager::Style_manager() {
     data = PList<PaintData*>();
-    now_data = Style_manager::default_pencil;
+    now_data = UIManager::instance()->getPencilData();
     PaintData* temp_data = new PaintData();
     now_data.copy_to(temp_data);
     data.append(temp_data);
     is_change = false;
 }
 
-Style_manager::~Style_manager()
-{
+Style_manager::~Style_manager() {
     data.clear_all();
     _instance = NULL;
 }
 
-Style_manager* Style_manager::_instance = NULL;
-
-PaintData Style_manager::default_pencil = PaintData(QColor(150, 50, 50), 3);
-PaintData Style_manager::default_highlighter = PaintData(
-            QColor(255, 255, 0, 100), 12, QColor(255, 255, 255), Qt::RoundCap, Qt::RoundJoin);
-
-
-Style_manager* Style_manager::instance()
-{
-    if(_instance == NULL)
-    {
+Style_manager* Style_manager::instance() {
+    if(_instance == NULL) {
         _instance = new Style_manager();
     }
     return _instance;
 }
 
-void Style_manager::reset()
-{
+void Style_manager::reset() {
     data.clear_all();
-    now_data = default_pencil;
+    now_data = UIManager::instance()->getPencilData();
     PaintData* temp_data = new PaintData();
     now_data.copy_to(temp_data);
     data.append(temp_data);
     is_change = false;
 }
 
-void Style_manager::change_color(QColor color)
-{
+void Style_manager::change_color(QColor color) {
     now_data.color = color;
     is_change = true;
 }
 
-void Style_manager::change_back_color(QColor color)
-{
+void Style_manager::change_back_color(QColor color) {
     now_data.back_color = color;
     is_change = true;
 }
 
-void Style_manager::change_width(double width)
-{
+void Style_manager::change_width(double width) {
     now_data.width = width;
     is_change = true;
 }
 
-void Style_manager::change_cap_style(Qt::PenCapStyle style)
-{
+void Style_manager::change_cap_style(Qt::PenCapStyle style) {
     now_data.cap_style = style;
     is_change = true;
 }
 
-void Style_manager::change_join_style(Qt::PenJoinStyle style)
-{
+void Style_manager::change_join_style(Qt::PenJoinStyle style) {
     now_data.join_style = style;
     is_change = true;
 }
 
-void Style_manager::change_pen(PaintData data)
-{
+void Style_manager::change_pen(PaintData data) {
     if(now_data.color != data.color)
         change_color(data.color);
     if(now_data.width != data.width)
@@ -84,14 +69,10 @@ void Style_manager::change_pen(PaintData data)
         change_join_style(data.join_style);
 }
 
-PaintData* Style_manager::get()
-{
-    if(!is_change)
-    {
+PaintData* Style_manager::get() {
+    if(!is_change) {
         return data.last();
-    }
-    else
-    {
+    } else {
         PaintData* temp_data = new PaintData();
         now_data.copy_to(temp_data);
         data.push_back(temp_data);
@@ -100,10 +81,8 @@ PaintData* Style_manager::get()
     }
 }
 
-PaintData Style_manager::get_now()
-{
-    if(is_change)
-    {
+PaintData Style_manager::get_now() {
+    if(is_change) {
         PaintData* temp_data = new PaintData();
         now_data.copy_to(temp_data);
         data.push_back(temp_data);

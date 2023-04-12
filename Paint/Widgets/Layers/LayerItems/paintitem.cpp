@@ -41,7 +41,7 @@ QPainterPath PaintItem::shape() const {
     return shape;
 }
 
-void PaintItem::addPoint(QPointF point, bool needUpdate) {
+void PaintItem::addPoint(QPointF point, bool updateGlobal) {
     QPointF lastPoint = info.path.last();
     info.path.append(point);
     this->path.lineTo(point);
@@ -57,7 +57,9 @@ void PaintItem::addPoint(QPointF point, bool needUpdate) {
     if(boundRect.bottom() < point.y()) {
         boundRect.setBottom(point.y());
     }
-    if(needUpdate)
+    if(updateGlobal)
+        update();
+    else
         update(Math::resizeRect(Math::buildRect(lastPoint, point), info.style_info->width+1, info.style_info->width+1));
 }
 

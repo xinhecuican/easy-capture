@@ -14,13 +14,13 @@ ArrowLayer::ArrowLayer(QGraphicsItem* parent, QPointF begin_point, QPointF end_p
     setAcceptHoverEvents(true);
     connect(begin_button, static_cast<void (ExpandButton::*)(direction, qreal, qreal)>(&ExpandButton::posChange), this, &ArrowLayer::posChangeFunc);
     connect(end_button, static_cast<void (ExpandButton::*)(direction, qreal, qreal)>(&ExpandButton::posChange), this, &ArrowLayer::posChangeFunc);
+    data = Style_manager::instance()->get_now();
 }
 
 void ArrowLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     painter->setRenderHint(QPainter::Antialiasing, true);                   //设置反走样，防锯齿
-    PaintData current = Style_manager::instance()->get_now();
-    QPen pen(current.color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    QBrush brush(current.color, Qt::SolidPattern);
+    QPen pen(data.color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    QBrush brush(data.color, Qt::SolidPattern);
     painter->setPen(pen);
     painter->setBrush(brush);
     QLineF line(begin_point, end_point);

@@ -1,7 +1,8 @@
 #include "UpdateData.h"
 
 UpdateData::UpdateData() {
-
+    this->version = "0.0.1";
+    this->_isBeta = false;
 }
 
 UpdateData::UpdateData(QString version, QString url, QString time, QString description, bool isBeta) {

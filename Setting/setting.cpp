@@ -14,6 +14,7 @@
 #include<QDir>
 #include "Manager/update.h"
 #include "Helper/Serialize.h"
+#include "Manager/uimanager.h"
 
 Setting::Setting(QWidget *parent) :
     WindowBase(parent),
@@ -83,9 +84,11 @@ Setting::~Setting() {
 
 void Setting::postUpdate(Config::setting type, QVariant data) {
     switch(type) {
-    case Config::CHINESE:
-    case Config::ENGLISH:
+    case Config::language:
         MString::load_from_file("Data/Languages/");
+        break;
+    case Config::ui_theme_name:
+        delete UIManager::instance();
         break;
     }
 }
@@ -112,9 +115,9 @@ void Setting::addBoolOption(QString tabName, QString tab_name, QString name, int
 
 }
 
-void Setting::addComboOption(QString tabName, QString tab_name, QString text, QVector<QString> name, int index, const std::function<void (int)> &f) {
+void Setting::addComboOption(QString tabName, QString tab_name, QString text, QVector<QString> name, int index, const std::function<void (int)> &f, bool isString) {
     TabWidget* panel = getTab(tabName);
-    panel->add_combo_option(tab_name, text, name, index, f);
+    panel->add_combo_option(tab_name, text, name, index, f, isString);
 }
 
 void Setting::addKeyOption(QString tabName, int index, QString indexName, QString windowName, QString keyName, std::function<void (QString, QString, QList<int>)> const &f) {
@@ -184,6 +187,18 @@ void Setting::normal_settings() {
         ready_setting.append(data(Config::language, index));
         normal_setting->set_dirty(true);
     });
+    QVector<QString> themeName = QVector<QString>();
+    QDir dir("Data/UI");
+    if(dir.exists()) {
+        QFileInfoList fileList = dir.entryInfoList(QDir::Dirs|QDir::NoDotAndDotDot);
+        for(int i=0; i<fileList.size(); i++) {
+            themeName.append(fileList.at(i).fileName());
+        }
+    }
+    addComboOption("{6m2deulC6q}通用", "theme_name", "{7BQgNdUtCI}主题", themeName, Config::ui_theme_name, [=](int index) {
+        ready_setting.append(data(Config::ui_theme_name, themeName[index]));
+        normal_setting->set_dirty(true);
+    }, true);
     addNumOption("{6m2deulC6q}通用", "history_num", Config::history_num, "{VwuLzPpyI3}历史记录数量", 0, 500,[=](int index) {
         ready_setting.append(data(Config::history_num, index));
         normal_setting->set_dirty(true);
@@ -213,6 +228,10 @@ void Setting::normal_settings() {
     });
     addBoolOption("{6m2deulC6q}通用", "clip_voice", "{sqFHDuafTm}启用截屏声音", Config::clip_voice, [=](bool ans) {
         ready_setting.append(data(Config::clip_voice, ans));
+        normal_setting->set_dirty(true);
+    });
+    addBoolOption("{6m2deulC6q}通用", "receive_beta", "{PFu2ZARZg9}是否接受beta版本", Config::receive_beta, [=](bool ans) {
+        ready_setting.append(data(Config::receive_beta, ans));
         normal_setting->set_dirty(true);
     });
 }

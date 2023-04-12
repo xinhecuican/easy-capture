@@ -16,8 +16,9 @@
 	"test_setting": 0,
 	"total_capture_save_path": "Data/ScreenShot/",
 	"middle_button_type": 1,
-	"version": "0.5.4",
+	"version": "0.6.0",
 	"clip_voice": true,
 	"show_update_box": false,
-	"ui_theme_name": "default"
+	"ui_theme_name": "default",
+	"receive_beta": false
 }

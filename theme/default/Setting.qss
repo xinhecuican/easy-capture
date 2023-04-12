@@ -1,0 +1,181 @@
+*{
+	font-size: 15px;
+	font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+/* 悬浮在列表项时的状态 */
+.ListWrapper:hover{
+	background-color: #CDCDCD;
+	border-radius: 10px;
+}
+
+TabWidget{
+    border: none;
+}
+
+/* 背景颜色 */
+TabWidget QWidget#base{
+	background-color:rgb(255, 255, 255);
+}
+
+Setting{
+	background-color: rgb(255, 255, 255);
+}
+
+KeyOption{
+	max-width: 300px;
+}
+
+Spacer{
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+Spacer QLabel{
+	font-size: 25px;
+	font-weight: bolder;
+	font-family: Roman, '华文仿宋';
+}
+
+Spacer QFrame#line{
+	border: 2px solid #298DFF;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+QLabel#easyCapture{
+	font-size: 25px;
+	font-weight: bolder;
+	font-family: Roman, '华文仿宋';
+}
+
+QTabBar::tab {
+    min-width: 90px;
+    min-height: 28px;
+	font: 18px;
+	font-weight: bold;
+}
+
+QScrollBar:vertical {
+    width: 8px;
+    background: #F2F2F2;
+    padding-bottom: 8px;
+}
+
+QScrollBar:horizontal {
+    height: 8px;
+    background: #F2F2F2;
+}
+
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+    background: #CDCDCD;
+}
+
+QScrollBar::handle:vertical:hover,
+QScrollBar::handle:horizontal:hover {
+    background: #B4B4B4;
+}
+
+QScrollBar::sub-line:vertical, QScrollBar::add-line:vertical,
+QScrollBar::sub-line:horizontal, QScrollBar::add-line:horizontal {
+    width: 0;
+    height: 0;
+}
+
+
+/* 未下拉时，QComboBox的样式 */
+QComboBox {
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    background: transparent; 
+    border: 1px solid #B4B4B4; 
+	color: #B4B4B4;
+	background-color: #FFFFFF;
+}
+/* 点击QComboBox后的已选中项的样式 */
+QComboBox:on {
+    color: #298DFF;
+    background-color:#F2F2F2;
+}
+
+/* 下拉展开后，整个下拉窗体样式 */
+QComboBox QAbstractItemView {
+    background-color: #FFFFFF; /* 整个下拉窗体的背景色 */
+    selection-color: #298DFF;/*下拉框选中项字体颜色*/
+    selection-background-color:#F2F2F2;/* 下拉框选中项的背景色 */
+	outline: 1px solid #298DFF;
+	outline-radius: 3px;
+}
+
+
+/* 下拉框箭头样式 */
+QComboBox::drop-down {
+    subcontrol-origin: padding;/* 子控件在父元素中的原点矩形。如果未指定此属性，则默认为padding。 */
+    subcontrol-position: top right;/* 下拉框的位置（右上） */
+    width: 15px;/* 下拉框的宽度 */
+    border-left-width: 1px;/* 下拉框的左边界线宽度 */
+    border-left-color: darkgray;/* 下拉框的左边界线颜色 */
+    border-left-style: solid; /* 下拉框的左边界线为实线 */
+    border-top-right-radius: 3px;/* 下拉框的右上边界线的圆角半径（应和整个QComboBox右上边界线的圆角半径一致） */
+    border-bottom-right-radius: 3px; /* 同上 */
+    background: #33333310;
+}
+
+/* 悬浮在下拉箭头时样式 */
+QComboBox::drop-down:hover {
+    background: #3cfff52a;
+}
+
+/* 下拉箭头样式 */
+QComboBox::down-arrow {
+    width: 15px;/* 下拉箭头的宽度（建议与下拉框drop-down的宽度一致） */
+    background: transparent;/* 下拉箭头的的背景色 */
+    padding: 0px 0px 0px 0px;/* 上内边距、右内边距、下内边距、左内边距 */
+    image: url(:/image/show.png);
+}
+
+/* 点击下拉箭头样式 */
+QComboBox::down-arrow:on {
+    image: url(:/image/hide.png);/* 显示上拉箭头 */
+}
+
+
+
+
+QLineEdit {
+	border: 1px solid #A0A0A0; /* 边框宽度为1px，颜色为#A0A0A0 */
+	border-radius: 3px; /* 边框圆角 */
+	padding-left: 5px; /* 文本距离左边界有5px */
+	background-color: #FFFFFF; /* 背景颜色 */
+	color: #A0A0A0; /* 文本颜色 */
+	selection-background-color: #A0A0A0; /* 选中文本的背景颜色 */
+	selection-color: #F2F2F2; /* 选中文本的颜色 */
+	font-family: "Microsoft YaHei"; /* 文本字体族 */
+	font-size: 10pt; /* 文本字体大小 */
+}
+
+QLineEdit:hover { /* 鼠标悬浮在QLineEdit时的状态 */
+	border: 1px solid #298DFF;
+	border-radius: 3px;
+	background-color: #F2F2F2;
+	color: #298DFF;
+	selection-background-color: #298DFF;
+	selection-color: #F2F2F2;
+}
+
+QLineEdit[echoMode="2"] { /* QLineEdit有输入掩码时的状态 */
+	lineedit-password-character: 9679;
+	lineedit-password-mask-delay: 2000;
+}
+
+QLineEdit:disabled { /* QLineEdit在禁用时的状态 */
+	border: 1px solid #CDCDCD;
+	background-color: #CDCDCD;
+	color: #B4B4B4;
+}
+
+QLineEdit:read-only { /* QLineEdit在只读时的状态 */
+	background-color: #CDCDCD;
+	color: #F2F2F2;
+}

@@ -1,0 +1,33 @@
+{
+	"default_pencil": {
+		"color": "rgb(150, 50, 50)",
+		"width": 3
+	},
+	"default_highlighter":{
+		"color": "rgba(255, 255, 0, 100)",
+		"width": 25,
+		"background_color": "rgba(255, 255, 255)",
+		"cap_style": 32,
+		"join_style": 128
+	},
+	"default_rect":{
+		"color": "#EA4300",
+		"width": 3
+	},
+	"default_arrow": {
+		"color": "#FF8C00",
+		"width": 2
+	},
+	"default_text": {
+		"color": "rgb(255, 0, 0)",
+		"font": "宋体",
+		"font_size": 15
+	},
+	"default_border": {
+		"color": "#0078D7",
+		"width": 2
+	},
+	"capture_background": {
+		"color": "rgba(0, 0, 0, 100)"
+	}
+}

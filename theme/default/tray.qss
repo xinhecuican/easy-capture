@@ -1,0 +1,36 @@
+/* 托盘菜单项的样式 */
+
+QMenu {
+	border-radius: 10px;
+}
+
+QMenu::item {
+    background-color: transparent;
+	padding: 5px 15px;
+	border-radius: 5px;
+	min-width: 60px;
+	margin: 3px;
+}
+
+QMenu::item:selected {
+	background-color: rgba(0, 0, 0, 10);
+}
+
+QMenu::item:pressed {
+	background-color: rgba(0, 0, 0, 7);
+}
+
+QMenu::right-arrow {
+	image: url(":/image/TreeViewClose.png");
+	min-width: 40px;
+	min-height: 18px;
+}
+
+QMenuBar:disabled {
+	color: rgba(0, 0, 0, 150);
+}
+
+QMenu::item:disabled {
+	color: rgba(0, 0, 0, 150);
+	background-color: transparent;
+}

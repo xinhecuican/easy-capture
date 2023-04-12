@@ -1,0 +1,10 @@
+{
+	"verion": 1,
+	"int": [
+		"int.json"
+	],
+	"color": [
+		"color.json"
+	],
+	"global": "global.json"
+}

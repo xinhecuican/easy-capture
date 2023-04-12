@@ -5,8 +5,7 @@
 #include "Paint/Widgets/Layers/LayerItems/expandbutton.h"
 #include<QtMath>
 
-class ArrowLayer : public QGraphicsObject, public BaseLayer
-{
+class ArrowLayer : public QGraphicsObject, public BaseLayer {
     Q_OBJECT
 public:
     ArrowLayer(QGraphicsItem* parent, QPointF begin_point, QPointF end_point);
@@ -40,6 +39,7 @@ private:
     QCursor out_cursor;
     bool is_focus;
     bool enable_move;
+    PaintData data;
     const float ExtRefArrowLenght = 10;//箭头末端大小的长度，
     const float ExtRefArrowDegrees = M_PI / 6;//箭头末端顶角的一半
 };

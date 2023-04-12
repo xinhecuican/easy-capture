@@ -359,11 +359,11 @@ void PaintWindow::set_toolbar() {
         action->setChecked(true);
         switch(index) {
         case 0:
-            Style_manager::instance()->change_pen(Style_manager::default_pencil);
+            Style_manager::instance()->change_pen(UIManager::instance()->getPencilData());
             pen_cursor = QCursor(QPixmap(":/image/pencil.png"), 0, 24);
             break;
         case 1:
-            Style_manager::instance()->change_pen(Style_manager::default_highlighter);
+            Style_manager::instance()->change_pen(UIManager::instance()->getHighlighterData());
             pen_cursor = QCursor(QPixmap(":/image/highlighter_cursor.png"), 0, 24);
             break;
         }

@@ -37,10 +37,10 @@ ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsIte
         calBarPos();
     });
     this->widget_parent = widget_parent;
-    rect_setting = Style_manager::default_pencil;
-    arrowSetting = Style_manager::default_pencil;
-    pencil_setting = Style_manager::default_pencil;
-    highlighter_setting = Style_manager::default_highlighter;
+    rect_setting = UIManager::instance()->getRectData();
+    arrowSetting = UIManager::instance()->getArrowData();
+    pencil_setting = UIManager::instance()->getPencilData();
+    highlighter_setting = UIManager::instance()->getHighlighterData();
     widgetParent = NULL;
     toolbar = NULL;
     attribute_toolbar = NULL;
@@ -440,7 +440,7 @@ void ClipLayer::updateAttributeToolbar(int id) {
         color_widget->setCurrentStyle(highlighter_setting.color);
         Style_manager::instance()->change_color(highlighter_setting.color);
         Style_manager::instance()->change_width(highlighter_setting.width);
-        width_button->setValue(highlighter_button->width());
+        width_button->setValue(highlighter_setting.width);
         attribute_toolbar->add(width_button);
         attribute_toolbar->add(color_widget);
         break;

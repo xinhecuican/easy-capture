@@ -7,11 +7,12 @@ ComboOption::ComboOption() {
 }
 
 ComboOption::ComboOption(QString tab_name, QVector<QString> name, int index,
-                         std::function<void (int)> const &f, QWidget* parent)
+                         std::function<void (int)> const &f, QWidget* parent, bool isString)
     :QComboBox(parent) {
     this->tab_name = tab_name;
     this->index = index;
-
+    _isString = isString;
+    names = name;
     setEditable(false);
     for(int i=0; i<name.size(); i++) {
         addItem(name[i]);
@@ -33,5 +34,15 @@ int ComboOption::getDefaultIndex() {
 }
 
 void ComboOption::reset() {
-    setCurrentIndex(Config::getConfig<int>(index));
+    if(_isString) {
+        QString value = Config::getConfig<QString>(index);
+        for(int i=0; i<names.size(); i++) {
+            if(value == names[i]) {
+                setCurrentIndex(i);
+                break;
+            }
+        }
+    } else {
+        setCurrentIndex(Config::getConfig<int>(index));
+    }
 }

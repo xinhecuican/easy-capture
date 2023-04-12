@@ -54,6 +54,7 @@
         <file>RadioButton.png</file>
         <file>RadioButtonHover.png</file>
         <file>RadioButtonPressed.png</file>
+        <file>TreeViewClose.png</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

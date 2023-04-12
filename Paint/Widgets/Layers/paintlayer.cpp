@@ -49,7 +49,7 @@ void  PaintLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
 void  PaintLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     if(is_enable && is_press) {
-        current_item->addPoint(mapFromScene(event->scenePos()), true);
+        current_item->addPoint(mapFromScene(event->scenePos()));
     }
     if(is_erase && is_press) {
         removeLines(mapFromScene(event->scenePos()));

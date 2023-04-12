@@ -5,13 +5,14 @@
 #include<QColor>
 #include<QComboBox>
 #include<QPushButton>
+#include "Paint/Data/fontdata.h"
 
-class Flow_edit_panel : public QToolBar
-{
+/**
+ * @brief 绘制文字的工具栏
+ */
+class Flow_edit_panel : public QToolBar {
     Q_OBJECT
 public:
-    static QFont default_font;
-    static QColor default_color;
     static Flow_edit_panel* instance();
     ~Flow_edit_panel();
     QFont get_font();
@@ -30,10 +31,9 @@ private:
     QToolButton* bold_button;
     QToolButton* italic_button;
     QToolButton* underline_button;
-    QColor color;
-    QFont font;
     QComboBox* width_button;
     QList<QString> get_font_text();
+    FontData fontData;
 };
 
 #endif // FLOW_EDIT_PANEL_H

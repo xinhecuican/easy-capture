@@ -6,8 +6,7 @@
 #include "clipregion.h"
 #include <QPixmap>
 
-class MaskLayer : public QGraphicsObject, public BaseLayer
-{
+class MaskLayer : public QGraphicsObject, public BaseLayer {
     Q_OBJECT
 public:
     MaskLayer(QGraphicsItem* parent);
@@ -42,6 +41,8 @@ private:
     bool is_enable;
     QPixmap mask_pix;
     QPainterPath free_capture_path;
+    PaintData borderData;
+    QColor backgroundColor;
 };
 
 #endif // MASKLAYER_H

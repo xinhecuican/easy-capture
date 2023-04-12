@@ -8,6 +8,7 @@
 #include "Helper/math.h"
 #include "Helper/plist.h"
 #include "Manager/config.h"
+#include "Manager/uimanager.h"
 
 MaskLayer::MaskLayer(QGraphicsItem* parent) : QGraphicsObject(parent) {
     is_drag = false;
@@ -15,6 +16,8 @@ MaskLayer::MaskLayer(QGraphicsItem* parent) : QGraphicsObject(parent) {
     begin_clip = false;
     is_enable = true;
     screen_rect = QGuiApplication::primaryScreen()->geometry();
+    borderData = UIManager::instance()->getBorderData();
+    backgroundColor = UIManager::instance()->getCaptureBackground();
 }
 
 void MaskLayer::reset() {
@@ -63,8 +66,8 @@ void MaskLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void MaskLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if(!is_save) {
         QPen pen;
-        pen.setColor(QColor(123, 123, 233));
-        pen.setWidth(2);
+        pen.setColor(borderData.color);
+        pen.setWidth(borderData.width);
         painter->setPen(pen);
 
         QPainterPath origin;
@@ -94,7 +97,7 @@ void MaskLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         path = path.simplified();
         painter->drawPath(path);
         origin = origin.subtracted(path);
-        painter->fillPath(origin, QColor(0, 0, 0, 0x40));
+        painter->fillPath(origin, backgroundColor);
     }
 }
 

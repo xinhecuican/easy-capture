@@ -23,6 +23,8 @@ SOURCES += \
     Helper/mstring.cpp \
     MainFilter.cpp \
 	Manager/Data/UpdateData.cpp \
+	Manager/Data/uiglobalparser.cpp \
+	Manager/Data/uiparser.cpp \
     Manager/Data/update_dialog.cpp \
     Manager/Data/updatedownloader.cpp \
     Manager/KeyManager.cpp \
@@ -30,6 +32,7 @@ SOURCES += \
     Manager/config.cpp \
     Manager/uimanager.cpp \
     Manager/update.cpp \
+	Paint/Data/fontdata.cpp \
     Paint/Data/scroll_button.cpp \
     Paint/Data/stretch_button.cpp \
     Paint/PaintWindow.cpp \
@@ -111,6 +114,8 @@ HEADERS += \
     MainFilter.h \
     Manager/Data/Reply_timeout.h \
 	Manager/Data/UpdateData.h \
+	Manager/Data/uiglobalparser.h \
+	Manager/Data/uiparser.h \
     Manager/Data/update_dialog.h \
     Manager/Data/updatedownloader.h \
     Manager/IKeyListener.h \
@@ -122,6 +127,7 @@ HEADERS += \
     Paint/Data/Common.h \
     Paint/Data/History_data.h \
     Paint/Data/Ilayer.h \
+	Paint/Data/fontdata.h \
 	Paint/Data/paint_data.h \
     Paint/Data/scroll_button.h \
     Paint/Data/stretch_button.h \

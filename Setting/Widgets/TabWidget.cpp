@@ -62,8 +62,8 @@ void TabWidget::add_bool_option(QString tab_name, QString name, int index, std::
     update();
 }
 
-void TabWidget::add_combo_option(QString tab_name, QString text, QVector<QString> name, int index, const std::function<void (int)> &f) {
-    ComboOption* temp = new ComboOption(tab_name, name, index, f,  base);
+void TabWidget::add_combo_option(QString tab_name, QString text, QVector<QString> name, int index, const std::function<void (int)> &f, bool isString) {
+    ComboOption* temp = new ComboOption(tab_name, name, index, f,  base, isString);
     widgets.push_back(temp);
     QHBoxLayout* hlayout = new QHBoxLayout();
     QLabel* label = new QLabel(base);

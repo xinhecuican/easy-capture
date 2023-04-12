@@ -12,8 +12,7 @@
 #include "baselayer.h"
 #include "rect_layer.h"
 
-class Text_layer : public QGraphicsTextItem, public BaseLayer
-{
+class Text_layer : public QGraphicsTextItem, public BaseLayer {
     Q_OBJECT
 public:
     Text_layer(QRectF rect, QGraphicsItem* parent=nullptr);

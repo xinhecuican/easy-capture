@@ -213,7 +213,7 @@ void CaptureWindow::loadKeyEvent(QString name) {
     KeyManager::addFunc(this, name, "capture_erase", [=](QObject* receiver, bool is_enter) {
         CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            current->area->clipButtonEnter(7);
+            current->area->clipButtonEnter(6);
     });
     KeyManager::addFunc(this, name, "capture_undo", [=](QObject* receiver, bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))

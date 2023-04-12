@@ -16,7 +16,7 @@ public:
     PaintItem() {}
     PaintItem(PaintInfo info, QGraphicsItem* parent=nullptr);
     QRectF boundingRect() const override;
-    void addPoint(QPointF point, bool needUpdate=false);
+    void addPoint(QPointF point, bool updateGlobal=false);
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget=nullptr)override;
     void paintLine(QPainter* painter);

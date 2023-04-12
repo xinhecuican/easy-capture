@@ -29,7 +29,8 @@ public:
               version,
               clip_voice,
               show_update_box,
-              ui_theme_name
+              ui_theme_name,
+              receive_beta
              );
 
     /**

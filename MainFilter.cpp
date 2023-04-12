@@ -14,6 +14,7 @@
 #include "Manager/update.h"
 #include "JlCompress.h"
 #include "Manager/update.h"
+#include "Manager/uimanager.h"
 
 MainFilter* MainFilter::_instance = NULL;
 
@@ -38,6 +39,7 @@ MainFilter::MainFilter() {
             QDateTime::currentSecsSinceEpoch()/60) {
         Update::instance()->checkUpdate();
     }
+    setStyleSheet(UIManager::instance()->load("tray"));
     checkCrash();
 }
 

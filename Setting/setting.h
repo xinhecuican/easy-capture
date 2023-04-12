@@ -26,7 +26,7 @@ public:
     TabWidget* getTab(QString name);
     void addBoolOption(QString tabName, QString optionName, QString name, int index, std::function<void (bool)> const  &f);
     void addComboOption(QString tabName, QString optionName, QString text, QVector<QString> name,
-                        int index, std::function<void (int)> const &f);
+                        int index, std::function<void (int)> const &f, bool isString=false);
     void addKeyOption(QString tabName, int index, QString optionName, QString windowName, QString keyName, std::function<void (QString, QString, QList<int>)> const &f);
     void addGlobalKeyOption(QString tabName, int index, QString optionName, QString keyName, std::function<void (QString, int, int)> const &f);
     void addNumOption(QString tabName, QString optionName, int index, QString name, int min, int max,

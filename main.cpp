@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
     KeyManager::registerGlobalKey("fullscreen_capture");
     MString::load_from_file("Data/Languages/");
     registerClasses();
+    UIManager::instance();
 
     MainFilter* fliter = MainFilter::instance();
     a.installEventFilter(fliter);//捕获全局键盘事件
