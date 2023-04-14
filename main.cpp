@@ -25,6 +25,7 @@
 #include "new_capture/Widgets/cliplayer.h"
 #include "Helper/log.h"
 #include<QPair>
+#include "Manager/uimanager.h"
 #ifndef QT_DEBUG
 #include <QBreakpadHandler.h>
 #include <QBreakpadHttpUploader.h>
@@ -51,12 +52,15 @@ int main(int argc, char *argv[]) {
     logSysInit("Data/Temp/log.txt");
 #endif
     Config::loadConfig();
+    if(argc == 3 && strncmp(argv[1], "buildTheme", 20) == 0) {
+        UIManager::instance()->buildRelease(QString(argv[2]));
+        return 0;
+    }
     KeyManager::load();
     KeyManager::registerGlobalKey("awake_capture");
     KeyManager::registerGlobalKey("fullscreen_capture");
     MString::load_from_file("Data/Languages/");
     registerClasses();
-    UIManager::instance();
 
     MainFilter* fliter = MainFilter::instance();
     a.installEventFilter(fliter);//捕获全局键盘事件

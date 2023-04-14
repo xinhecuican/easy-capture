@@ -1,10 +1,13 @@
 #include "blurlayer.h"
 #include<QRgb>
 #include<QPainter>
+#include "Manager/uimanager.h"
 
 BlurLayer::BlurLayer(QGraphicsItem* parent) : QGraphicsObject(parent), is_setpic(false) {
     is_allocate = false;
     is_save = false;
+    unit_size = UIManager::instance()->getMosaicUnitSize();
+    range = UIManager::instance()->getMosaicRange();
 }
 
 void BlurLayer::setPix(const QPixmap& pix, QPoint pos) {

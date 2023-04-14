@@ -17,7 +17,7 @@ class  PaintLayer : public QGraphicsObject {
     Q_OBJECT
 public:
     PaintLayer(QGraphicsItem* parent=nullptr);
-    ~ PaintLayer();
+    ~PaintLayer();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

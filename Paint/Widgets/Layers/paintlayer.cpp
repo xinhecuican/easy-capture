@@ -18,8 +18,13 @@ PaintLayer:: PaintLayer(QGraphicsItem* parent) : QGraphicsObject(parent) {
     setAcceptedMouseButtons(Qt::NoButton);
 }
 
-PaintLayer::~ PaintLayer() {
-    reset();
+PaintLayer::~PaintLayer() {
+    for(QGraphicsItem* line : lines) {
+        delete line;
+    }
+    if(_isPixSet) {
+        delete pixPainter;
+    }
 }
 
 void  PaintLayer::reset() {
@@ -27,7 +32,10 @@ void  PaintLayer::reset() {
         delete line;
     }
     lines.clear();
-    updateLines();
+    if(_isPixSet) {
+        delete pixPainter;
+        _isPixSet = false;
+    }
 }
 
 void  PaintLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
@@ -128,7 +136,9 @@ void PaintLayer::setPix(const QPixmap &pix, QPoint pos) {
 }
 
 void PaintLayer::updateLines() {
-    pix.fill(Qt::transparent);
+    if(!_isPixSet)
+        return;
+    pixPainter->fillRect(0, 0, pix.width(), pix.height(), QBrush(Qt::transparent));
     for(int i=0; i<lines.size(); i++) {
         lines.at(i)->paintLine(pixPainter);
     }

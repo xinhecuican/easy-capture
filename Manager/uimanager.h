@@ -32,6 +32,11 @@ public:
     PaintData getArrowData();
     PaintData getBorderData();
     QColor getCaptureBackground();
+    int getMosaicUnitSize();
+    int getMosaicRange();
+    void buildRelease(QString outPath);
+private:
+    QString combineSettings(QString str);
 
 private:
     static UIManager* _instance;
@@ -39,6 +44,7 @@ private:
     QHash<QString, QString> intDatas;
     QHash<QString, QString> colorDatas;
     UIGlobalParser globalParser;
+    bool _isDynamic;
 };
 
 #endif // UIMANAGER_H

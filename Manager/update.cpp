@@ -48,8 +48,8 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-UpdateData Update::now_version = UpdateData("0.5.4",
-                                 "http://121.37.81.150:8200/easycapture/update/0.5.4.zip", "",
+UpdateData Update::now_version = UpdateData("0.6.0",
+                                 "http://121.37.81.150:8200/easycapture/update/0.6.0.zip", "",
                                  "1. 优化画笔\n"
                                  "2. UIManager可以解析颜色，且可以更改一些全局设置\n"
                                  "3. 优化托盘菜单样式\n"

@@ -28,6 +28,10 @@
  * default_border: 默认的截图边框样式, 属性: color, width
  *
  * capture_background: 截图阴影，属性: color
+ *
+ * default_mosaic: 默认的马赛克设置，属性: unit_size, range。
+ *
+ * 其中unit_size是指将计算多大的正方形的平均值，越大模糊效果越好，range是模糊的范围, range>unit_size
  */
 class UIGlobalParser : public Serializable {
 public:
@@ -42,6 +46,8 @@ public:
     PaintData getArrowData();
     PaintData getBorderData();
     QColor getCaptureBackground();
+    int getMosaicUnitSize();
+    int getMosaicRange();
     /**
      * @brief 可以解析的样式种类
      */
@@ -63,6 +69,8 @@ private:
     FontData fontData;
     PaintData borderData;
     QColor captureBackgroundColor;
+    int mosaicUnitSize;
+    int mosaicRange;
 };
 
 #endif // UIGLOBALPARSER_H

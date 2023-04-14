@@ -29,5 +29,9 @@
 	},
 	"capture_background": {
 		"color": "rgba(0, 0, 0, 100)"
+	},
+	"default_mosaic": {
+		"unit_size": 4,
+		"range": 12
 	}
 }

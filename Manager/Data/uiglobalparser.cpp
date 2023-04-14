@@ -4,6 +4,8 @@
 UIGlobalParser::UIGlobalParser() {
     pencilData = PaintData(QColor(150, 50, 50), 3);
     highlighterData = PaintData(QColor(255, 255, 0, 100), 12, QColor(255, 255, 255), Qt::RoundCap, Qt::RoundJoin);
+    mosaicUnitSize = 4;
+    mosaicRange = 12;
 }
 
 void UIGlobalParser::serialized(QJsonObject *json) {
@@ -125,6 +127,19 @@ void UIGlobalParser::deserialized(QJsonObject *json) {
             captureBackgroundColor = var.value<QColor>();
         }
     }
+
+    if(json->contains("default_mosaic")) {
+        QJsonObject mosaicObject = json->value("default_mosaic").toObject();
+        bool success;
+        QVariant var = parse(WIDTH, "unit_size", &mosaicObject, success);
+        if(success) {
+            mosaicUnitSize = var.toInt();
+        }
+        var = parse(WIDTH, "range", &mosaicObject, success);
+        if(success) {
+            mosaicRange = var.toInt();
+        }
+    }
 }
 
 QVariant UIGlobalParser::parse(ParseStyle style, QString name, QJsonObject *object, bool& success) {
@@ -228,4 +243,12 @@ PaintData UIGlobalParser::getBorderData() {
 
 QColor UIGlobalParser::getCaptureBackground() {
     return captureBackgroundColor;
+}
+
+int UIGlobalParser::getMosaicRange() {
+    return mosaicRange;
+}
+
+int UIGlobalParser::getMosaicUnitSize() {
+    return mosaicUnitSize;
 }
