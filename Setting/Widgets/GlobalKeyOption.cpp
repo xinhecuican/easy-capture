@@ -1,5 +1,6 @@
 #include "GlobalKeyOption.h"
 #include "Manager/KeyManager.h"
+#include "qxtglobalshortcut.h"
 
 GlobalKeyOption::GlobalKeyOption() {
 
@@ -101,11 +102,12 @@ void GlobalKeyOption::keyEnd() {
 }
 
 void GlobalKeyOption::detectKeyConflict() {
-    ATOM testId = GlobalAddAtomA("easycapture_test");
-    bool result = RegisterHotKey((HWND)this->winId(), testId, KeyManager::nativeModKeyCode((Qt::Key)modKey), KeyManager::nativeKeycode((Qt::Key)key));
+#ifdef Q_OS_LINUX
+    QxtGlobalShortcut shortcut;
+    bool result = shortcut.setShortcut(QKeySequence(modKey, key));
     icon->setPixmap(result ? ok : cancel);
-    UnregisterHotKey((HWND)this->winId(), testId);
-    GlobalDeleteAtom(testId);
+    shortcut.unsetShortcut();
+#endif
 }
 
 void GlobalKeyOption::reset() {

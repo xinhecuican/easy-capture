@@ -3,7 +3,9 @@
 #include<QPainter>
 #include<QDebug>
 #define WIN32_LEAN_AND_MEAN
+#ifdef Q_OS_WIN
 #include <windows.h>
+#endif
 #include<QDateTime>
 #include "Helper/debug.h"
 #include "Scroll_handler_global.h"

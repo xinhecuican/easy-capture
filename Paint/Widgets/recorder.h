@@ -10,8 +10,10 @@
 class Recorder : public QObject
 {
     Q_OBJECT
-public:
+private:
     Recorder();
+public:
+
     ~Recorder();
     static Recorder* instance();
     void record(RecordElement* element);
@@ -48,6 +50,7 @@ private:
 
         void clear()
         {
+            qDebug() << limit;
             for(int i=0; i<limit; i++)
             {
                 delete data[i];

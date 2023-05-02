@@ -1,6 +1,7 @@
 #ifndef WINDOW_FLITER_H
 #define WINDOW_FLITER_H
 #define WIN32_LEAN_AND_MEAN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include<QWidget>
 #include<QDebug>
@@ -315,6 +316,6 @@ public:
        static QVector<CSCWinInfo*> m_arSnapshot;
 };
 
-
+#endif
 
 #endif // WINDOW_FLITER_H

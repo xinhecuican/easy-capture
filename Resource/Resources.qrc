@@ -64,7 +64,6 @@
         <file>toolbar.qss</file>
     </qresource>
     <qresource prefix="/Data">
-        <file>Languages/MainWindow/chinese.xml</file>
         <file>Languages/Config/chinese.xml</file>
         <file>Languages/Paint_window/chinese.json</file>
         <file>Languages/Setting/chinese.xml</file>

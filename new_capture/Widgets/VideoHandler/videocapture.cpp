@@ -1,4 +1,4 @@
-#include "videocapture.h"
+﻿#include "videocapture.h"
 
 VideoCaptureHandler::VideoCaptureHandler(QObject* parent) : QObject(parent)
 {

@@ -10,10 +10,14 @@
 #include "JlCompress.h"
 #include "Manager/update.h"
 #include "Style_widget/tray.h"
+#ifdef Q_OS_WIN
 #include <windows.h>
+#endif
 #include "MainFilter.h"
 #include "Paint/Widgets/history.h"
+#ifdef Q_OS_WIN
 #include<dbghelp.h>
+#endif
 #include "Helper/debug.h"
 #include "Paint/Widgets/Layers/rect_layer.h"
 #include "Paint/Widgets/Layers/text_layer.h"
@@ -26,9 +30,11 @@
 #include "Helper/log.h"
 #include<QPair>
 #include "Manager/uimanager.h"
+#ifdef Q_OS_WIN
 #ifndef QT_DEBUG
 #include <QBreakpadHandler.h>
 #include <QBreakpadHttpUploader.h>
+#endif
 #endif
 //#ifdef QT_DEBUG
 //#pragma comment(lib, "C:/usr/software/Visual_Leak_Detector/lib/Win64/vld.lib")
@@ -46,9 +52,13 @@ int main(int argc, char *argv[]) {
     // 设置PWD
     QString applicationDirPathStr = QCoreApplication::applicationDirPath();
     QDir::setCurrent(applicationDirPathStr);
+#ifdef Q_OS_WIN
 #ifndef QT_DEBUG
     QBreakpadInstance.setDumpPath(QLatin1String("crashs"));
     QBreakpadInstance.mainVersion = Update::now_version.get_version();
+#endif
+#endif
+#ifndef QT_DEBUG
     logSysInit("Data/Temp/log.txt");
 #endif
     Config::loadConfig();
@@ -63,8 +73,7 @@ int main(int argc, char *argv[]) {
     registerClasses();
 
     MainFilter* fliter = MainFilter::instance();
-    a.installEventFilter(fliter);//捕获全局键盘事件
-    a.installNativeEventFilter(fliter); // 捕获程序键盘事件
+    a.installEventFilter(fliter);
     a.setQuitOnLastWindowClosed(false);
     a.connect(&a, &QApplication::aboutToQuit, &a, [=]() {
         KeyManager::unRegisterAll();

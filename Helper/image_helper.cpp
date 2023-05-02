@@ -73,6 +73,7 @@ cv::Mat Image_helper::QImage2Mat(QImage const& image)
     return mat;
 }
 
+#ifdef Q_OS_WIN
 cv::Mat Image_helper::HBitmapToMat(HBITMAP& _hBmp)
 {
     //BITMAP操作
@@ -86,6 +87,7 @@ cv::Mat Image_helper::HBitmapToMat(HBITMAP& _hBmp)
     GetBitmapBits(_hBmp,bmp.bmHeight*bmp.bmWidth*nChannels,v_mat.data);
     return v_mat;
 }
+#endif
 
 bool Image_helper::is_equal(const cv::Mat &data1, const cv::Mat &data2)
 {

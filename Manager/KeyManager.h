@@ -8,7 +8,10 @@
 #include "Helper/EnumReflect.h"
 #include "IKeyListener.h"
 #include "QAbstractNativeEventFilter"
+#ifdef Q_OS_WIN
 #include <windows.h>
+#endif
+#include "qxtglobalshortcut.h"
 
 class KeyManager {
 public:
@@ -38,10 +41,12 @@ public:
 
     static quint32 nativeKeycode(Qt::Key keycode);
     static quint32 nativeModKeyCode(Qt::Key keycode);
+#ifdef Q_OS_WIN
     static QList<ATOM> getGlobalKeyId();
+#endif
     static QList<QString> getGlobalKeyName();
     static QString getGlobalKeyName(int index);
-    static void addGlobalKey(QString name, int modKey, int key);
+    static void addGlobalKey(QString name, int modKey, int key, QString funcName="");
     static void registerGlobalKey(QString name);
     static void unRegisterGlobalKey(QString name);
     static int getGlobalModKey(int index);
@@ -52,10 +57,11 @@ public:
 private:
     struct GlobalKeyItem {
         bool registered;
-        ATOM keyId;
+        QxtGlobalShortcut* shortcut;
         int modKey;
         int key;
         QString name;
+        QString funcName;
     };
     struct node {
         std::function<void(QObject*, bool)> func;

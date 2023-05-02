@@ -1,4 +1,4 @@
-#include "PaintArea.h"
+﻿#include "PaintArea.h"
 #include "recorder.h"
 #include "style_manager.h"
 #include<QDir>
@@ -12,7 +12,9 @@
 #include "opencv2/opencv.hpp"
 #include "Helper/image_helper.h"
 #define WIN32_LEAN_AND_MEAN
+#ifdef Q_OS_WIN
 #include <windows.h>
+#endif
 #include<QImageWriter>
 #include "Helper/image_helper.h"
 #include<QPixmapCache>
@@ -130,13 +132,17 @@ void PaintArea::initProcess() {
     QStringList args;
     QDir dir("ocr/models");
     QDir dir2("ocr");
-    args << "--models" << dir.absolutePath()
+    args << "--models" << "models/"
          << "--det" << "ch_PP-OCRv3_det_infer.onnx"
          << "--cls" << "ch_ppocr_mobile_v2.0_cls_infer.onnx"
          << "--rec" << "ch_PP-OCRv3_rec_infer.onnx"
          << "--keys" << "ppocr_keys_v1.txt"
-         << "--image" << dir2.absoluteFilePath("1.png")
+         << "--image" << "1.png"
+#if defined (Q_OS_WIN)
          << "--numThread" << QString::number(Scroll_handler_global::instance()->num_core)
+#elif defined (Q_OS_LINUX)
+         << "--numThread" << "2"
+#endif
          << "--padding" << "50"
          << "--maxSideLen" << "1024"
          << "--boxScoreThresh" << "0.5"
@@ -144,7 +150,11 @@ void PaintArea::initProcess() {
          << "--unClipRatio" << "1.6"
          << "--doAngle" << "1"
          << "--mostAngle" << "1";
+#if defined (Q_OS_WIN)
     ocrProcess.setProgram("ocr/RapidOcrOnnx.exe");
+#elif defined (Q_OS_LINUX)
+    ocrProcess.setProgram(dir2.absolutePath() + "/RapidOcrOnnx");
+#endif
     ocrProcess.setArguments(args);
     ocrProcess.setWorkingDirectory(dir2.absolutePath());
     connect(&ocrProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [=](int exitCode, QProcess::ExitStatus exitStatus) {
@@ -152,7 +162,11 @@ void PaintArea::initProcess() {
             showOcrResultProcess.startDetached();
         }
     });
+#if defined (Q_OS_WIN)
     showOcrResultProcess.setProgram("OcrViewer.exe");
+#elif defined (Q_OS_LINUX)
+    showOcrResultProcess.setProgram("OcrViewer");
+#endif
     showOcrResultProcess.setWorkingDirectory(QDir::currentPath());
 }
 

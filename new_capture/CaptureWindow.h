@@ -1,4 +1,4 @@
-#ifndef CAPTURE_WINDOW_H
+﻿#ifndef CAPTURE_WINDOW_H
 #define CAPTURE_WINDOW_H
 
 #include<QVector>
@@ -8,7 +8,9 @@
 #include "Base/WindowBase.h"
 #include<QTimer>
 #define WIN32_LEAN_AND_MEAN
+#ifdef Q_OS_WIN
 #include <windows.h>
+#endif
 #include "new_capture/Widgets/Scroll_handler/scroll_dispatcher.h"
 #include "opencv2/core/core.hpp"
 #include<QPointer>
@@ -17,8 +19,9 @@
 #include "Paint/Widgets/PaintArea.h"
 #include "Helper/EnumReflect.h"
 #include "Style_widget/bubbletipswidget.h"
+#ifdef Q_OS_WIN
 #include "Widgets/VideoHandler/videocapture.h"
-
+#endif
 //namespace Ui {
 //class CaptureWindow;
 //}
@@ -55,7 +58,9 @@ private:
     int mouse_move_times;
     QTimer* timer;
     QTimer* scroll_timer;
+#ifdef Q_OS_WIN
     HWND scroll_hwnd;
+#endif
     int height_char;
     QPoint cursor_point;
     QPoint now_point;
@@ -77,9 +82,12 @@ private:
     BubbleTipsWidget* bubbleTipsWidget;
     ScrollState scrollState;
     ScrollState beforeState;
+#ifdef Q_OS_WIN
     VideoCaptureHandler* videoCapture;
+#endif
     qint64 lastCaptureTime;
     bool isVideoCapture;
+    QProcess videoProcess;
 };
 
 #endif // CAPTURE_WINDOW_H

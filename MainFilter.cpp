@@ -41,6 +41,7 @@ MainFilter::MainFilter() {
     }
     setStyleSheet(UIManager::instance()->load("tray"));
     checkCrash();
+    initGlobalKeyFuncs();
 }
 
 MainFilter::~MainFilter() {
@@ -61,59 +62,10 @@ bool MainFilter::eventFilter(QObject *o, QEvent *e) {
     return false;
 }
 
-bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, long *result) {
-    MSG* pMsg = reinterpret_cast<MSG*>(message);
-    if(pMsg->message == WM_HOTKEY) {
-        QList<ATOM> keyIds = KeyManager::getGlobalKeyId();
-        for(int i=0; i<keyIds.size(); i++) {
-            if(pMsg->wParam == keyIds[i]) {
-                switch(i) {
-                case 0:
-                    if(WindowManager::getNowWindow() != "CaptureWindow") {
-                        WindowManager::changeWindow("CaptureWindow");
-                        return true;
-                    }
-                    break;
-                case 1:
-                    WindowManager::changeWindow("tray");
-                    QTimer::singleShot(200, this, [=]() {
-                        QScreen *screen = QGuiApplication::primaryScreen();
-                        QPixmap map = screen->grabWindow(0);
-                        QString save_path = Config::getConfig<QString>(Config::total_capture_save_path);
-                        QString dir_path = save_path.mid(0, save_path.lastIndexOf("/")+1);
-                        QDir base_dir = QDir(dir_path);
-                        if(!base_dir.exists()) {
-                            QDir dir;
-                            dir.mkpath(dir_path);
-                        }
-                        QString file_name = QDateTime::currentDateTime().toString("dd_mm_yyyy_hh_mm_ss") + ".png";
-                        map.save(save_path + file_name);
-                        if(Config::getConfig<bool>(Config::clip_voice))
-                            QSound::play(":/audio/screenshot.wav");
-                    });
-                    break;
-                case 2:
-                    if(WindowManager::getNowWindow() == "CaptureWindow") {
-                        WindowManager::getWindow("CaptureWindow")->startCaptureVideo();
-                    }
-                    break;
-                case 3:
-                    if(WindowManager::getNowWindow() == "CaptureWindow") {
-                        WindowManager::getWindow("CaptureWindow")->pauseCaptureVideo();
-                    }
-                    break;
-                case 4:
-                    if(WindowManager::getNowWindow() == "CaptureWindow") {
-                        WindowManager::getWindow("CaptureWindow")->stopCaptureVideo();
-                    }
-                    break;
-
-                }
-                break;
-            }
-        }
+void MainFilter::onGlobalKeyTriggered(QString name){
+    if(globalKeyFuncs.contains(name)){
+        globalKeyFuncs[name]();
     }
-    return false;
 }
 
 void MainFilter::windowMnaagerThread() {
@@ -240,4 +192,46 @@ void MainFilter::checkCrash() {
             crashUploadProcess->deleteLater();
         });
     }
+}
+
+void MainFilter::initGlobalKeyFuncs(){
+    globalKeyFuncs.insert("awake_capture", [=](){
+        if(WindowManager::getNowWindow() != "CaptureWindow") {
+            WindowManager::changeWindow("CaptureWindow");
+            return true;
+        }
+    });
+    globalKeyFuncs.insert("fullscreen_capture", [=](){
+        WindowManager::changeWindow("tray");
+        QTimer::singleShot(200, this, [=]() {
+            QScreen *screen = QGuiApplication::primaryScreen();
+            QPixmap map = screen->grabWindow(0);
+            QString save_path = Config::getConfig<QString>(Config::total_capture_save_path);
+            QString dir_path = save_path.mid(0, save_path.lastIndexOf("/")+1);
+            QDir base_dir = QDir(dir_path);
+            if(!base_dir.exists()) {
+                QDir dir;
+                dir.mkpath(dir_path);
+            }
+            QString file_name = QDateTime::currentDateTime().toString("dd_mm_yyyy_hh_mm_ss") + ".png";
+            map.save(save_path + file_name);
+            if(Config::getConfig<bool>(Config::clip_voice))
+                QSound::play(":/audio/screenshot.wav");
+        });
+    });
+    globalKeyFuncs.insert("capture_video_start", [=](){
+        if(WindowManager::getNowWindow() == "CaptureWindow") {
+            WindowManager::getWindow("CaptureWindow")->startCaptureVideo();
+        }
+    });
+    globalKeyFuncs.insert("capture_video_pause", [=](){
+        if(WindowManager::getNowWindow() == "CaptureWindow"){
+            WindowManager::getWindow("CaptureWindow")->pauseCaptureVideo();
+        }
+    });
+    globalKeyFuncs.insert("capture_video_stop", [=](){
+        if(WindowManager::getNowWindow() == "CaptureWindow"){
+            WindowManager::getWindow("CaptureWindow")->stopCaptureVideo();
+        }
+    });
 }

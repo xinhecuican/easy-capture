@@ -7,7 +7,9 @@
 #include<QKeyEvent>
 #include "update.h"
 #define WIN32_LEAN_AND_MEAN
+#ifdef Q_OS_WIN
 #include <Windows.h>
+#endif
 #include "MainFilter.h"
 
 KeyManager::KeyManager() {
@@ -44,11 +46,11 @@ QList<QString> KeyManager::keySettings = {
 };
 
 QList<QString> globalKeySetting = {
-    "awake_capture:16777249;16777264",
-    "fullscreen_capture:16777249;16777265",
-    "capture_video_start:0;16777268",
-    "capture_video_pause:0;16777269",
-    "capture_video_stop:0;16777270"
+    "awake_capture:0;16777264?awake_capture",
+    "fullscreen_capture:0;16777265?awake_capture",
+    "capture_video_start:0;16777268?capture_video_start",
+    "capture_video_pause:0;16777269?capture_video_pause",
+    "capture_video_stop:0;16777270?capture_video_stop"
 };
 
 bool fastRegister[] = {true,
@@ -111,9 +113,10 @@ void KeyManager::updateGlobalKey() {
     for(int i=0; i<globalKeySetting.size(); i++) {
         int firstIndex = globalKeySetting[i].indexOf(':');
         int secondIndex = globalKeySetting[i].indexOf(';');
+        int thirdIndex = globalKeySetting[i].indexOf('?');
         QString temp;
         QList<int> using_key = QList<int>();
-        for(int k=secondIndex+1; k<globalKeySetting[i].size(); k++) {
+        for(int k=secondIndex+1; k<thirdIndex; k++) {
             if(globalKeySetting[i][k] == ',') {
                 using_key.append(temp.toInt());
                 temp.clear();
@@ -124,7 +127,8 @@ void KeyManager::updateGlobalKey() {
         using_key.append(temp.toInt());
         QString name = globalKeySetting[i].mid(0, firstIndex);
         int modKey = globalKeySetting[i].mid(firstIndex+1, secondIndex - firstIndex - 1).toInt();
-        addGlobalKey(name, modKey, using_key.size() != 0 ? using_key[0] : 0);
+        QString funcName = globalKeySetting[i].mid(thirdIndex+1);
+        addGlobalKey(name, modKey, using_key.size() != 0 ? using_key[0] : 0, funcName);
         if(fastRegister[i])
             registerGlobalKey(name);
     }
@@ -370,6 +374,7 @@ void KeyManager::onWindowClose(QString windowName) {
 
 }
 
+#ifdef Q_OS_WIN
 QList<ATOM> KeyManager::getGlobalKeyId() {
     QList<ATOM> ans;
     for(GlobalKeyItem keyItem : globalKeys) {
@@ -377,6 +382,7 @@ QList<ATOM> KeyManager::getGlobalKeyId() {
     }
     return ans;
 }
+#endif
 
 int KeyManager::getGlobalKey(int index) {
     return globalKeys[index].key;
@@ -402,11 +408,13 @@ QList<QString> KeyManager::getGlobalKeyName() {
     return ans;
 }
 
-void KeyManager::addGlobalKey(QString name, int modKey, int key) {
+void KeyManager::addGlobalKey(QString name, int modKey, int key, QString funcName) {
     for(int i=0; i<globalKeys.size(); i++) {
         if(globalKeys[i].name == name) {
             globalKeys[i].modKey = modKey;
             globalKeys[i].key = key;
+            if(funcName != "")
+                globalKeys[i].funcName = funcName;
             return;
         }
     }
@@ -415,17 +423,21 @@ void KeyManager::addGlobalKey(QString name, int modKey, int key) {
     keyItem.modKey = modKey;
     keyItem.key = key;
     keyItem.registered = false;
-    keyItem.keyId = GlobalAddAtomA(keyItem.name.toStdString().c_str());
+    keyItem.funcName = funcName;
+    keyItem.shortcut = new QxtGlobalShortcut(MainFilter::instance()); // MainFilter的生命周期是全局的
     globalKeys.append(keyItem);
 }
 
 void KeyManager::registerGlobalKey(QString name) {
     for(int i=0; i<globalKeys.size(); i++) {
-        if(globalKeys[i].name == name) {
-            if(globalKeys[i].registered) {
-                UnregisterHotKey((HWND)MainFilter::instance()->winId(), globalKeys[i].keyId);
+        if(!globalKeys[i].registered && globalKeys[i].name == name) {
+            QKeySequence keySequence(globalKeys[i].modKey + globalKeys[i].key);
+            globalKeys[i].registered = globalKeys[i].shortcut->setShortcut(keySequence);
+            if(globalKeys[i].registered){
+                MainFilter::instance()->connect(globalKeys[i].shortcut, &QxtGlobalShortcut::activated, MainFilter::instance(), [=](){
+                    MainFilter::instance()->onGlobalKeyTriggered(globalKeys[i].funcName != "" ? globalKeys[i].funcName : globalKeys[i].name);
+                });
             }
-            globalKeys[i].registered = RegisterHotKey((HWND)MainFilter::instance()->winId(), globalKeys[i].keyId, nativeModKeyCode((Qt::Key)globalKeys[i].modKey), nativeKeycode((Qt::Key)globalKeys[i].key));
             break;
         }
     }
@@ -434,14 +446,17 @@ void KeyManager::registerGlobalKey(QString name) {
 void KeyManager::unRegisterGlobalKey(QString name) {
     for(int i=0; i<globalKeys.size(); i++) {
         if(globalKeys[i].name == name) {
-            UnregisterHotKey((HWND)MainFilter::instance()->winId(), globalKeys[i].keyId);
-            globalKeys[i].registered = false;
+            if(globalKeys[i].registered){
+                globalKeys[i].shortcut->unsetShortcut();
+                globalKeys[i].registered = false;
+            }
             break;
         }
     }
 }
 
 quint32 KeyManager::nativeModKeyCode(Qt::Key keycode) {
+#ifdef Q_OS_WIN
     switch(keycode) {
     case Qt::Key_Alt:
         return MOD_ALT;
@@ -453,12 +468,13 @@ quint32 KeyManager::nativeModKeyCode(Qt::Key keycode) {
         return MOD_WIN;
     }
     return 0;
+#endif
 }
 
 void KeyManager::unRegisterAll() {
     for(int i=0; i<globalKeys.size(); i++) {
         if(globalKeys[i].registered) {
-            UnregisterHotKey((HWND)MainFilter::instance()->winId(), globalKeys[i].keyId);
+            globalKeys[i].shortcut->unsetShortcut();
             globalKeys[i].registered = false;
 
         }
@@ -468,12 +484,18 @@ void KeyManager::unRegisterAll() {
 void KeyManager::registerAll() {
     for(int i=0; i<globalKeys.size(); i++) {
         if(!globalKeys[i].registered && fastRegister[i]) {
-            globalKeys[i].registered = RegisterHotKey((HWND)MainFilter::instance()->winId(), globalKeys[i].keyId, nativeModKeyCode((Qt::Key)globalKeys[i].modKey), nativeKeycode((Qt::Key)globalKeys[i].key));
+            globalKeys[i].registered = globalKeys[i].shortcut->setShortcut(QKeySequence(globalKeys[i].modKey + globalKeys[i].key));
+            if(globalKeys[i].registered){
+                MainFilter::instance()->connect(globalKeys[i].shortcut, &QxtGlobalShortcut::activated, MainFilter::instance(), [=](){
+                    MainFilter::instance()->onGlobalKeyTriggered(globalKeys[i].funcName != "" ? globalKeys[i].funcName : globalKeys[i].name);
+                });
+            }
         }
     }
 }
 
 quint32 KeyManager::nativeKeycode(Qt::Key keycode) {
+#ifdef Q_OS_WIN
     if(keycode <= 0xFFFF) {//Try to obtain the key from it's "character"
         const SHORT vKey = VkKeyScanW(static_cast<WCHAR>(keycode));
         if(vKey > -1)
@@ -643,8 +665,8 @@ quint32 KeyManager::nativeKeycode(Qt::Key keycode) {
             return 0;
         }
     }
+#endif
 }
-
 
 QHash<int, QString> KeyManager::keyType = {
 
@@ -778,6 +800,8 @@ QHash<int, QString> KeyManager::keyType = {
     {0x1000064, "Refresh"},
     {0x1000070, "VolumeDown"},
     {0x1000071, "VolumeMute"},
-    {0x1000072, "VolumeUP"}
-
+    {0x1000072, "VolumeUP"},
+    {0x2000000, "Shift"},
+    {0x4000000, "Ctrl"},
+    {0x8000000, "Alt"}
 };

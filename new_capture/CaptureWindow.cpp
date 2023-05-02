@@ -1,5 +1,4 @@
-#include "CaptureWindow.h"
-#include "ui_capture_window.h"
+﻿#include "CaptureWindow.h"
 #include "Manager/WindowManager.h"
 #include<QDebug>
 #include<QPainter>
@@ -8,7 +7,9 @@
 #include "Manager/config.h"
 #include "Manager/KeyManager.h"
 #include<QScreen>
+#ifdef Q_OS_WIN
 #include "hook.h"
+#endif
 #include<QWindow>
 #include "window_fliter.h"
 #include "Helper/image_helper.h"
@@ -24,6 +25,8 @@
 #include "Paint/Widgets/recorder.h"
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include "Helper/math.h"
+#include <QWidget>
+#include <QGuiApplication>
 
 bool CaptureWindow::end_scroll = false;
 
@@ -44,7 +47,9 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     is_finish = false;
     begin_waiting = false;
     window_valid = false;
+#ifdef Q_OS_WIN
     videoCapture = new VideoCaptureHandler(this);
+#endif
     isVideoCapture = false;
     isScrollManual = false;
     scrollState = IDLE;
@@ -57,6 +62,7 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     showFullScreen();
     this->setMouseTracking(true);
     centralWidget->setMouseTracking(true);
+    videoProcess.setProgram("ffmpeg");
 #ifdef QT_NO_DEBUG
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
@@ -83,13 +89,16 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
         bubbleTipsWidget->addContent(tip);
     }
     bubbleTipsWidget->hide();
-
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [=]() {
+#if defined (Q_OS_WIN)
         if(!xHook->isMouseHookRunning() || xHook->uninstallMouseHook()) {
             timer->stop();
             WindowManager::closeWindow("CaptureWindow");
         }
+#elif defined (Q_OS_LINUX)
+            WindowManager::closeWindow("CaptureWindow");
+#endif
     });
 }
 
@@ -100,12 +109,14 @@ CaptureWindow::~CaptureWindow() {
     }
     timer->stop();
     delete timer;
+#if defined (Q_OS_WIN)
     if(xHook->isMouseHookRunning()) {
         xHook->uninstallMouseHook();
     }
     if(xHook->isKeyHookRunning()) {
         xHook->uninstallKeyHook();
     }
+#endif
 }
 
 void CaptureWindow::paintEvent(QPaintEvent *paint_event) {
@@ -147,13 +158,21 @@ void CaptureWindow::paintEvent(QPaintEvent *paint_event) {
     } else if(Config::getConfig<int>(Config::capture_mode) == Config::RECT_CAPTURE && isVideoCapture) {
         QPen pen;
         pen.setWidth(3);
+#ifdef Q_OS_WIN
         if(videoCapture->getIsPause()) {
             pen.setColor(QColor(247,186,11));
         } else {
             pen.setColor(QColor(255, 0, 0));
         }
+#else
+        pen.setColor(QColor(255, 0, 0));
+#endif
         painter.setPen(pen);
+#ifdef Q_OS_WIN
         QRect rect = videoCapture->getBound();
+#else
+        QRect rect = area->getRecordInfo().bound;
+#endif
         rect.setTopLeft(rect.topLeft() - QPoint(3, 3));
         rect.setBottomRight(rect.bottomRight() + QPoint(3, 3));
         painter.drawRect(rect);
@@ -166,9 +185,15 @@ void CaptureWindow::loadKeyEvent(QString name) {
     KeyManager::addFunc(this, name, "leave", [=](QObject* receiver, bool is_enter) {
         if(is_enter) {
             if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
+#if defined (Q_OS_WIN)
                 if(scrollState == SCROLL_AUTO && !xHook->isKeyHookRunning()) {
                     end_scroll = true;
                 } else if(scrollState == SCROLL_MANUAL && !xHook->isKeyHookRunning()) {
+#elif defined (Q_OS_LINUX)
+                if(scrollState == SCROLL_AUTO){
+                    end_scroll = true;
+                } else if(scrollState  == SCROLL_MANUAL){
+#endif
                     dispatcher->get_all_images();//结束
                 } else if(scrollState == SCROLLRECT_SETTED) {
                     scrollState = IDLE;
@@ -297,6 +322,7 @@ enum window_search_mode {
     INCLUDE_MINIMIZED,
     EXCLUDE_MINIMIZED
 };
+#ifdef Q_OS_WIN
 static bool check_window_valid(HWND window, enum window_search_mode mode) {
     DWORD styles, ex_styles;
     RECT  rect;
@@ -326,6 +352,7 @@ static inline HWND next_window(HWND window, enum window_search_mode mode) {
 
     return window;
 }
+#endif
 
 void CaptureWindow::onWindowSelect() {
 //    Window_fliter::instance()->SnapshotAllWinRect();
@@ -336,6 +363,7 @@ void CaptureWindow::onWindowSelect() {
         is_enter = false;
         set_scroll_info();
         view->hide();
+#if defined (Q_OS_WIN)
         if(xHook->installMouseHook()) {
             // is_shield: 屏蔽鼠标事件
             connect(xHook, &XGlobalHook::mouseEvent, this,
@@ -459,6 +487,7 @@ WINDOW_VALID_OUT:
                 }
             });
         }
+#endif
     } else {
         area->reset();
         area->update();
@@ -499,9 +528,11 @@ void CaptureWindow::set_scroll_info() {
                 pix = screen->grabWindow(0, active_window_bound.x(), active_window_bound.y(),
                                          active_window_bound.width(), active_window_bound.height());
             } else {
+#ifdef Q_OS_WIN
                 pix = screen->grabWindow(WId(scroll_hwnd));
+#endif
             }
-
+#ifdef Q_OS_WIN
             QWindow* mainWindow = QWindow::fromWinId(WId(scroll_hwnd));
             QPoint window_point;
             if (mainWindow != nullptr) {
@@ -541,12 +572,15 @@ void CaptureWindow::set_scroll_info() {
             //combine_image(pix.toImage());
 //            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
             dispatcher->start(image);
+#endif
         });
     }
 }
 
 void CaptureWindow::startCaptureVideo() {
     if(!(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
+
+#if defined (Q_OS_WIN)
         videoCapture->setCaptureInfo(area->getRecordInfo());
         if(videoCapture->isValid() && !isVideoCapture) {
             isVideoCapture = true;
@@ -554,21 +588,52 @@ void CaptureWindow::startCaptureVideo() {
             update();
             videoCapture->startCapture();
         }
+#elif defined (Q_OS_LINUX)
+        QFile savePath(area->getRecordInfo().recordPath);
+        if(savePath.exists()){
+            savePath.remove();
+        }
+        RecordInfo info = area->getRecordInfo();
+        QStringList args;
+        args << "-video_size" << QString("%1x%2").arg(info.bound.width()).arg(info.bound.height())
+             << "-framerate" << QString::number(info.fps)
+             << "-f" << "x11grab"
+             << "-i" << QString(":0.0+%1,%2").arg(info.bound.left()).arg(info.bound.top())
+             << info.recordPath;
+        if(!info.enableAudio)
+            args << "-an";
+        videoProcess.setArguments(args);
+        isVideoCapture = true;
+        view->hide();
+        update();
+        videoProcess.start();
+#endif
     }
 }
 
 void CaptureWindow::pauseCaptureVideo() {
+#ifdef Q_OS_WIN
     if(!(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) && videoCapture->isValid() && isVideoCapture) {
         videoCapture->pauseOrResume();
         update();
     }
+#endif
 }
 
 void CaptureWindow::stopCaptureVideo() {
+#if defined (Q_OS_WIN)
     if(!(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) && videoCapture->isValid() && isVideoCapture) {
         isVideoCapture = false;
         videoCapture->stopCapture();
         WindowManager::changeWindow("tray");
         view->show();
     }
+#elif defined (Q_OS_LINUX)
+    if(!(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)){
+        isVideoCapture = false;
+        videoProcess.write("q");
+        WindowManager::changeWindow("tray");
+        view->show();
+    }
+#endif
 }

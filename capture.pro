@@ -1,5 +1,5 @@
 QT       += core gui xml network multimedia
-
+unix: QT += x11extras dbus
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
@@ -112,6 +112,7 @@ HEADERS += \
     Helper/mstring.h \
     Helper/plist.h \
     MainFilter.h \
+    Manager/Data/FuncData.h \
     Manager/Data/Reply_timeout.h \
 	Manager/Data/UpdateData.h \
 	Manager/Data/uiglobalparser.h \
@@ -200,6 +201,8 @@ FORMS += \
 TRANSLATIONS += \
     capture_zh_CN.ts
 
+unix:  SOURCES += Helper/eventmonitor.cpp
+unix: HEADERS += Helper/eventmonitor.h
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
@@ -223,10 +226,9 @@ win32:CONFIG(release, debug|release): LIBS += -lqBreakpad
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lHook
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/debug/ -lHook
-else:unix: LIBS += -L$$PWD/../build-Hook-MSVC-Debug/ -lHook
 
-INCLUDEPATH += $$PWD/../HOOK
-DEPENDPATH += $$PWD/../HOOK
+win32:INCLUDEPATH += $$PWD/../HOOK
+win32:DEPENDPATH += $$PWD/../HOOK
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Release/quazip/release/ -lquazip
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/debug/ -lquazipd
@@ -234,19 +236,23 @@ DEPENDPATH += $$PWD/../HOOK
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/quazip/release/ -lquazip
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/quazip/debug/ -lquazipd
-else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/ -lquazipd
+else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_GCC_64bit-Release/quazip -lquazip
 
 INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
 DEPENDPATH += $$PWD/../quazip-0.7.3/quazip
 
-LIBS += -lGdi32 -loleacc -lDbgHelp
-LIBS += \
+win32:LIBS += -lGdi32 -loleacc -lDbgHelp
+win32:LIBS += \
     -ldwmapi -lOle32 -lksuser -lUser32
+unix: LIBS += -lX11 -lXext -lXtst
 
 RC_FILE = logo.rc
 
-INCLUDEPATH += F:/capture/opencv/opencv4.5.1/include \
+win32:INCLUDEPATH += F:/capture/opencv/opencv4.5.1/include \
     F:/capture/opencv/opencv4.5.1/include/opencv2
+else:unix:INCLUDEPATH += /usr/local/include \
+    /usr/local/include/opencv4 \
+    /usr/local/include/opencv4/opencv2
 
 #LIBS += F:/capture/opencv/opencv4.5.1/x64/mingw/lib/libopencv_*
 win32:CONFIG(release, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
@@ -255,25 +261,29 @@ win32:CONFIG(release, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-ms
 else:win32:CONFIG(debug, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
 -lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
 -lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d -lopencv_highgui451d
-else:unix: LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
--lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
--lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d
+else:unix: LIBS += -L/usr/local/lib\
+-lopencv_xfeatures2d -lopencv_imgproc -lopencv_imgcodecs\
+-lopencv_core -lopencv_flann -lopencv_calib3d -lopencv_features2d
 
 msvc {
     QMAKE_CFLAGS += /utf-8
     QMAKE_CXXFLAGS += /utf-8
 }
 
-DEPENDPATH += C:/usr/software/Visual_Leak_Detector/include
-INCLUDEPATH += C:/usr/software/Visual_Leak_Detector/include
+win32:DEPENDPATH += C:/usr/software/Visual_Leak_Detector/include
+win32:INCLUDEPATH += C:/usr/software/Visual_Leak_Detector/include
 win32:CONFIG(release, debug|release): LIBS += -LC:/usr/software/Visual_Leak_Detector/lib/Win64 -lvld
 
 DISTFILES += \
-	Resource/toolbar.qss
+	Resource/toolbar.qss \
+	docs/build_opencv.md
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lECVideoCapture
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lECVideoCapture
-else:unix: LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/ -lECVideoCapture
+else:unix:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_GCC_64bit-Release/ -lECVideoCapture
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_GCC_64bit-Debug/ -lECVideoCapture
 
 INCLUDEPATH += $$PWD/../ECVideoCapture
 DEPENDPATH += $$PWD/../ECVideoCapture
+
+include($$PWD/../qxtglobalshortcut5/qxt.pri)

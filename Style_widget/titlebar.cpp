@@ -1,6 +1,8 @@
 #include "titlebar.h"
 #define WIN32_LEAN_AND_MEAN
+#ifdef Q_OS_WIN
 #include <windows.h>
+#endif
 #include<QHBoxLayout>
 #include<QMouseEvent>
 #include<QDebug>

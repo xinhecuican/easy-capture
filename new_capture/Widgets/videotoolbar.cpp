@@ -7,7 +7,9 @@
 #include <QFileDialog>
 #include "Paint/Widgets/history.h"
 #include <QLineEdit>
+#ifdef Q_OS_WIN
 #include "windows.h"
+#endif
 #include <memory>
 #include <QDebug>
 #include "Helper/mstring.h"
@@ -28,6 +30,7 @@ VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
     });
 
     QComboBox* deviceSelector = new QComboBox(this);
+#ifdef Q_OS_WIN
     int nDeviceNum = waveInGetNumDevs();
     for (int i = 0; i < nDeviceNum; ++i)
     {
@@ -41,6 +44,7 @@ VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
         WideCharToMultiByte(CP_UTF8, 0, wic.szPname, wcslen(wic.szPname), spDeviceName.get(), nSize, NULL, NULL);
         deviceSelector->addItem(spDeviceName.get());
     }
+#endif
     info.audioDeviceIndex = 0;
     deviceSelector->setMaximumWidth(150);
     connect(deviceSelector, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, [=](int index){
