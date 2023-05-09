@@ -59,7 +59,7 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_OpaquePaintEvent );
-    showFullScreen();
+    // showFullScreen();
     this->setMouseTracking(true);
     centralWidget->setMouseTracking(true);
     videoProcess.setProgram("ffmpeg");
@@ -604,8 +604,9 @@ void CaptureWindow::startCaptureVideo() {
             args << "-an";
         videoProcess.setArguments(args);
         isVideoCapture = true;
-        view->hide();
+        hide();
         update();
+        videoProcess.close();
         videoProcess.start();
 #endif
     }
@@ -633,7 +634,6 @@ void CaptureWindow::stopCaptureVideo() {
         isVideoCapture = false;
         videoProcess.write("q");
         WindowManager::changeWindow("tray");
-        view->show();
     }
 #endif
 }
