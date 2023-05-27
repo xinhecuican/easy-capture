@@ -15,6 +15,7 @@
 #include "JlCompress.h"
 #include "Manager/update.h"
 #include "Manager/uimanager.h"
+#include "Helper/imagehelper.h"
 
 MainFilter* MainFilter::_instance = NULL;
 
@@ -77,8 +78,7 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
                 case 1:
                     WindowManager::changeWindow("tray");
                     QTimer::singleShot(200, this, [=]() {
-                        QScreen *screen = QGuiApplication::primaryScreen();
-                        QPixmap map = screen->grabWindow(0);
+                        QPixmap map = ImageHelper::grabScreen();
                         QString save_path = Config::getConfig<QString>(Config::total_capture_save_path);
                         QString dir_path = save_path.mid(0, save_path.lastIndexOf("/")+1);
                         QDir base_dir = QDir(dir_path);
@@ -190,11 +190,10 @@ void MainFilter::setTrayContextMenu() {
         else if(index == Config::TOTAL_CAPTURE) {
             WindowManager::changeWindow("tray");
             QTimer::singleShot(200, this, [=]() {
-                QScreen *screen = QGuiApplication::primaryScreen();
-                QPixmap map = screen->grabWindow(0);
+                QPixmap map = ImageHelper::grabScreen();
                 WindowManager::changeWindow("PaintWindow");
                 WindowManager::getWindow("PaintWindow")->
-                setPic(map, screen->geometry());
+                setPic(map, ImageHelper::getCurrentScreen()->geometry());
                 if(Config::getConfig<bool>(Config::clip_voice))
                     QSound::play(":/audio/screenshot.wav");
             });

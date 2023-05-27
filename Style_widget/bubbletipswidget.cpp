@@ -6,8 +6,7 @@
 
 BubbleTipsWidget::BubbleTipsWidget(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::BubbleTipsWidget)
-{
+    , ui(new Ui::BubbleTipsWidget) {
     ui->setupUi(this);
 
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
@@ -23,7 +22,7 @@ BubbleTipsWidget::BubbleTipsWidget(QWidget *parent)
     loopTime = 3000;
     currentIndex = 0;
     contentChangeTimer = new QTimer(this);
-    connect(contentChangeTimer, &QTimer::timeout, this, [=](){
+    connect(contentChangeTimer, &QTimer::timeout, this, [=]() {
         if(contents.size() == 0)
             return;
         if(contents.size() <= currentIndex)
@@ -35,13 +34,11 @@ BubbleTipsWidget::BubbleTipsWidget(QWidget *parent)
 //    setLeftTopMargin();
 }
 
-BubbleTipsWidget::~BubbleTipsWidget()
-{
+BubbleTipsWidget::~BubbleTipsWidget() {
     delete ui;
 }
 
-void BubbleTipsWidget::addContent(QString content, QColor color)
-{
+void BubbleTipsWidget::addContent(QString content, QColor color) {
     ContentType contentType;
     contentType.text = content;
     contentType.color = color;
@@ -51,29 +48,33 @@ void BubbleTipsWidget::addContent(QString content, QColor color)
         contentChangeTimer->start(loopTime);
 }
 
-void BubbleTipsWidget::clear()
-{
+void BubbleTipsWidget::addContents(QStringList contents, QColor color) {
+    for(QString content : contents) {
+        ContentType contentType;
+        contentType.text = content;
+        contentType.color = color;
+        this->contents.append(contentType);
+    }
+}
+
+void BubbleTipsWidget::clear() {
     contents.clear();
 }
 
-void BubbleTipsWidget::setBackColor(int r, int g, int b, int a)
-{
+void BubbleTipsWidget::setBackColor(int r, int g, int b, int a) {
     m_backColor = QColor(r, g, b, a);
 }
 
-void BubbleTipsWidget::setDirect(DIRECT direct, double size)
-{
+void BubbleTipsWidget::setDirect(DIRECT direct, double size) {
     m_direct = direct;
     m_posSize = size;
 }
 
-void BubbleTipsWidget::setContentFont(QFont font)
-{
+void BubbleTipsWidget::setContentFont(QFont font) {
     ui->label->setFont(font);
 }
 
-void BubbleTipsWidget::setContent(const QString &content, QColor color)
-{
+void BubbleTipsWidget::setContent(const QString &content, QColor color) {
     ui->label->setText(MString::search(content));
     ui->label->setStyleSheet(QString("color: rgb(%1, %2, %3)")
                              .arg(color.red())
@@ -83,22 +84,19 @@ void BubbleTipsWidget::setContent(const QString &content, QColor color)
     update();
 }
 
-void BubbleTipsWidget::hideEvent(QHideEvent *event)
-{
+void BubbleTipsWidget::hideEvent(QHideEvent *event) {
     QWidget::hideEvent(event);
     if(contentChangeTimer->isActive())
         contentChangeTimer->stop();
 }
 
-void BubbleTipsWidget::showEvent(QShowEvent *event)
-{
+void BubbleTipsWidget::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
     if(!contentChangeTimer->isActive())
         contentChangeTimer->start(loopTime);
 }
 
-void BubbleTipsWidget::setLeftTopMargin(int leftMargin, int topMargin)
-{
+void BubbleTipsWidget::setLeftTopMargin(int leftMargin, int topMargin) {
     m_leftMargin = leftMargin;
     m_topMargin = topMargin;
     this->setContentsMargins(m_leftMargin + TRANSPARENT_LENGTH,
@@ -107,8 +105,7 @@ void BubbleTipsWidget::setLeftTopMargin(int leftMargin, int topMargin)
                              m_topMargin + TRANSPARENT_LENGTH);
 }
 
-void BubbleTipsWidget::paintEvent(QPaintEvent *event)
-{
+void BubbleTipsWidget::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event)
 
     QPainter painter(this);
@@ -124,21 +121,16 @@ void BubbleTipsWidget::paintEvent(QPaintEvent *event)
                             height() - TRANSPARENT_LENGTH * 2, 4, 4);
 }
 
-void BubbleTipsWidget::setFixContent(const QString content, QColor color)
-{
+void BubbleTipsWidget::setFixContent(const QString content, QColor color) {
     setFix(true);
     setContent(content, color);
 }
 
-void BubbleTipsWidget::setFix(bool isFix)
-{
-    if(isFix)
-    {
+void BubbleTipsWidget::setFix(bool isFix) {
+    if(isFix) {
         isFixContent = true;
         contentChangeTimer->stop();
-    }
-    else
-    {
+    } else {
         isFixContent = false;
         contentChangeTimer->start(loopTime);
     }

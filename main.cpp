@@ -26,6 +26,7 @@
 #include "Helper/log.h"
 #include<QPair>
 #include "Manager/uimanager.h"
+#include "Paint/Widgets/Panels/flow_edit_panel.h"
 #ifndef QT_DEBUG
 #include <QBreakpadHandler.h>
 #include <QBreakpadHttpUploader.h>
@@ -61,7 +62,6 @@ int main(int argc, char *argv[]) {
     KeyManager::registerGlobalKey("fullscreen_capture");
     MString::load_from_file("Data/Languages/");
     registerClasses();
-
     MainFilter* fliter = MainFilter::instance();
     a.installEventFilter(fliter);//捕获全局键盘事件
     a.installNativeEventFilter(fliter); // 捕获程序键盘事件
@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
         Update::instance()->onFinish();
         fliter->deleteLater();
     });
+    Flow_edit_panel::instance();// 初始化时间过长，提前初始化一次
 //    Update::instance()->save();
     int ans = a.exec();
 

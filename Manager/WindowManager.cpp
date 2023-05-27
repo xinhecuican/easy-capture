@@ -45,15 +45,15 @@ void WindowManager::controlWindowClose() {
 }
 
 void WindowManager::closeWindow(QString name) {
-    if(windowList.find(name) != windowList.end() && name != activeWindow) {
+    if(name == activeWindow) {
+        qWarning("未关闭窗口调用closeWindow");
+    } else if(windowList.find(name) != windowList.end()) {
         windowList[name].window->onWindowClose();
         windowList[name].window->deleteLater();
         windowList.remove(name);
         qInfo() << "关闭窗口" << name;
     }
-    if(name == activeWindow) {
-        qWarning("未关闭窗口调用closeWindow");
-    }
+
 }
 
 void WindowManager::pushWindow(QString name, WindowBase *widget) {
@@ -67,8 +67,6 @@ void WindowManager::changeWindow(QString name) {
         KeyManager::onWindowChangeBegin(activeWindow, name);
         if(name == "tray") {
             windowList[activeWindow].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
-        } else {
-            windowList[name].window->setWindowFlag(Qt::WindowSystemMenuHint, true);
         }
         if(activeWindow != "tray" && windowList.contains(activeWindow)) {
             windowList[activeWindow].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
@@ -166,12 +164,4 @@ void WindowManager::hideNow() {
     currentHidden = true;
     windowList[activeWindow].window->hide();
     windowList[activeWindow].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
-}
-
-void WindowManager::hideToMain() {
-    currentHidden = true;
-    windowList[activeWindow].window->hide();
-    windowList[activeWindow].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
-    previousWindow = activeWindow;
-    activeWindow = "MainWindow";
 }

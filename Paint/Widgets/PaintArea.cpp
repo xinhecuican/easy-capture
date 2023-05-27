@@ -10,11 +10,11 @@
 #include<QMouseEvent>
 #include "opencv2/core.hpp"
 #include "opencv2/opencv.hpp"
-#include "Helper/image_helper.h"
+#include "Helper/imagehelper.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include<QImageWriter>
-#include "Helper/image_helper.h"
+#include "Helper/imagehelper.h"
 #include<QPixmapCache>
 #include "Paint/Widgets/Layers/text_layer.h"
 #include <QTextCodec>//转码
@@ -130,12 +130,12 @@ void PaintArea::initProcess() {
     QStringList args;
     QDir dir("ocr/models");
     QDir dir2("ocr");
-    args << "--models" << dir.absolutePath()
+    args << "--models" << "models/"
          << "--det" << "ch_PP-OCRv3_det_infer.onnx"
          << "--cls" << "ch_ppocr_mobile_v2.0_cls_infer.onnx"
          << "--rec" << "ch_PP-OCRv3_rec_infer.onnx"
          << "--keys" << "ppocr_keys_v1.txt"
-         << "--image" << dir2.absoluteFilePath("1.png")
+         << "--image" << "1.png"
          << "--numThread" << QString::number(Scroll_handler_global::instance()->num_core)
          << "--padding" << "50"
          << "--maxSideLen" << "1024"
@@ -144,7 +144,7 @@ void PaintArea::initProcess() {
          << "--unClipRatio" << "1.6"
          << "--doAngle" << "1"
          << "--mostAngle" << "1";
-    ocrProcess.setProgram("ocr/RapidOcrOnnx.exe");
+    ocrProcess.setProgram(dir2.absolutePath() + "/RapidOcrOnnx.exe");
     ocrProcess.setArguments(args);
     ocrProcess.setWorkingDirectory(dir2.absolutePath());
     connect(&ocrProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [=](int exitCode, QProcess::ExitStatus exitStatus) {
@@ -333,7 +333,7 @@ bool PaintArea::save(History_data::save_type type, QString path) {
 //        image.fill(Qt::transparent);
         QPainter painter(&image);
         render(&painter, QRectF(QPointF(0, 0), image.size()), temp_rect);
-        cv::Mat temp_mat = Image_helper::QImage2Mat(image);
+        cv::Mat temp_mat = ImageHelper::QImage2Mat(image);
         temp_mat.copyTo(ans(cv::Rect(0, i, bound.width(), height)));
     }
     cv::imwrite(path.toLocal8Bit().toStdString(), ans);

@@ -100,7 +100,9 @@ void Config::updateAll() {
             updateConfig((setting)i);
         }
     }
+    temp_setting[version] = instance()->all_settings[version];
     instance()->all_settings = temp_setting;
+    saveToConfig();
 }
 
 void Config::setConfig(setting type, QVariant data) {

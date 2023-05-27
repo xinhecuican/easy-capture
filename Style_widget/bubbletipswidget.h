@@ -5,7 +5,9 @@
 #include <QTimer>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class BubbleTipsWidget; }
+namespace Ui {
+class BubbleTipsWidget;
+}
 QT_END_NAMESPACE
 
 // 三角形的高度
@@ -25,8 +27,7 @@ enum class DIRECT {
 };
 
 // 来源：https://blog.csdn.net/guorong520/article/details/108827925?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-108827925-blog-81699336.pc_relevant_aa2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-108827925-blog-81699336.pc_relevant_aa2&utm_relevant_index=6
-class BubbleTipsWidget : public QWidget
-{
+class BubbleTipsWidget : public QWidget {
     Q_OBJECT
 public:
     explicit BubbleTipsWidget(QWidget *parent = nullptr);
@@ -38,6 +39,7 @@ public:
     void setContentFont(QFont font = {});
     void setContent(const QString &content, QColor color = {});
     void addContent(QString content, QColor color = QColor());
+    void addContents(QStringList content, QColor color = QColor());
     void setFixContent(const QString content, QColor color = {});
     void clear();
     void setLeftTopMargin(int leftMargin = LEFT_MARGIN, int topMargin = TOP_MARGIN);
@@ -55,8 +57,7 @@ private:
     double          m_posSize    {0.75};
     int             m_leftMargin {LEFT_MARGIN};
     int             m_topMargin  {TOP_MARGIN};
-    struct ContentType
-    {
+    struct ContentType {
         QString text;
         QColor color;
     };

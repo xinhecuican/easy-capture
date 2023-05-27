@@ -30,4 +30,5 @@ static void createDirWithFile(QString filePath) {
     QDir dir(filePath.mid(0, index));
     dir.mkpath(dir.absolutePath());
 }
+
 #endif // COMMON_H

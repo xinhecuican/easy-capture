@@ -30,6 +30,7 @@
 #include <QSound>
 #include <QGuiApplication>
 #include <QApplication>
+#include "Helper/imagehelper.h"
 
 PaintWindow::PaintWindow(QWidget *parent) :
     WindowBase(parent)
@@ -116,8 +117,7 @@ void PaintWindow::loadKeyEvent(QString name) {
             PaintWindow* current = qobject_cast<PaintWindow*>(receiver);
             if(Config::getConfig<int>(Config::capture_mode) == (int)Config::TOTAL_CAPTURE) {
                 QTimer::singleShot(200, current, [=]() {
-                    QScreen *screen = QGuiApplication::primaryScreen();
-                    QPixmap map = screen->grabWindow(0);
+                    QPixmap map = ImageHelper::grabScreen();
                     WindowManager::changeWindow("PaintWindow");
                     WindowManager::getWindow("PaintWindow")->
                     setPic(map, QGuiApplication::primaryScreen()->geometry());
@@ -217,11 +217,10 @@ void PaintWindow::set_toolbar() {
         if(Config::getConfig<int>(Config::capture_mode) == Config::TOTAL_CAPTURE) {
             WindowManager::changeWindow("tray");
             QTimer::singleShot(200, this, [=]() {
-                QScreen *screen = QGuiApplication::primaryScreen();
-                QPixmap map = screen->grabWindow(0);
+                QPixmap map = ImageHelper::grabScreen();
                 WindowManager::changeWindow("PaintWindow");
                 WindowManager::getWindow("PaintWindow")->
-                setPic(map, screen->geometry());
+                setPic(map, ImageHelper::getCurrentScreen()->geometry());
             });
             return;
         } else {
@@ -539,6 +538,10 @@ void PaintWindow::reset() {
 
 void PaintWindow::onWindowCancel() {
 
+}
+
+void PaintWindow::onWindowSelect() {
+    setWindowFlag(Qt::WindowSystemMenuHint, true);
 }
 
 void PaintWindow::onPaintWindowClose() {

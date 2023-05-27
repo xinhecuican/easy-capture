@@ -23,11 +23,19 @@ ShapeLayer::ShapeLayer(QGraphicsItem* parent) : QGraphicsObject(parent) {
 }
 
 void ShapeLayer::reset() {
+    is_press = false;
+    is_enable = false;
+    is_focus = false;
+    isRect = false;
     focus_item = NULL;
+    shape = RECTANGLE;
+    blur_layer = NULL;
     QList<QGraphicsItem*> children = childItems();
     for(QGraphicsItem* item: children) {
         delete item;
     }
+    if(blur_layer != NULL)
+        delete blur_layer;
     blur_layer = new BlurLayer(this);
 }
 

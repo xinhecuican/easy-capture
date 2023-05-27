@@ -5,6 +5,8 @@
 #include "Data/update_dialog.h"
 #include<QNetworkReply>
 #include<QWidget>
+#include "Helper/common.h"
+
 
 class Update : public QWidget, public Serializable {
     Q_OBJECT

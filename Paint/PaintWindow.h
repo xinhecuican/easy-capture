@@ -30,6 +30,7 @@ public:
     void reset();
     void setPic(QPixmap pix, QRect rect)override;
     void onWindowCancel() override;
+    void onWindowSelect() override;
     void closeEvent(QCloseEvent* event)override;
     void onPaintWindowClose() override;
     void onWindowClose() override;

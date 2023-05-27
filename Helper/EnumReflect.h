@@ -6,58 +6,49 @@
 #include<QDebug>
 
 // Search and remove whitespace from both ends of the string
-static std::string TrimEnumString(const std::string &s)
-{
+static std::string TrimEnumString(const std::string &s) {
     std::string::const_iterator it = s.begin();
-    while (it != s.end() && isspace(*it)) { it++; }
+    while (it != s.end() && isspace(*it)) {
+        it++;
+    }
     std::string::const_reverse_iterator rit = s.rbegin();
-    if(s.find('=') != s.npos)//排除等号和后面的干扰
-    {
+    if(s.find('=') != s.npos) { //排除等号和后面的干扰
         bool meet_equal = false;
-        while(rit.base() != it && (isspace(*rit) || !meet_equal))
-        {
-            if(*rit == '=')
-            {
+        while(rit.base() != it && (isspace(*rit) || !meet_equal)) {
+            if(*rit == '=') {
                 meet_equal = true;
             }
             rit++;
         }
-    }
-    else
-    {
-        while (rit.base() != it && isspace(*rit)) { rit++; }
+    } else {
+        while (rit.base() != it && isspace(*rit)) {
+            rit++;
+        }
     }
     return std::string(it, rit.base());
 }
 
-static void SplitEnumArgs(const char* szArgs, std::string Array[], int nMax)
-{
+static void SplitEnumArgs(const char* szArgs, std::string Array[], int nMax) {
     std::stringstream ss(szArgs);
     std::string strSub;
     int nIdx = 0;
     while (ss.good() && (nIdx < nMax)) {
         getline(ss, strSub, ',');
         if(strSub.find("end") != strSub.npos ||
-                (strSub.substr(strSub.size()-5, 5) == "begin" && strSub.find("=") == strSub.npos))
-        {
+                (strSub.substr(strSub.size()-5, 5) == "begin" && strSub.find("=") == strSub.npos)) {
             continue;
         }
-        if(strSub.substr(strSub.size()-5, 5) == "begin")
-        {
+        if(strSub.substr(strSub.size()-5, 5) == "begin") {
             int end_place = 0;
-            for(int i=1; i<(int)strSub.length(); i++)
-            {
-                if(strSub[i] == ' ' || strSub[i] == '=')
-                {
+            for(int i=1; i<(int)strSub.length(); i++) {
+                if(strSub[i] == ' ' || strSub[i] == '=') {
                     end_place = i;
                     break;
                 }
             }
             Array[nIdx] = TrimEnumString(strSub.substr(0, end_place));
             nIdx++;
-        }
-        else
-        {
+        } else {
             Array[nIdx] = TrimEnumString(strSub);
             nIdx++;
         }
@@ -86,4 +77,4 @@ static void SplitEnumArgs(const char* szArgs, std::string Array[], int nMax)
  *
  * 之后如果是在类中定义的，还需要在类外声明一下_Strings，可以使用DEFINE_STRING宏
  */
-#endif // ENUM_HELPER_H
+#endif

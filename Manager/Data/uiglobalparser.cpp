@@ -4,6 +4,7 @@
 UIGlobalParser::UIGlobalParser() {
     pencilData = PaintData(QColor(150, 50, 50), 3);
     highlighterData = PaintData(QColor(255, 255, 0, 100), 12, QColor(255, 255, 255), Qt::RoundCap, Qt::RoundJoin);
+    captureBackgroundColor = QColor(0, 0, 0, 100);
     mosaicUnitSize = 4;
     mosaicRange = 12;
 }

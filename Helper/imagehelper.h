@@ -6,14 +6,20 @@
 #include "opencv2/imgproc/types_c.h"
 #define WIN32_LEAN_AND_MEAN
 #include<windows.h>
-class Image_helper
-{
+#include <QScreen>
+class ImageHelper {
 public:
-    Image_helper();
     static QImage Mat2QImage(cv::Mat const& src);
     static cv::Mat QImage2Mat(QImage const& src);
     static cv::Mat HBitmapToMat(HBITMAP& _hBmp);
     static bool is_equal(const cv::Mat& data1, const cv::Mat& data2);
+    static QScreen* getCurrentScreen();
+    static int getCurrentIndex();
+    static QPixmap grabScreen();
+    static QPixmap grabScreen(int index);
+    static QPixmap grabScreen(int index, WId wid);
+    static QPixmap grabScreen(int x, int y, int width, int height);
+    static QPixmap grabScreen(int index, int x, int y, int width, int height);
 };
 
 #endif // IMAGE_HELPER_H

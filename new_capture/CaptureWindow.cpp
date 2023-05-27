@@ -1,5 +1,4 @@
 #include "CaptureWindow.h"
-#include "ui_capture_window.h"
 #include "Manager/WindowManager.h"
 #include<QDebug>
 #include<QPainter>
@@ -11,7 +10,7 @@
 #include "hook.h"
 #include<QWindow>
 #include "window_fliter.h"
-#include "Helper/image_helper.h"
+#include "Helper/imagehelper.h"
 #include<malloc.h>
 #include<QBitmap>
 #include<stdio.h>
@@ -24,6 +23,7 @@
 #include "Paint/Widgets/recorder.h"
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include "Helper/math.h"
+#include <QGuiApplication>
 
 bool CaptureWindow::end_scroll = false;
 
@@ -54,7 +54,7 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_OpaquePaintEvent );
-    showFullScreen();
+//    showFullScreen();
     this->setMouseTracking(true);
     centralWidget->setMouseTracking(true);
 #ifdef QT_NO_DEBUG
@@ -78,10 +78,9 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     setCentralWidget(view);
     area->onViewSet(view);
     bubbleTipsWidget = new BubbleTipsWidget(this);
-    QList<QString> tips = {"{yrlS5RFyAi}按Ctrl键可以自行设置滚动大小", "{jjSL6uTMUW}在设置-捕获中可以调节滚动速度哦", "{sI4UKVCDun}按鼠标中键手动滚动"};
-    for(QString tip : tips) {
-        bubbleTipsWidget->addContent(tip);
-    }
+    QStringList tips;
+    tips << "{yrlS5RFyAi}按Ctrl键可以自行设置滚动大小" << "{jjSL6uTMUW}在设置-捕获中可以调节滚动速度哦" << "{sI4UKVCDun}按鼠标中键手动滚动";
+    bubbleTipsWidget->addContents(tips);
     bubbleTipsWidget->hide();
 
     timer = new QTimer(this);
@@ -354,8 +353,8 @@ void CaptureWindow::onWindowSelect() {
                     if(currentTime - lastCaptureTime > time) {
                         lastCaptureTime = currentTime;
                         QScreen * screen = QGuiApplication::primaryScreen();
-                        QPixmap pix = screen->grabWindow(0, active_window_bound.x(), active_window_bound.y(),
-                                                         active_window_bound.width(), active_window_bound.height());
+                        QPixmap pix = ImageHelper::grabScreen(active_window_bound.x(), active_window_bound.y(),
+                                                              active_window_bound.width(), active_window_bound.height());
                         QImage image = pix.toImage();
                         dispatcher->start(image);
                     }
@@ -427,8 +426,8 @@ void CaptureWindow::onWindowSelect() {
                             return;
                         }
                         scroll_hwnd = WindowFromPoint(point);
-                        QScreen * screen = QGuiApplication::primaryScreen();
-                        QPixmap pix = screen->grabWindow(WId(scroll_hwnd));
+                        scrollWindowIndex = ImageHelper::getCurrentIndex();
+                        QPixmap pix = ImageHelper::grabScreen(scrollWindowIndex, WId(scroll_hwnd));
                         QImage image = pix.toImage();
                         //                    image.save("f:/dinfo/temp.png");
                         for(int i=0; i<image.height(); i+=5) {
@@ -466,8 +465,7 @@ WINDOW_VALID_OUT:
         Style_manager::instance()->reset();
         Recorder::instance()->reset();
         view->show();
-        QScreen* screen = QGuiApplication::primaryScreen();
-        QPixmap p = screen->grabWindow(0);
+        QPixmap p = ImageHelper::grabScreen();
         area->setClipPic(p);
         area->stateChange(ARROW);
     }
@@ -496,10 +494,10 @@ void CaptureWindow::set_scroll_info() {
             QScreen * screen = QGuiApplication::primaryScreen();
             QPixmap pix;
             if(!window_valid || beforeState == SCROLLRECT_SETTED) {
-                pix = screen->grabWindow(0, active_window_bound.x(), active_window_bound.y(),
-                                         active_window_bound.width(), active_window_bound.height());
+                pix = ImageHelper::grabScreen(scrollWindowIndex, active_window_bound.x(), active_window_bound.y(),
+                                              active_window_bound.width(), active_window_bound.height());
             } else {
-                pix = screen->grabWindow(WId(scroll_hwnd));
+                pix = ImageHelper::grabScreen(scrollWindowIndex, WId(scroll_hwnd));
             }
 
             QWindow* mainWindow = QWindow::fromWinId(WId(scroll_hwnd));
@@ -524,10 +522,10 @@ void CaptureWindow::set_scroll_info() {
             QImage image = pix.toImage();
 
             bool success = false;
-            cv::Mat mat1 = Image_helper::QImage2Mat(pre_image);
+            cv::Mat mat1 = ImageHelper::QImage2Mat(pre_image);
             if(mat1.cols != 0) {
-                cv::Mat mat2 = Image_helper::QImage2Mat(image);
-                if(!Image_helper::is_equal(mat1, mat2))success = true;
+                cv::Mat mat2 = ImageHelper::QImage2Mat(image);
+                if(!ImageHelper::is_equal(mat1, mat2))success = true;
             } else {
                 success = true;
             }

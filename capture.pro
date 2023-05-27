@@ -17,7 +17,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Helper/debug.cpp \
-    Helper/image_helper.cpp \
+	Helper/imagehelper.cpp \
     Helper/log.cpp \
     Helper/math.cpp \
     Helper/mstring.cpp \
@@ -106,7 +106,7 @@ HEADERS += \
     Helper/Serialize.h \
     Helper/common.h \
     Helper/debug.h \
-    Helper/image_helper.h \
+	Helper/imagehelper.h \
     Helper/log.h \
     Helper/math.h \
     Helper/mstring.h \

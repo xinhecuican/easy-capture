@@ -56,6 +56,7 @@ private:
     QTimer* timer;
     QTimer* scroll_timer;
     HWND scroll_hwnd;
+    int scrollWindowIndex;
     int height_char;
     QPoint cursor_point;
     QPoint now_point;

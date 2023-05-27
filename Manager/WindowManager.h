@@ -39,11 +39,6 @@ public:
     static void showNow();
     static void hideNow();
 
-    /**
-     * @brief hideToMain
-     * @deprecated
-     */
-    static void hideToMain();
     static void createWindow(QString name);
 private:
     struct WindowData {

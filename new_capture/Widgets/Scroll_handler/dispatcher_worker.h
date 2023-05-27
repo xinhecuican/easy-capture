@@ -6,7 +6,7 @@
 #include<QMap>
 #include<QMutex>
 #include "opencv2/core/core.hpp"
-#include "Helper/image_helper.h"
+#include "Helper/imagehelper.h"
 using namespace cv;
 
 class Dispatcher_worker : public QObject

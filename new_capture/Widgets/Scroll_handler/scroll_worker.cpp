@@ -4,7 +4,7 @@
 #include<QDebug>
 #include<QDateTime>
 #include<QThread>
-#include "Helper/image_helper.h"
+#include "Helper/imagehelper.h"
 #include "Helper/debug.h"
 #include "Scroll_handler_global.h"
 
@@ -21,8 +21,8 @@ Scroll_worker::~Scroll_worker()
 
 void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
 {
-    cv::Mat img1 = Image_helper::QImage2Mat(image1);
-    cv::Mat img2 = Image_helper::QImage2Mat(image2);
+    cv::Mat img1 = ImageHelper::QImage2Mat(image1);
+    cv::Mat img2 = ImageHelper::QImage2Mat(image2);
     cv::Mat temp_img1 = img1(cv::Rect(0, image1.height()-img_height, image1.width(), img_height));
     cv::Mat temp_img2 = img2(cv::Rect(0, 0, image2.width(), img_height));
     cv::Mat scroll_image1, scroll_image2;
@@ -79,7 +79,7 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
             .copyTo(ans_image1(cv::Rect(0, img1.rows+image.rows - img_height, img2.cols, img2.rows-img_height)));
     }
     // QImage高上限为32700，因此长图需要通过Mat进行转换
-    QImage ans_image = Image_helper::Mat2QImage(ans_image1);
+    QImage ans_image = ImageHelper::Mat2QImage(ans_image1);
     emit work_finish(ans_image);
 }
 
