@@ -48,10 +48,9 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-UpdateData Update::now_version = UpdateData("0.6.1",
-                                 "http://121.37.81.150:8200/easycapture/update/0.6.1.zip", "",
-                                 "1. 优化启动截屏的速度",
-                                 true);
+UpdateData Update::now_version = UpdateData("0.6.2",
+                                 "http://121.37.81.150:8200/easycapture/update/0.6.2.zip", "",
+                                 "1. 修复更新崩溃的bug");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;
@@ -128,7 +127,7 @@ void Update::start_request(const QUrl &url) {
             out<< codec->toUnicode(reply->readAll());
             file.close();
             Serialize::deserialize("Data/Temp/update_msg.json", this);
-            if(newest_data > now_version) {
+            if(data_list.size() != 0) {
                 if(Config::getConfig<bool>(Config::show_update_box)) {
                     dialog = new Update_dialog(data_list, this);
                     connect(dialog, &Update_dialog::download_finished, this, [=]() {
