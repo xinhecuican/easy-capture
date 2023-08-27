@@ -20,7 +20,7 @@ UpdateDownloader::UpdateDownloader(QList<UpdateData> data, QObject* parent) : QO
             timerReceive = currentReceive;
         }
     });
-    qDebug() << "开始更新";
+    qDebug() << "开始更新" ;
 }
 
 /**

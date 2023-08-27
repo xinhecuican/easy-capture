@@ -1,12 +1,12 @@
 *{
-	font-size: 15px;
+	font-size: 10pt;
 	font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
 }
 
 /* 悬浮在列表项时的状态 */
 .ListWrapper:hover{
 	background-color: #CDCDCD;
-	border-radius: 10px;
+	border-radius: 10pt;
 }
 
 TabWidget{
@@ -27,12 +27,12 @@ KeyOption{
 }
 
 Spacer{
-	margin-bottom: 5px;
-	margin-top: 5px;
+	margin-bottom: 3pt;
+	margin-top: 3pt;
 }
 
 Spacer QLabel{
-	font-size: 25px;
+	font-size: 15pt;
 	font-weight: bolder;
 	font-family: Roman, '华文仿宋';
 }
@@ -44,15 +44,15 @@ Spacer QFrame#line{
 }
 
 QLabel#easyCapture{
-	font-size: 25px;
+	font-size: 15pt;
 	font-weight: bolder;
 	font-family: Roman, '华文仿宋';
 }
 
 QTabBar::tab {
-    min-width: 90px;
-    min-height: 28px;
-	font: 18px;
+    min-width: 100pt;
+    min-height: 28pt;
+	font: 10pt;
 	font-weight: bold;
 }
 
@@ -86,11 +86,10 @@ QScrollBar::sub-line:horizontal, QScrollBar::add-line:horizontal {
 
 /* 未下拉时，QComboBox的样式 */
 QComboBox {
-    border-radius: 3px;
-    padding: 1px 18px 1px 3px;
+    border-radius: 3pt;
+    padding: 1pt 18pt 1pt 3pt;
     background: transparent; 
     border: 1px solid #B4B4B4; 
-	color: #B4B4B4;
 	background-color: #FFFFFF;
 }
 /* 点击QComboBox后的已选中项的样式 */
@@ -145,7 +144,7 @@ QComboBox::down-arrow:on {
 
 QLineEdit {
 	border: 1px solid #A0A0A0; /* 边框宽度为1px，颜色为#A0A0A0 */
-	border-radius: 3px; /* 边框圆角 */
+	border-radius: 3pt; /* 边框圆角 */
 	padding-left: 5px; /* 文本距离左边界有5px */
 	background-color: #FFFFFF; /* 背景颜色 */
 	color: #A0A0A0; /* 文本颜色 */

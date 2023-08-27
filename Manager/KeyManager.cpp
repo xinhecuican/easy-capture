@@ -34,7 +34,7 @@ QList<QString> KeyManager::keySettings = {
     "CaptureWindow:capture_redo;16777249,88",
     "CaptureWindow:enter_capture;16777220",//enter
     "CaptureWindow:save2file;16777249,83",
-    "CaptureWindow:save2clip;16777249,69",
+    "CaptureWindow:save2clip;16777249,67",
     "CaptureWindow:capture_scrollrect;16777249",
     "PaintWindow:undo;16777249,90",
     "PaintWindow:redo;16777249,88",
@@ -471,6 +471,10 @@ void KeyManager::registerAll() {
             globalKeys[i].registered = RegisterHotKey((HWND)MainFilter::instance()->winId(), globalKeys[i].keyId, nativeModKeyCode((Qt::Key)globalKeys[i].modKey), nativeKeycode((Qt::Key)globalKeys[i].key));
         }
     }
+}
+
+void KeyManager::clearKeys(){
+    availiableKey.clear();
 }
 
 quint32 KeyManager::nativeKeycode(Qt::Key keycode) {

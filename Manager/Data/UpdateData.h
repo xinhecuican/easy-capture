@@ -31,6 +31,13 @@ public:
         return sum1 < sum2;
     }
 
+    bool operator<=(UpdateData& data) {
+        int sum1, sum2;
+        decompress_version(&sum1);
+        data.decompress_version(&sum2);
+        return sum1 <= sum2;
+    }
+
     bool operator>(UpdateData& data) {
         int sum1, sum2;
         decompress_version(&sum1);

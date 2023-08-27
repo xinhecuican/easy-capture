@@ -106,6 +106,7 @@ void PaintWindow::loadKeyEvent(QString name) {
         if(is_enter) {
             QString file_name = QFileDialog::getSaveFileName(this,"保存",
                                 History::instance()->get_last_directory(), "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+            KeyManager::clearKeys();
             if(file_name != "") {
                 current->area->save(History_data::Persist, file_name);
                 WindowManager::changeWindow("tray");

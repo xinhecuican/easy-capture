@@ -35,6 +35,7 @@ public:
     static QList<QString> getWindowNames();
     static QList<QString> getKeyNames(QString window_name);
     static QList<QString> detectKeyConflict(QString window_name, QString key_name, QList<int> keys);
+    static void clearKeys();
 
     static quint32 nativeKeycode(Qt::Key keycode);
     static quint32 nativeModKeyCode(Qt::Key keycode);

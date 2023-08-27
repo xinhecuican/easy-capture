@@ -213,8 +213,8 @@ DEFINES += QT_MESSAGELOGCONTEXT
 RESOURCES += \
     Resource/Resources.qrc\
 
-win32:CONFIG(release, debug|release): include(F:/capture/qBreakpad/qBreakpad.pri)
-win32:CONFIG(release, debug|release): QMAKE_LIBDIR += F:/capture/qBreakpad/handler
+win32:CONFIG(release, debug|release): include($$PWD/../qBreakpad/qBreakpad.pri)
+win32:CONFIG(release, debug|release): QMAKE_LIBDIR += $$PWD/../qBreakpad/handler
 win32:CONFIG(release, debug|release): LIBS += -lqBreakpad
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Release/release/ -lHook
@@ -245,17 +245,17 @@ LIBS += \
 
 RC_FILE = logo.rc
 
-INCLUDEPATH += F:/capture/opencv/opencv4.5.1/include \
-    F:/capture/opencv/opencv4.5.1/include/opencv2
+INCLUDEPATH += $$PWD/../opencv/opencv4.5.1/include \
+    $$PWD/../opencv/opencv4.5.1/include/opencv2
 
 #LIBS += F:/capture/opencv/opencv4.5.1/x64/mingw/lib/libopencv_*
-win32:CONFIG(release, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../opencv/opencv4.5.1-msvc/x64/vc16/lib\
 -lopencv_xfeatures2d451 -lopencv_imgproc451 -lopencv_imgcodecs451\
 -lopencv_core451 -lopencv_flann451 -lopencv_calib3d451 -lopencv_features2d451
-else:win32:CONFIG(debug, debug|release): LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../opencv/opencv4.5.1-msvc/x64/vc16/lib\
 -lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
 -lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d -lopencv_highgui451d
-else:unix: LIBS += -LF:/capture/opencv/opencv4.5.1-msvc/x64/vc16/lib\
+else:unix: LIBS += -L$$PWD/../opencv/opencv4.5.1-msvc/x64/vc16/lib\
 -lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
 -lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d
 
@@ -264,9 +264,9 @@ msvc {
     QMAKE_CXXFLAGS += /utf-8
 }
 
-DEPENDPATH += C:/usr/software/Visual_Leak_Detector/include
-INCLUDEPATH += C:/usr/software/Visual_Leak_Detector/include
-win32:CONFIG(release, debug|release): LIBS += -LC:/usr/software/Visual_Leak_Detector/lib/Win64 -lvld
+DEPENDPATH += E:/libs/Visual_Leak_Detector/include
+INCLUDEPATH += E:/libs/Visual_Leak_Detector/include
+win32:CONFIG(release, debug|release): LIBS += -LE:/libs/Visual_Leak_Detector/lib/Win64 -lvld
 
 DISTFILES += \
 	Resource/toolbar.qss

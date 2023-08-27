@@ -48,9 +48,10 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-UpdateData Update::now_version = UpdateData("0.6.2",
-                                 "http://121.37.81.150:8200/easycapture/update/0.6.2.zip", "",
-                                 "1. 修复更新崩溃的bug");
+UpdateData Update::now_version = UpdateData("0.6.3",
+                                 "http://121.37.81.150:8200/easycapture/update/0.6.3.zip", "",
+                                 "1. 修复保存后快捷键失效的bug\n"
+                                 "2. 设置界面字体高dpi适配");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;
@@ -71,6 +72,9 @@ void Update::deserialized(QJsonObject *json) {
         data.deserialized(&version);
         if(data == now_version) {
             now_version.set_time(data.get_time());
+            break;
+        }
+        else if(data <= now_version){
             break;
         }
         if(!Config::getConfig<bool>(Config::receive_beta) && data.isBeta())
@@ -135,6 +139,7 @@ void Update::start_request(const QUrl &url) {
                     });
                     dialog->show();
                 } else {
+                    qDebug() << "当前版本: " << now_version.get_version();
                     UpdateDownloader* downloader = new UpdateDownloader(data_list, this);
                     downloader->start();
                     connect(downloader, &UpdateDownloader::success, this, [=]() {

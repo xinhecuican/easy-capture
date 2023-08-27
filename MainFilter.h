@@ -10,7 +10,7 @@
 
 /**
  * @brief The MainFilter class
- * 用于注册快捷键，全局快捷键和托盘，它会处理全局快捷键事件，并且将本进程的键盘事件传递给@ref KeyManager
+ * 用于注册快捷键，全局快捷键和托盘，它会处理全局快捷键事件，并且将本进程的键盘事件传递给 @ref KeyManager
  * 此外还会检查更新及启用定时器来调用 @ref WindowManager::controlWindowClose()
  */
 class MainFilter : public QWidget, public QAbstractNativeEventFilter {

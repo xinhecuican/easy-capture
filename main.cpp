@@ -37,6 +37,8 @@
 //#endif
 
 void registerClasses();
+void setupDebug();
+void preLoad();
 #ifdef TEST
 #include "Tests/AllTests.h"
 #include <QTest>
@@ -47,21 +49,15 @@ int main(int argc, char *argv[]) {
     // 设置PWD
     QString applicationDirPathStr = QCoreApplication::applicationDirPath();
     QDir::setCurrent(applicationDirPathStr);
-#ifndef QT_DEBUG
-    QBreakpadInstance.setDumpPath(QLatin1String("crashs"));
-    QBreakpadInstance.mainVersion = Update::now_version.get_version();
-    logSysInit("Data/Temp/log.txt");
-#endif
-    Config::loadConfig();
+
     if(argc == 3 && strncmp(argv[1], "buildTheme", 20) == 0) {
         UIManager::instance()->buildRelease(QString(argv[2]));
         return 0;
     }
-    KeyManager::load();
-    KeyManager::registerGlobalKey("awake_capture");
-    KeyManager::registerGlobalKey("fullscreen_capture");
-    MString::load_from_file("Data/Languages/");
-    registerClasses();
+
+    setupDebug();
+    preLoad();
+
     MainFilter* fliter = MainFilter::instance();
     a.installEventFilter(fliter);//捕获全局键盘事件
     a.installNativeEventFilter(fliter); // 捕获程序键盘事件
@@ -92,4 +88,21 @@ void registerClasses() {
     Reflect::registerClass<BlurLayer>();
     Reflect::registerClass<ArrowLayer>();
     Reflect::registerClass<ClipRegion>();
+}
+
+void setupDebug(){
+#ifndef QT_DEBUG
+    QBreakpadInstance.setDumpPath(QLatin1String("crashs"));
+    QBreakpadInstance.mainVersion = Update::now_version.get_version();
+    logSysInit("Data/Temp/log.txt");
+#endif
+}
+
+void preLoad(){
+    Config::loadConfig();
+    KeyManager::load();
+    KeyManager::registerGlobalKey("awake_capture");
+    KeyManager::registerGlobalKey("fullscreen_capture");
+    MString::load_from_file("Data/Languages/");
+    registerClasses();
 }

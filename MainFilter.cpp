@@ -16,6 +16,7 @@
 #include "Manager/update.h"
 #include "Manager/uimanager.h"
 #include "Helper/imagehelper.h"
+#include <QDebug>
 
 MainFilter* MainFilter::_instance = NULL;
 

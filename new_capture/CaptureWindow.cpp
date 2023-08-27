@@ -229,6 +229,7 @@ void CaptureWindow::loadKeyEvent(QString name) {
                                 "保存",
                                 History::instance()->get_last_directory(),
                                 "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+            KeyManager::clearKeys();
             if(file_name != "") {
                 if(current->area->save(History_data::Persist, file_name))
                     WindowManager::changeWindow("tray");
