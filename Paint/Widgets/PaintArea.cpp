@@ -165,7 +165,6 @@ void PaintArea::setPic(QPixmap pic, QRect rect) {
     for(QColor color : History::instance()->get_color()) {
         pic_layer->setSaveDisableColor(-1, color);
     }
-    setSceneRect(0, 0, rect.width() * 2, rect.height() * 2);
 }
 
 void PaintArea::setClipPic(QPixmap pix) {
@@ -413,3 +412,11 @@ RecordInfo PaintArea::getRecordInfo() {
         return clip_layer->getRecordInfo();
     return RecordInfo();
 }
+
+//void PaintArea::wheelEvent(QGraphicsSceneWheelEvent *event){
+//    if(pic_layer != NULL){
+//        pic_layer->setCurrentPos(event->scenePos());
+//        pic_layer->update();
+//    }
+//    QGraphicsScene::wheelEvent(event);
+//}

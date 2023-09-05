@@ -12,6 +12,8 @@
 #include "Helper/plist.h"
 #include <QGraphicsObject>
 #include "rect_layer.h"
+#include <QGraphicsPixmapItem>
+#include "LayerItems/picitem.h"
 
 class Picture_layer : public QGraphicsObject
 {
@@ -35,12 +37,11 @@ public:
 private:
 
     RectLayer* rect_layer;
-    QPixmap pix;
+    PicItem* picItem;
     QRectF bound;
-    QRectF mask;
     QList<QColor> disable_color;
     QList<QColor> save_disable_color;
-    QPixmap mask_pix;
+    QRectF mask;
 };
 
 #endif // PICTURE_LAYER_H

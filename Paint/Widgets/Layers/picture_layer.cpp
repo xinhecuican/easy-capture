@@ -4,15 +4,18 @@
 #include<QGraphicsSceneHoverEvent>
 #include "Paint/Widgets/Recorder_element/resize_record.h"
 #include "Paint/Widgets/recorder.h"
+#include "Helper/imagehelper.h"
 
 Picture_layer::Picture_layer(QGraphicsItem* parent): QGraphicsObject(parent) {
     rect_layer = new RectLayer(this, boundingRect());
+    picItem = new PicItem(this);
     connect(rect_layer, &RectLayer::sizeChange, this, [=]() {
         prepareGeometryChange();
         ResizeRecord* record = new ResizeRecord(this, "undoRedoSizeFunc",
                                                 mask, rect_layer->boundingRect());
         Recorder::instance()->record(record);
         mask = rect_layer->boundingRect();
+        picItem->setMask(mask);
         this->update();
     });
 //    rect_layer->setAcceptHoverEvents(false);
@@ -24,13 +27,12 @@ Picture_layer::Picture_layer(QGraphicsItem* parent): QGraphicsObject(parent) {
 }
 
 void Picture_layer::setPixmap(const QPixmap &pix) {
-    this->pix = pix;
-    mask_pix = pix;
     this->bound.setHeight(pix.height());
     this->bound.setWidth(pix.width());
     mask = this->bound;
     rect_layer->setBounding(this->boundingRect());
-    rect_layer->setLimit(mask);
+    rect_layer->setLimit(bound);
+    picItem->setPix(pix);
 }
 
 QRectF Picture_layer::boundingRect() const {
@@ -38,12 +40,11 @@ QRectF Picture_layer::boundingRect() const {
 }
 
 void Picture_layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    painter->drawPixmap(mask.topLeft(), mask_pix, mask);
+//    painter->drawPixmap(mask.topLeft(), mask_pix, mask);
 }
 
 void  Picture_layer::reset() {
-    pix = QPixmap();
-    mask_pix = QPixmap();
+    picItem->reset();
     bound = QRectF();
     mask = QRectF();
 }
@@ -53,45 +54,15 @@ void Picture_layer::setEnableMove(bool enable) {
 }
 
 void Picture_layer::setDisableColor(int index, QColor color) {
-    if(index != -1) {
-        disable_color.removeAt(index);
-    } else {
-        disable_color.append(color);
-    }
-    QImage temp = pix.toImage();
-    for(QColor color : disable_color) {
-        QImage mask = temp.createMaskFromColor(color.rgb(), Qt::MaskOutColor);
-        temp.setAlphaChannel(mask);
-    }
-    for(QColor color: save_disable_color) {
-        QImage mask = temp.createMaskFromColor(color.rgb(), Qt::MaskOutColor);
-        temp.setAlphaChannel(mask);
-    }
-    mask_pix = QPixmap::fromImage(temp);
-    update();
+    picItem->setDisableColor(index, color);
 }
 
 void Picture_layer::setSaveDisableColor(int index, QColor color) {
-    if(index != -1) {
-        save_disable_color.removeAt(index);
-    } else {
-        save_disable_color.append(color);
-    }
-    QImage temp = pix.toImage();
-    for(QColor color: save_disable_color) {
-        QImage mask = temp.createMaskFromColor(color.rgb(), Qt::MaskOutColor);
-        temp.setAlphaChannel(mask);
-    }
-    for(QColor color : disable_color) {
-        QImage mask = temp.createMaskFromColor(color.rgb(), Qt::MaskOutColor);
-        temp.setAlphaChannel(mask);
-    }
-    mask_pix = QPixmap::fromImage(temp);
-    update();
+    picItem->setSaveDisableColor(index, color);
 }
 
 bool Picture_layer::containsPicture() {
-    return !pix.isNull();
+    return picItem->containsPicture();
 }
 
 void Picture_layer::prepareSave() {
@@ -107,9 +78,11 @@ void Picture_layer::undoRedoSizeFunc(bool is_undo, QRectF before_rect, QRectF af
     if(is_undo) {
         mask = before_rect;
         rect_layer->setBounding(before_rect);
+        picItem->setMask(mask);
     } else {
         mask = after_rect;
         rect_layer->setBounding(after_rect);
+        picItem->setMask(mask);
     }
     update();
 }

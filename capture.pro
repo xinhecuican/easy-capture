@@ -40,6 +40,7 @@ SOURCES += \
     Paint/Widgets/Layer_list/list_widget.cpp \
     Paint/Widgets/Layers/LayerItems/expandbutton.cpp \
     Paint/Widgets/Layers/LayerItems/paintitem.cpp \
+	Paint/Widgets/Layers/LayerItems/picitem.cpp \
     Paint/Widgets/Layers/LayerItems/scrollitem.cpp \
     Paint/Widgets/Layers/arrowlayer.cpp \
     Paint/Widgets/Layers/blurlayer.cpp \
@@ -136,6 +137,7 @@ HEADERS += \
     Paint/Widgets/Layer_list/list_widget.h \
     Paint/Widgets/Layers/LayerItems/expandbutton.h \
     Paint/Widgets/Layers/LayerItems/paintitem.h \
+	Paint/Widgets/Layers/LayerItems/picitem.h \
     Paint/Widgets/Layers/LayerItems/scrollitem.h \
     Paint/Widgets/Layers/arrowlayer.h \
     Paint/Widgets/Layers/baselayer.h \

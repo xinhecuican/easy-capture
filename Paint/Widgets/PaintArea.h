@@ -40,6 +40,7 @@ public:
     void onViewSet(QWidget* view);
     void clipButtonEnter(int id);
     void startOcr();
+//    void wheelEvent(QGraphicsSceneWheelEvent *event) override;
     RecordInfo getRecordInfo();
 private:
     void setOtherLayer();

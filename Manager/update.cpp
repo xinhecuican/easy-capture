@@ -48,10 +48,9 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-UpdateData Update::now_version = UpdateData("0.6.3",
-                                 "http://121.37.81.150:8200/easycapture/update/0.6.3.zip", "",
-                                 "1. 修复保存后快捷键失效的bug\n"
-                                 "2. 设置界面字体高dpi适配");
+UpdateData Update::now_version = UpdateData("0.6.4",
+                                 "http://121.37.81.150:8200/easycapture/update/0.6.4.zip", "",
+                                 "1. 修复长图无法显示的bug");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;

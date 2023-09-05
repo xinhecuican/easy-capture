@@ -30,7 +30,6 @@ QImage ImageHelper::Mat2QImage(cv::Mat const& mat) {
         QImage image(pSrc, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
         return image.rgbSwapped();
     } else if(mat.type() == CV_8UC4) {
-        qDebug() << "CV_8UC4";
         // Copy input Mat
         const uchar *pSrc = (const uchar*)mat.data;
         // Create QImage with same dimensions as input Mat

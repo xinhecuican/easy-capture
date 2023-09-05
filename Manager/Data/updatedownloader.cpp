@@ -14,7 +14,9 @@ UpdateDownloader::UpdateDownloader(QList<UpdateData> data, QObject* parent) : QO
     timerReceive = 0;
     connect(timeoutTimer, &QTimer::timeout, this, [=]() {
         if(timerReceive == currentReceive) {
-            reply->abort();
+            if(reply != NULL)
+                reply->abort();
+            timeoutTimer->stop();
         } else {
             qInfo() << "下载字节数: " << currentReceive;
             timerReceive = currentReceive;
@@ -51,6 +53,8 @@ void UpdateDownloader::startInner(QUrl url) {
         if (reply->error()) {
             qWarning() << "更新文件获取失败, 错误码: " + reply->errorString();
             reply->deleteLater();
+            reply = NULL;
+            timeoutTimer->stop();
             emit failure();
             return;
         }
@@ -74,6 +78,7 @@ void UpdateDownloader::startInner(QUrl url) {
             if(!file.open(QIODevice::ReadWrite | QIODevice::Truncate)) {
                 qWarning("文件打开失败\n位置Update_dialog");
                 Config::setConfig(Config::need_update, false);
+                timeoutTimer->stop();
                 emit failure();
                 return;
             }
@@ -109,10 +114,11 @@ void UpdateDownloader::startInner(QUrl url) {
             if (!redirectionTarget.isNull()) {
                 const QUrl redirectedUrl = url.resolved(redirectionTarget.toUrl());
                 reply->deleteLater();
-                reply = nullptr;
+                reply = NULL;
                 startInner(redirectedUrl);
             } else {
                 qCritical() << "更新文件重定向失败";
+                timeoutTimer->stop();
                 emit failure();
             }
         }

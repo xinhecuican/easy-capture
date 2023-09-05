@@ -428,18 +428,19 @@ void CaptureWindow::onWindowSelect() {
                         }
                         scroll_hwnd = WindowFromPoint(point);
                         scrollWindowIndex = ImageHelper::getCurrentIndex();
-                        QPixmap pix = ImageHelper::grabScreen(scrollWindowIndex, WId(scroll_hwnd));
-                        QImage image = pix.toImage();
-                        //                    image.save("f:/dinfo/temp.png");
-                        for(int i=0; i<image.height(); i+=5) {
-                            for(int k=0; k<image.width(); k+=5) {
-                                if(image.pixel(k, i) != 0xff000000) {
-                                    window_valid = true;
-                                    goto WINDOW_VALID_OUT;
-                                }
-                            }
-                        }
-                        window_valid = false;
+//                        QPixmap pix = ImageHelper::grabScreen(scrollWindowIndex, WId(scroll_hwnd));
+//                        QImage image = pix.toImage();
+//                                            image.save("D:/Temp/temp.png");
+//                        for(int i=0; i<image.height(); i+=5) {
+//                            for(int k=0; k<image.width(); k+=5) {
+//                                if(image.pixel(k, i) != 0xff000000) {
+//                                    qDebug() << k << i << image.pixel(k, i);
+//                                    window_valid = true;
+//                                    goto WINDOW_VALID_OUT;
+//                                }
+//                            }
+//                        }
+//                        window_valid = false;
 
 WINDOW_VALID_OUT:
                         ;
@@ -494,12 +495,12 @@ void CaptureWindow::set_scroll_info() {
         connect(scroll_timer, &QTimer::timeout, this, [=]() {
             QScreen * screen = QGuiApplication::primaryScreen();
             QPixmap pix;
-            if(!window_valid || beforeState == SCROLLRECT_SETTED) {
+//            if(!window_valid || beforeState == SCROLLRECT_SETTED) {
                 pix = ImageHelper::grabScreen(scrollWindowIndex, active_window_bound.x(), active_window_bound.y(),
                                               active_window_bound.width(), active_window_bound.height());
-            } else {
-                pix = ImageHelper::grabScreen(scrollWindowIndex, WId(scroll_hwnd));
-            }
+//            } else {
+//                pix = ImageHelper::grabScreen(scrollWindowIndex, WId(scroll_hwnd));
+//            }
 
             QWindow* mainWindow = QWindow::fromWinId(WId(scroll_hwnd));
             QPoint window_point;
