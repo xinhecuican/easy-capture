@@ -48,9 +48,9 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-UpdateData Update::now_version = UpdateData("0.6.4",
-                                 "http://121.37.81.150:8200/easycapture/update/0.6.4.zip", "",
-                                 "1. 修复长图无法显示的bug");
+UpdateData Update::now_version = UpdateData("0.6.5",
+                                 "http://121.37.81.150:8200/easycapture/update/0.6.5.zip", "",
+                                 "1. 修复部分情况下无法滚动的bug");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;
@@ -107,6 +107,7 @@ void Update::start_request(const QUrl &url) {
             timer->start(2000);
             reply->deleteLater();
             updateState = IDLE;
+            timeoutTimer->stop();
             updateStateChange(updateState);
             return;
         }

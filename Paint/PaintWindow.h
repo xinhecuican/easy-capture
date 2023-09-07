@@ -28,12 +28,17 @@ public:
     void set_toolbar();
     void loadKeyEvent(QString name) override;
     void reset();
-    void setPic(QPixmap pix, QRect rect)override;
     void onWindowCancel() override;
     void onWindowSelect() override;
     void closeEvent(QCloseEvent* event)override;
     void onPaintWindowClose() override;
     void onWindowClose() override;
+    /**
+     * @brief receiveData
+     * @param data1 iamge: 接收的图像
+     * @param data2 rect: 图像的大小
+     */
+    void receiveData(QVariant data1 =QVariant(), QVariant data2 =QVariant()) override;
 public slots:
 //    void append_layer();
 //    void remove_layer(int index);

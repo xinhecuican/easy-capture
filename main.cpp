@@ -27,6 +27,7 @@
 #include<QPair>
 #include "Manager/uimanager.h"
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
+#include "Windows/scrollerwindow.h"
 #ifndef QT_DEBUG
 #include <QBreakpadHandler.h>
 #include <QBreakpadHttpUploader.h>
@@ -80,6 +81,7 @@ void registerClasses() {
     Reflect::registerClass<Setting>();
     Reflect::registerClass<CaptureWindow>();
     Reflect::registerClass<PaintWindow>();
+    Reflect::registerClass<ScrollerWindow>();
     Reflect::registerClass<RectLayer>();
     Reflect::registerClass<Text_layer>();
     Reflect::registerClass<Picture_layer>();

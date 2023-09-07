@@ -1,6 +1,7 @@
 #include "tray.h"
 #include "Manager/WindowManager.h"
 #include<QMenu>
+#include "Helper/common.h"
 
 Tray::Tray() {
 
@@ -12,7 +13,7 @@ Tray::Tray(QObject* parent) : QSystemTrayIcon(parent) {
     connect(this, &QSystemTrayIcon::activated, this, [=](QSystemTrayIcon::ActivationReason reason) {
         switch(reason) {
         case DoubleClick:
-            WindowManager::changeWindow("CaptureWindow");
+            changeWindowHelper();
             break;
         case Context:
 //            contextMenu()->show();

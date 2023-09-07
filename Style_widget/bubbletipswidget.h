@@ -46,6 +46,8 @@ public:
     void hideEvent(QHideEvent *event) override;
     void showEvent(QShowEvent *event) override;
     void setFix(bool isFix);
+public slots:
+    void contentChangeFunc();
 protected:
     void paintEvent(QPaintEvent *event)override;
 

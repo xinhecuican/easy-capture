@@ -24,7 +24,7 @@ public:
      * @brief changeWindow 切换到某个窗口，如果窗口不存在则创建
      * @param name 窗体的类名称
      */
-    static void changeWindow(QString name);
+    static void changeWindow(QString name, QVariant data1=QVariant(), QVariant data2=QVariant());
     static void openWindow(QString name);
     static QString getNowWindow();
     static void popWindow();

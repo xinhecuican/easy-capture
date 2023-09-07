@@ -22,15 +22,7 @@ BubbleTipsWidget::BubbleTipsWidget(QWidget *parent)
     loopTime = 3000;
     currentIndex = 0;
     contentChangeTimer = new QTimer(this);
-    connect(contentChangeTimer, &QTimer::timeout, this, [=]() {
-        if(contents.size() == 0)
-            return;
-        if(contents.size() <= currentIndex)
-            currentIndex = 0;
-        else
-            currentIndex = (currentIndex + 1) % contents.size();
-        setContent(contents[currentIndex].text, contents[currentIndex].color);
-    });
+    connect(contentChangeTimer, &QTimer::timeout, this, &BubbleTipsWidget::contentChangeFunc);
 //    setLeftTopMargin();
 }
 
@@ -92,8 +84,10 @@ void BubbleTipsWidget::hideEvent(QHideEvent *event) {
 
 void BubbleTipsWidget::showEvent(QShowEvent *event) {
     QWidget::showEvent(event);
-    if(!contentChangeTimer->isActive())
+    if(!contentChangeTimer->isActive()){
+        contentChangeFunc();
         contentChangeTimer->start(loopTime);
+    }
 }
 
 void BubbleTipsWidget::setLeftTopMargin(int leftMargin, int topMargin) {
@@ -132,7 +126,17 @@ void BubbleTipsWidget::setFix(bool isFix) {
         contentChangeTimer->stop();
     } else {
         isFixContent = false;
+        contentChangeFunc();
         contentChangeTimer->start(loopTime);
     }
 }
 
+void BubbleTipsWidget::contentChangeFunc(){
+    if(contents.size() == 0)
+        return;
+    if(contents.size() <= currentIndex)
+        currentIndex = 0;
+    else
+        currentIndex = (currentIndex + 1) % contents.size();
+    setContent(contents[currentIndex].text, contents[currentIndex].color);
+}

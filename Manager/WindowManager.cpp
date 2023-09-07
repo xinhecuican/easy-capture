@@ -60,7 +60,7 @@ void WindowManager::pushWindow(QString name, WindowBase *widget) {
     windowList[name] = createData(widget);
 }
 
-void WindowManager::changeWindow(QString name) {
+void WindowManager::changeWindow(QString name, QVariant data1, QVariant data2) {
     qInfo() << name << " " << activeWindow;
     createWindow(name);
     if(activeWindow != name) {
@@ -80,6 +80,7 @@ void WindowManager::changeWindow(QString name) {
         if(activeWindow != "tray") {
             windowList[activeWindow].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
             windowList[activeWindow].window->onWindowSelect();
+            windowList[activeWindow].window->receiveData(data1, data2);
             windowList[name].window->show();
         }
         KeyManager::onWindowChangeEnd();

@@ -58,9 +58,8 @@ PaintArea::PaintArea(QWidget* parent, bool enable_clip) : QGraphicsScene(parent)
             image.fill(Qt::transparent);
             QPainter painter(&image);
             render(&painter, QRectF(QPointF(0, 0), bound.size()), bound);
-            WindowManager::changeWindow("PaintWindow");
             bound.moveTo(0, 0);
-            WindowManager::getWindow("PaintWindow")->setPic(QPixmap::fromImage(image), bound.toRect());
+            WindowManager::changeWindow("PaintWindow", QPixmap::fromImage(image), bound.toRect());
             endSave();
         });
         connect(clip_layer, &ClipLayer::needClip, this, [=]() {

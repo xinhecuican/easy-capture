@@ -79,6 +79,7 @@ SOURCES += \
     Style_widget/tray.cpp \
     Tests/configtest.cpp \
     Tests/testwidget.cpp \
+	Windows/scrollerwindow.cpp \
     main.cpp \
     new_capture/CaptureWindow.cpp \
     new_capture/Widgets/Scroll_handler/Scroll_handle_global.cpp \
@@ -178,6 +179,7 @@ HEADERS += \
     Tests/AllTests.h \
     Tests/configtest.h \
     Tests/testwidget.h \
+	Windows/scrollerwindow.h \
     new_capture/CaptureWindow.h \
     new_capture/Widgets/Scroll_handler/Scroll_handler_global.h \
     new_capture/Widgets/Scroll_handler/dispatcher_worker.h \
