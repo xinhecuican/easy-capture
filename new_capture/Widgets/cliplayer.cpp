@@ -149,8 +149,7 @@ void ClipLayer::capture(QPixmap pix) {
     rect = path.boundingRect().toRect();
     ans = pix.copy(rect);
     rect.moveTo(0, 0);
-    WindowManager::changeWindow("PaintWindow");
-    WindowManager::getWindow("PaintWindow")->setPic(ans, rect);
+    WindowManager::changeWindow("PaintWindow", ans, rect);
 }
 
 void ClipLayer::setPic(QPixmap pix) {

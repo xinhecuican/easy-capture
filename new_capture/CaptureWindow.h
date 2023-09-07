@@ -42,7 +42,6 @@ public:
     void stopCaptureVideo() override;
 
 private:
-    enum ScrollState {IDLE, SCROLLRECT_SETTING, SCROLLRECT_SETTED, SCROLL_AUTO, SCROLL_MANUAL};
 //    Ui::CaptureWindow *ui;
     QWidget* centralWidget;
     bool button_click;
@@ -58,28 +57,15 @@ private:
     HWND scroll_hwnd;
     int scrollWindowIndex;
     int height_char;
-    QPoint cursor_point;
     QPoint now_point;
     QPoint end_point;
-    QImage scroll_image;
     bool begin_waiting;
     //bool combine_image(QImage image);
     Scroll_dispatcher* dispatcher;
-    QImage pre_image;
     bool is_finish;
-    void set_scroll_info();
-    bool window_valid;
     QGraphicsView* view;
     PaintArea* area;
-    bool isScrollRect;
-    bool isScrollRectEnter;
-    bool isScrollRectEnd;
-    bool isScrollManual;
-    BubbleTipsWidget* bubbleTipsWidget;
-    ScrollState scrollState;
-    ScrollState beforeState;
     VideoCaptureHandler* videoCapture;
-    qint64 lastCaptureTime;
     bool isVideoCapture;
 };
 

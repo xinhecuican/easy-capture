@@ -25,6 +25,14 @@ public:
     }
 
     /**
+     * @brief receiveData 用于窗口切换时接收参数
+     * @param data1
+     * @param data2
+     */
+    virtual void receiveData(QVariant data1=QVariant(), QVariant data2=QVariant()){
+    }
+
+    /**
      * @brief onWindowSelect 当窗体切换到前台后调用
      */
     virtual void onWindowSelect() {
@@ -58,13 +66,7 @@ public:
 
     }
 
-    //下面两个函数都是Paint_window用的
-    /**
-     * @brief setPic 设置绘图窗口的图片
-     * @param pix
-     * @param rect 图片的长和宽，顶点位于(0, 0)
-     */
-    virtual void setPic(QPixmap pix, QRect rect) {};
+    //下面函数是Paint_window用的
     virtual void onPaintWindowClose() {};
 
     /// CaptureWindow 录屏全局快捷键函数

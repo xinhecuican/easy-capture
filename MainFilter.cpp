@@ -71,10 +71,7 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
             if(pMsg->wParam == keyIds[i]) {
                 switch(i) {
                 case 0:
-                    if(WindowManager::getNowWindow() != "CaptureWindow") {
-                        WindowManager::changeWindow("CaptureWindow");
-                        return true;
-                    }
+                    changeWindowHelper();
                     break;
                 case 1:
                     WindowManager::changeWindow("tray");
@@ -185,16 +182,15 @@ void MainFilter::setTrayContextMenu() {
         QVariant index_var = action->data();
         int index = index_var.toInt();
         Config::setConfig(Config::capture_mode, index);
-        if(index == (int)Config::RECT_CAPTURE || index == (int)Config::FREE_CAPTURE
-                || index == (int)Config::SCROLL_CAPTURE)
+        if(index == (int)Config::RECT_CAPTURE || index == (int)Config::FREE_CAPTURE)
             WindowManager::changeWindow("CaptureWindow");
+        else if(index == (int)Config::SCROLL_CAPTURE)
+            WindowManager::changeWindow("ScrollerWindow");
         else if(index == Config::TOTAL_CAPTURE) {
             WindowManager::changeWindow("tray");
             QTimer::singleShot(200, this, [=]() {
                 QPixmap map = ImageHelper::grabScreen();
-                WindowManager::changeWindow("PaintWindow");
-                WindowManager::getWindow("PaintWindow")->
-                setPic(map, ImageHelper::getCurrentScreen()->geometry());
+                WindowManager::changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
                 if(Config::getConfig<bool>(Config::clip_voice))
                     QSound::play(":/audio/screenshot.wav");
             });

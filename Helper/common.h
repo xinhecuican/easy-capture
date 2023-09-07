@@ -5,6 +5,8 @@
 #include<QFile>
 #include <QDir>
 #include <QDebug>
+#include "Manager/WindowManager.h"
+#include "Manager/config.h"
 
 struct MRect {
     QPoint topleft;
@@ -29,6 +31,15 @@ static void createDirWithFile(QString filePath) {
     int index = filePath.lastIndexOf('/');
     QDir dir(filePath.mid(0, index));
     dir.mkpath(dir.absolutePath());
+}
+
+static void changeWindowHelper(){
+    if(Config::getConfig<int>(Config::capture_mode) == (int)Config::SCROLL_CAPTURE){
+        WindowManager::changeWindow("ScrollerWindow");
+    }
+    else{
+        WindowManager::changeWindow("CaptureWindow");
+    }
 }
 
 #endif // COMMON_H

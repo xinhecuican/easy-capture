@@ -31,6 +31,7 @@
 #include <QGuiApplication>
 #include <QApplication>
 #include "Helper/imagehelper.h"
+#include "Helper/common.h"
 
 PaintWindow::PaintWindow(QWidget *parent) :
     WindowBase(parent)
@@ -119,16 +120,14 @@ void PaintWindow::loadKeyEvent(QString name) {
             if(Config::getConfig<int>(Config::capture_mode) == (int)Config::TOTAL_CAPTURE) {
                 QTimer::singleShot(200, current, [=]() {
                     QPixmap map = ImageHelper::grabScreen();
-                    WindowManager::changeWindow("PaintWindow");
-                    WindowManager::getWindow("PaintWindow")->
-                    setPic(map, QGuiApplication::primaryScreen()->geometry());
+                    WindowManager::changeWindow("PaintWindow", map, QGuiApplication::primaryScreen()->geometry());
                     if(Config::getConfig<bool>(Config::clip_voice))
                         QSound::play(":/audio/screenshot.wav");
                 });
 
                 return;
             } else {
-                WindowManager::changeWindow("CaptureWindow");
+                changeWindowHelper();
             }
             Config::setConfig(Config::capture_mode, Config::RECT_CAPTURE);
         }
@@ -160,7 +159,7 @@ void PaintWindow::set_menubar() {
             }
             QRect rect = pixmap.rect();
             rect.moveTo(0, 0);
-            setPic(pixmap, rect);
+            receiveData(pixmap, rect);
         }
     });
     QAction* save_action = new QAction(MString::search("{0EtTa6lKzl}另存为"), file_setting_menu);
@@ -200,7 +199,7 @@ void PaintWindow::set_menubar() {
                     QRect rect = pixmap.rect();
                     rect.moveTo(0, 0);
 //                    area->pic_save = true;//不需要添加记录
-                    setPic(pixmap, rect);
+                    receiveData(pixmap, rect);
                 });
                 history_actions.append(action);
             }
@@ -219,13 +218,11 @@ void PaintWindow::set_toolbar() {
             WindowManager::changeWindow("tray");
             QTimer::singleShot(200, this, [=]() {
                 QPixmap map = ImageHelper::grabScreen();
-                WindowManager::changeWindow("PaintWindow");
-                WindowManager::getWindow("PaintWindow")->
-                setPic(map, ImageHelper::getCurrentScreen()->geometry());
+                WindowManager::changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
             });
             return;
         } else {
-            WindowManager::changeWindow("CaptureWindow");
+            changeWindowHelper();
         }
     });
     new_button->setText(MString::search("{cR3jOHb9Qw}新建"));
@@ -466,7 +463,9 @@ void PaintWindow::set_toolbar() {
 //    toolbar->addWidget(test_button);
 }
 
-void PaintWindow::setPic(QPixmap pix, QRect rect) {
+void PaintWindow::receiveData(QVariant data1, QVariant data2){
+    QPixmap pix = data1.value<QPixmap>();
+    QRect rect = data2.value<QRect>();
     reset();
     area->setPic(pix, rect);//在这个函数中还设置了paint_panel的大小
     paint_panel->update();
@@ -490,9 +489,6 @@ void PaintWindow::setPic(QPixmap pix, QRect rect) {
 
     paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
     paint_panel->horizontalScrollBar()->setValue(rect.width() / 2);
-//    paint_panel->verticalScrollBar()->setSliderPosition(rect.height() / 2);
-//    paint_panel->horizontalScrollBar()->setSliderPosition(rect.width() / 2);
-
 }
 
 void PaintWindow::closeEvent(QCloseEvent *event) {

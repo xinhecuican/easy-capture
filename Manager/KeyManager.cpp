@@ -40,7 +40,9 @@ QList<QString> KeyManager::keySettings = {
     "PaintWindow:redo;16777249,88",
     "PaintWindow:save;16777249,83",
     "PaintWindow:new_capture;16777249,78",
-    "PaintWindow:delete_shape;16777223"
+    "PaintWindow:delete_shape;16777223",
+    "ScrollerWindow:scroll_scrollrect;16777249",
+    "ScrollerWindow:scroll_leave;16777216"
 };
 
 QList<QString> globalKeySetting = {
