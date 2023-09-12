@@ -25,6 +25,8 @@ public:
     QRectF getClipRect();
     QPainterPath getPath();
 signals:
+    void regionChangeBegin(QPointF point);
+    void regionMove(QPointF point);
     void regionChanged();
 private:
     void addRegion(QPolygonF polygon);
@@ -39,7 +41,6 @@ private:
     bool begin_clip;
     bool is_save;
     bool is_enable;
-    QPixmap mask_pix;
     QPainterPath free_capture_path;
     PaintData borderData;
     QColor backgroundColor;

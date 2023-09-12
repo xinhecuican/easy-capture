@@ -25,12 +25,12 @@ BlurLayer::~BlurLayer() {
 }
 
 QRectF BlurLayer::boundingRect()const {
-    return QRectF(QPointF(0, 0), mask.size());
+    return bound;
 }
 
 QPainterPath BlurLayer::shape() const {
     QPainterPath ans;
-    ans.addRect(QRectF(QPointF(0, 0), mask.size()));
+    ans.addRect(bound);
     return ans;
 }
 
@@ -44,6 +44,25 @@ void BlurLayer::addPoint(QPoint point) {
     int times = 0;
     int begin_x = point.x() - range - point.x() % maskUnitSize;
     int begin_y = point.y() - range - point.y() % maskUnitSize;
+    int end_x = point.x() + 2 * range > mask.width() ? mask.width() - 1 : point.x() + 2 * range;
+    int end_y = point.y() + 2 * range > mask.height() ? mask.height() - 1 : point.y() + 2 * range;
+    if(bound.width() == 0 || bound.height() == 0){
+        bound = QRectF(QPointF(begin_x, begin_y), QPointF(end_x, end_y));
+    }
+    else{
+        if(bound.left() > begin_x){
+            bound.setLeft(begin_x);
+        }
+        if(bound.top() > begin_y){
+            bound.setTop(begin_y);
+        }
+        if(bound.right() < end_x){
+            bound.setRight(end_x);
+        }
+        if(bound.bottom() < end_y){
+            bound.setBottom(end_y);
+        }
+    }
 
     bool allUse = true;
     int unitDelta = range / maskUnitSize;
@@ -189,5 +208,6 @@ void BlurLayer::clearMaskUse() {
         }
         delete [] mask_use;
         is_allocate = false;
+        bound = QRectF();
     }
 }

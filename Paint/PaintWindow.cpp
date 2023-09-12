@@ -226,13 +226,13 @@ void PaintWindow::set_toolbar() {
         }
     });
     new_button->setText(MString::search("{cR3jOHb9Qw}新建"));
-    new_button->setIcon(QIcon(":/image/capture.png"));
+    new_button->setIcon(ImageHelper::getIcon("capture"));
     new_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolbar->addWidget(new_button);
 
     QToolButton* mode_button = new QToolButton(this);
     mode_button->setText(MString::search(MString::search("{7yUWnx82jI}模式")));
-    mode_button->setIcon(QIcon(":/image/mode.png"));
+    mode_button->setIcon(ImageHelper::getIcon("mode"));
     mode_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     mode_button->setPopupMode(QToolButton::InstantPopup);
     QMenu* mode_menu = new QMenu(this);
@@ -259,7 +259,7 @@ void PaintWindow::set_toolbar() {
     toolbar->addWidget(mode_button);
 
     QToolButton* clipboard_button = new QToolButton(this);
-    clipboard_button->setIcon(QIcon(":/image/clipboard.png"));
+    clipboard_button->setIcon(ImageHelper::getIcon("clipboard"));
     clipboard_button->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
     connect(clipboard_button, &QToolButton::clicked, this, [=]() {
         area->save2Clipboard();
@@ -267,7 +267,7 @@ void PaintWindow::set_toolbar() {
     toolbar->addWidget(clipboard_button);
 
     QToolButton* save_button = new QToolButton(this);
-    save_button->setIcon(QIcon(":/image/save.png"));
+    save_button->setIcon(ImageHelper::getIcon("save"));
     save_button->setToolTip(MString::search("{pJqTHhEQdb}保存"));
     connect(save_button, &QToolButton::clicked, this, [=]() {
         QString file_name = QFileDialog::getSaveFileName(this,
@@ -283,7 +283,7 @@ void PaintWindow::set_toolbar() {
     toolbar->addSeparator();
 
     QToolButton* undo_button = new QToolButton(this);
-    undo_button->setIcon(QIcon(":/image/undo.png"));
+    undo_button->setIcon(ImageHelper::getIcon("undo"));
     undo_button->setToolTip(MString::search("{h5KymvIMTN}撤销"));
     connect(undo_button, &QPushButton::clicked, this, [=]() {
         Recorder::instance()->back();
@@ -291,7 +291,7 @@ void PaintWindow::set_toolbar() {
     toolbar->addWidget(undo_button);
     QToolButton* redo_button = new QToolButton(this);
     redo_button->setToolTip(MString::search("{a7CaC7NOL5}恢复"));
-    redo_button->setIcon(QIcon(":/image/redo.png"));
+    redo_button->setIcon(ImageHelper::getIcon("redo"));
     connect(redo_button, &QPushButton::clicked, this, [=]() {
         Recorder::instance()->forward();
     });
@@ -311,7 +311,7 @@ void PaintWindow::set_toolbar() {
     });
 
     QToolButton* ocrButton = new QToolButton(this);
-    ocrButton->setIcon(QIcon(":/image/ocr.png"));
+    ocrButton->setIcon(ImageHelper::getIcon("ocr"));
     ocrButton->setToolTip(MString::search("{SvJhCjRGF0}提取文字"));
     connect(ocrButton, &QToolButton::clicked, this, [=]() {
         if(area->save(History_data::Editable, "ocr/1.png")) {
@@ -324,7 +324,7 @@ void PaintWindow::set_toolbar() {
     paint_button_group = new QButtonGroup(this);
     paint_button_group->setExclusive(true);
     cursor_button = new QToolButton(this);
-    cursor_button->setIcon(QIcon(":/image/cursor.png"));
+    cursor_button->setIcon(ImageHelper::getIcon("cursor"));
     cursor_button->setToolTip(MString::search("{l4yTU9QXUd}指针"));
     cursor_button->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
     cursor_button->setCheckable(true);
@@ -332,7 +332,7 @@ void PaintWindow::set_toolbar() {
     toolbar->addWidget(cursor_button);
 
     pencil_button = new QToolButton(this);
-    pencil_button->setIcon(QIcon(":/image/pencil.png"));
+    pencil_button->setIcon(ImageHelper::getIcon("pencil"));
 //    pencil_button->setToolTip();
     pencil_button->setCheckable(true);
     pencil_button->setChecked(true);
@@ -380,14 +380,14 @@ void PaintWindow::set_toolbar() {
 
     QToolButton* shape_button = new QToolButton(this);
     shape_button->setToolTip(MString::search("{25JzGpOvFt}形状"));
-    shape_button->setIcon(QIcon(":/image/shape.png"));
+    shape_button->setIcon(ImageHelper::getIcon("shape"));
     shape_button->setCheckable(true);
     paint_button_group->addButton(shape_button, 2);
     toolbar->addWidget(shape_button);
 
     QToolButton* erase_button = new QToolButton(this);
     erase_button->setToolTip(MString::search("{7cwKObEhcx}擦除"));
-    erase_button->setIcon(QIcon(":/image/eraser.png"));
+    erase_button->setIcon(ImageHelper::getIcon("eraser"));
     erase_button->setCheckable(true);
     paint_button_group->addButton(erase_button, 3);
     toolbar->addWidget(erase_button);
@@ -422,13 +422,13 @@ void PaintWindow::set_toolbar() {
 
     QToolButton* more_button = new QToolButton(this);
     more_button->setToolTip(MString::search("{dAIlC0hPf5}更多画图选项"));
-    more_button->setIcon(QIcon(":/image/more.png"));
+    more_button->setIcon(ImageHelper::getIcon("more"));
     connect(more_button, &QToolButton::clicked, this, &PaintWindow::showSettingPanel);
     toolbar->addWidget(more_button);
 
     QToolButton* setting_button = new QToolButton(this);
     setting_button->setToolTip(MString::search("{dTUpYwhZRM}设置"));
-    setting_button->setIcon(QIcon(":/image/setting.svg"));
+    setting_button->setIcon(ImageHelper::getIcon("setting"));
     connect(setting_button, &QToolButton::clicked, this, [=]() {
         WindowManager::openWindow("Setting");
     });

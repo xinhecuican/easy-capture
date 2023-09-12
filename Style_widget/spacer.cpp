@@ -4,6 +4,7 @@
 #include "Helper/mstring.h"
 #include <QStyleOption>
 #include <QPainter>
+#include "Helper/imagehelper.h"
 
 Spacer::Spacer() {
 
@@ -14,8 +15,8 @@ Spacer::Spacer(QString name, bool need_hide_button, QWidget* parent) : QWidget(p
     this->name = MString::search(name);
     this->parent = parent;
     widgets = PList<QWidget*>();
-    show_icon = QIcon(":/image/show.png");
-    hide_icon = QIcon(":/image/hide.png");
+    show_icon = ImageHelper::getIcon("show");
+    hide_icon = ImageHelper::getIcon("hide");
     if(!need_hide_button) {
         hide_button = new QToolButton(this);
         hide_button->setIcon(show_icon);

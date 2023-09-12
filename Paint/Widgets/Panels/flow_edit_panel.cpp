@@ -8,6 +8,7 @@
 #include<QAbstractItemView>
 #include<QDebug>
 #include "Manager/uimanager.h"
+#include "Helper/imagehelper.h"
 
 Flow_edit_panel* Flow_edit_panel::_instance = NULL;
 
@@ -17,7 +18,7 @@ Flow_edit_panel::Flow_edit_panel() {
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
     setWindowFlag(Qt::WindowSystemMenuHint, false);
     QToolButton* brush_button = new QToolButton(this);
-    brush_button->setIcon(QIcon(":/image/brush.png"));
+    brush_button->setIcon(ImageHelper::getIcon("brush"));
     brush_button->setToolTip("格式刷");
     connect(brush_button, &QToolButton::clicked, this, [=]() {
         emit text_brush();
@@ -95,7 +96,7 @@ Flow_edit_panel::Flow_edit_panel() {
     addSeparator();
 
     bold_button = new QToolButton(this);
-    bold_button->setIcon(QIcon(":/image/bold.png"));
+    bold_button->setIcon(ImageHelper::getIcon("bold", 48, 48));
     bold_button->setCheckable(true);
     connect(bold_button, &QToolButton::clicked, this, [=]() {
         if(fontData.font.bold()) {
@@ -109,7 +110,7 @@ Flow_edit_panel::Flow_edit_panel() {
     });
     addWidget(bold_button);
     italic_button = new QToolButton(this);
-    italic_button->setIcon(QIcon(":/image/italic.png"));
+    italic_button->setIcon(ImageHelper::getIcon("italic", 48, 48));
     italic_button->setCheckable(true);
     connect(italic_button, &QToolButton::clicked, this, [=]() {
         if(fontData.font.italic()) {
@@ -123,7 +124,7 @@ Flow_edit_panel::Flow_edit_panel() {
     });
     addWidget(italic_button);
     underline_button = new QToolButton(this);
-    underline_button->setIcon(QIcon(":/image/underline.png"));
+    underline_button->setIcon(ImageHelper::getIcon("underline", 48, 48));
     underline_button->setCheckable(true);
     connect(underline_button, &QToolButton::clicked, this, [=]() {
         if(fontData.font.underline()) {

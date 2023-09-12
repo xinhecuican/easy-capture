@@ -15,11 +15,13 @@ public:
     static bool is_equal(const cv::Mat& data1, const cv::Mat& data2);
     static QScreen* getCurrentScreen();
     static int getCurrentIndex();
+    static QRect getCurrentGeometry();
     static QPixmap grabScreen();
     static QPixmap grabScreen(int index);
     static QPixmap grabScreen(int index, WId wid);
     static QPixmap grabScreen(int x, int y, int width, int height);
     static QPixmap grabScreen(int index, int x, int y, int width, int height);
+    static QIcon getIcon(QString name, int pt_w=24, int pt_h=24);
 };
 
 #endif // IMAGE_HELPER_H

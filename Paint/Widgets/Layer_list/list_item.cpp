@@ -2,7 +2,7 @@
 #include<QBoxLayout>
 #include<QPushButton>
 #include<QToolButton>
-
+#include "Helper/imagehelper.h"
 
 List_item::List_item()
 {
@@ -14,10 +14,10 @@ List_item::List_item(QWidget* parent, QString text, bool useable) :QWidget(paren
     QHBoxLayout* layout = new QHBoxLayout(this);
     QVBoxLayout* move_button_layout = new QVBoxLayout(this);
     QToolButton* up_button = new QToolButton(this);
-    up_button->setIcon(QIcon(":/image/up.png"));
+    up_button->setIcon(ImageHelper::getIcon("up"));
     up_button->setIconSize(QSize(20, 20));
     QToolButton* down_button = new QToolButton(this);
-    down_button->setIcon(QIcon(":/image/down.png"));
+    down_button->setIcon(ImageHelper::getIcon("down"));
     down_button->setIconSize(QSize(20, 20));
     connect(up_button, &QPushButton::clicked, this, [=](){
         emit button_click(UP);
@@ -36,7 +36,7 @@ List_item::List_item(QWidget* parent, QString text, bool useable) :QWidget(paren
         emit text_change(name->text());
     });
     QToolButton* close_button = new QToolButton(this);
-    close_button->setIcon(QIcon(":/image/cancel.svg"));
+    close_button->setIcon(ImageHelper::getIcon("cancel"));
     connect(close_button, &QPushButton::clicked, this, [=](){
         emit button_click(CLOSE);
     });

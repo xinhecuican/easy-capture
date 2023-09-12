@@ -33,8 +33,18 @@ ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsIte
     currentshape(SHAPE_RECT) {
     screen_rect = QGuiApplication::primaryScreen()->geometry();
     mask_layer = new MaskLayer(this);
+    colorPicker = new ColorPicker(this);
+    colorPicker->hide();
+    connect(mask_layer, &MaskLayer::regionChangeBegin, this, [=](QPointF point){
+        colorPicker->show();
+        colorPicker->setPosition(point);
+    });
+    connect(mask_layer, &MaskLayer::regionMove, this, [=](QPointF point){
+        colorPicker->setPosition(point);
+    });
     connect(mask_layer, &MaskLayer::regionChanged, this, [=]() {
         calBarPos();
+        colorPicker->hide();
     });
     this->widget_parent = widget_parent;
     rect_setting = UIManager::instance()->getRectData();
@@ -155,6 +165,7 @@ void ClipLayer::capture(QPixmap pix) {
 void ClipLayer::setPic(QPixmap pix) {
     pixSet = true;
     this->pix = pix;
+    colorPicker->setPic(pix);
     update();
 }
 
@@ -193,50 +204,50 @@ void ClipLayer::setToolBar() {
     toolbar->hide();
 
     ocrButton = new QToolButton(toolbar);
-    ocrButton->setIcon(QIcon(":/image/ocr.png"));
+    ocrButton->setIcon(ImageHelper::getIcon("ocr"));
     ocrButton->setToolTip(MString::search("{SvJhCjRGF0}提取文字"));
     connect(ocrButton, &QToolButton::clicked, this, [=]() {
         emit requestOcr();
     });
 
     save_button = new QToolButton(toolbar);
-    save_button->setIcon(QIcon(":/image/save.png"));
+    save_button->setIcon(ImageHelper::getIcon("save"));
     save_button->setToolTip(MString::search("{pJqTHhEQdb}保存"));
     connect(save_button, &QToolButton::clicked, this, [=]() {
         emit needSave();
     });
 
     clip_button = new QToolButton(toolbar);
-    clip_button->setIcon(QIcon(":/image/clipboard.png"));
+    clip_button->setIcon(ImageHelper::getIcon("clipboard"));
     clip_button->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
     connect(clip_button, &QToolButton::clicked, this, [=]() {
         emit needClip();
     });
 
     erase_button = new QToolButton(toolbar);
-    erase_button->setIcon(QIcon(":/image/eraser.png"));
+    erase_button->setIcon(ImageHelper::getIcon("eraser"));
     erase_button->setToolTip(MString::search("{7cwKObEhcx}擦除"));
     erase_button->setCheckable(true);
 
     videoButton = new QToolButton(toolbar);
-    videoButton->setIcon(QIcon(":/image/videocam.png"));
+    videoButton->setIcon(ImageHelper::getIcon("videocam"));
     videoButton->setToolTip(MString::search("{UowiwjDUIy}视频"));
     videoButton->setCheckable(true);
 
     ok_button = new QToolButton(toolbar);
-    ok_button->setIcon(QIcon(":/image/ok.svg"));
+    ok_button->setIcon(ImageHelper::getIcon("ok"));
     connect(ok_button, &QToolButton::clicked, this, [=]() {
         emit requestImage();
     });
 
     cancel_button = new QToolButton(toolbar);
-    cancel_button->setIcon(QIcon(":/image/cancel.svg"));
+    cancel_button->setIcon(ImageHelper::getIcon("cancel"));
     connect(cancel_button, &QToolButton::clicked, this, [=]() {
         WindowManager::changeWindow("tray");
     });
 
     undo_button = new QToolButton(toolbar);
-    undo_button->setIcon(QIcon(":/image/undo.png"));
+    undo_button->setIcon(ImageHelper::getIcon("undo"));
     undo_button->setToolTip(MString::search("{h5KymvIMTN}撤销"));
     connect(undo_button, &QPushButton::clicked, this, [=]() {
         Recorder::instance()->back();
@@ -244,7 +255,7 @@ void ClipLayer::setToolBar() {
 
     redo_button = new QToolButton(toolbar);
     redo_button->setToolTip(MString::search("{a7CaC7NOL5}恢复"));
-    redo_button->setIcon(QIcon(":/image/redo.png"));
+    redo_button->setIcon(ImageHelper::getIcon("redo"));
     connect(redo_button, &QPushButton::clicked, this, [=]() {
         Recorder::instance()->forward();
     });
@@ -262,7 +273,7 @@ void ClipLayer::setToolBar() {
     });
 
     mosaic_button = new QToolButton(toolbar);
-    mosaic_button->setIcon(QIcon(":/image/mosaic.png"));
+    mosaic_button->setIcon(ImageHelper::getIcon("mosaic"));
     mosaic_button->setToolTip("马赛克");
     mosaic_button->setCheckable(true);
 
@@ -274,22 +285,22 @@ void ClipLayer::setToolBar() {
     cursor_button->setChecked(true);
 
     pencil_button = new QToolButton(toolbar);
-    pencil_button->setIcon(QIcon(":/image/pencil.png"));
+    pencil_button->setIcon(ImageHelper::getIcon("pencil"));
     pencil_button->setCheckable(true);
 
     highlighter_button = new QToolButton(toolbar);
     highlighter_button->setToolTip(MString::search("{j54u1kWtCx}荧光笔"));
-    highlighter_button->setIcon(QIcon(":/image/highlighter.png"));
+    highlighter_button->setIcon(ImageHelper::getIcon("highlighter"));
     highlighter_button->setCheckable(true);
 
     text_button = new QToolButton(toolbar);
     text_button->setToolTip("文本框");
-    text_button->setIcon(QIcon(":/image/text.png"));
+    text_button->setIcon(ImageHelper::getIcon("text"));
     text_button->setCheckable(true);
 
     shape_button = new QToolButton(toolbar);
     shape_button->setToolTip(MString::search("{25JzGpOvFt}形状"));
-    shape_button->setIcon(QIcon(":/image/shape.png"));
+    shape_button->setIcon(ImageHelper::getIcon("shape"));
     shape_button->setCheckable(true);
 
     button_group = new QButtonGroup(toolbar);
@@ -476,7 +487,7 @@ void ClipLayer::initAttributeToolbarWidget(int id) {
             rect_button = new QToolButton(attribute_toolbar);
             rect_button->setObjectName("rectButton");
             rect_button->setToolTip("矩形");
-            rect_button->setIcon(QIcon(":/image/rect.png"));
+            rect_button->setIcon(ImageHelper::getIcon("rect"));
             rect_button->setCheckable(true);
             rect_button->setChecked(true);
             rect_button->hide();
@@ -485,7 +496,7 @@ void ClipLayer::initAttributeToolbarWidget(int id) {
         if(arrow_button == NULL) {
             arrow_button = new QToolButton(attribute_toolbar);
             arrow_button->setObjectName("arrowButton");
-            arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
+            arrow_button->setIcon(ImageHelper::getIcon("paint_arrow"));
             arrow_button->setToolTip("{D7HSBXWTLj}箭头");
             arrow_button->setCheckable(true);
             arrow_button->hide();
@@ -564,13 +575,13 @@ void ClipLayer::initAttributeToolbarWidget(int id) {
             mode_group->setExclusive(true);
 
             rect_capture = new QToolButton(attribute_toolbar);
-            rect_capture->setIcon(QIcon(QPixmap(":/image/rect.png").scaled(42, 42)));
+            rect_capture->setIcon(ImageHelper::getIcon("rect"));
             rect_capture->setToolTip(MString::search("{OBwjJUhTkh}矩形窗口"));
             rect_capture->setChecked(true);
             rect_capture->setCheckable(true);
             rect_capture->setIconSize(QSize(36, 36));
             free_capture = new QToolButton(attribute_toolbar);
-            free_capture->setIcon(QIcon(QPixmap(":/image/painterpath.png").scaled(42,42)));
+            free_capture->setIcon(ImageHelper::getIcon("painterpath"));
             free_capture->setIconSize(QSize(36, 36));
             free_capture->setCheckable(true);
             mode_group->addButton(rect_capture, 0);

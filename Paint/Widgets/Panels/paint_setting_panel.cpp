@@ -14,6 +14,7 @@
 #include<QSpinBox>
 #include "Paint/Widgets/history.h"
 #include <QButtonGroup>
+#include "Helper/imagehelper.h"
 
 Paint_setting_panel* Paint_setting_panel::_instance = NULL;
 
@@ -77,7 +78,7 @@ void Paint_setting_panel::init_shape_setting()
 //    text_button->setCheckable(true);
 //    text_button->setChecked(true);
     text_button->setToolTip("文本框");
-    text_button->setIcon(QIcon(":/image/text.png"));
+    text_button->setIcon(ImageHelper::getIcon("text"));
     connect(text_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(TEXT);
     });
@@ -91,20 +92,20 @@ void Paint_setting_panel::init_shape_setting()
     QToolButton* rect_button = new QToolButton(this);
 //    rect_button->setCheckable(true);
     rect_button->setToolTip("矩形");
-    rect_button->setIcon(QIcon(":/image/rect.png"));
+    rect_button->setIcon(ImageHelper::getIcon("rect"));
     connect(rect_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(RECTANGLE);
     });
     QToolButton* arrow_button = new QToolButton(this);
 //    arrow_button->setCheckable(true);
-    arrow_button->setIcon(QIcon(":/image/paint_arrow.png"));
+    arrow_button->setIcon(ImageHelper::getIcon("paint_arrow"));
     arrow_button->setToolTip("{D7HSBXWTLj}箭头");
     connect(arrow_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(PAINT_ARROW);
     });
     QToolButton* mosaic_button = new QToolButton(this);
 //    mosaic_button->setCheckable(true);
-    mosaic_button->setIcon(QIcon(":/image/mosaic.png"));
+    mosaic_button->setIcon(ImageHelper::getIcon("mosaic"));
     mosaic_button->setToolTip("马赛克");
     connect(mosaic_button, &QToolButton::clicked, this, [=](){
        emit paint_shape(BLUR);

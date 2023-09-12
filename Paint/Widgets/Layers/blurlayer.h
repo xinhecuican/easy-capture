@@ -44,6 +44,7 @@ private:
     bool is_save;
     int maskUseWidth;
     int maskUseHeight;
+    QRectF bound;
 };
 
 #endif // BLUELAYER_H

@@ -31,7 +31,9 @@ public:
     Q_INVOKABLE void hideNormal() override;
     Q_INVOKABLE void showNormal() override;
 signals:
+    void regionChangeBegin(QPointF point);
     void regionChange();
+    void regionMove(QPointF point);
 private:
     void remapPoint();
     bool isButtonHide;

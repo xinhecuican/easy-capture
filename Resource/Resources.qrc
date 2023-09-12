@@ -55,6 +55,44 @@
         <file>RadioButtonHover.png</file>
         <file>RadioButtonPressed.png</file>
         <file>TreeViewClose.png</file>
+        <file>mode.svg</file>
+        <file>drop_up.svg</file>
+        <file>drop_down.svg</file>
+        <file>help.svg</file>
+        <file>videocam.svg</file>
+        <file>folder.svg</file>
+        <file>ocr.svg</file>
+        <file>painterpath.svg</file>
+        <file>file.svg</file>
+        <file>mosaic.svg</file>
+        <file>paint_arrow.svg</file>
+        <file>shape.svg</file>
+        <file>rotate.svg</file>
+        <file>rect.svg</file>
+        <file>maximize.svg</file>
+        <file>minimize.svg</file>
+        <file>close.svg</file>
+        <file>brush.svg</file>
+        <file>underline.svg</file>
+        <file>italic.svg</file>
+        <file>bold.svg</file>
+        <file>text.svg</file>
+        <file>clipboard.svg</file>
+        <file>warning.svg</file>
+        <file>color_dropper.svg</file>
+        <file>show.svg</file>
+        <file>hide.svg</file>
+        <file>up.svg</file>
+        <file>down.svg</file>
+        <file>save.svg</file>
+        <file>highlighter.svg</file>
+        <file>highlighter_cursor.svg</file>
+        <file>pencil.svg</file>
+        <file>more.svg</file>
+        <file>redo.svg</file>
+        <file>undo.svg</file>
+        <file>capture.svg</file>
+        <file>eraser.svg</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

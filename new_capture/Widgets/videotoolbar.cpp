@@ -11,6 +11,7 @@
 #include <memory>
 #include <QDebug>
 #include "Helper/mstring.h"
+#include "Helper/imagehelper.h"
 #pragma comment(lib, "Winmm.lib")
 
 VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
@@ -60,7 +61,7 @@ VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
     });
 
     QToolButton* pathChooseButton = new QToolButton(this);
-    pathChooseButton->setIcon(QIcon(":/image/folder.png"));
+    pathChooseButton->setIcon(ImageHelper::getIcon("folder"));
     pathChooseButton->setToolTip(History::instance()->getVideoSavePath());
     connect(pathChooseButton, &QToolButton::clicked, this, [=](){
         QString result = QFileDialog::getExistingDirectory(this, MString::search("{nmqfWFejoz}选择保存目录"), History::instance()->getVideoSavePath());
@@ -95,7 +96,7 @@ VideoToolbar::VideoToolbar(QWidget* parent) : QWidget(parent)
     });
 
     QToolButton* helpButton = new QToolButton(this);
-    helpButton->setIcon(QIcon(":/image/help.png"));
+    helpButton->setIcon(ImageHelper::getIcon("help"));
     helpButton->setToolTip(MString::search("{SHLK0bd4wt}开始录屏: F5\n暂停/恢复录屏: F6\n结束录屏: F7"));
 
     layout->addWidget(enableAudioButton);

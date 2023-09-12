@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QScreen>
+#include <QIcon>
+#include "common.h"
 
 QImage ImageHelper::Mat2QImage(cv::Mat const& mat) {
     if(mat.type() == CV_8UC1) {
@@ -143,4 +145,13 @@ int ImageHelper::getCurrentIndex() {
         }
     }
     return 0;
+}
+
+QRect ImageHelper::getCurrentGeometry(){
+    return getCurrentScreen()->geometry();
+}
+
+QIcon ImageHelper::getIcon(QString name, int pt_w, int pt_h){
+    QIcon icon(QPixmap(":/image/" +name + ".svg").scaled(pt2px(pt_w), pt2px(pt_h)));
+    return icon;
 }

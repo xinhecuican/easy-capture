@@ -1,4 +1,4 @@
-QT       += core gui xml network multimedia
+QT       += core gui xml network multimedia svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -91,6 +91,7 @@ SOURCES += \
     new_capture/Widgets/attributetoolbar.cpp \
     new_capture/Widgets/cliplayer.cpp \
     new_capture/Widgets/clipregion.cpp \
+	new_capture/Widgets/colorpicker.cpp \
     new_capture/Widgets/masklayer.cpp \
     new_capture/Widgets/mosicsample.cpp \
     new_capture/Widgets/videotoolbar.cpp \
@@ -190,6 +191,7 @@ HEADERS += \
     new_capture/Widgets/attributetoolbar.h \
     new_capture/Widgets/cliplayer.h \
     new_capture/Widgets/clipregion.h \
+	new_capture/Widgets/colorpicker.h \
     new_capture/Widgets/masklayer.h \
     new_capture/Widgets/mosicsample.h \
     new_capture/Widgets/videotoolbar.h \

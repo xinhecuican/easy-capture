@@ -47,6 +47,7 @@ void MaskLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         free_capture_path.moveTo(mapFromScene(event->scenePos()));
     }
     begin_point = mapFromScene(event->scenePos());
+    end_point = begin_point;
     is_drag = false;
     begin_clip = true;
     for(int i=0; i<regions.size(); i++) {
@@ -60,6 +61,9 @@ void MaskLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
             is_drag = true;
             break;
         }
+    }
+    if(!is_drag){
+        emit regionChangeBegin(begin_point);
     }
 }
 
@@ -104,11 +108,13 @@ void MaskLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 void MaskLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     if(!is_drag || !is_enable) {
         update();
+        emit regionMove(mapFromScene(event->scenePos()));
     }
     if(Config::getConfig<int>(Config::capture_mode) == Config::FREE_CAPTURE)
         free_capture_path.lineTo(mapFromScene(event->scenePos()));
     else
         end_point = mapFromScene(event->scenePos());
+
 }
 
 void MaskLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
@@ -158,8 +164,14 @@ void MaskLayer::addRegion(QPolygonF polygon) {
     }
     intersect_path.clear_all();
     regions.append(new_region);
+    connect(new_region, &ClipRegion::regionChangeBegin, this, [=](QPointF point){
+        emit regionChangeBegin(point);
+    });
     connect(new_region, &ClipRegion::regionChange, this, [=]() {
         emit regionChanged();
+    });
+    connect(new_region, &ClipRegion::regionMove, this, [=](QPointF point){
+        emit regionMove(point);
     });
 }
 

@@ -3,6 +3,7 @@
 #include <QToolButton>
 #include "Manager/config.h"
 #include <QFileDialog>
+#include "Helper/imagehelper.h"
 
 FileChooser::FileChooser()
 {
@@ -47,7 +48,7 @@ void FileChooser::init()
         f(edit->text());
     });
     QToolButton* file_button = new QToolButton(this);
-    file_button->setIcon(QIcon(":/image/file.png"));
+    file_button->setIcon(ImageHelper::getIcon("file"));
     connect(file_button, &QToolButton::clicked, this ,[=](){
         QString file_name = QFileDialog::getExistingDirectory(this,
                                                          "保存",

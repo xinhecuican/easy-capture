@@ -30,6 +30,7 @@ void ExpandButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     begin_point = event->scenePos();
     record_point = event->scenePos();
+    emit posChangeBegin(begin_point.x(), begin_point.y());
 }
 
 void ExpandButton::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

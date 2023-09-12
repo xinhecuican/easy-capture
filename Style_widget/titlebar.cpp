@@ -4,6 +4,8 @@
 #include<QHBoxLayout>
 #include<QMouseEvent>
 #include<QDebug>
+#include "Helper/imagehelper.h"
+
 Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
 {
     this->parent = parent;
@@ -18,7 +20,7 @@ Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
     icon_label->setFixedSize(20, 20);
     name_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    min_button->setIcon(QIcon(":/image/minimize.png"));
+    min_button->setIcon(ImageHelper::getIcon("maximize"));
     min_button->setMinimumSize(24, 30);
     min_button->setToolTip("最小化");
     min_button->setStyleSheet("QToolButton{border:none;}\n"
@@ -33,7 +35,7 @@ Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
         emit minimize();
     });
 
-    max_button->setIcon(QIcon(":/image/maximize.png"));
+    max_button->setIcon(ImageHelper::getIcon("minimize"));
     max_button->setToolTip("最大化");
     max_button->setMinimumSize(24, 30);
     max_button->setStyleSheet("QToolButton{border:none;}\n"
@@ -46,7 +48,7 @@ Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
     connect(max_button, &QPushButton::clicked, this, [=](){
         parent->isMaximized() ? parent->showNormal() : parent->showMaximized();
     });
-    QPixmap pix = QPixmap(":/image/close.png");
+    QPixmap pix = QPixmap(":/image/close.svg");
     pix = pix.scaled(60, 30);
     close_button->setIcon(QIcon(pix));
     close_button->setToolTip("关闭");

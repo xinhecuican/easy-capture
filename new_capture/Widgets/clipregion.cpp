@@ -76,6 +76,9 @@ void ClipRegion::remapPoint()
     for(int i=buttons.size(); i<polygon.count(); i++)
     {
         ExpandButton* button = new ExpandButton(this);
+        connect(button, &ExpandButton::posChangeBegin, this, [=](qreal x, qreal y){
+            emit regionChangeBegin(QPointF(x, y));
+        });
         connect(button, static_cast<void (ExpandButton::*)(QList<int>, qreal, qreal, int, int)>(&ExpandButton::posChange), this, [=](QList<int> index, qreal dx, qreal dy, int x_neigh, int y_neigh){
             for(int i=0; i<index.size(); i++)
             {
@@ -94,6 +97,7 @@ void ClipRegion::remapPoint()
             }
             buttons[x_neigh]->setPosition(buttons[x_neigh]->pos() + QPointF(dx, 0));
             buttons[y_neigh]->setPosition(buttons[y_neigh]->pos() + QPointF(0, dy));
+            emit regionMove(polygon[index[0]]);
             update();
         });
         connect(button, &ExpandButton::posTo, this, [=](direction dir, qreal x, qreal y){

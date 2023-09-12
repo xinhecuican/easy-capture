@@ -30,6 +30,7 @@ public:
     void clearIndex();
     QList<int> getIndex();
 signals:
+    void posChangeBegin(qreal x, qreal y);
     void posChange(direction dir, qreal x, qreal y);
     void posChange(QList<int> index, qreal x, qreal y, int x_neighbor_index, int y_neighbor_index);
     void posTo(direction dir, qreal x, qreal y);

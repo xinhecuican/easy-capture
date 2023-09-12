@@ -17,6 +17,7 @@
 #include <QSlider>
 #include "Helper/EnumReflect.h"
 #include "videotoolbar.h"
+#include "colorpicker.h"
 
 /**
  * @brief 普通截图的核心类，用来控制工具栏展现,截屏区域显示及图片的显示
@@ -120,6 +121,8 @@ private:
 
     ShapeType currentshape;
     QButtonGroup* shapeGroup;
+
+    ColorPicker* colorPicker;
 };
 
 #endif // CLIPREGION_H

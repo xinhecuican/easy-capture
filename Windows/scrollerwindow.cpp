@@ -230,11 +230,11 @@ void ScrollerWindow::mouseReleaseEvent(QMouseEvent *event){
 }
 
 void ScrollerWindow::onWindowCancel(){
-
+    bubbleTipsWidget->hide();
 }
 
 void ScrollerWindow::onWindowSelect(){
-
+    bubbleTipsWidget->show();
 }
 
 void ScrollerWindow::loadKeyEvent(QString name){

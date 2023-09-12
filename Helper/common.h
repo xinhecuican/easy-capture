@@ -7,6 +7,8 @@
 #include <QDebug>
 #include "Manager/WindowManager.h"
 #include "Manager/config.h"
+#include <QGuiApplication>
+#include <QScreen>
 
 struct MRect {
     QPoint topleft;
@@ -40,6 +42,14 @@ static void changeWindowHelper(){
     else{
         WindowManager::changeWindow("CaptureWindow");
     }
+}
+
+static int pt2px(double pt){
+    return (int)(pt / 72 * QGuiApplication::screenAt(QCursor::pos())->physicalDotsPerInch());
+}
+
+static QPixmap loadSVG(QString name, int pt_w, int pt_h){
+
 }
 
 #endif // COMMON_H
