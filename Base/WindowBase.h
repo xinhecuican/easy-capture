@@ -53,6 +53,22 @@ public:
 
     }
 
+    /**
+     * @brief controlWindowClose 是否自己控制窗体的资源释放
+     * @return
+     */
+    virtual bool controlWindowClose(){
+        return false;
+    }
+
+    /**
+     * @brief disableWindowClose 如果当前窗口为活跃窗口则禁用窗口资源释放
+     * @return
+     */
+    virtual bool disableWindowClose(){
+        return false;
+    }
+
     virtual ~WindowBase() {};
 
     /**

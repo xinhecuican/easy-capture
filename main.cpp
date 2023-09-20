@@ -28,6 +28,7 @@
 #include "Manager/uimanager.h"
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include "Windows/scrollerwindow.h"
+#include "Windows/pinwindow.h"
 #ifndef QT_DEBUG
 #include <QBreakpadHandler.h>
 #include <QBreakpadHttpUploader.h>
@@ -55,6 +56,10 @@ int main(int argc, char *argv[]) {
         UIManager::instance()->buildRelease(QString(argv[2]));
         return 0;
     }
+    if(argc == 2 && strncmp(argv[1], "update", 10) == 0){
+        Update::instance()->save();
+        return 0;
+    }
 
     setupDebug();
     preLoad();
@@ -69,9 +74,8 @@ int main(int argc, char *argv[]) {
         fliter->deleteLater();
     });
     Flow_edit_panel::instance();// 初始化时间过长，提前初始化一次
-//    Update::instance()->save();
+    qInfo() << "程序启动";
     int ans = a.exec();
-
     return ans;
 }
 #endif
@@ -82,6 +86,7 @@ void registerClasses() {
     Reflect::registerClass<CaptureWindow>();
     Reflect::registerClass<PaintWindow>();
     Reflect::registerClass<ScrollerWindow>();
+    Reflect::registerClass<PinWindow>();
     Reflect::registerClass<RectLayer>();
     Reflect::registerClass<Text_layer>();
     Reflect::registerClass<Picture_layer>();

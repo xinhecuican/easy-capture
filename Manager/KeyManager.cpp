@@ -11,7 +11,6 @@
 #include "MainFilter.h"
 
 KeyManager::KeyManager() {
-
 }
 
 

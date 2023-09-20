@@ -14,6 +14,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
+QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 
 SOURCES += \
     Helper/debug.cpp \
@@ -79,6 +81,8 @@ SOURCES += \
     Style_widget/tray.cpp \
     Tests/configtest.cpp \
     Tests/testwidget.cpp \
+	Windows/Widgets/pinwidget.cpp \
+	Windows/pinwindow.cpp \
 	Windows/scrollerwindow.cpp \
     main.cpp \
     new_capture/CaptureWindow.cpp \
@@ -105,6 +109,7 @@ HEADERS += \
     Base/WindowBase.h \
     Helper/EnumReflect.h \
     Helper/GraphicsViewPatch.h \
+	Helper/PaintHelper.h \
     Helper/Reflect.h \
     Helper/Serialize.h \
     Helper/common.h \
@@ -180,6 +185,8 @@ HEADERS += \
     Tests/AllTests.h \
     Tests/configtest.h \
     Tests/testwidget.h \
+	Windows/Widgets/pinwidget.h \
+	Windows/pinwindow.h \
 	Windows/scrollerwindow.h \
     new_capture/CaptureWindow.h \
     new_capture/Widgets/Scroll_handler/Scroll_handler_global.h \

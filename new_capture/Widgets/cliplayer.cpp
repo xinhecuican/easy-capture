@@ -134,6 +134,7 @@ void ClipLayer::prepareSave() {
     painter.fillPath(path, QColor(1, 1, 1));
     savePix = pix;
     savePix.setMask(mask.createMaskFromColor(QColor(1, 1, 1), Qt::MaskOutColor));
+    qInfo() << "正在截图";
 }
 
 void ClipLayer::endSave() {
@@ -272,6 +273,13 @@ void ClipLayer::setToolBar() {
         }
     });
 
+    pinButton = new QToolButton(toolbar);
+    pinButton->setToolTip(MString::search("{BNzMH1dcwW}钉住"));
+    pinButton->setIcon(ImageHelper::getIcon("pin"));
+    connect(pinButton, &QToolButton::clicked, this, [=](){
+        emit needPin();
+    });
+
     mosaic_button = new QToolButton(toolbar);
     mosaic_button->setIcon(ImageHelper::getIcon("mosaic"));
     mosaic_button->setToolTip("马赛克");
@@ -332,6 +340,7 @@ void ClipLayer::setToolBar() {
     toolbar->addWidget(ocrButton);
     toolbar->addWidget(clip_button);
     toolbar->addWidget(save_button);
+    toolbar->addWidget(pinButton);
     toolbar->addWidget(ok_button);
     toolbar->addWidget(cancel_button);
 }

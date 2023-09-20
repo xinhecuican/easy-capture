@@ -53,6 +53,7 @@ signals:
     void requestImage();
     void needSave();
     void needClip();
+    void needPin();
     void paintShape(SHAPE_TYPE type);
     void stateChange(PAINT_STATE state);
     void mosaicChange(bool is_range, int value);
@@ -95,6 +96,7 @@ private:
     QToolButton* cancel_button;
     QToolButton* undo_button;
     QToolButton* redo_button;
+    QToolButton* pinButton;
     QToolButton* cursor_button;
     QToolButton* pencil_button;
     QToolButton* highlighter_button;

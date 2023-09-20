@@ -48,13 +48,11 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = 0.6.6
-
-# Using the PROJECT_BRIEF tag one can provide an optional one line description
-# for a project that appears at the top of each page and should give viewer a
+PROJECT_NUMBER = 0.7.0# for a project that appears at the top of each page and should give viewer a
 # quick idea about the purpose of the project. Keep the description short.
 
 PROJECT_BRIEF          =
+
 
 # With the PROJECT_LOGO tag one can specify a logo or an icon that is included
 # in the documentation. The maximum height of the logo should not exceed 55
@@ -2781,3 +2779,37 @@ GENERATE_LEGEND        = YES
 # The default value is: YES.
 
 DOT_CLEANUP            = YES
+
+rary
+# files.
+# The default value is: YES.
+
+DOT_CLEANUP            = YES
+
+ary
+# files.
+# The default value is: YES.
+
+DOT_CLEANUP            = YES
+
+
+# files.
+# The default value is: YES.
+
+DOT_CLEANUP            = YES
+
+
+ YES
+
+
+
+
+# The default value is: YES.
+
+DOT_CLEANUP            = YES
+
+
+ YES
+
+
+

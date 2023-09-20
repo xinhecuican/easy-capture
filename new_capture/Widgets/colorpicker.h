@@ -20,6 +20,13 @@ private:
     QPointF point;
     QRect bound;
     QRect screenGeometry;
+    int pixelWidthPX;
+    int pixelHeightPX;
+    int shadowWidth = 10;
+    const int offsetX = 30;
+    const int offsetY = 20;
+    const int pixelWidthPT = 15;
+    const int pixelHeightPT = 10;
 };
 
 #endif // COLORPICKER_H

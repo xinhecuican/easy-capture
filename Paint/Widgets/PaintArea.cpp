@@ -66,6 +66,22 @@ PaintArea::PaintArea(QWidget* parent, bool enable_clip) : QGraphicsScene(parent)
             save2Clipboard();
             WindowManager::changeWindow("tray");
         });
+        connect(clip_layer, &ClipLayer::needPin, this, [=](){
+            prepareSave();
+            QRectF bound = clip_layer->getClipRect();
+            bound = bound.united(paint_layer->childrenBoundingRect());
+            bound = bound.united(shape_layer->childrenBoundingRect());
+
+            if(bound == QRectF(0, 0, 0, 0))
+                return;
+
+            QImage image(bound.width(), bound.height(), QImage::Format_ARGB32);
+            image.fill(Qt::transparent);
+            QPainter painter(&image);
+            render(&painter, QRectF(QPointF(0, 0), bound.size()), bound);
+            WindowManager::changeWindow("PinWindow", QPixmap::fromImage(image), bound.toRect());
+            endSave();
+        });
         connect(clip_layer, &ClipLayer::needSave, this, [=]() {
             QString file_name = QFileDialog::getSaveFileName(parent,
                                 "保存",

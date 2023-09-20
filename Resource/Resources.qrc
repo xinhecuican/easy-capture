@@ -93,6 +93,7 @@
         <file>undo.svg</file>
         <file>capture.svg</file>
         <file>eraser.svg</file>
+        <file>pin.svg</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

@@ -21,10 +21,10 @@
 MainFilter* MainFilter::_instance = NULL;
 
 MainFilter::MainFilter() {
-//    global_key_id = GlobalAddAtomA("awake_capture");
-//    RegisterHotKey((HWND)this->winId(), global_key_id, MOD_CONTROL, VK_F1);
-//    global_capture_id = GlobalAddAtomA("fullscreen_capture");
-//    RegisterHotKey((HWND)this->winId(), global_capture_id, MOD_CONTROL, VK_F2);
+    //    global_key_id = GlobalAddAtomA("awake_capture");
+    //    RegisterHotKey((HWND)this->winId(), global_key_id, MOD_CONTROL, VK_F1);
+    //    global_capture_id = GlobalAddAtomA("fullscreen_capture");
+    //    RegisterHotKey((HWND)this->winId(), global_capture_id, MOD_CONTROL, VK_F2);
     //只是延时执行，不是新的线程，相当于回调，因此不用加锁
     //定时删除不使用的Window
     timer = new QTimer(this);
@@ -37,7 +37,7 @@ MainFilter::MainFilter() {
 
     Update::instance()->update();
     if(!Config::getConfig<bool>(Config::need_update) && Config::getConfig<int>(Config::update_interval) != -1 &&
-            Config::getConfig<int>(Config::last_update_time) + Config::getConfig<int>(Config::update_interval) <
+        Config::getConfig<int>(Config::last_update_time) + Config::getConfig<int>(Config::update_interval) <
             QDateTime::currentSecsSinceEpoch()/60) {
         Update::instance()->checkUpdate();
     }
@@ -227,9 +227,12 @@ void MainFilter::checkCrash() {
             qInfo() << "upload end";
             if(exitStatus == QProcess::NormalExit) {
                 QFile::remove(file_info.absoluteFilePath());
-                QDir dir("Data/crash");
+                QDir dir;
                 dir.setPath(QCoreApplication::applicationDirPath());
                 dir.cd("Data/crash");
+                dir.removeRecursively();
+                QDir dir2;
+                dir.cd("crashs/");
                 dir.removeRecursively();
                 file_info.dir().remove(file_info.fileName());
             }

@@ -105,8 +105,6 @@ public:
     }
     static void setConfig(setting type, QVariant data);
     static void setConfig(int type, QVariant data);
-    static QString getConfigName(setting type);
-    static QString getConfigName(int type);
 private:
     bool is_loading_translate = false;
     static std::atomic<Config*> _instance;
@@ -114,7 +112,6 @@ private:
     QMap<int, QVariant> all_settings;
     bool is_update_config;
     setting update_setting;
-    QString readTranslate(int type);
 };
 
 

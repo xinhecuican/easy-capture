@@ -20,7 +20,7 @@ Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
     icon_label->setFixedSize(20, 20);
     name_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    min_button->setIcon(ImageHelper::getIcon("maximize"));
+    min_button->setIcon(ImageHelper::getIcon("minimize"));
     min_button->setMinimumSize(24, 30);
     min_button->setToolTip("最小化");
     min_button->setStyleSheet("QToolButton{border:none;}\n"
@@ -35,7 +35,7 @@ Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
         emit minimize();
     });
 
-    max_button->setIcon(ImageHelper::getIcon("minimize"));
+    max_button->setIcon(ImageHelper::getIcon("maximize"));
     max_button->setToolTip("最大化");
     max_button->setMinimumSize(24, 30);
     max_button->setStyleSheet("QToolButton{border:none;}\n"

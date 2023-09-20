@@ -22,11 +22,11 @@ void WindowManager::controlWindowClose() {
     qint64 current_time = QDateTime::currentDateTime().currentSecsSinceEpoch();
     QList<WindowBase*> temp_list = QList<WindowBase*>();
     // 如果是设置则不销毁窗口，否则设置完成后绘图窗口可能会重置
-    if(activeWindow == "Setting")return;
+    if(activeWindow != "tray" && windowList[activeWindow].window->disableWindowClose())return;
     qInfo() << activeWindow << endl;
     for(auto iter=windowList.begin(); iter!=windowList.end();) {
         if(current_time-iter.value().time >= time&&
-                (currentHidden || iter.key() != activeWindow)) {
+            (currentHidden || iter.key() != activeWindow) && !iter.value().window->controlWindowClose()) {
             temp_list.append(iter.value().window);
             qInfo() << "delete " << iter.key();
             KeyManager::onWindowClose(iter.key());

@@ -52,8 +52,6 @@ private:
     static bool end_scroll;
     bool is_first_capture;//第一次捕获时可能是自由捕获
     int mouse_move_times;
-    QTimer* timer;
-    QTimer* scroll_timer;
     HWND scroll_hwnd;
     int scrollWindowIndex;
     int height_char;

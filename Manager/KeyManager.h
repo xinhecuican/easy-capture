@@ -111,9 +111,11 @@ private:
         }
 
         void findAndRun(bool is_enter, int key) {
+            bool hasTrigger = false;
             for(auto iter=func.begin(); iter!=func.end(); iter++) { //无论有键按下还是松开都会让原来的键失效
                 if(iter->isKeyEqual(availiableKey) && iter->func != NULL) {
                     iter->func(iter->receiver, false);
+                    hasTrigger = true;
                     break;
                 }
             }
@@ -122,7 +124,9 @@ private:
             } else {
                 availiableKey.removeOne(key);
             }
-            QList<int>  availiable = availiableKey;
+            if(hasTrigger){
+                availiableKey.clear();
+            }
             for(auto iter=func.begin(); iter!=func.end(); iter++) {
                 if(iter->isKeyEqual(availiableKey) && iter->func != NULL) {
                     iter->func(iter->receiver, true);

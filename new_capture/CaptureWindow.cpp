@@ -70,23 +70,10 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
     setCentralWidget(view);
     area->onViewSet(view);
-
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [=]() {
-        if(!xHook->isMouseHookRunning() || xHook->uninstallMouseHook()) {
-            timer->stop();
-            WindowManager::closeWindow("CaptureWindow");
-        }
-    });
 }
 
 CaptureWindow::~CaptureWindow() {
-//    delete ui;
-    if(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) {
-        scroll_timer->stop();
-    }
-    timer->stop();
-    delete timer;
+//    delete ui
     if(xHook->isMouseHookRunning()) {
         xHook->uninstallMouseHook();
     }
@@ -264,6 +251,7 @@ void CaptureWindow::startCaptureVideo() {
             update();
             videoCapture->startCapture();
         }
+        qInfo() << "开始录屏";
     }
 }
 

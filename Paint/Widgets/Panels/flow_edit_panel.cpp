@@ -65,15 +65,15 @@ Flow_edit_panel::Flow_edit_panel() {
     completer->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
     completer->setMaxVisibleItems(10);	//下拉最大高度
     m_ComboBox->setCompleter(completer);	//设置自动补全
-//    m_ComboBox->setStyleSheet("QComboBox{combobox-popup: 0;}");	//linux系统上，防止下拉框过长,消耗时间较多
+    //    m_ComboBox->setStyleSheet("QComboBox{combobox-popup: 0;}");	//linux系统上，防止下拉框过长,消耗时间较多
     m_ComboBox->setMaxVisibleItems(10);	//下拉最大高度
     m_ComboBox->setCurrentText("宋体");
     connect(m_ComboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
-    , this, [=](const QString& text) {
-        fontData.font.setFamily(text);
-        clearFocus();
-        emit font_change();
-    });
+                            , this, [=](const QString& text) {
+                fontData.font.setFamily(text);
+                clearFocus();
+                emit font_change();
+            });
     addWidget(m_ComboBox);
     addSeparator();
 
@@ -83,15 +83,15 @@ Flow_edit_panel::Flow_edit_panel() {
     width_button->setEditable(true);
     width_button->setCurrentText(QString::number(fontData.font.pointSize()));
     connect(width_button, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
-    , this, [=](const QString& text) {
-        bool success = false;
-        int num = text.toInt(&success);
-        if(success && num > 0) {
-            clearFocus();
-            fontData.font.setPointSize(num);
-            emit font_change();
-        }
-    });
+                              , this, [=](const QString& text) {
+                bool success = false;
+                int num = text.toInt(&success);
+                if(success && num > 0) {
+                    clearFocus();
+                    fontData.font.setPointSize(num);
+                    emit font_change();
+                }
+            });
     addWidget(width_button);
     addSeparator();
 
@@ -176,29 +176,29 @@ void Flow_edit_panel::set_format(QFont font, QColor color) {
 
 QList<QString> Flow_edit_panel::get_font_text() {
     QList<QString> font_text =  QList<QString>({"Agency FB", "Algerian", "Arial", "Arial Black", "Arial Narrow",
-                                "Bauhaus 93", "Bell MT",
-                                "Bodoni MT", "Bodoni MT Black", "Bodoni MT Condensed", "Book Antiqua", "Broadway",
-                                "Calibri", "Calibri Light", "Californian FB", "Calisto MT",
-                                "Candara", "Candara Light", "Castellar", "Centaur", "Century", "Century Gothic",
-                                "Chiller", "Colonna MT", "Comic Sans MS", "Consolas", "Constantia", "Cooper Black",
-                                "Corbel", "Corbel Light", "Courier", "Courier New", "Curlz MT",
-                                "Dubai", "Dubai Light", "Dubai Medium", "Ebrima", "Elephant", "Engravers MT",
-                                "Ink Free",
-                                "Microsoft Himalaya", "Microsoft JhengHei",
-                                "Microsoft New Tai Lue", "Microsoft PhagsPa", "Microsoft Sans Serif",
-                                "Microsoft Tai Le", "Microsoft YaHei UI", "MingLiU-ExtB",
-                                "Mistral", "Modern", "Modern No. 20", "Mongolian Baiti", "Monotype Corsiva",
-                                "MS Gothic", "MS Outlook", "MS PGothic",
-                                "MS Sans Serif", "MS Serif", "MS UI Gothic", "MT Extra", "MV Boli", "Myanmar Text", "Niagara Engraved",
-                                "Niagara Solid", "Nirmala UI", "Nirmala UI Semilight", "NumberOnly",
-                                "Onyx", "Open Sans", "Papyrus", "Parchment",
-                                "Perpetua",
-                                "Ravie", "Rockwell",
-                                "Small Fonts", "Snap ITC", "Stencil", "Sylfaen", "Symbol", "System",
-                                "Tahoma", "Terminal", "Times New Roman", "Verdana",
-                                "仿宋", "华文中宋", "华文仿宋", "华文宋体", "华文彩云", "华文新魏", "华文楷体",
-                                "华文琥珀", "华文细黑", "华文行楷", "华文隶书", "宋体", "幼圆", "微软雅黑", "微软雅黑 Light", "思源黑体",
-                                "新宋体", "方正姚体", "方正粗黑宋简体", "方正舒体", "楷体", "等线", "等线 Light", "隶书", "黑体"});
+                                               "Bauhaus 93", "Bell MT",
+                                               "Bodoni MT", "Bodoni MT Black", "Bodoni MT Condensed", "Book Antiqua", "Broadway",
+                                               "Calibri", "Calibri Light", "Californian FB", "Calisto MT",
+                                               "Candara", "Candara Light", "Castellar", "Centaur", "Century", "Century Gothic",
+                                               "Chiller", "Colonna MT", "Comic Sans MS", "Consolas", "Constantia", "Cooper Black",
+                                               "Corbel", "Corbel Light", "Courier", "Courier New", "Curlz MT",
+                                               "Dubai", "Dubai Light", "Dubai Medium", "Ebrima", "Elephant", "Engravers MT",
+                                               "Ink Free",
+                                               "Microsoft Himalaya", "Microsoft JhengHei",
+                                               "Microsoft New Tai Lue", "Microsoft PhagsPa", "Microsoft Sans Serif",
+                                               "Microsoft Tai Le", "Microsoft YaHei UI", "MingLiU-ExtB",
+                                               "Mistral", "Modern", "Modern No. 20", "Mongolian Baiti", "Monotype Corsiva",
+                                               "MS Gothic", "MS Outlook", "MS PGothic",
+                                               "MS Sans Serif", "MS Serif", "MS UI Gothic", "MT Extra", "MV Boli", "Myanmar Text", "Niagara Engraved",
+                                               "Niagara Solid", "Nirmala UI", "Nirmala UI Semilight", "NumberOnly",
+                                               "Onyx", "Open Sans", "Papyrus", "Parchment",
+                                               "Perpetua",
+                                               "Ravie", "Rockwell",
+                                               "Small Fonts", "Snap ITC", "Stencil", "Sylfaen", "Symbol", "System",
+                                               "Tahoma", "Terminal", "Times New Roman", "Verdana",
+                                               "仿宋", "华文中宋", "华文仿宋", "华文宋体", "华文彩云", "华文新魏", "华文楷体",
+                                               "华文琥珀", "华文细黑", "华文行楷", "华文隶书", "宋体", "幼圆", "微软雅黑", "微软雅黑 Light", "思源黑体",
+                                               "新宋体", "方正姚体", "方正粗黑宋简体", "方正舒体", "楷体", "等线", "等线 Light", "隶书", "黑体"});
     return font_text;
 }
 

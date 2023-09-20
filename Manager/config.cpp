@@ -26,15 +26,6 @@ Config::~Config() {
     qDebug() << "config delete";
 }
 
-QString Config::readTranslate(int type) {
-    if(!is_loading_translate) {
-        //MString::load_from_file(":/Data/Languages/Config/");
-//        MString::load_from_file("Data/Languages/Config/");
-        is_loading_translate = true;
-    }
-    return MString::search("{" + eto_string((setting)type) + "}");
-}
-
 void Config::serialized(QJsonObject* json) {
     if(is_update_config) {
         QJsonValue value = QJsonValue::fromVariant(all_settings[update_setting]);
@@ -111,14 +102,6 @@ void Config::setConfig(setting type, QVariant data) {
 
 void Config::setConfig(int type, QVariant data) {
     instance()->all_settings[type] = data;
-}
-
-QString Config::getConfigName(setting type) {
-    return instance()->readTranslate(type);
-}
-
-QString Config::getConfigName(int type) {
-    return instance()->readTranslate(type);
 }
 
 //template<typename T>

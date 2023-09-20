@@ -1,10 +1,15 @@
 #include "colorpicker.h"
 #include <QRgb>
 #include <QPainter>
+#include "Helper/PaintHelper.h"
 
 ColorPicker::ColorPicker(QGraphicsItem* parent) : QGraphicsObject(parent)
 {
     screenGeometry = ImageHelper::getCurrentGeometry();
+    int widthpx = pt2px(pixelWidthPT);
+    pixelWidthPX = (widthpx | 0b1) * 5;
+    int heightpx = pt2px(pixelHeightPT);
+    pixelHeightPX = (heightpx | 0b1) * 5;
 }
 
 void ColorPicker::setPic(const QPixmap &pix){
@@ -13,40 +18,47 @@ void ColorPicker::setPic(const QPixmap &pix){
 
 void ColorPicker::setPosition(QPointF point){
     this->point = point;
-    if(point.x() + 145 > screenGeometry.right()){
-        bound.setLeft(point.x()-145);
+    if(point.x() + pixelWidthPX + offsetX > screenGeometry.right()){
+        bound.setLeft(point.x()- pixelWidthPX - offsetX);
     }
     else{
-        bound.setLeft(point.x());
+        bound.setLeft(point.x() + offsetX);
     }
-    if(point.y() + 85 > screenGeometry.bottom()){
-        bound.setTop(point.y()-85);
+    if(point.y() + pixelHeightPX + 20 + offsetY > screenGeometry.bottom()){
+        bound.setTop(point.y()- pixelHeightPX - 20 - offsetY);
     }
     else{
-        bound.setTop(point.y());
+        bound.setTop(point.y() + offsetY);
     }
-    bound.setHeight(105);
-    bound.setWidth(145);
+    bound.setHeight(pixelHeightPX+20);
+    bound.setWidth(pixelWidthPX);
 }
 
 QRectF ColorPicker::boundingRect() const{
+//    QRectF ans = bound;
+//    ans.setTopLeft(ans.topLeft() - QPointF(shadowWidth, shadowWidth));
+//    ans.setBottomRight(ans.bottomRight() + QPointF(shadowWidth, shadowWidth));
     return bound;
 }
 
 QPainterPath ColorPicker::shape() const{
     QPainterPath path;
+//    QRectF ans = bound;
+//    ans.setTopLeft(ans.topLeft() - QPointF(shadowWidth, shadowWidth));
+//    ans.setBottomRight(ans.bottomRight() + QPointF(shadowWidth, shadowWidth));
+//    path.addRect(ans);
     path.addRect(bound);
     return path;
 }
 
 void ColorPicker::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    QImage image1 = QImage(145, 85,QImage::Format_RGB32);
-    for(int i=0; i<29; i++) {
-        for(int k=0; k<17; k++) {
+    QImage image1 = QImage(pixelWidthPX, pixelHeightPX,QImage::Format_RGB32);
+    for(int i=0; i<pixelWidthPX/5; i++) {
+        for(int k=0; k<pixelHeightPX/5; k++) {
             for(int j=i*5; j<i*5+5; j++) {
                 for(int m=k*5; m<k*5+5; m++) {
-                    int x = i+point.x()-14 < 0 ? 0 : i+point.x()+14>=image.width() ? image.width()-1 : i+point.x() - 14;
-                    int y = k+point.y()-8 < 0 ? 0 : k+point.y()+8>=image.height() ? image.height()-1 : k+point.y()-8;
+                    int x = i+point.x()-pixelWidthPX/10 < 0 ? 0 : i+point.x()+pixelWidthPX/10>=image.width() ? image.width()-1 : i+point.x() - pixelWidthPX/10;
+                    int y = k+point.y()-pixelHeightPX/10 < 0 ? 0 : k+point.y()+pixelHeightPX/10>=image.height() ? image.height()-1 : k+point.y()-pixelHeightPX/10;
                     image1.setPixel(j, m, image.pixel(x, y));
                 }
             }
@@ -56,11 +68,14 @@ void ColorPicker::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     QRgb rgb = image.pixel(point.x(), point.y());
     image2.fill(rgb);
     painter->drawImage(bound.left(), bound.top(), image1);
-    painter->drawImage(bound.left(), bound.top()+85, image2);
-    QRect textBound(bound.left()+20, bound.top()+85, 126, 20);
+    painter->drawImage(bound.left(), bound.top()+pixelHeightPX, image2);
+    QRect textBound(bound.left()+20, bound.top()+pixelHeightPX, pixelWidthPX-20, 20);
     painter->fillRect(textBound, QColor(255, 255, 255));
     painter->drawText(textBound, Qt::AlignCenter,  "("+QString::number(qRed(rgb)) + "," + QString::number(qGreen(rgb)) + "," + QString::number(qBlue(rgb)) + ")");
+    PaintHelper::paintShadow(painter, bound, shadowWidth, QColor(50, 50, 50, 120));
     painter->setCompositionMode(QPainter::RasterOp_SourceOrNotDestination);
-    painter->drawLine(bound.left()+65, bound.top()+42.5, bound.left()+80, bound.top()+42.5);
-    painter->drawLine(bound.left()+72.5, bound.top()+35, bound.left()+72.5, bound.top()+50);
+    double middlex = (double)(pixelWidthPX) / 2.0;
+    double middley = (double)(pixelHeightPX) / 2.0;
+    painter->drawLine(bound.left()+middlex-10, bound.top()+middley, bound.left()+middlex+10, bound.top()+middley);
+    painter->drawLine(bound.left()+middlex, bound.top()+middley-10, bound.left()+middlex, bound.top()+middley+10);
 }

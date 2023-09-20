@@ -27,7 +27,7 @@ Paint_setting_panel::Paint_setting_panel()
 Paint_setting_panel::Paint_setting_panel(QWidget* parent) : QDockWidget(parent)
 {
     this->parent = parent;
-//    setAttribute(Qt::WA_DeleteOnClose);
+    //    setAttribute(Qt::WA_DeleteOnClose);
     layout = new QVBoxLayout();//scrollarea的layout
     layout->setAlignment(Qt::AlignTop);
     init_shape_setting();
@@ -75,60 +75,60 @@ void Paint_setting_panel::init_shape_setting()
     Spacer* spacer = new Spacer("形状绘制", false, this);
     QGridLayout* shape_layout = new QGridLayout();
     QToolButton* text_button = new QToolButton(this);
-//    text_button->setCheckable(true);
-//    text_button->setChecked(true);
+    //    text_button->setCheckable(true);
+    //    text_button->setChecked(true);
     text_button->setToolTip("文本框");
     text_button->setIcon(ImageHelper::getIcon("text"));
     connect(text_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(TEXT);
     });
-//    QToolButton* delete_button = new QToolButton(this);
-////    delete_button->setCheckable(true);
-//    delete_button->setToolTip("删除形状");
-//    delete_button->setIcon(QIcon(":/image/delete.svg"));
-//    connect(delete_button, &QToolButton::clicked, this, [=](){
-//        emit paint_shape(DELETE_SHAPE);
-//    });
+    //    QToolButton* delete_button = new QToolButton(this);
+    ////    delete_button->setCheckable(true);
+    //    delete_button->setToolTip("删除形状");
+    //    delete_button->setIcon(QIcon(":/image/delete.svg"));
+    //    connect(delete_button, &QToolButton::clicked, this, [=](){
+    //        emit paint_shape(DELETE_SHAPE);
+    //    });
     QToolButton* rect_button = new QToolButton(this);
-//    rect_button->setCheckable(true);
+    //    rect_button->setCheckable(true);
     rect_button->setToolTip("矩形");
     rect_button->setIcon(ImageHelper::getIcon("rect"));
     connect(rect_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(RECTANGLE);
     });
     QToolButton* arrow_button = new QToolButton(this);
-//    arrow_button->setCheckable(true);
+    //    arrow_button->setCheckable(true);
     arrow_button->setIcon(ImageHelper::getIcon("paint_arrow"));
     arrow_button->setToolTip("{D7HSBXWTLj}箭头");
     connect(arrow_button, &QToolButton::clicked, this, [=](){
         emit paint_shape(PAINT_ARROW);
     });
     QToolButton* mosaic_button = new QToolButton(this);
-//    mosaic_button->setCheckable(true);
+    //    mosaic_button->setCheckable(true);
     mosaic_button->setIcon(ImageHelper::getIcon("mosaic"));
     mosaic_button->setToolTip("马赛克");
     connect(mosaic_button, &QToolButton::clicked, this, [=](){
-       emit paint_shape(BLUR);
+        emit paint_shape(BLUR);
     });
-//    QButtonGroup* group = new QButtonGroup(this);
-//    group->addButton(text_button, 0);
-//    group->addButton(delete_button, 1);
-//    group->addButton(rect_button, 2);
-//    group->addButton(arrow_button, 3);
-//    group->addButton(mosaic_button, 4);
-//    connect(group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, [=](int id){
-//       switch(id)
-//       {
-//       case 0:emit paint_shape(TEXT);break;
-//       case 1:emit paint_shape(DELETE_SHAPE);break;
-//       case 2:emit paint_shape(RECTANGLE);break;
-//       case 3:emit paint_shape(PAINT_ARROW);break;
-//       case 4:emit paint_shape(BLUR);break;
-//       }
-//    });
+    //    QButtonGroup* group = new QButtonGroup(this);
+    //    group->addButton(text_button, 0);
+    //    group->addButton(delete_button, 1);
+    //    group->addButton(rect_button, 2);
+    //    group->addButton(arrow_button, 3);
+    //    group->addButton(mosaic_button, 4);
+    //    connect(group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, [=](int id){
+    //       switch(id)
+    //       {
+    //       case 0:emit paint_shape(TEXT);break;
+    //       case 1:emit paint_shape(DELETE_SHAPE);break;
+    //       case 2:emit paint_shape(RECTANGLE);break;
+    //       case 3:emit paint_shape(PAINT_ARROW);break;
+    //       case 4:emit paint_shape(BLUR);break;
+    //       }
+    //    });
     shape_layout->setOriginCorner(Qt::TopLeftCorner);
     shape_layout->addWidget(text_button, 0, 0);
-//    shape_layout->addWidget(delete_button, 1, 2);
+    //    shape_layout->addWidget(delete_button, 1, 2);
     shape_layout->addWidget(rect_button, 0, 1);
     shape_layout->addWidget(arrow_button, 0, 2);
     shape_layout->addWidget(mosaic_button, 1, 1);
@@ -203,20 +203,20 @@ void Paint_setting_panel::init_pen_setting()
     alpha_chooser->addWidget(alpha_slider);
     spacer->add_layout(alpha_chooser);*/
 
-    QLabel* width_label = new QLabel(MString::search("{zW4GVylzEh}画笔宽度: "), this);
+        QLabel* width_label = new QLabel(MString::search("{zW4GVylzEh}画笔宽度: "), this);
     width_button = new QComboBox(this);
     QList<QString> width_text = {"4", "8", "12", "16", "20", "24", "28", "40", "50"};
     width_button->addItems(width_text);
     width_button->setEditable(true);
     connect(width_button, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged)
-            , this, [=](const QString& text){
-        bool success = false;
-        int num = text.toInt(&success);
-        if(success && num > 0)
-        {
-            Style_manager::instance()->change_width(num);
-        }
-    });
+                              , this, [=](const QString& text){
+                bool success = false;
+                int num = text.toInt(&success);
+                if(success && num > 0)
+                {
+                    Style_manager::instance()->change_width(num);
+                }
+            });
     QHBoxLayout* width_layout = new QHBoxLayout();
     width_layout->addWidget(width_label);
     width_layout->addWidget(width_button);
@@ -236,13 +236,13 @@ void Paint_setting_panel::init_disable_color_setting()
     combo->setAutoFillBackground(true);
     connect(combo, static_cast<void (QComboBox::*)(const QString &text)>(&QComboBox::currentIndexChanged),
             this, [=](const QString &text){
-        int splitter1 = text.indexOf(',');
-        int splitter2 = text.indexOf(',', splitter1+1);
-        int red = text.mid(0, splitter1).toInt();
-        int green = text.mid(splitter1+1, splitter2-splitter1-1).toInt();
-        int blue = text.mid(splitter2+1).toInt();
-        combo->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(red).arg(green).arg(blue));
-    });
+                int splitter1 = text.indexOf(',');
+                int splitter2 = text.indexOf(',', splitter1+1);
+                int red = text.mid(0, splitter1).toInt();
+                int green = text.mid(splitter1+1, splitter2-splitter1-1).toInt();
+                int blue = text.mid(splitter2+1).toInt();
+                combo->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(red).arg(green).arg(blue));
+            });
     QToolButton* add_button = new QToolButton(this);
     QToolButton* remove_button = new QToolButton(this);
     connect(add_button, &QToolButton::clicked, this, [=](){
@@ -293,7 +293,7 @@ void Paint_setting_panel::init_disable_color_setting()
     for(int i=0; i<colors.size(); i++)
     {
         save_box->addItem(QString::number(colors[i].red())+","+QString::number(colors[i].green())
-                       +","+QString::number(colors[i].blue()));
+                          +","+QString::number(colors[i].blue()));
         QStandardItemModel* model = qobject_cast<QStandardItemModel*>(save_box->model());
         model->item(save_box->count()-1)->setBackground(colors[i]);
         int red, green, blue;
@@ -309,13 +309,13 @@ void Paint_setting_panel::init_disable_color_setting()
     }
     connect(save_box, static_cast<void (QComboBox::*)(const QString &text)>(&QComboBox::currentIndexChanged),
             this, [=](const QString &text){
-        int splitter1 = text.indexOf(',');
-        int splitter2 = text.indexOf(',', splitter1+1);
-        int red = text.mid(0, splitter1).toInt();
-        int green = text.mid(splitter1+1, splitter2-splitter1-1).toInt();
-        int blue = text.mid(splitter2+1).toInt();
-        save_box->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(red).arg(green).arg(blue));
-    });
+                int splitter1 = text.indexOf(',');
+                int splitter2 = text.indexOf(',', splitter1+1);
+                int red = text.mid(0, splitter1).toInt();
+                int green = text.mid(splitter1+1, splitter2-splitter1-1).toInt();
+                int blue = text.mid(splitter2+1).toInt();
+                save_box->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(red).arg(green).arg(blue));
+            });
     QToolButton* save_add_button = new QToolButton(this);
     QToolButton* save_remove_button = new QToolButton(this);
     connect(save_add_button, &QToolButton::clicked, this, [=](){
@@ -324,7 +324,7 @@ void Paint_setting_panel::init_disable_color_setting()
         selector->update();
         connect(selector, &Color_selector::color_select, this, [=](QColor color){
             save_box->addItem(QString::number(color.red())+","+QString::number(color.green())
-                           +","+QString::number(color.blue()));
+                              +","+QString::number(color.blue()));
             QStandardItemModel* model = qobject_cast<QStandardItemModel*>(save_box->model());
             model->item(save_box->count()-1)->setBackground(color);
             int red, green, blue;
@@ -404,7 +404,7 @@ void Paint_setting_panel::closeEvent(QCloseEvent *event)
     else
     {
         qWarning("warning: paint_setting_panel close after paint window\nPaint"
-                                   "_setting_panel:close_event");
+                 "_setting_panel:close_event");
     }
     event->accept();
 }

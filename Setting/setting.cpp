@@ -109,44 +109,36 @@ TabWidget* Setting::getTab(QString name) {
     return NULL;
 }
 
-void Setting::addBoolOption(QString tabName, QString tab_name, QString name, int index, const std::function<void (bool)> &f) {
-    TabWidget* panel = getTab(tabName);
-    panel->add_bool_option(tab_name, name, index, f);
+void Setting::addBoolOption(TabWidget* tab, QString tab_name, QString name, int index, const std::function<void (bool)> &f) {
+    tab->add_bool_option(tab_name, name, index, f);
 
 }
 
-void Setting::addComboOption(QString tabName, QString tab_name, QString text, QVector<QString> name, int index, const std::function<void (int)> &f, bool isString) {
-    TabWidget* panel = getTab(tabName);
-    panel->add_combo_option(tab_name, text, name, index, f, isString);
+void Setting::addComboOption(TabWidget* tab, QString tab_name, QString text, QVector<QString> name, int index, const std::function<void (int)> &f, bool isString) {
+    tab->add_combo_option(tab_name, text, name, index, f, isString);
 }
 
-void Setting::addKeyOption(QString tabName, int index, QString indexName, QString windowName, QString keyName, std::function<void (QString, QString, QList<int>)> const &f) {
-    TabWidget* panel = getTab(tabName);
-    panel->add_key_option(index, indexName, windowName, keyName, f);
+void Setting::addKeyOption(TabWidget* tab, int index, QString indexName, QString windowName, QString keyName, std::function<void (QString, QString, QList<int>)> const &f) {
+    tab->add_key_option(index, indexName, windowName, keyName, f);
 }
 
-void Setting::addGlobalKeyOption(QString tabName, int index, QString optionName, QString keyName, std::function<void (QString, int, int)> const &f) {
-    TabWidget* tab = getTab(tabName);
+void Setting::addGlobalKeyOption(TabWidget* tab, int index, QString optionName, QString keyName, std::function<void (QString, int, int)> const &f) {
     tab->addGlobalKeyOption(index, optionName, keyName, f);
 }
 
-void Setting::addNumOption(QString tabName, QString optionName, int index, QString name, int min, int max, const std::function<void (int)> &f) {
-    TabWidget* tab = getTab(tabName);
+void Setting::addNumOption(TabWidget* tab, QString optionName, int index, QString name, int min, int max, const std::function<void (int)> &f) {
     tab->add_num_option(optionName, index, name, min, max, f);
 }
 
-void Setting::addFileOption(QString tabName, QString optionName, QString name, int index, const std::function<void (QString)> &f) {
-    TabWidget* tab = getTab(tabName);
+void Setting::addFileOption(TabWidget* tab, QString optionName, QString name, int index, const std::function<void (QString)> &f) {
     tab->add_file_option(optionName, name, index, f);
 }
 
-void Setting::addSpacer(QString tabName, QString text) {
-    TabWidget* tab = getTab(tabName);
+void Setting::addSpacer(TabWidget* tab, QString text) {
     tab->add_spacer(text);
 }
 
-void Setting::addText(QString tabName, QString text, QString objectName) {
-    TabWidget* tab = getTab(tabName);
+void Setting::addText(TabWidget* tab, QString text, QString objectName) {
     tab->addText(text, objectName);
 }
 
@@ -157,36 +149,36 @@ void Setting::normal_settings() {
                 << MString::search("{3EhZoQBZHg}每日检查更新")
                 << MString::search("{F9JiJznbwk}每次启动检查更新")
                 << MString::search("{4Xoj7GVwjR}每周检查更新");
-    addComboOption("{6m2deulC6q}通用", "update_type", "{1cSo8BaCHq}更新时间", update_name,
-    Config::update_checktime, [=](int index) {
-        ready_setting.append(data(Config::update_checktime, index));
-        data temp_data;
-        temp_data.type = Config::update_interval;
-        switch(index) {
-        case 0:
-            temp_data.sum = -1;
-            break;
-        case 1:
-            temp_data.sum = 60 * 24;
-            break;
-        case 2:
-            temp_data.sum = 0;
-            break;
-        case 3:
-            temp_data.sum = 60 * 24 * 7;
-            break;
-        }
-        ready_setting.append(temp_data);
-        normal_setting->set_dirty(true);
-    });
+    addComboOption(normal_setting, "update_type", "{1cSo8BaCHq}更新时间", update_name,
+                   Config::update_checktime, [=](int index) {
+                       ready_setting.append(data(Config::update_checktime, index));
+                       data temp_data;
+                       temp_data.type = Config::update_interval;
+                       switch(index) {
+                       case 0:
+                           temp_data.sum = -1;
+                           break;
+                       case 1:
+                           temp_data.sum = 60 * 24;
+                           break;
+                       case 2:
+                           temp_data.sum = 0;
+                           break;
+                       case 3:
+                           temp_data.sum = 60 * 24 * 7;
+                           break;
+                       }
+                       ready_setting.append(temp_data);
+                       normal_setting->set_dirty(true);
+                   });
 
     QVector<QString> language_name = QVector<QString>();
     language_name << MString::search("{chinese}") << MString::search("{english}");
-    addComboOption("{6m2deulC6q}通用", "language_type", "{E33TP7yq9G}语言", language_name,
-    Config::language, [=](int index) {
-        ready_setting.append(data(Config::language, index));
-        normal_setting->set_dirty(true);
-    });
+    addComboOption(normal_setting, "language_type", "{E33TP7yq9G}语言", language_name,
+                   Config::language, [=](int index) {
+                       ready_setting.append(data(Config::language, index));
+                       normal_setting->set_dirty(true);
+                   });
     QVector<QString> themeName = QVector<QString>();
     QDir dir("Data/UI");
     if(dir.exists()) {
@@ -195,42 +187,42 @@ void Setting::normal_settings() {
             themeName.append(fileList.at(i).fileName());
         }
     }
-    addComboOption("{6m2deulC6q}通用", "theme_name", "{7BQgNdUtCI}主题", themeName, Config::ui_theme_name, [=](int index) {
-        ready_setting.append(data(Config::ui_theme_name, themeName[index]));
-        normal_setting->set_dirty(true);
-    }, true);
-    addNumOption("{6m2deulC6q}通用", "history_num", Config::history_num, "{VwuLzPpyI3}历史记录数量", 0, 500,[=](int index) {
+    addComboOption(normal_setting, "theme_name", "{7BQgNdUtCI}主题", themeName, Config::ui_theme_name, [=](int index) {
+            ready_setting.append(data(Config::ui_theme_name, themeName[index]));
+            normal_setting->set_dirty(true);
+        }, true);
+    addNumOption(normal_setting, "history_num", Config::history_num, "{VwuLzPpyI3}历史记录数量", 0, 500,[=](int index) {
         ready_setting.append(data(Config::history_num, index));
         normal_setting->set_dirty(true);
     });
-    addNumOption("{6m2deulC6q}通用", "check_time", Config::clear_interval, "{dcvOkViWtX}内存清理检查时间", 5, 120, [=](int index) {
+    addNumOption(normal_setting, "check_time", Config::clear_interval, "{dcvOkViWtX}内存清理检查时间", 5, 120, [=](int index) {
         ready_setting.append(data(Config::clear_interval, index));
         normal_setting->set_dirty(true);
     });
-    addBoolOption("{6m2deulC6q}通用", "start_now", "{3BIidMbkAm}开机启动", Config::start_instantly, [=](bool ans) {
+    addBoolOption(normal_setting, "start_now", "{3BIidMbkAm}开机启动", Config::start_instantly, [=](bool ans) {
         ready_setting.append(data(Config::start_instantly, ans));
         QSettings reg("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
         QString appName = QApplication::applicationName();
         if(ans) {
             QString strAppPath=QDir::toNativeSeparators(QCoreApplication::applicationFilePath());
-            reg.setValue(appName,strAppPath+ tr(" autoStart"));
+            reg.setValue(appName,strAppPath+ " autoStart");
         } else
             reg.remove(appName);
         normal_setting->set_dirty(true);
     });
-    addBoolOption("{6m2deulC6q}通用", "hide_tray", "{ZflcWUcIX8}隐藏到托盘", Config::hide_to_tray, [=](bool ans) {
+    addBoolOption(normal_setting, "hide_tray", "{ZflcWUcIX8}隐藏到托盘", Config::hide_to_tray, [=](bool ans) {
         ready_setting.append(data(Config::hide_to_tray, ans));
         normal_setting->set_dirty(true);
     });
-    addBoolOption("{6m2deulC6q}通用", "copy_clipboard", "{g2X3jHOVbU}自动复制到剪切板", Config::auto_copy_to_clipboard, [=](bool ans) {
+    addBoolOption(normal_setting, "copy_clipboard", "{g2X3jHOVbU}自动复制到剪切板", Config::auto_copy_to_clipboard, [=](bool ans) {
         ready_setting.append(data(Config::auto_copy_to_clipboard, ans));
         normal_setting->set_dirty(true);
     });
-    addBoolOption("{6m2deulC6q}通用", "clip_voice", "{sqFHDuafTm}启用截屏声音", Config::clip_voice, [=](bool ans) {
+    addBoolOption(normal_setting, "clip_voice", "{sqFHDuafTm}启用截屏声音", Config::clip_voice, [=](bool ans) {
         ready_setting.append(data(Config::clip_voice, ans));
         normal_setting->set_dirty(true);
     });
-    addBoolOption("{6m2deulC6q}通用", "receive_beta", "{PFu2ZARZg9}是否接受beta版本", Config::receive_beta, [=](bool ans) {
+    addBoolOption(normal_setting, "receive_beta", "{PFu2ZARZg9}是否接受beta版本", Config::receive_beta, [=](bool ans) {
         ready_setting.append(data(Config::receive_beta, ans));
         normal_setting->set_dirty(true);
     });
@@ -243,16 +235,16 @@ void Setting::capture_settings() {
     button_type_name << MString::search("{CcwwfzotQL}跳转到绘图窗口")
                      << MString::search("{Sx1TD3igtj}保存到剪切板")
                      << MString::search("{ePbIenISyt}保存到文件");
-    addComboOption("{23ih0Dr8Na}捕获", "capture_button_type", "{PnHYo4i9Gu}鼠标中键作用", button_type_name,
-    Config::middle_button_type, [=](int index) {
-        ready_setting.append(data(Config::middle_button_type, index));
-        capture_setting->set_dirty(true);
-    });
-    addNumOption("{23ih0Dr8Na}捕获", "capture_interval", Config::capture_interval, "{FcOnYo1uUa}滚动时间间隔", 100, 500, [=](int index) {
+    addComboOption(capture_setting, "capture_button_type", "{PnHYo4i9Gu}鼠标中键作用", button_type_name,
+                   Config::middle_button_type, [=](int index) {
+                       ready_setting.append(data(Config::middle_button_type, index));
+                       capture_setting->set_dirty(true);
+                   });
+    addNumOption(capture_setting, "capture_interval", Config::capture_interval, "{FcOnYo1uUa}滚动时间间隔", 100, 500, [=](int index) {
         ready_setting.append(data(Config::capture_interval, index));
         capture_setting->set_dirty(true);
     });
-    addFileOption("{23ih0Dr8Na}捕获", "global_capture_file", "{HBqaqm8LIK}全屏保存位置", Config::total_capture_save_path, [=](QString path) {
+    addFileOption(capture_setting, "global_capture_file", "{HBqaqm8LIK}全屏保存位置", Config::total_capture_save_path, [=](QString path) {
         ready_setting.append(data(Config::total_capture_save_path, path));
         capture_setting->set_dirty(true);
     });
@@ -260,10 +252,10 @@ void Setting::capture_settings() {
 
 void Setting::keySettings() {
     TabWidget* keySetting = addTab("{YRHJ1nexv6}快捷键");
-    addSpacer("{YRHJ1nexv6}快捷键", "{LvA0JggRsZ}全局快捷键");
+    addSpacer(keySetting, "{LvA0JggRsZ}全局快捷键");
     QList<QString> globalKeyNames = KeyManager::getGlobalKeyName();
     for(int i=0; i<globalKeyNames.size(); i++) {
-        addGlobalKeyOption("{YRHJ1nexv6}快捷键", i, "{" + globalKeyNames[i] + "}" + globalKeyNames[i], globalKeyNames[i], [=](QString keyName, int modKey, int key) {
+        addGlobalKeyOption(keySetting, i, "{" + globalKeyNames[i] + "}" + globalKeyNames[i], globalKeyNames[i], [=](QString keyName, int modKey, int key) {
             ready_setting.append(data(keyName, modKey, key));
             keySetting->set_dirty(true);
         });
@@ -277,14 +269,14 @@ void Setting::keySettings() {
         if(key_name.size() == 0) {
             continue;
         }
-        addSpacer("{YRHJ1nexv6}快捷键", "{" + window_name[i] + "}" + window_name[i]);
+        addSpacer(keySetting, "{" + window_name[i] + "}" + window_name[i]);
         int size = key_name.size();
         for(int k=0; k<size; k++) {
-            addKeyOption("{YRHJ1nexv6}快捷键", i * size + k, "{" + key_name[k] + "}" + key_name[k],
-            window_name[i], key_name[k], [=](QString windowName, QString keyName, QList<int> keys) {
-                ready_setting.append(data(windowName, keyName, keys));
-                keySetting->set_dirty(true);
-            });
+            addKeyOption(keySetting, i * size + k, "{" + key_name[k] + "}" + key_name[k],
+                         window_name[i], key_name[k], [=](QString windowName, QString keyName, QList<int> keys) {
+                             ready_setting.append(data(windowName, keyName, keys));
+                             keySetting->set_dirty(true);
+                         });
         }
     }
 }
@@ -320,12 +312,12 @@ void Setting::closeEvent(QCloseEvent *event) {
 }
 
 void Setting::onWindowCancel() {
-//    ready_setting.clear();
-//    for(int i=0; i<all_setting.size(); i++) {
-//        if(all_setting[i]->is_dirty()) {
-//            all_setting[i]->reset();
-//        }
-//    }
+    //    ready_setting.clear();
+    //    for(int i=0; i<all_setting.size(); i++) {
+    //        if(all_setting[i]->is_dirty()) {
+    //            all_setting[i]->reset();
+    //        }
+    //    }
     KeyManager::registerAll();
 }
 
@@ -351,4 +343,8 @@ void Setting::onClose(bool isSave) {
             tab->set_dirty(false);
         }
     }
+}
+
+bool Setting::disableWindowClose(){
+    return true;
 }
