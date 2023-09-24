@@ -94,6 +94,7 @@
         <file>capture.svg</file>
         <file>eraser.svg</file>
         <file>pin.svg</file>
+        <file>cursor.svg</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

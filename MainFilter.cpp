@@ -210,6 +210,10 @@ void MainFilter::setTrayContextMenu() {
 
 void MainFilter::checkCrash() {
     QDir dir("Data/crash");
+    QDir dir2("crashs/");
+    if(!dir2.exists()){
+        dir2.mkpath("crashs/");
+    }
     if(dir.exists()) {
         QString time = QDateTime::currentDateTime().toString("yyyy_MM_dd__hh_mm_ss");
         QString name = "Data/" + time + ".zip";

@@ -50,12 +50,13 @@ PaintWindow::PaintWindow(QWidget *parent) :
     helper->setWidgetResizable(true);
     helper->setWidgetMovable(true);
     helper->setTitleHeight(30);
+    helper->setRubberBandOnResize(true);
     setWindowFlags (Qt::FramelessWindowHint);
     setWindowTitle("简截");
     setWindowIcon(QIcon(":/image/avator.png"));
-    connect(title_bar, &Titlebar::minimize, this, [=]() {
-        WindowManager::changeWindow("tray");
-    });
+//    connect(title_bar, &Titlebar::minimize, this, [=]() {
+//        WindowManager::changeWindow("tray");
+//    });
     qRegisterMetaType<BaseLayer>("BaseLayer");
     menu_bar = new QMenuBar(this);
     QWidget* menu_widget = new QWidget(this);
@@ -87,6 +88,7 @@ PaintWindow::PaintWindow(QWidget *parent) :
     set_toolbar();
     initSettingPanel();
     addToolBarBreak();
+    setMinimumSize(400, 200);
 }
 
 PaintWindow::~PaintWindow() {
@@ -466,6 +468,9 @@ void PaintWindow::set_toolbar() {
 void PaintWindow::receiveData(QVariant data1, QVariant data2){
     QPixmap pix = data1.value<QPixmap>();
     QRect rect = data2.value<QRect>();
+    if(pix.isNull()){
+        pix = QPixmap(100, 100);
+    }
     reset();
     area->setPic(pix, rect);//在这个函数中还设置了paint_panel的大小
     paint_panel->update();
@@ -475,18 +480,16 @@ void PaintWindow::receiveData(QVariant data1, QVariant data2){
         clip->setPixmap(pix);
     }
     QScreen* screen = QGuiApplication::primaryScreen();
-    if(rect.width()+100 >= (double)screen->geometry().width()
-        || rect.height()+140 >= (double)screen->geometry().height()) {
+    int currentWidth = rect.width() + 100;
+    int currentHeight = rect.height() + 140;
+    if(currentWidth >= (double)screen->geometry().width()
+        || currentHeight >= (double)screen->geometry().height()) {
         showMaximized();
     } else {
-        resize(rect.width()+100, rect.height()+140);//设置主窗口大小，否则窗口大小不会变化
+        resize(currentWidth, currentHeight);//设置主窗口大小，否则窗口大小不会变化
         //左上角移动到指定位置，截图越大越向(0, 0)点接近
-        move(pos().x() * (1-(rect.width()/(double)screen->geometry().width()>1
-                                   ?1:rect.width()/(double)screen->geometry().width()
-                               )), pos().y() * (1 - (rect.height()/(double)screen->geometry().height()>1
-                                   ?1:rect.height()/(double)screen->geometry().height())));
+        move((screen->availableGeometry().width()-currentWidth)/2, (screen->availableGeometry().height() - currentHeight) / 2);
     }
-
     paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
     paint_panel->horizontalScrollBar()->setValue(rect.width() / 2);
 }

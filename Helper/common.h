@@ -45,7 +45,11 @@ static void changeWindowHelper(){
 }
 
 static int pt2px(double pt){
-    return (int)(pt / 72 * QGuiApplication::screenAt(QCursor::pos())->physicalDotsPerInch());
+    QPoint pos = QCursor::pos();
+    if(pos.x() < 0 || pos.y() < 0){
+        pos = QPoint(0, 0);
+    }
+    return (int)(pt / 72 * QGuiApplication::screenAt(pos)->physicalDotsPerInch());
 }
 
 static QPixmap loadSVG(QString name, int pt_w, int pt_h){

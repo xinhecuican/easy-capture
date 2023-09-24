@@ -17,11 +17,11 @@ Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
     setFixedHeight(30);
 
     icon_label->setScaledContents(true);
-    icon_label->setFixedSize(20, 20);
+    icon_label->setFixedSize(30, 30);
     name_label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     min_button->setIcon(ImageHelper::getIcon("minimize"));
-    min_button->setMinimumSize(24, 30);
+    min_button->setMinimumSize(30, 30);
     min_button->setToolTip("最小化");
     min_button->setStyleSheet("QToolButton{border:none;}\n"
                 "QToolButton:hover {\n"
@@ -37,7 +37,7 @@ Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
 
     max_button->setIcon(ImageHelper::getIcon("maximize"));
     max_button->setToolTip("最大化");
-    max_button->setMinimumSize(24, 30);
+    max_button->setMinimumSize(30, 30);
     max_button->setStyleSheet("QToolButton{border:none;}\n"
                               "QToolButton:hover {\n"
                                             "background-color: rgb(233, 233, 233);\n"
@@ -49,10 +49,10 @@ Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
         parent->isMaximized() ? parent->showNormal() : parent->showMaximized();
     });
     QPixmap pix = QPixmap(":/image/close.svg");
-    pix = pix.scaled(60, 30);
+    pix = pix.scaled(30, 30);
     close_button->setIcon(QIcon(pix));
     close_button->setToolTip("关闭");
-    close_button->setMinimumSize(40, 30);
+    close_button->setMinimumSize(30, 30);
     close_button->setStyleSheet("QToolButton{border:none;}\n"
                                 "QToolButton:hover {\n"
                                               "background-color: rgb(232, 17, 36);\n"

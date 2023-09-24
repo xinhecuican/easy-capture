@@ -88,6 +88,8 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
         if(!success || end_scroll) {
             dispatcher->get_all_images();//结束
             scrollTimer->stop();
+            scrollState = SCROLL_END;
+            update();
             return;
         }
         preImage = image;
@@ -100,7 +102,7 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
 
 void ScrollerWindow::paintEvent(QPaintEvent* event){
     QPainter painter(this);
-    if(scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL)
+    if(scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END)
         painter.fillRect(screenGeometry, QColor(0, 0, 0, 1));
 
     QPen pen;
@@ -115,14 +117,14 @@ void ScrollerWindow::paintEvent(QPaintEvent* event){
             painter.drawRect(rect);
             painter.drawText(activeWindowBound.left(),
                              activeWindowBound.top() + activeWindowBound.height()+20, MString::search("{NWZ0wFsHVM}按Esc中止\n请不要移动鼠标"));
-    } else {
+    } else if(scrollState != SCROLL_END){
         painter.drawRect(activeWindowBound);
     }
 }
 
 void ScrollerWindow::mousePressEvent(QMouseEvent *event){
     beginPoint = event->pos();
-    if((event->button() == Qt::LeftButton || event->button() == Qt::MidButton) && scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL){
+    if((event->button() == Qt::LeftButton || event->button() == Qt::MidButton) && scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END){
         // 手动设置滚动截屏区域
         if((scrollState == IDLE || scrollState == SCROLLRECT_SETTED) && isScrollRect) {
             scrollState = SCROLLRECT_SETTING;
@@ -180,7 +182,7 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
             scrollTimer->start(time);
         }
     }
-    else if(event->button() == Qt::RightButton){
+    else if(event->button() == Qt::RightButton && scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END){
         if(scrollState == SCROLLRECT_SETTED) {
             bubbleTipsWidget->setFix(false);
             scrollState = IDLE;
@@ -217,7 +219,7 @@ void ScrollerWindow::mouseMoveEvent(QMouseEvent *event){
         activeWindowBound = Math::buildRect(beginPoint, currentPoint).toRect();
         update();
     }
-    if(scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL){
+    if(scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END){
         bubbleTipsWidget->move(currentPoint);
     }
 }
@@ -240,6 +242,7 @@ void ScrollerWindow::onWindowSelect(){
 void ScrollerWindow::loadKeyEvent(QString name){
     KeyManager::addFunc(this, name, "scroll_scrollrect", [=](QObject* receiver, bool is_enter) {
         ScrollerWindow* current = qobject_cast<ScrollerWindow*>(receiver);
+        qDebug() << "scroll rect: " << is_enter;
         if(is_enter)
             current->isScrollRect = true;
         else if(!is_enter)
@@ -247,7 +250,10 @@ void ScrollerWindow::loadKeyEvent(QString name){
     });
     KeyManager::addFunc(this, name, "scroll_leave", [=](QObject* receiver, bool is_enter) {
         if(is_enter) {
-            if(scrollState == SCROLL_AUTO && !xHook->isKeyHookRunning()) {
+            if(scrollState == SCROLL_END){
+
+            }
+            else if(scrollState == SCROLL_AUTO && !xHook->isKeyHookRunning()) {
                 end_scroll = true;
             } else if(scrollState == SCROLL_MANUAL && !xHook->isKeyHookRunning()) {
                 dispatcher->get_all_images();//结束

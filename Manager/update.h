@@ -35,6 +35,7 @@ private slots:
 private:
     update_state_t updateState;
     static Update* _instance;
+    static QString version;
     UpdateData newest_data;
     QPointer<QNetworkReply> reply;
     QNetworkRequest request;

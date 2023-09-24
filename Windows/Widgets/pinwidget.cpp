@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include "Helper/mstring.h"
 #include <QPropertyAnimation>
+#include <QPalette>
 
 PinWidget::PinWidget(QImage image, QRect bound, QWidget* parent) : QWidget(parent),
     image(image),
@@ -24,6 +25,17 @@ PinWidget::PinWidget(QImage image, QRect bound, QWidget* parent) : QWidget(paren
 {
     scaleLabel = new QLabel("1000%", this);
     scaleLabel->setFont(QFont("Roman", 20, 75));
+    QPalette labelPal;
+    QLinearGradient colorGradient = QLinearGradient(0, 0, scaleLabel->width(), scaleLabel->height());
+    colorGradient.setSpread(QGradient::RepeatSpread);
+    colorGradient.setColorAt(0, QColor("#5EFCE8"));
+    colorGradient.setColorAt(0.5, QColor("#333333"));
+    colorGradient.setColorAt(1, QColor("#736EFE"));
+    QBrush brush(colorGradient);
+    labelPal.setBrush(QPalette::ColorRole::Text, brush);
+
+    scaleLabel->setPalette(labelPal);
+    scaleLabel->setForegroundRole(QPalette::Text);
     QGraphicsOpacityEffect *scaleOpacityEffect = new QGraphicsOpacityEffect(scaleLabel);
     scaleOpacityEffect->setOpacity(0);
     scaleLabel->setGraphicsEffect(scaleOpacityEffect);

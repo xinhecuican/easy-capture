@@ -28,7 +28,6 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
     cv::Mat scroll_image1, scroll_image2;
     cv::rotate(temp_img1, scroll_image1, cv::ROTATE_90_COUNTERCLOCKWISE);
     cv::rotate(temp_img2, scroll_image2, cv::ROTATE_90_COUNTERCLOCKWISE);
-    initMask(scroll_image1.cols, scroll_image1.rows);
     if (temp_img1.empty() || temp_img2.empty())
     {
         qDebug() << "Read image failed, please check again!" << endl;
@@ -190,6 +189,7 @@ bool Scroll_worker::first_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans)
     // Detect the keypoints
     std::vector<cv::KeyPoint> keyPointR, keyPointL;
     cv::Mat imageDescR, imageDescL;
+    initMask(grayL.cols, grayL.rows, grayL - grayR);
     detector->detect(grayL, keyPointL, maskImage);
     detector->detect(grayR, keyPointR, maskImage);
     //cv::Ptr<cv::xfeatures2d::BriefDescriptorExtractor> Descriptor =
@@ -475,25 +475,78 @@ int Scroll_worker::SURF(cv::Mat imageL, cv::Mat imageR, cv::Mat& ans, int img_he
 //    }
 }
 
-void Scroll_worker::initMask(int cols, int rows)
+struct SortNode{
+    int value;
+    int index;
+};
+
+bool sortCompare(const SortNode& a, const SortNode& b){
+    return a.value > b.value;
+}
+void Scroll_worker::initMask(int cols, int rows, cv::Mat image)
 {
     if(maskImage.rows != rows || maskImage.cols != cols)
     {
         maskImage = cv::Mat(rows, cols, CV_8UC1);
+        cv::Mat borderImage = cv::Mat(rows, cols, CV_8UC1);
+        cv::Canny(image, borderImage, 50, 150);
+//        cv::imwrite("D:/Temp/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", borderImage);
+        int testCount = (double)(cols) * 0.1;
+        int testStep = cols / testCount;
+        int deprecateCount = 0;
+        QVector<SortNode> activeLines;
+
         for(int i=0; i<rows; i++)
         {
-            for(int k=0; k<cols; k++)
-            {
+            if(i % 10 == 0){
+                int sensitive = 0;
+                for(int k=0; k<cols; k+=testStep){
+                    sensitive += borderImage.ptr<uchar>(i)[k];
+                }
+                // 不是边缘不进行考虑
+                if(sensitive != 0){
+                    SortNode sortNode;
+                    sortNode.index = i;
+                    sortNode.value = sensitive;
+                    activeLines.append(sortNode);
+                    for(int k=0; k<cols; k++)
+                    {
+                        maskImage.ptr<uchar>(i)[k] = 255;
+                    }
+                    continue;
+                }
+                else{
+                    deprecateCount++;
+                }
+            }
+            for(int k=0; k<cols; k++){
                 maskImage.ptr<uchar>(i)[k] = 0;
             }
         }
-        for(int i=0; i<rows; i+=10)
-        {
-            for(int k=0; k<cols; k++)
-            {
-                maskImage.ptr<uchar>(i)[k] = 255;
+
+        // 边界的周围也是边界，进行补偿获取更多信息
+        std::sort(activeLines.begin(), activeLines.end(), sortCompare);
+        deprecateCount /= 3;
+        int currentIdx = 0;
+        int shift = 1;
+        for(int i=0; i<deprecateCount; i++){
+            int idx = shift + activeLines[currentIdx].index;
+            if(idx < rows){
+                for(int k=0; k<cols; k++){
+                    maskImage.ptr<uchar>(idx)[k] = 255;
+                }
+            }
+            currentIdx++;
+            if(currentIdx == activeLines.size()){
+                currentIdx = 0;
+                if(shift < 0){
+                    shift = -shift + 1;
+                }
+                else
+                    shift = -shift;
             }
         }
+//        cv::imwrite("D:/Temp/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", maskImage);
     }
 }
 

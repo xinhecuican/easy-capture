@@ -17,7 +17,7 @@ public:
     void onWindowSelect() override;
     void loadKeyEvent(QString name) override;
 private:
-    enum ScrollState {IDLE, SCROLLRECT_SETTING, SCROLLRECT_SETTED, SCROLL_AUTO, SCROLL_MANUAL};
+    enum ScrollState {IDLE, SCROLLRECT_SETTING, SCROLLRECT_SETTED, SCROLL_AUTO, SCROLL_MANUAL, SCROLL_END};
     QRect screenGeometry;
     BubbleTipsWidget* bubbleTipsWidget;
     bool isScrollRect;

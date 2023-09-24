@@ -48,8 +48,7 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.7.0# for a project that appears at the top of each page and should give viewer a
-# quick idea about the purpose of the project. Keep the description short.
+PROJECT_NUMBER = 0.7.2
 
 PROJECT_BRIEF          =
 
@@ -2810,6 +2809,8 @@ DOT_CLEANUP            = YES
 
 
  YES
+
+
 
 
 

@@ -48,7 +48,13 @@ public:
     int process_width;
     int delta_width;
     cv::Mat maskImage;
-    void initMask(int cols, int rows);
+    /**
+     * @brief initMask 初始化掩码，减小计算量并找出两张图片不同的部分进行下一步操作
+     * @param cols
+     * @param rows
+     * @param image 图像是将要拼接的两张图像的差
+     */
+    void initMask(int cols, int rows, cv::Mat image);
 };
 
 #endif // SCROLL_WORKER_H
