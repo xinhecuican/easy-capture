@@ -31,7 +31,9 @@ ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsIte
     is_enable(true),
     scene(scene),
     currentshape(SHAPE_RECT) {
-    screen_rect = QGuiApplication::primaryScreen()->geometry();
+    QRect screenGeometry = ImageHelper::getCurrentGeometry();
+    screenGeometry.moveTo(0, 0);
+    screen_rect = screenGeometry;
     mask_layer = new MaskLayer(this);
     colorPicker = new ColorPicker(this);
     colorPicker->hide();
@@ -184,6 +186,9 @@ QRectF ClipLayer::getClipRect() {
 }
 
 void ClipLayer::reset() {
+    QRect screenGeometry = ImageHelper::getCurrentGeometry();
+    screenGeometry.moveTo(0, 0);
+    screen_rect = screenGeometry;
     is_save = false;
     buttonEnter(2);
     mask_layer->reset();
@@ -375,6 +380,11 @@ void ClipLayer::calBarPos() {
     }
     if(top < 0) {
         top = 0;
+    }
+    if(left == 0 && top == 0){
+        QPoint toolbarPos = toolbar->mapToGlobal(QPoint(left, top));
+        left = toolbarPos.x();
+        top = toolbarPos.y();
     }
     toolbar->move(left, top);
     attribute_toolbar->move(left + button_group->checkedButton()->pos().x(), top + bar_height);

@@ -3,6 +3,8 @@
 #include "Base/WindowBase.h"
 #include "Style_widget/bubbletipswidget.h"
 #include "new_capture/Widgets/Scroll_handler/scroll_dispatcher.h"
+#include "Style_widget/fadelabel.h"
+
 class ScrollerWindow : public WindowBase
 {
     Q_OBJECT
@@ -16,6 +18,7 @@ public:
     void onWindowCancel() override;
     void onWindowSelect() override;
     void loadKeyEvent(QString name) override;
+    void wheelEvent(QWheelEvent* event)override;
 private:
     enum ScrollState {IDLE, SCROLLRECT_SETTING, SCROLLRECT_SETTED, SCROLL_AUTO, SCROLL_MANUAL, SCROLL_END};
     QRect screenGeometry;
@@ -39,5 +42,6 @@ private:
     QPoint currentPoint;
     QImage preImage;
     qint64 lastCaptureTime;
+    FadeLabel* intervalLabel;
 };
 #endif // ScrollerWindow_H

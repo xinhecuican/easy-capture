@@ -18,32 +18,14 @@ PinWidget::PinWidget(QImage image, QRect bound, QWidget* parent) : QWidget(paren
     bound(bound),
     screenGeometry(ImageHelper::getCurrentGeometry()),
     isPress(false),
-    shadowColor(QColor(50, 50, 50, 90)),
+    shadowColor(QColor(50, 50, 50, 50)),
     currentWidth(bound.width()),
     currentHeight(bound.height())
 
 {
-    scaleLabel = new QLabel("1000%", this);
+    scaleLabel = new FadeLabel("1000%", this);
     scaleLabel->setFont(QFont("Roman", 20, 75));
-    QPalette labelPal;
-    QLinearGradient colorGradient = QLinearGradient(0, 0, scaleLabel->width(), scaleLabel->height());
-    colorGradient.setSpread(QGradient::RepeatSpread);
-    colorGradient.setColorAt(0, QColor("#5EFCE8"));
-    colorGradient.setColorAt(0.5, QColor("#333333"));
-    colorGradient.setColorAt(1, QColor("#736EFE"));
-    QBrush brush(colorGradient);
-    labelPal.setBrush(QPalette::ColorRole::Text, brush);
-
-    scaleLabel->setPalette(labelPal);
-    scaleLabel->setForegroundRole(QPalette::Text);
-    QGraphicsOpacityEffect *scaleOpacityEffect = new QGraphicsOpacityEffect(scaleLabel);
-    scaleOpacityEffect->setOpacity(0);
-    scaleLabel->setGraphicsEffect(scaleOpacityEffect);
-    scaleAnimation = new QPropertyAnimation(scaleOpacityEffect, "opacity");
-    scaleAnimation->setDuration(1500);
-    scaleAnimation->setStartValue(1);
-    scaleAnimation->setEndValue(0);
-    scaleAnimation->setEasingCurve(QEasingCurve::InOutQuad);
+    normalColor = shadowColor;
 
 
     QRect screenBound = bound;
@@ -91,7 +73,7 @@ void PinWidget::focusInEvent(QFocusEvent *event){
 }
 
 void PinWidget::focusOutEvent(QFocusEvent *event){
-    shadowColor = QColor(50, 50, 50, 90);
+    shadowColor = normalColor;
 }
 
 void PinWidget::wheelEvent(QWheelEvent *event){
@@ -110,11 +92,10 @@ void PinWidget::wheelEvent(QWheelEvent *event){
     qreal deltaHeight = currentHeight - beforeHeight;
     QPoint centerPos = event->pos();
     move(pos() - QPoint(deltaWidth * centerPos.x() / beforeWidth, deltaHeight * (qreal)(centerPos.y()) / beforeHeight));
-    resize(currentWidth, currentHeight);
+    resize(ImageHelper::getCurrentGeometry().size());
     scaleLabel->move(event->pos());
     scaleLabel->setText(QString::number(scale) + "%");
-    scaleAnimation->stop();
-    scaleAnimation->start();
+    scaleLabel->showAni();
 }
 
 void PinWidget::initMenu(){

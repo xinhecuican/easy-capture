@@ -48,8 +48,7 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.7.2
-
+PROJECT_NUMBER = 0.7.3
 PROJECT_BRIEF          =
 
 
@@ -2809,6 +2808,7 @@ DOT_CLEANUP            = YES
 
 
  YES
+
 
 
 

@@ -183,6 +183,7 @@ void PaintArea::setPic(QPixmap pic, QRect rect) {
 }
 
 void PaintArea::setClipPic(QPixmap pix) {
+    setSceneRect(0, 0, pix.width(), pix.height());
     clip_layer->setPic(pix);
     shape_layer->setPic(pix, QPoint(0, 0));
     paint_layer->setPix(pix, QPoint(0, 0));

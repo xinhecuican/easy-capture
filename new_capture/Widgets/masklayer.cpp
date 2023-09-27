@@ -9,18 +9,22 @@
 #include "Helper/plist.h"
 #include "Manager/config.h"
 #include "Manager/uimanager.h"
+#include "Helper/imagehelper.h"
 
 MaskLayer::MaskLayer(QGraphicsItem* parent) : QGraphicsObject(parent) {
     is_drag = false;
     is_save = false;
     begin_clip = false;
     is_enable = true;
-    screen_rect = QGuiApplication::primaryScreen()->geometry();
+    QRect screenGeometry = ImageHelper::getCurrentGeometry();
+    screen_rect = QRectF(0, 0, screenGeometry.width(), screenGeometry.height());
     borderData = UIManager::instance()->getBorderData();
     backgroundColor = UIManager::instance()->getCaptureBackground();
 }
 
 void MaskLayer::reset() {
+    QRect screenGeometry = ImageHelper::getCurrentGeometry();
+    screen_rect = QRectF(0, 0, screenGeometry.width(), screenGeometry.height());
     is_drag = false;
     begin_clip = false;
     is_save = false;

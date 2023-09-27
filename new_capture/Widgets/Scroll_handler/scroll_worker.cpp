@@ -490,7 +490,7 @@ void Scroll_worker::initMask(int cols, int rows, cv::Mat image)
         maskImage = cv::Mat(rows, cols, CV_8UC1);
         cv::Mat borderImage = cv::Mat(rows, cols, CV_8UC1);
         cv::Canny(image, borderImage, 50, 150);
-//        cv::imwrite("D:/Temp/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", borderImage);
+        cv::imwrite("D:/Temp/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", borderImage);
         int testCount = (double)(cols) * 0.1;
         int testStep = cols / testCount;
         int deprecateCount = 0;
@@ -546,7 +546,7 @@ void Scroll_worker::initMask(int cols, int rows, cv::Mat image)
                     shift = -shift;
             }
         }
-//        cv::imwrite("D:/Temp/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", maskImage);
+        cv::imwrite("D:/Temp/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", maskImage);
     }
 }
 

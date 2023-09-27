@@ -57,6 +57,10 @@
 * 录屏
 
   录屏基于[NanaRecorder](https://github.com/onlyet/NanaRecorder)改进而来
+  
+* 贴图
+
+  ![](https://xinhecuican.tech/images/简截10.png)
 
 # 快捷键
 
@@ -65,7 +69,9 @@
 | 区域 | 动作 | 作用 |
 |-|-|-|
 | 截图 | 左键 | 在区域上时为移动区域，不在为创建新区域 |
-| 截图 | 中键 | 确认 |
+| 截图 | 中键 | 保存置剪切板，可以在设置中更改 |
+| 滚动截图 | 滚轮 | 调节滚动截屏的速度 |
+| 贴图 | 滚轮 | 调节贴图的大小 |
 
 
 | 区域 | 快捷键 | 作用 |
@@ -77,34 +83,6 @@
 | 全局 | F7 | 终止录屏 |
 
 还有许多快捷键可以在**设置-快捷键**中查看
-
-# 更新计划
-
-- [x] 完成滚动截屏
-- [x] 修bug，重构部分代码
-- [x] 完善绘图区域，添加文本框，箭头和水印图片，支持旋转
-- [x] 完成UI_manager，可以利用qss(和css语法类似)修改样式并且提供主题
-- [ ]  完善透明度选择，除了删除某些像素外可以选择保留哪些像素，并支持渐变颜色删除。
-
-# 翻译
-
-本软件提供了便利的翻译方式，翻译文件位于Data/Languages下。翻译方式为将该目录下chinese.xml复制并且重命名为对应语言，例如english.xml。然后将文件里面的中文换成对应语言。以Data/Languages/MainWindow/chinese.xml为例
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<strings language="chinese">//将language标签替换成对应语言，目前只有english,如果想翻译其他语言请先和作者联系
-    <string id="cR3jOHb9Qw" text="新建"/>//中文翻译为对应语言
-    <string id="7yUWnx82jI" text="模式"/>
-    <string id="OBwjJUhTkh" text="矩形窗口"/>
-    <string id="fnGapBU4vo" text="自由截图"/>
-    <string id="ETY295cnab" text="滚动截图"/>
-    <string id="rzdUgOw26Y" text="活动窗口截屏"/>
-    <string id="FHFzLMcLYa" text="全屏"/>
-</strings>
-```
-如果先练练英文或其他语言的可以尝试一下
-
-
 
 如果你觉得本软件对你有帮助，可以请作者喝一杯咖啡 ^_^
 

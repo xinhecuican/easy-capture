@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
+#include "Style_widget/fadelabel.h"
 
 class PinWidget : public QWidget
 {
@@ -30,11 +31,11 @@ private:
     QPoint topLeftPoint;
     QRect screenGeometry;
     bool isPress;
-    const int shadowWidth = 6;
+    const int shadowWidth = 10;
     QColor shadowColor;
+    QColor normalColor;
     QMenu* menu;
-    QLabel* scaleLabel;
-    QPropertyAnimation *scaleAnimation;
+    FadeLabel* scaleLabel;
     int currentWidth;
     int currentHeight;
     int scale=100;

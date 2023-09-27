@@ -11,8 +11,6 @@ QMap<QString, WindowManager::WindowData> WindowManager::windowList =
     QMap<QString, WindowManager::WindowData>();
 QString WindowManager::activeWindow = "tray";
 QString WindowManager::previousWindow = NULL;
-bool WindowManager::currentHidden = false;
-bool WindowManager::previousHidden = false;
 
 WindowManager::WindowManager() {}
 
@@ -26,7 +24,7 @@ void WindowManager::controlWindowClose() {
     qInfo() << activeWindow << endl;
     for(auto iter=windowList.begin(); iter!=windowList.end();) {
         if(current_time-iter.value().time >= time&&
-            (currentHidden || iter.key() != activeWindow) && !iter.value().window->controlWindowClose()) {
+            (iter.key() != activeWindow) && !iter.value().window->controlWindowClose()) {
             temp_list.append(iter.value().window);
             qInfo() << "delete " << iter.key();
             KeyManager::onWindowClose(iter.key());
@@ -48,6 +46,7 @@ void WindowManager::closeWindow(QString name) {
     if(name == activeWindow) {
         qWarning("未关闭窗口调用closeWindow");
     } else if(windowList.find(name) != windowList.end()) {
+        windowList[name].window->onWindowCancel();
         windowList[name].window->onWindowClose();
         windowList[name].window->deleteLater();
         windowList.remove(name);
@@ -75,13 +74,11 @@ void WindowManager::changeWindow(QString name, QVariant data1, QVariant data2) {
         }
         previousWindow = activeWindow;
         activeWindow = name;
-        previousHidden = currentHidden;
-        currentHidden = false;
         if(activeWindow != "tray") {
             windowList[activeWindow].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
             windowList[activeWindow].window->onWindowSelect();
-            windowList[activeWindow].window->receiveData(data1, data2);
             windowList[name].window->show();
+            windowList[activeWindow].window->receiveData(data1, data2);
         }
         KeyManager::onWindowChangeEnd();
     }
@@ -98,6 +95,15 @@ void WindowManager::openWindow(QString name) {
 
 }
 
+void WindowManager::checkWindow(){
+    createWindow(previousWindow);
+    QString nowWindow = previousWindow;
+    previousWindow = activeWindow;
+    activeWindow = nowWindow;
+    windowList[nowWindow].window->show();
+    closeWindow(previousWindow);
+}
+
 QString WindowManager::getNowWindow() {
     return activeWindow;
 }
@@ -110,14 +116,6 @@ WindowBase* WindowManager::getWindow(QString name) {
 }
 
 void WindowManager::popWindow() {
-    if(previousHidden) {
-        previousHidden = currentHidden;
-        hideNow();
-        QString temp_window = activeWindow;
-        activeWindow = previousWindow;
-        previousWindow = temp_window;
-        return;
-    }
     changeWindow(previousWindow);
 }
 
@@ -149,20 +147,4 @@ WindowManager::WindowData WindowManager::createData(WindowBase *window) {
     data.time = QDateTime::currentDateTime().currentSecsSinceEpoch();
     data.window = window;
     return data;
-}
-
-void WindowManager::showNow() {
-    createWindow(activeWindow);
-    currentHidden = false;
-    windowList[activeWindow].window->show();
-    windowList[activeWindow].window->setWindowFlag(Qt::WindowSystemMenuHint, true);
-    if(!MainFilter::instance()->isTimerRun()) {
-        MainFilter::instance()->startTimer();
-    }
-}
-
-void WindowManager::hideNow() {
-    currentHidden = true;
-    windowList[activeWindow].window->hide();
-    windowList[activeWindow].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
 }

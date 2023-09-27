@@ -35,6 +35,8 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
     tips << "{yrlS5RFyAi}按Ctrl键可以自行设置滚动大小" << "{jjSL6uTMUW}在设置-捕获中可以调节滚动速度哦" << "{sI4UKVCDun}按鼠标中键手动滚动";
     bubbleTipsWidget->addContents(tips);
     bubbleTipsWidget->hide();
+    intervalLabel = new FadeLabel("", this);
+    intervalLabel->setFont(QFont("Roman", 20, 75));
 
     scrollState = IDLE;
     isScrollRect = false;
@@ -264,4 +266,25 @@ void ScrollerWindow::loadKeyEvent(QString name){
             }
         }
     });
+}
+
+void ScrollerWindow::wheelEvent(QWheelEvent *event){
+    int current = 0;
+    int old = Config::getConfig<int>(Config::capture_interval);
+    if(event->delta() > 0){
+        Config::setConfig(Config::capture_interval, old+10);
+        current = old + 10;
+    }
+    else{
+        if(old > 50){
+            current = old - 10;
+        }
+        else{
+            current = old;
+        }
+        Config::setConfig(Config::capture_interval, current);
+    }
+    intervalLabel->move(event->pos() - QPoint(40, 40));
+    intervalLabel->setText(QString::number(current));
+    intervalLabel->showAni();
 }

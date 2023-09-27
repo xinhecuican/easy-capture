@@ -49,7 +49,11 @@ static int pt2px(double pt){
     if(pos.x() < 0 || pos.y() < 0){
         pos = QPoint(0, 0);
     }
-    return (int)(pt / 72 * QGuiApplication::screenAt(pos)->physicalDotsPerInch());
+    QScreen* screen = QGuiApplication::screenAt(pos);
+    if(screen != NULL)
+        return (int)(pt / 72 * screen->physicalDotsPerInch());
+    else
+        return pt;
 }
 
 static QPixmap loadSVG(QString name, int pt_w, int pt_h){

@@ -2,6 +2,7 @@
 #define PAINTHELPER_H
 #include <QPainter>
 #include <qmath.h>
+#include <QDebug>
 
 class PaintHelper{
 public:
@@ -17,7 +18,8 @@ public:
         int alpha = color.alpha();
         for (int i = 0; i < shadowWidth; i++)
         {
-            color.setAlpha(alpha - qSqrt(i) * 40);
+            int currentAlpha = alpha * pow((double)(shadowWidth - i) / (double)(shadowWidth), 3);
+            color.setAlpha(currentAlpha);
             painter->setPen(color);
             painter->drawRoundedRect(rect.left() - i, rect.top() - i, rect.width() + i * 2, rect.height() + i * 2, roundRaidus, roundRaidus);
         }

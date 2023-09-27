@@ -74,6 +74,7 @@ SOURCES += \
 	Setting/setting.cpp \
     Style_widget/bubbletipswidget.cpp \
     Style_widget/colorwidget.cpp \
+	Style_widget/fadelabel.cpp \
     Style_widget/framelesshelper.cpp \
     Style_widget/rotate_view.cpp \
     Style_widget/spacer.cpp \
@@ -177,6 +178,7 @@ HEADERS += \
 	Setting/setting.h \
     Style_widget/bubbletipswidget.h \
     Style_widget/colorwidget.h \
+	Style_widget/fadelabel.h \
     Style_widget/framelesshelper.h \
     Style_widget/rotate_view.h \
     Style_widget/spacer.h \

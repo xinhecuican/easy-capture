@@ -252,6 +252,7 @@ void Setting::capture_settings() {
 
 void Setting::keySettings() {
     TabWidget* keySetting = addTab("{YRHJ1nexv6}快捷键");
+    addSpacer(keySetting, "鼠标");
     addSpacer(keySetting, "{LvA0JggRsZ}全局快捷键");
     QList<QString> globalKeyNames = KeyManager::getGlobalKeyName();
     for(int i=0; i<globalKeyNames.size(); i++) {
@@ -306,8 +307,7 @@ void Setting::aboutTab() {
 }
 
 void Setting::closeEvent(QCloseEvent *event) {
-    WindowManager::popWindow();
-    WindowManager::closeWindow("Setting");
+    WindowManager::checkWindow();
     event->accept();
 }
 

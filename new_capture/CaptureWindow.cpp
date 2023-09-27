@@ -236,6 +236,7 @@ void CaptureWindow::onWindowSelect() {
     Flow_edit_panel::instance()->reset();
     Style_manager::instance()->reset();
     Recorder::instance()->reset();
+    setGeometry(ImageHelper::getCurrentGeometry());
     view->show();
     QPixmap p = ImageHelper::grabScreen();
     area->setClipPic(p);

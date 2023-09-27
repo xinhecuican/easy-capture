@@ -122,7 +122,7 @@ void PaintWindow::loadKeyEvent(QString name) {
             if(Config::getConfig<int>(Config::capture_mode) == (int)Config::TOTAL_CAPTURE) {
                 QTimer::singleShot(200, current, [=]() {
                     QPixmap map = ImageHelper::grabScreen();
-                    WindowManager::changeWindow("PaintWindow", map, QGuiApplication::primaryScreen()->geometry());
+                    WindowManager::changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
                     if(Config::getConfig<bool>(Config::clip_voice))
                         QSound::play(":/audio/screenshot.wav");
                 });
@@ -479,16 +479,17 @@ void PaintWindow::receiveData(QVariant data1, QVariant data2){
         QClipboard *clip=QApplication::clipboard();
         clip->setPixmap(pix);
     }
-    QScreen* screen = QGuiApplication::primaryScreen();
+    QScreen* screen = ImageHelper::getCurrentScreen();
+    QRect geometry = screen->availableGeometry();
     int currentWidth = rect.width() + 100;
     int currentHeight = rect.height() + 140;
-    if(currentWidth >= (double)screen->geometry().width()
-        || currentHeight >= (double)screen->geometry().height()) {
+    if(currentWidth >= (double)geometry.width()
+        || currentHeight >= (double)geometry.height()) {
         showMaximized();
     } else {
         resize(currentWidth, currentHeight);//设置主窗口大小，否则窗口大小不会变化
         //左上角移动到指定位置，截图越大越向(0, 0)点接近
-        move((screen->availableGeometry().width()-currentWidth)/2, (screen->availableGeometry().height() - currentHeight) / 2);
+        move(geometry.x() + (geometry.width()-currentWidth)/2, geometry.y() + (geometry.height() - currentHeight) / 2);
     }
     paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
     paint_panel->horizontalScrollBar()->setValue(rect.width() / 2);
@@ -551,7 +552,6 @@ void PaintWindow::onWindowClose() {
     //    delete Style_manager::instance();
     //    delete Recorder::instance();
     //    delete History::instance();
-    delete Paint_setting_panel::instance();
     QClipboard *clip=QApplication::clipboard();
     if(Config::getConfig<bool>(Config::auto_copy_to_clipboard)) {
         clip->clear();
