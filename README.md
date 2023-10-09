@@ -16,6 +16,8 @@
 * zlib
 * qbreakpad
 
+[库文件下载地址, 密码bsmo](https://xinhecuican.lanzouj.com/idDKk1b9lcej)
+
 # 下载及代码
 
 [蓝奏云 密码: 8nq4](https://xinhecuican.lanzouy.com/b041tvkfg)

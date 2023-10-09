@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<strings language="english">
+    <string id="capture_one_window" text="Only one capture window allowed"/>
+    <string id="capture_multi_window_separate" text="Allow multiple separate capture windows"/>
+    <string id="capture_multi_window_combine" text="Allow multiple mergeable capture windows"/>
+    <string id="chinese" text="Chinese"/>
+    <string id="english" text="English"/>
+    <string id="clear_interval" text="Memory cleanup check interval"/>
+    <string id="history_num" text="Maximum history record count"/>
+    <string id="ZmjIc1nu8Q" text="Never update"/>
+    <string id="3EhZoQBZHg" text="Check for updates daily"/>
+    <string id="4Xoj7GVwjR" text="Check for updates weekly"/>
+    <string id="F9JiJznbwk" text="Check for updates on every startup"/>
+    <string id="multi_window_separate" text="Allow multiple separate rectangles"/>
+    <string id="multi_window_combine" text="Allow multiple mergeable rectangles"/>
+    <string id="move_all" text="Move all"/>
+    <string id="cR3jOHb9Qw" text="New"/>
+    <string id="7yUWnx82jI" text="Mode"/>
+    <string id="OBwjJUhTkh" text="Rectangular window"/>
+    <string id="fnGapBU4vo" text="Free screenshot"/>
+    <string id="ETY295cnab" text="Scrolling screenshot"/>
+    <string id="rzdUgOw26Y" text="Capture active window"/>
+    <string id="FHFzLMcLYa" text="Fullscreen"/>
+    <string id="m2Llo9nJ9o" text="File"/>
+    <string id="zA7Twj1QhJ" text="Open"/>
+    <string id="0EtTa6lKzl" text="Save as"/>
+    <string id="Mo0LoFqQqT" text="History"/>
+    <string id="pJqTHhEQdb" text="Save"/>
+    <string id="h5KymvIMTN" text="Undo"/>
+    <string id="ndvChZ2O6z" text="Pen"/>
+    <string id="a7CaC7NOL5" text="Redo"/>
+    <string id="j54u1kWtCx" text="Highlighter"/>
+    <string id="7cwKObEhcx" text="Eraser"/>
+    <string id="dAIlC0hPf5" text="More drawing options"/>
+    <string id="dTUpYwhZRM" text="Settings"/>
+    <string id="l1DkNbzL1T" text="Brush settings"/>
+    <string id="fYXepa9pHx" text="Brush color"/>
+    <string id="6Of41PN3eL" text="Select font color"/>
+    <string id="jEFblEjzoU" text="Background color"/>
+    <string id="VfVCbcOMjR" text="Background transparency"/>
+    <string id="zW4GVylzEh" text="Brush width"/>
+    <string id="pnbWkrTVVw" text="Transparent color settings"/>
+    <string id="8RK1prjHf0" text="Transparent color"/>
+    <string id="i4yFQ5UXBc" text="Layer management"/>
+    <string id="ntbJbEqxwF" text="Copy to clipboard"/>
+    <string id="l4yTU9QXUd" text="Pointer"/>
+    <string id="25JzGpOvFt" text="Shape"/>
+    <string id="biSbDKXbuW" text="Capture window count settings"/>
+    <string id="23ih0Dr8Na" text="Capture"/>
+    <string id="1cSo8BaCHq" text="Update time"/>
+    <string id="6m2deulC6q" text="General"/>
+    <string id="YRHJ1nexv6" text="Shortcuts"/>
+    <string id="leave" text="Exit"/>
+    <string id="one_window" text="Only allow one rectangle"/>
+    <string id="CaptureWindow" text="Capture window"/>
+    <string id="E33TP7yq9G" text="Language"/>
+    <string id="VwuLzPpyI3" text="History record count"/>
+    <string id="3BIidMbkAm" text="Startup at boot"/>
+    <string id="ZflcWUcIX8" text="Hide to tray"/>
+    <string id="YycWGmFDhU" text="Show exit dialog"/>
+    <string id="LvA0JggRsZ" text="Global shortcuts"/>
+    <string id="iy3cIujuw5" text="Open screenshot window"/>
+    <string id="dcvOkViWtX" text="Memory cleanup check time"/>
+    <string id="MainWindow" text="Main window"/>
+    <string id="PaintWindow" text="Paint window"/>
+    <string id="main_capture" text="Open screenshot window"/>
+    <string id="undo" text="Undo"/>
+    <string id="redo" text="Redo"/>
+    <string id="save" text="Save"/>
+    <string id="new_capture" text="Open screenshot window"/>
+    <string id="enter_capture" text="Confirm screenshot"/>
+    <string id="delete_shape" text="Delete shape"/>
+    <string id="capture_rect" text="Square"/>
+    <string id="capture_mosaic" text="Mosaic"/>
+    <string id="capture_cursor" text="Capture area"/>
+    <string id="capture_pencil" text="Pencil"/>
+    <string id="capture_highlighter" text="Highlighter"/>
+    <string id="capture_text" text="Text"/>
+    <string id="capture_undo" text="Undo"/>
+    <string id="capture_redo" text="Redo"/>
+    <string id="capture_erase" text="Erase"/>
+    <string id="capture_scrollrect" text="Set scrolling area"/>
+    <string id="capture_video_start" text="Start recording"/>
+    <string id="capture_video_pause" text="Pause/resume recording"/>
+    <string id="capture_video_stop" text="Stop recording"/>
+    <string id="FcOnYo1uUa" text="Scroll time interval"/>
+    <string id="g2X3jHOVbU" text="Auto copy to clipboard"/>
+    <string id="save2file" text="Save"/>
+    <string id="save2clip" text="Save to clipboard"/>
+    <string id="0NHvAJ2fEQ" text="Capture fullscreen"/>
+    <string id="HBqaqm8LIK" text="Fullscreen save location"/>
+    <string id="DepMhoivvx" text="Current color"/>
+    <string id="D7HSBXWTLj" text="Arrow"/>
+    <string id="CcwwfzotQL" text="Switch to drawing window"/>
+    <string id="Sx1TD3igtj" text="Switch to clipboard"/>
+    <string id="ePbIenISyt" text="Save to file"/>
+    <string id="PnHYo4i9Gu" text="Middle mouse button action"/>
+    <string id="sqFHDuafTm" text="Enable screenshot sound"/>
+    <string id="yrlS5RFyAi" text="You can set scrolling size by holding Ctrl"/>
+    <string id="jjSL6uTMUW" text="You can adjust scrolling speed in settings - capture"/>
+    <string id="YZbdqyumbs" text="Click on the scrolling area to scroll"/>
+    <string id="NWZ0wFsHVM" text="Press Esc to stop\nDo not move the mouse"/>
+    <string id="awake_capture" text="Wake up screenshot"/>
+    <string id="fullscreen_capture" text="Fullscreen"/>
+    <string id="FuBCvgW4BE" text="Close"/>
+    <string id="De720dAaY1" text="Settings"/>
+    <string id="vOmXOswvHv" text="Check for updates"/>
+    <string id="MKFr8c7gW9" text="Checking..."/>
+    <string id="d6AUxGzHMJ" text="Updating..."/>
+    <string id="UowiwjDUIy" text="Video"/>
+    <string id="rh0LYgOmDD" text="Record sound"/>
+    <string id="nmqfWFejoz" text="Select save directory"/>
+    <string id="SHLK0bd4wt" text="Start recording: F5\nPause/resume recording: F6\nStop recording: F7"/>
+    <string id="sI4UKVCDun" text="Manually scroll with middle mouse button"/>
+    <string id="akRpWUEmtc" text="Default"/>
+    <string id="H1WPwLFDwO" text="Confirm"/>
+    <string id="4Rmr42SpQK" text="Reset"/>
+    <string id="ms01jwOir5" text="About"/>
+    <string id="YQQqFBaXjV" text="Jianjie"/>
+    <string id="SYdvb1dMci" text="Version"/>
+    <string id="UjoYcLzhiX" text="Update time"/>
+    <string id="R3hH9RwEIO" text="Author"/>
+    <string id="0p65BvqadC" text="Release Notes"/>
+    <string id="PFu2ZARZg9" text="Accept beta versions"/>
+    <string id="7BQgNdUtCI" text="Theme"/>
+    <string id="BNzMH1dcwW" text="Pin"/>
+    <string id="KuxjUaFCne" text="Copy"/>
+    <string id="hpKdt8TR1o" text="Close all"/>
+    <string id="ScrollerWindow" text="Scrolling window"/>
+    <string id="scroll_leave" text="Exit"/>
+    <string id="scroll_scrollrect" text="Select scrolling area"/>
+</strings>

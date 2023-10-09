@@ -228,31 +228,31 @@ DEFINES += QT_MESSAGELOGCONTEXT
 RESOURCES += \
     Resource/Resources.qrc\
 
-win32:CONFIG(release, debug|release): include($$PWD/../qBreakpad/qBreakpad.pri)
-win32:CONFIG(release, debug|release): QMAKE_LIBDIR += $$PWD/../qBreakpad/handler
+win32:CONFIG(release, debug|release): include($$PWD/lib/qBreakpad/qBreakpad.pri)
+win32:CONFIG(release, debug|release): QMAKE_LIBDIR += $$PWD/lib/qBreakpad/handler
 win32:CONFIG(release, debug|release): LIBS += -lqBreakpad
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Release/release/ -lHook
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/debug/ -lHook
 #else:unix: LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/ -lHook
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lHook
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/debug/ -lHook
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/Hook/lib -lHook
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/Hook/lib -lHook
 else:unix: LIBS += -L$$PWD/../build-Hook-MSVC-Debug/ -lHook
 
-INCLUDEPATH += $$PWD/../HOOK
-DEPENDPATH += $$PWD/../HOOK
+INCLUDEPATH += $$PWD/lib/Hook/include
+DEPENDPATH += $$PWD/lib/Hook/include
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Release/quazip/release/ -lquazip
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/debug/ -lquazipd
 #else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/quazip/ -lquazipd
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/quazip/release/ -lquazip
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/quazip/debug/ -lquazipd
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/quazip/lib -lquazip
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/quazip/lib -lquazipd
 else:unix: LIBS += -L$$PWD/../build-quazip-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug/ -lquazipd
 
-INCLUDEPATH += $$PWD/../quazip-0.7.3/quazip
-DEPENDPATH += $$PWD/../quazip-0.7.3/quazip
+INCLUDEPATH += $$PWD/lib/quazip/include
+DEPENDPATH += $$PWD/lib/quazip/include
 
 LIBS += -lGdi32 -loleacc -lDbgHelp
 LIBS += \
@@ -260,17 +260,17 @@ LIBS += \
 
 RC_FILE = logo.rc
 
-INCLUDEPATH += $$PWD/../opencv/opencv4.5.1/include \
-    $$PWD/../opencv/opencv4.5.1/include/opencv2
+INCLUDEPATH += $$PWD/lib/opencv/include \
+	$$PWD/lib/opencv/include/opencv2
 
 #LIBS += F:/capture/opencv/opencv4.5.1/x64/mingw/lib/libopencv_*
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../opencv/opencv4.5.1-msvc/x64/vc16/lib\
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/opencv/lib\
 -lopencv_xfeatures2d451 -lopencv_imgproc451 -lopencv_imgcodecs451\
 -lopencv_core451 -lopencv_flann451 -lopencv_calib3d451 -lopencv_features2d451
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../opencv/opencv4.5.1-msvc/x64/vc16/lib\
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/opencv/lib\
 -lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
 -lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d -lopencv_highgui451d
-else:unix: LIBS += -L$$PWD/../opencv/opencv4.5.1-msvc/x64/vc16/lib\
+else:unix: LIBS += -L$$PWD/lib/opencv/lib\
 -lopencv_xfeatures2d451d -lopencv_imgproc451d -lopencv_imgcodecs451d\
 -lopencv_core451d -lopencv_flann451d -lopencv_calib3d451d -lopencv_features2d451d
 
@@ -279,16 +279,16 @@ msvc {
     QMAKE_CXXFLAGS += /utf-8
 }
 
-DEPENDPATH += E:/libs/Visual_Leak_Detector/include
-INCLUDEPATH += E:/libs/Visual_Leak_Detector/include
-win32:CONFIG(release, debug|release): LIBS += -LE:/libs/Visual_Leak_Detector/lib/Win64 -lvld
+DEPENDPATH += -L$$PWD/lib/vld/include
+INCLUDEPATH += -L$$PWD/lib/vld/include
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/vld/lib/Win64 -lvld
 
 DISTFILES += \
 	Resource/toolbar.qss
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lECVideoCapture
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/release/ -lECVideoCapture
-else:unix: LIBS += -L$$PWD/../build-ECVideoCapture-Desktop_Qt_5_14_2_MSVC2017_64bit-Release/ -lECVideoCapture
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ECVideoCapture/lib -lECVideoCapture
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ECVideoCapture/lib -lECVideoCapture
+else:unix: LIBS += -L$$PWD/lib/ECVideoCapture/lib -lECVideoCapture
 
-INCLUDEPATH += $$PWD/../ECVideoCapture
-DEPENDPATH += $$PWD/../ECVideoCapture
+INCLUDEPATH += $$PWD/lib/ECVideoCapture/include
+DEPENDPATH += $$PWD/lib/ECVideoCapture/include

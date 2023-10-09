@@ -78,5 +78,6 @@ capture.vcxproj
 capture.vcxproj.fliters
 capture.vcxproj.user
 doc/
+lib/
 
 

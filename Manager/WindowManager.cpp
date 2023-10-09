@@ -96,11 +96,13 @@ void WindowManager::openWindow(QString name) {
 }
 
 void WindowManager::checkWindow(){
-    createWindow(previousWindow);
+    if(previousWindow != "tray")
+        createWindow(previousWindow);
     QString nowWindow = previousWindow;
     previousWindow = activeWindow;
     activeWindow = nowWindow;
-    windowList[nowWindow].window->show();
+    if(nowWindow != "tray")
+        windowList[nowWindow].window->show();
     closeWindow(previousWindow);
 }
 
