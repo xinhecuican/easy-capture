@@ -29,8 +29,6 @@ public:
     void stopTimer();
     void startTimer();
     bool isTimerRun();
-    ATOM global_key_id;
-    ATOM global_capture_id;
 public slots:
     void windowMnaagerThread();
 private:

@@ -19,6 +19,7 @@ public:
     bool controlWindowClose() override;
 private:
     QList<PinWidget*> pinWidgets;
+    QRect allGeometry;
 };
 
 #endif // PINWINDOW_H

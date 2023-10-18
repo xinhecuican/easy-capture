@@ -9,6 +9,7 @@
 #include "IKeyListener.h"
 #include "QAbstractNativeEventFilter"
 #include <windows.h>
+#include "Helper/common.h"
 
 class KeyManager {
 public:
