@@ -31,6 +31,7 @@ ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsIte
     is_enable(true),
     scene(scene),
     currentshape(SHAPE_RECT) {
+    widgetParent = widget_parent;
     QRect screenGeometry = ImageHelper::getCurrentGeometry();
     screenGeometry.moveTo(0, 0);
     screen_rect = screenGeometry;
@@ -53,15 +54,15 @@ ClipLayer::ClipLayer(QWidget* widget_parent, QGraphicsScene* scene, QGraphicsIte
     arrowSetting = UIManager::instance()->getArrowData();
     pencil_setting = UIManager::instance()->getPencilData();
     highlighter_setting = UIManager::instance()->getHighlighterData();
-    widgetParent = NULL;
+//    widgetParent = NULL;
     toolbar = NULL;
     attribute_toolbar = NULL;
     setToolBar();
     setAttributeToolbar();
-    if(widgetParent != NULL) {
-        toolbar->setParent(widgetParent);
-        attribute_toolbar->setParent(widgetParent);
-    }
+//    if(widgetParent != NULL) {
+//        toolbar->setParent(widgetParent);
+//        attribute_toolbar->setParent(widgetParent);
+//    }
 }
 
 ClipLayer::~ClipLayer() {
@@ -204,7 +205,7 @@ void ClipLayer::sendRequestImage() {
 }
 
 void ClipLayer::setToolBar() {
-    toolbar = new QToolBar();
+    toolbar = new QToolBar(widgetParent);
     toolbar->setWindowFlags(toolbar->windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     toolbar->setWindowFlag(Qt::WindowSystemMenuHint, false);
     toolbar->hide();
@@ -633,7 +634,7 @@ void ClipLayer::initAttributeToolbarWidget(int id) {
 }
 
 void ClipLayer::setAttributeToolbar() {
-    attribute_toolbar = new AttributeToolbar();
+    attribute_toolbar = new AttributeToolbar(widgetParent);
     attribute_toolbar->setWindowFlags(toolbar->windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     attribute_toolbar->setWindowFlag(Qt::WindowSystemMenuHint, false);
 

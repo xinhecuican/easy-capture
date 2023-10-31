@@ -64,6 +64,7 @@ private:
     QGraphicsView* view;
     PaintArea* area;
     VideoCaptureHandler* videoCapture;
+    BubbleTipsWidget* tips;
     bool isVideoCapture;
 };
 

@@ -48,9 +48,7 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.7.3
-PROJECT_BRIEF          =
-
+PROJECT_NUMBER = 0.7.4
 
 # With the PROJECT_LOGO tag one can specify a logo or an icon that is included
 # in the documentation. The maximum height of the logo should not exceed 55
@@ -1020,7 +1018,8 @@ EXCLUDE                = debug/ \
                         github/ \
                         release/ \
                         doc/ \
-                        ocr/
+                        ocr/ \
+                        lib/
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -2808,6 +2807,18 @@ DOT_CLEANUP            = YES
 
 
  YES
+
+
+
+
+
+
+
+
+
+
+ YES
+
 
 
 

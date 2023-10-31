@@ -526,6 +526,9 @@ void Scroll_worker::initMask(int cols, int rows, cv::Mat image)
 
         // 边界的周围也是边界，进行补偿获取更多信息
         std::sort(activeLines.begin(), activeLines.end(), sortCompare);
+        if(activeLines.size() == 0){
+            return;
+        }
         deprecateCount /= 3;
         int currentIdx = 0;
         int shift = 1;
@@ -546,7 +549,7 @@ void Scroll_worker::initMask(int cols, int rows, cv::Mat image)
                     shift = -shift;
             }
         }
-        cv::imwrite("D:/Temp/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", maskImage);
+//        cv::imwrite("D:/Temp/" + std::to_string(QDateTime::currentMSecsSinceEpoch()) + ".png", maskImage);
     }
 }
 

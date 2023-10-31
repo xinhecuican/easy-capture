@@ -34,7 +34,7 @@ void Debug::beginTimer(QString name) {
     TimerElement timerElement;
     timerElement.name = name;
     timerElement.beginTime = QDateTime::currentMSecsSinceEpoch();
-    int threadId = *(int*)QThread::currentThreadId();
+    int threadId = quintptr(QThread::currentThreadId());
     mutex->lock();
     if(!timerName.contains(threadId)) {
         QList<TimerElement> timerList;
@@ -45,7 +45,7 @@ void Debug::beginTimer(QString name) {
 }
 
 void Debug::endTimer() {
-    int threadId = *(int*)QThread::currentThreadId();
+    int threadId = quintptr(QThread::currentThreadId());
     mutex->lock();
     if(timerName[threadId].size() == 0)
         return;

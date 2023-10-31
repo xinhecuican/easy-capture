@@ -6,6 +6,8 @@
 #include <QScreen>
 #include <QIcon>
 #include "common.h"
+#include <QSvgRenderer>
+#include <QPainter>
 
 QImage ImageHelper::Mat2QImage(cv::Mat const& mat) {
     if(mat.type() == CV_8UC1) {
@@ -152,6 +154,22 @@ QRect ImageHelper::getCurrentGeometry(){
 }
 
 QIcon ImageHelper::getIcon(QString name, int pt_w, int pt_h){
-    QIcon icon(QPixmap(":/image/" +name + ".svg").scaled(pt2px(pt_w), pt2px(pt_h)));
+    QSvgRenderer render;
+    render.load(":/image/" + name + ".svg");
+    QPixmap pix(pt2px(pt_w), pt2px(pt_h));
+    pix.fill(Qt::transparent);
+    QPainter painter(&pix);
+    render.render(&painter);
+    QIcon icon(pix);
     return icon;
+}
+
+QPixmap ImageHelper::getPixmap(QString name, int pt_w, int pt_h){
+    QSvgRenderer render;
+    render.load(":/image/" + name + ".svg");
+    QPixmap pix(pt2px(pt_w), pt2px(pt_h));
+    pix.fill(Qt::transparent);
+    QPainter painter(&pix);
+    render.render(&painter);
+    return pix;
 }

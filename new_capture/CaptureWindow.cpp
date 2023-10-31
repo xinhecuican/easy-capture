@@ -24,6 +24,8 @@
 #include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include "Helper/math.h"
 #include <QGuiApplication>
+#include <QGraphicsProxyWidget>
+#include "Widgets/capturetip.h"
 
 bool CaptureWindow::end_scroll = false;
 
@@ -56,9 +58,11 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
 
 //    ui->centralwidget->setGeometry(QGuiApplication::primaryScreen()->geometry());
     setGeometry(ImageHelper::getCurrentScreen()->geometry());
-    area = new PaintArea(this, true);
+    view = new QGraphicsView(this);
+    area = new PaintArea(view, true);
     area->stateChange(ARROW);
-    view = new QGraphicsView(area, this);
+
+    view->setScene(area);
     view->setStyleSheet(".QGraphicsView{background: transparent;border:0px;}");
     view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 //    view->viewport()->installEventFilter(new GraphicsViewPatch(view));
@@ -68,8 +72,27 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    if((Config::getConfig<int>(Config::show_guidance) & Config::CAPTURE_GUID) == 0){
+        tips = new BubbleTipsWidget(this);
+        tips->setBackColor(255, 255, 255);
+        tips->setShowHideButton(true);
+        CaptureTip* captureTip = new CaptureTip(this);
+        tips->setContent(captureTip);
+        connect(tips, &BubbleTipsWidget::hideButtonTrigger, this, [=](bool trigger){
+            int guidance = Config::getConfig<int>(Config::show_guidance);
+            if(trigger)
+                guidance = guidance | Config::CAPTURE_GUID;
+            else
+                guidance = guidance & (~Config::CAPTURE_GUID);
+            Config::setConfig(Config::show_guidance, guidance);
+            Config::updateConfig(Config::show_guidance);
+        });
+        QGraphicsProxyWidget* proxyTips = area->addTip(tips);
+        proxyTips->setZValue(10);
+    }
+
     setCentralWidget(view);
-    area->onViewSet(view);
+//    area->onViewSet(view);
 }
 
 CaptureWindow::~CaptureWindow() {

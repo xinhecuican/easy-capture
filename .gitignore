@@ -79,5 +79,6 @@ capture.vcxproj.fliters
 capture.vcxproj.user
 doc/
 lib/
+CppProperties.json
 
 

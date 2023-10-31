@@ -71,10 +71,9 @@ QString MString::search(QString id) {
     int end_index = 0;
     if(id[0] == "{") {
         for(int i=1; i<id.size(); i++) {
-            if(id[i] != "}") {
-                id_name.append(id[i]);
-            } else {
+            if(id[i] == "}") {
                 end_index = i;
+                id_name = id.mid(1, i-1);
                 break;
             }
         }

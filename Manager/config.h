@@ -30,7 +30,8 @@ public:
               clip_voice,
               show_update_box,
               ui_theme_name,
-              receive_beta
+              receive_beta,
+              show_guidance
              );
 
     /**
@@ -41,6 +42,10 @@ public:
         TOTAL_CAPTURE, /// 截全屏
         FREE_CAPTURE, /// 自由形状截图
         SCROLL_CAPTURE /// 滚动截屏
+    };
+
+    enum Guidance {
+        CAPTURE_GUID=1
     };
 
     /**

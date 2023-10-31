@@ -8,7 +8,12 @@ BubbleTipsWidget::BubbleTipsWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::BubbleTipsWidget) {
     ui->setupUi(this);
-
+    ui->hideButton->hide();
+    currentWidget = NULL;
+    connect(ui->hideButton, &QRadioButton::toggled, this, [=](bool checked){
+        emit hideButtonTrigger(checked);
+    });
+    isShowHideButton = false;
     setWindowFlags(Qt::FramelessWindowHint | Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
     setBackColor(146, 219, 176, 130);
@@ -17,7 +22,6 @@ BubbleTipsWidget::BubbleTipsWidget(QWidget *parent)
     QFont f;
     f.setFamily("Microsoft YaHei UI");
     f.setPixelSize(18);
-    setContentFont(f);
 
     loopTime = 3000;
     currentIndex = 0;
@@ -31,22 +35,24 @@ BubbleTipsWidget::~BubbleTipsWidget() {
 }
 
 void BubbleTipsWidget::addContent(QString content, QColor color) {
-    ContentType contentType;
-    contentType.text = content;
-    contentType.color = color;
-    contents.append(contentType);
-    setContent(content, color);
+    QLabel* label = initLabelContent(content, color);
+    contents.append(label);
+    setContent(label);
     if(!contentChangeTimer->isActive())
         contentChangeTimer->start(loopTime);
 }
 
 void BubbleTipsWidget::addContents(QStringList contents, QColor color) {
     for(QString content : contents) {
-        ContentType contentType;
-        contentType.text = content;
-        contentType.color = color;
-        this->contents.append(contentType);
+        QLabel* label = initLabelContent(content, color);
+        this->contents.append(label);
     }
+}
+
+inline void BubbleTipsWidget::setContent(QWidget* widget){
+    setContentWidget(widget);
+    adjustSize();
+    update();
 }
 
 void BubbleTipsWidget::clear() {
@@ -62,18 +68,11 @@ void BubbleTipsWidget::setDirect(DIRECT direct, double size) {
     m_posSize = size;
 }
 
-void BubbleTipsWidget::setContentFont(QFont font) {
-    ui->label->setFont(font);
-}
-
 void BubbleTipsWidget::setContent(const QString &content, QColor color) {
-    ui->label->setText(MString::search(content));
-    ui->label->setStyleSheet(QString("color: rgb(%1, %2, %3)")
-                             .arg(color.red())
-                             .arg(color.green())
-                             .arg(color.blue()));
-    adjustSize();
-    update();
+    QLabel* label = initLabelContent(content, color);
+    contents.clear();
+    contents.append(label);
+    setContent(label);
 }
 
 void BubbleTipsWidget::hideEvent(QHideEvent *event) {
@@ -138,5 +137,38 @@ void BubbleTipsWidget::contentChangeFunc(){
         currentIndex = 0;
     else
         currentIndex = (currentIndex + 1) % contents.size();
-    setContent(contents[currentIndex].text, contents[currentIndex].color);
+    setContent(contents[currentIndex]);
+}
+
+void BubbleTipsWidget::setShowHideButton(bool show){
+    if(show)
+        ui->hideButton->show();
+    else
+        ui->hideButton->hide();
+}
+
+QLabel* BubbleTipsWidget::initLabelContent(const QString &content, QColor color){
+    QLabel* label = new QLabel(this);
+    QFont f;
+    f.setFamily("Microsoft YaHei UI");
+    f.setPixelSize(18);
+    label->setFont(f);
+    label->setText(MString::search(content));
+    label->setStyleSheet(QString("color: rgb(%1, %2, %3)")
+                                 .arg(color.red())
+                                 .arg(color.green())
+                                 .arg(color.blue()));
+    label->hide();
+    return label;
+}
+
+void BubbleTipsWidget::setContentWidget(QWidget* widget){
+    if(currentWidget == NULL || currentWidget != widget){
+        if(currentWidget != NULL)
+            currentWidget->hide();
+        widget->show();
+        ui->contentLayout->removeWidget(currentWidget);
+        ui->contentLayout->addWidget(widget);
+        currentWidget = widget;
+    }
 }

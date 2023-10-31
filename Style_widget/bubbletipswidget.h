@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,7 +27,6 @@ enum class DIRECT {
     DIRECT_BOTTOM
 };
 
-// 来源：https://blog.csdn.net/guorong520/article/details/108827925?spm=1001.2101.3001.6650.3&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-108827925-blog-81699336.pc_relevant_aa2&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-3-108827925-blog-81699336.pc_relevant_aa2&utm_relevant_index=6
 class BubbleTipsWidget : public QWidget {
     Q_OBJECT
 public:
@@ -36,8 +36,8 @@ public:
     void setBackColor(int r, int g, int b, int a = 255);
     // 设置三角方向(左上右下)，位置系数(宽度 * 系数)
     void setDirect(DIRECT direct = DIRECT::DIRECT_TOP, double size = 0.75);
-    void setContentFont(QFont font = {});
     void setContent(const QString &content, QColor color = {});
+    inline void setContent(QWidget* widget);
     void addContent(QString content, QColor color = QColor());
     void addContents(QStringList content, QColor color = QColor());
     void setFixContent(const QString content, QColor color = {});
@@ -46,12 +46,17 @@ public:
     void hideEvent(QHideEvent *event) override;
     void showEvent(QShowEvent *event) override;
     void setFix(bool isFix);
+    void setShowHideButton(bool show);
 public slots:
     void contentChangeFunc();
+signals:
+    void hideButtonTrigger(bool enable);
 protected:
     void paintEvent(QPaintEvent *event)override;
 
 private:
+    void setContentWidget(QWidget* widget);
+    QLabel* initLabelContent(const QString &content, QColor color = {});
     Ui::BubbleTipsWidget *ui;
     QColor          m_backColor  {255, 0, 255, 255};
     DIRECT          m_direct;
@@ -65,9 +70,11 @@ private:
     };
     int currentIndex;
     int loopTime;
-    QList<ContentType> contents;
+    QList<QWidget*> contents;
     QTimer* contentChangeTimer;
+    QWidget* currentWidget;
     bool isFixContent;
+    bool isShowHideButton;
 };
 #endif // _BUBBLETIPSWIDGET_H_
 

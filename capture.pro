@@ -94,6 +94,7 @@ SOURCES += \
     new_capture/Widgets/Scroll_handler/scroll_worker.cpp \
     new_capture/Widgets/VideoHandler/videocapture.cpp \
     new_capture/Widgets/attributetoolbar.cpp \
+	new_capture/Widgets/capturetip.cpp \
     new_capture/Widgets/cliplayer.cpp \
     new_capture/Widgets/clipregion.cpp \
 	new_capture/Widgets/colorpicker.cpp \
@@ -198,6 +199,7 @@ HEADERS += \
     new_capture/Widgets/Scroll_handler/scroll_worker.h \
     new_capture/Widgets/VideoHandler/videocapture.h \
     new_capture/Widgets/attributetoolbar.h \
+	new_capture/Widgets/capturetip.h \
     new_capture/Widgets/cliplayer.h \
     new_capture/Widgets/clipregion.h \
 	new_capture/Widgets/colorpicker.h \
@@ -228,9 +230,12 @@ DEFINES += QT_MESSAGELOGCONTEXT
 RESOURCES += \
     Resource/Resources.qrc\
 
-win32:CONFIG(release, debug|release): include($$PWD/lib/qBreakpad/qBreakpad.pri)
-win32:CONFIG(release, debug|release): QMAKE_LIBDIR += $$PWD/lib/qBreakpad/handler
-win32:CONFIG(release, debug|release): LIBS += -lqBreakpad
+win32:CONFIG(release, debug|release):INCLUDEPATH += $$PWD/lib/qBreakpad/handler/
+win32:CONFIG(release, debug|release):HEADERS += \
+	$$PWD/lib/qBreakpad/handler/QBreakpadHandler.h \
+	$$PWD/lib/qBreakpad/handler/QBreakpadHttpUploader.h
+win32:CONFIG(release, debug|release):LIBS += \
+	-L$$PWD/lib/qBreakpad/handler -lqBreakpad
 
 #win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Release/release/ -lHook
 #else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-Hook-Desktop_Qt_5_14_2_MinGW_64_bit-Debug/debug/ -lHook

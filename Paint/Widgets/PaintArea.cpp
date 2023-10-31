@@ -30,12 +30,14 @@
 #include <QScreen>
 #include <QProcess>
 #include "new_capture/Widgets/Scroll_handler/Scroll_handler_global.h"
+#include <QGraphicsProxyWidget>
 
 PaintArea::PaintArea(QWidget* parent, bool enable_clip) : QGraphicsScene(parent) {
     is_save = false;
     is_clip = enable_clip;
     state = PAINT;
     shape_type = RECTANGLE;
+    tip = NULL;
     initProcess();
     if(!is_clip) {
         pic_layer = new Picture_layer();
@@ -391,6 +393,8 @@ void PaintArea::prepareSave() {
         pic_layer->prepareSave();
     else
         clip_layer->prepareSave();
+    if(tip != NULL)
+        tip->hide();
     shape_layer->prepareSave();
     update();
 }
@@ -400,6 +404,8 @@ void PaintArea::endSave() {
         pic_layer->endSave();
     else
         clip_layer->endSave();
+    if(tip != NULL)
+        tip->show();
     shape_layer->endSave();
     update();
 }
@@ -427,6 +433,11 @@ RecordInfo PaintArea::getRecordInfo() {
     if(clip_layer != NULL)
         return clip_layer->getRecordInfo();
     return RecordInfo();
+}
+
+QGraphicsProxyWidget* PaintArea::addTip(QWidget* tip){
+    this->tip = tip;
+    return addWidget(tip);
 }
 
 //void PaintArea::wheelEvent(QGraphicsSceneWheelEvent *event){

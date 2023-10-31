@@ -40,6 +40,7 @@ public:
     void onViewSet(QWidget* view);
     void clipButtonEnter(int id);
     void startOcr();
+    QGraphicsProxyWidget* addTip(QWidget* tip);
 //    void wheelEvent(QGraphicsSceneWheelEvent *event) override;
     RecordInfo getRecordInfo();
 private:
@@ -55,6 +56,7 @@ private:
     Picture_layer* pic_layer;
     ShapeLayer* shape_layer;
     ClipLayer* clip_layer;
+    QWidget* tip;
     bool is_save;
     bool is_clip;
     QProcess ocrProcess;
