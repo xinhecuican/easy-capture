@@ -48,13 +48,12 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-QString Update::version = "0.7.4";
+QString Update::version = "0.7.5";
 UpdateData Update::now_version = UpdateData(Update::version,
                                             "http://121.37.81.150:8200/easycapture/update/" + Update::version + ".zip", "",
-                                 "1. 修复贴图不能跨屏的问题\n"
-                                 "2. 截图界面添加提示\n"
-                                 "3. 优化首次打开截图窗口的速度\n"
-                                 "4. 优化图标显示");
+                                 "1. 重构KeyManager\n"
+                                 "2. 修复更改快捷键时崩溃的bug\n"
+                                 "3. 修复快捷键不生效的bug");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;
@@ -190,7 +189,7 @@ void Update::on_update() {
         int ans = file.readAll().toInt();
         if(file.exists() && ans) {
             Config::updateAll();
-            KeyManager::updateAll();
+            KeyManager::instance()->updateAll();
             History::instance()->update();
             Config::setConfig(Config::need_update, 0);
             Config::updateConfig(Config::need_update);

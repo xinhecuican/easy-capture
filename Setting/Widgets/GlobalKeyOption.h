@@ -11,21 +11,23 @@ class GlobalKeyOption : public QWidget, IKeyListener, public TabBase {
 public:
     GlobalKeyOption();
     ~GlobalKeyOption();
+    GlobalKeyOption(int index, QString name, QString keyName, QWidget* parent);
     GlobalKeyOption(int index, QString name, QString keyName, QWidget* parent, std::function<void (QString, int, int)> const &f);
     void keyEnd() override;
     void getKey(int key) override;
     void reset() override;
     QString getName() override;
-    int getBeginIndex() override;
-    int getDefaultIndex() override;
     void restore() override;
+    void onSave() override;
 private:
     void detectKeyConflict();
+    void init();
     int index;
     int modKey;
     int key;
     int tempKey;
-    bool dirty;
+    int originKey;
+    int originModKey;
     QString name;
     QString keyName;
     QPushButton* modKeyButton;

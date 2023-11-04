@@ -48,25 +48,11 @@ MainFilter::MainFilter() {
 MainFilter::~MainFilter() {
 }
 
-bool MainFilter::eventFilter(QObject *o, QEvent *e) {
-    if(e->type() == QEvent::KeyPress) {
-        QKeyEvent* event = static_cast<QKeyEvent*>(e);
-        if(!event->isAutoRepeat()) {
-            KeyManager::keyEnter(event->key());
-        }
-    } else if(e->type() == QEvent::KeyRelease) {
-        QKeyEvent* event = static_cast<QKeyEvent*>(e);
-        if(!event->isAutoRepeat()) {
-            KeyManager::keyRelease(event->key());
-        }
-    }
-    return false;
-}
 
 bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, long *result) {
     MSG* pMsg = reinterpret_cast<MSG*>(message);
     if(pMsg->message == WM_HOTKEY) {
-        QList<ATOM> keyIds = KeyManager::getGlobalKeyId();
+        QList<ATOM> keyIds = KeyManager::instance()->getGlobalKeyId();
         for(int i=0; i<keyIds.size(); i++) {
             if(pMsg->wParam == keyIds[i]) {
                 switch(i) {

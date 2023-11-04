@@ -114,6 +114,7 @@ HEADERS += \
 	Helper/PaintHelper.h \
     Helper/Reflect.h \
     Helper/Serialize.h \
+	Helper/Template.h \
     Helper/common.h \
     Helper/debug.h \
 	Helper/imagehelper.h \

@@ -9,22 +9,17 @@ public:
     virtual QString getName()=0;
 
     /**
-     * @brief getBeginIndex 获得当前设置的序号 @ref Config
-     * @return
-     */
-    virtual int getBeginIndex()=0;
-
-    /**
-     * @brief getDefaultIndex 多选设置修改前的序号
-     * @return
-     */
-    virtual int getDefaultIndex()=0;
-
-    /**
      * @brief @ref WindowBase::onWindowCancel() 时调用\n
      * 没保存就退出时会重置未保存的选项
      */
     virtual void reset()=0;
+
+    /**
+     * @brief 保存当前选项
+     */
+    virtual void onSave()=0;
+
+    virtual bool getChange(){return isChange;}
 
     /**
      * @brief restore
@@ -32,6 +27,8 @@ public:
      */
     virtual void restore() {}
     virtual ~TabBase() {};
+protected:
+    bool isChange=false;
 };
 
 #endif // TAB_BASE_H

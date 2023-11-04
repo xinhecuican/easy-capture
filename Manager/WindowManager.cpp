@@ -27,7 +27,7 @@ void WindowManager::controlWindowClose() {
             (iter.key() != activeWindow) && !iter.value().window->controlWindowClose()) {
             temp_list.append(iter.value().window);
             qInfo() << "delete " << iter.key();
-            KeyManager::onWindowClose(iter.key());
+            KeyManager::instance()->onWindowClose(iter.key());
             iter = windowList.erase(iter);
         } else {
             iter++;
@@ -63,7 +63,7 @@ void WindowManager::changeWindow(QString name, QVariant data1, QVariant data2) {
     qInfo() << name << " " << activeWindow;
     createWindow(name);
     if(activeWindow != name) {
-        KeyManager::onWindowChangeBegin(activeWindow, name);
+        KeyManager::instance()->onWindowChangeBegin(activeWindow);
         if(name == "tray") {
             windowList[activeWindow].window->setWindowFlag(Qt::WindowSystemMenuHint, false);
         }
@@ -80,7 +80,7 @@ void WindowManager::changeWindow(QString name, QVariant data1, QVariant data2) {
             windowList[name].window->show();
             windowList[activeWindow].window->receiveData(data1, data2);
         }
-        KeyManager::onWindowChangeEnd();
+        KeyManager::instance()->onWindowChangeEnd(name);
     }
     if(!MainFilter::instance()->isTimerRun()) {
         MainFilter::instance()->startTimer();

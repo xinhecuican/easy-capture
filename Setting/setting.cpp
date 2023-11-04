@@ -20,7 +20,6 @@ Setting::Setting(QWidget *parent) :
     WindowBase(parent),
     ui(new Ui::Setting) {
     ui->setupUi(this);
-    ready_setting = QList<data>();
     all_setting = PList<TabWidget*>();
 
     QDialogButtonBox* buttonBox = new QDialogButtonBox(this);//右下角按钮设置
@@ -28,17 +27,12 @@ Setting::Setting(QWidget *parent) :
     resetButton->setText(MString::search("{4Rmr42SpQK}重置"));
     resetButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
     connect(resetButton, &QPushButton::clicked, this, [=]() {
-        TabWidget* keyTab = getTab("{YRHJ1nexv6}快捷键");
-        if(keyTab != ui->tabWidget->currentWidget()) {
-            Config::resetConfig();
-            for(int i=0; i<all_setting.size(); i++) {
-                if(all_setting[i] != keyTab)
-                    all_setting[i]->reset();
-            }
-        } else {
-            KeyManager::reset();
-            keyTab->reset();
+        Config::resetConfig();
+        KeyManager::instance()->reset();
+        for(int i=0; i<all_setting.size(); i++) {
+            all_setting[i]->reset();
         }
+        isChange = true;
     });
     QPushButton* ok = new QPushButton(this);
     ok->setText(MString::search("{H1WPwLFDwO}确认"));
@@ -54,7 +48,14 @@ Setting::Setting(QWidget *parent) :
         this->close();
     });
     close->connect(close, &QPushButton::clicked, this, [=]() {
-        if(ready_setting.size() > 0) {
+        bool isChange = this->isChange;
+        if(!isChange){
+            for(TabWidget* widget : all_setting){
+                isChange = widget->isChange();
+                if(isChange) break;
+            }
+        }
+        if(isChange) {
             int ans = QMessageBox::warning(this, "简截", "有设置未保存，是否保存",  QMessageBox::No| QMessageBox::Ok);
             if(ans == QMessageBox::Ok) {
                 onClose(true);
@@ -80,17 +81,6 @@ Setting::Setting(QWidget *parent) :
 
 Setting::~Setting() {
     delete ui;
-}
-
-void Setting::postUpdate(Config::setting type, QVariant data) {
-    switch(type) {
-    case Config::language:
-        MString::load_from_file("Data/Languages/");
-        break;
-    case Config::ui_theme_name:
-        delete UIManager::instance();
-        break;
-    }
 }
 
 TabWidget* Setting::addTab(QString name) {
@@ -134,6 +124,31 @@ void Setting::addFileOption(TabWidget* tab, QString optionName, QString name, in
     tab->add_file_option(optionName, name, index, f);
 }
 
+void Setting::addBoolOption(TabWidget* tab, QString tab_name, QString name, int index) {
+    tab->addBoolOption(tab_name, name, index);
+
+}
+
+void Setting::addComboOption(TabWidget* tab, QString tab_name, QString text, QVector<QString> name, int index, bool isString) {
+    tab->addComboOption(tab_name, text, name, index, isString);
+}
+
+void Setting::addKeyOption(TabWidget* tab, int index, QString indexName, QString windowName, QString keyName) {
+    tab->addKeyOption(index, indexName, windowName, keyName);
+}
+
+void Setting::addGlobalKeyOption(TabWidget* tab, int index, QString optionName, QString keyName) {
+    tab->addGlobalKeyOption(index, optionName, keyName);
+}
+
+void Setting::addNumOption(TabWidget* tab, QString optionName, int index, QString name, int min, int max) {
+    tab->addNumOption(optionName, index, name, min, max);
+}
+
+void Setting::addFileOption(TabWidget* tab, QString optionName, QString name, int index) {
+    tab->addFileOption(optionName, name, index);
+}
+
 void Setting::addSpacer(TabWidget* tab, QString text) {
     tab->add_spacer(text);
 }
@@ -151,33 +166,34 @@ void Setting::normal_settings() {
                 << MString::search("{4Xoj7GVwjR}每周检查更新");
     addComboOption(normal_setting, "update_type", "{1cSo8BaCHq}更新时间", update_name,
                    Config::update_checktime, [=](int index) {
-                       ready_setting.append(data(Config::update_checktime, index));
-                       data temp_data;
-                       temp_data.type = Config::update_interval;
+                       Config::setConfig(Config::update_checktime, index);
+                       Config::updateConfig(Config::update_checktime);
+                       int sum;
                        switch(index) {
                        case 0:
-                           temp_data.sum = -1;
+                           sum = -1;
                            break;
                        case 1:
-                           temp_data.sum = 60 * 24;
+                           sum = 60 * 24;
                            break;
                        case 2:
-                           temp_data.sum = 0;
+                           sum = 0;
                            break;
                        case 3:
-                           temp_data.sum = 60 * 24 * 7;
+                           sum = 60 * 24 * 7;
                            break;
                        }
-                       ready_setting.append(temp_data);
-                       normal_setting->set_dirty(true);
+                       Config::setConfig(Config::update_interval, sum);
+                       Config::updateConfig(Config::update_interval);
                    });
 
     QVector<QString> language_name = QVector<QString>();
     language_name << MString::search("{chinese}") << MString::search("{english}");
     addComboOption(normal_setting, "language_type", "{E33TP7yq9G}语言", language_name,
-                   Config::language, [=](int index) {
-                       ready_setting.append(data(Config::language, index));
-                       normal_setting->set_dirty(true);
+                   Config::language, [=](int index){
+                       Config::setConfig(Config::language, index);
+                       Config::updateConfig(Config::language);
+                       MString::load_from_file("Data/Languages/");
                    });
     QVector<QString> themeName = QVector<QString>();
     QDir dir("Data/UI");
@@ -187,20 +203,16 @@ void Setting::normal_settings() {
             themeName.append(fileList.at(i).fileName());
         }
     }
-    addComboOption(normal_setting, "theme_name", "{7BQgNdUtCI}主题", themeName, Config::ui_theme_name, [=](int index) {
-            ready_setting.append(data(Config::ui_theme_name, themeName[index]));
-            normal_setting->set_dirty(true);
-        }, true);
-    addNumOption(normal_setting, "history_num", Config::history_num, "{VwuLzPpyI3}历史记录数量", 0, 500,[=](int index) {
-        ready_setting.append(data(Config::history_num, index));
-        normal_setting->set_dirty(true);
-    });
-    addNumOption(normal_setting, "check_time", Config::clear_interval, "{dcvOkViWtX}内存清理检查时间", 5, 120, [=](int index) {
-        ready_setting.append(data(Config::clear_interval, index));
-        normal_setting->set_dirty(true);
-    });
+    addComboOption(normal_setting, "theme_name", "{7BQgNdUtCI}主题", themeName, Config::ui_theme_name, [=](int index){
+            Config::setConfig(Config::ui_theme_name, themeName[index]);
+            Config::updateConfig(Config::ui_theme_name);
+            delete UIManager::instance();
+    }, true);
+    addNumOption(normal_setting, "history_num", Config::history_num, "{VwuLzPpyI3}历史记录数量", 0, 500);
+    addNumOption(normal_setting, "check_time", Config::clear_interval, "{dcvOkViWtX}内存清理检查时间", 5, 120);
     addBoolOption(normal_setting, "start_now", "{3BIidMbkAm}开机启动", Config::start_instantly, [=](bool ans) {
-        ready_setting.append(data(Config::start_instantly, ans));
+        Config::setConfig(Config::start_instantly, ans);
+        Config::updateConfig(Config::start_instantly);
         QSettings reg("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", QSettings::NativeFormat);
         QString appName = QApplication::applicationName();
         if(ans) {
@@ -208,24 +220,11 @@ void Setting::normal_settings() {
             reg.setValue(appName,strAppPath+ " autoStart");
         } else
             reg.remove(appName);
-        normal_setting->set_dirty(true);
     });
-    addBoolOption(normal_setting, "hide_tray", "{ZflcWUcIX8}隐藏到托盘", Config::hide_to_tray, [=](bool ans) {
-        ready_setting.append(data(Config::hide_to_tray, ans));
-        normal_setting->set_dirty(true);
-    });
-    addBoolOption(normal_setting, "copy_clipboard", "{g2X3jHOVbU}自动复制到剪切板", Config::auto_copy_to_clipboard, [=](bool ans) {
-        ready_setting.append(data(Config::auto_copy_to_clipboard, ans));
-        normal_setting->set_dirty(true);
-    });
-    addBoolOption(normal_setting, "clip_voice", "{sqFHDuafTm}启用截屏声音", Config::clip_voice, [=](bool ans) {
-        ready_setting.append(data(Config::clip_voice, ans));
-        normal_setting->set_dirty(true);
-    });
-    addBoolOption(normal_setting, "receive_beta", "{PFu2ZARZg9}是否接受beta版本", Config::receive_beta, [=](bool ans) {
-        ready_setting.append(data(Config::receive_beta, ans));
-        normal_setting->set_dirty(true);
-    });
+    addBoolOption(normal_setting, "hide_tray", "{ZflcWUcIX8}隐藏到托盘", Config::hide_to_tray);
+    addBoolOption(normal_setting, "copy_clipboard", "{g2X3jHOVbU}自动复制到剪切板", Config::auto_copy_to_clipboard);
+    addBoolOption(normal_setting, "clip_voice", "{sqFHDuafTm}启用截屏声音", Config::clip_voice);
+    addBoolOption(normal_setting, "receive_beta", "{PFu2ZARZg9}是否接受beta版本", Config::receive_beta);
 }
 
 void Setting::capture_settings() {
@@ -235,37 +234,23 @@ void Setting::capture_settings() {
     button_type_name << MString::search("{CcwwfzotQL}跳转到绘图窗口")
                      << MString::search("{Sx1TD3igtj}保存到剪切板")
                      << MString::search("{ePbIenISyt}保存到文件");
-    addComboOption(capture_setting, "capture_button_type", "{PnHYo4i9Gu}鼠标中键作用", button_type_name,
-                   Config::middle_button_type, [=](int index) {
-                       ready_setting.append(data(Config::middle_button_type, index));
-                       capture_setting->set_dirty(true);
-                   });
-    addNumOption(capture_setting, "capture_interval", Config::capture_interval, "{FcOnYo1uUa}滚动时间间隔", 100, 500, [=](int index) {
-        ready_setting.append(data(Config::capture_interval, index));
-        capture_setting->set_dirty(true);
-    });
-    addFileOption(capture_setting, "global_capture_file", "{HBqaqm8LIK}全屏保存位置", Config::total_capture_save_path, [=](QString path) {
-        ready_setting.append(data(Config::total_capture_save_path, path));
-        capture_setting->set_dirty(true);
-    });
+    addComboOption(capture_setting, "capture_button_type", "{PnHYo4i9Gu}鼠标中键作用", button_type_name, Config::middle_button_type);
+    addNumOption(capture_setting, "capture_interval", Config::capture_interval, "{FcOnYo1uUa}滚动时间间隔", 50, 500);
+    addFileOption(capture_setting, "global_capture_file", "{HBqaqm8LIK}全屏保存位置", Config::total_capture_save_path);
 }
 
 void Setting::keySettings() {
     TabWidget* keySetting = addTab("{YRHJ1nexv6}快捷键");
-    addSpacer(keySetting, "鼠标");
     addSpacer(keySetting, "{LvA0JggRsZ}全局快捷键");
-    QList<QString> globalKeyNames = KeyManager::getGlobalKeyName();
+    QList<QString> globalKeyNames = KeyManager::instance()->instance()->getGlobalKeyName();
     for(int i=0; i<globalKeyNames.size(); i++) {
-        addGlobalKeyOption(keySetting, i, "{" + globalKeyNames[i] + "}" + globalKeyNames[i], globalKeyNames[i], [=](QString keyName, int modKey, int key) {
-            ready_setting.append(data(keyName, modKey, key));
-            keySetting->set_dirty(true);
-        });
+        addGlobalKeyOption(keySetting, i, "{" + globalKeyNames[i] + "}" + globalKeyNames[i], globalKeyNames[i]);
     }
 
-    QList<QString> window_name = KeyManager::getWindowNames();
+    QList<QString> window_name = KeyManager::instance()->instance()->getWindowNames();
     window_name.sort();
     for(int i=0; i<window_name.size(); i++) {
-        QList<QString> key_name = KeyManager::getKeyNames(window_name[i]);
+        QList<QString> key_name = KeyManager::instance()->instance()->getKeyNames(window_name[i]);
         key_name.sort();
         if(key_name.size() == 0) {
             continue;
@@ -274,10 +259,7 @@ void Setting::keySettings() {
         int size = key_name.size();
         for(int k=0; k<size; k++) {
             addKeyOption(keySetting, i * size + k, "{" + key_name[k] + "}" + key_name[k],
-                         window_name[i], key_name[k], [=](QString windowName, QString keyName, QList<int> keys) {
-                             ready_setting.append(data(windowName, keyName, keys));
-                             keySetting->set_dirty(true);
-                         });
+                         window_name[i], key_name[k]);
         }
     }
 }
@@ -318,30 +300,16 @@ void Setting::onWindowCancel() {
     //            all_setting[i]->reset();
     //        }
     //    }
-    KeyManager::registerAll();
 }
 
 void Setting::onWindowSelect() {
     ui->tabWidget->setCurrentIndex(0);
-    KeyManager::unRegisterAll();
     update();
 }
 
 void Setting::onClose(bool isSave) {
-    if(isSave) {
-        for(int i=0; i<ready_setting.size(); i++) {
-            if(ready_setting[i].location == Config)
-                Config::setConfig(ready_setting[i].type, ready_setting[i].sum);
-            else if(ready_setting[i].location == Key)
-                KeyManager::setKeys(ready_setting[i].windowName, ready_setting[i].keyName, ready_setting[i].keys);
-            else if(ready_setting[i].location == GlobalKey)
-                KeyManager::addGlobalKey(ready_setting[i].keyName, ready_setting[i].modKey, ready_setting[i].key);
-        }
-        Config::saveToConfig();
-        KeyManager::save();
-        for(TabWidget* tab : all_setting) {
-            tab->set_dirty(false);
-        }
+    for(TabWidget* widget: all_setting){
+        widget->onSave();
     }
 }
 

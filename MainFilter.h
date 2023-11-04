@@ -24,7 +24,6 @@ public:
         }
         return _instance;
     }
-    bool eventFilter(QObject* o, QEvent* e)override;
     bool nativeEventFilter(const QByteArray &eventType, void *message, long *result)override;
     void stopTimer();
     void startTimer();

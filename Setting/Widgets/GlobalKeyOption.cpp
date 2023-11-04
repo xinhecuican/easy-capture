@@ -9,49 +9,65 @@ GlobalKeyOption::~GlobalKeyOption() {
 
 }
 
+GlobalKeyOption::GlobalKeyOption(int index, QString name, QString keyName, QWidget* parent) : QWidget(parent) {
+    this->index = index;
+    this->name = name;
+    this->keyName = keyName;
+
+    this->f = [=](QString name, int modKey, int key){
+        KeyManager::instance()->updateGlobalKey(name, key, modKey);
+    };
+    init();
+}
+
 GlobalKeyOption::GlobalKeyOption(int index, QString name, QString keyName, QWidget* parent, std::function<void (QString, int, int)> const &f) : QWidget(parent) {
     this->index = index;
     this->name = name;
     this->keyName = keyName;
     this->f = f;
-    key = KeyManager::getGlobalKey(index);
-    modKey = KeyManager::getGlobalModKey(index);
-    dirty = false;
+    init();
+}
+
+void GlobalKeyOption::init(){
+    key = KeyManager::instance()->getGlobalKey(index);
+    modKey = KeyManager::instance()->getGlobalModKey(index);
+    originKey = key;
+    originModKey = modKey;
     modKeyButton = new QPushButton(this);
     keyButton = new QPushButton(this);
     modKeyButton->setCheckable(true);
     keyButton->setCheckable(true);
-    modKeyButton->setText(KeyManager::keyType[modKey]);
-    keyButton->setText(KeyManager::keyType[key]);
+    modKeyButton->setText(KeyManager::instance()->keyType[modKey]);
+    keyButton->setText(KeyManager::instance()->keyType[key]);
     listenKey = false;
     icon = new QLabel(this);
     ok = QPixmap(":/image/ok.svg");
     ok = ok.scaled(32, 32);
     cancel = QPixmap(":/image/cancel.svg");
     cancel = cancel.scaled(32, 32);
-    icon->setPixmap(KeyManager::isGloablKeyRegistered(index) ? ok : cancel);
+    icon->setPixmap(KeyManager::instance()->testGlobalKey(index) ? ok : cancel);
     connect(keyButton, &QPushButton::clicked, this, [=]() {
         if(!keyButton->isChecked()) {
-            keyButton->setText(KeyManager::keyType[key]);
+            keyButton->setText(KeyManager::instance()->keyType[key]);
             modKeyButton->setEnabled(true);
-            KeyManager::removeKeyListener(this);
+            KeyManager::instance()->removeKeyListener(this);
         } else {
             keyButton->setText("");
             modKeyButton->setEnabled(false);
             listenKey = true;
-            KeyManager::addKeyListener(this);
+            KeyManager::instance()->addKeyListener(this);
         }
     });
     connect(modKeyButton, &QPushButton::clicked, this, [=]() {
         if(!modKeyButton->isChecked()) {
-            modKeyButton->setText(KeyManager::keyType[modKey]);
+            modKeyButton->setText(KeyManager::instance()->keyType[modKey]);
             keyButton->setEnabled(true);
-            KeyManager::removeKeyListener(this);
+            KeyManager::instance()->removeKeyListener(this);
         } else {
             modKeyButton->setText("");
             keyButton->setEnabled(false);
             listenKey = false;
-            KeyManager::addKeyListener(this);
+            KeyManager::instance()->addKeyListener(this);
         }
     });
     root = new QHBoxLayout();
@@ -64,14 +80,14 @@ GlobalKeyOption::GlobalKeyOption(int index, QString name, QString keyName, QWidg
 void GlobalKeyOption::getKey(int key) {
     tempKey = key;
     if(listenKey) {
-        keyButton->setText(KeyManager::keyType[key]);
+        keyButton->setText(KeyManager::instance()->keyType[key]);
     } else {
-        modKeyButton->setText(KeyManager::keyType[key]);
+        modKeyButton->setText(KeyManager::instance()->keyType[key]);
     }
 }
 
 void GlobalKeyOption::keyEnd() {
-    KeyManager::removeKeyListener(this);
+    KeyManager::instance()->removeKeyListener(this);
     if(listenKey) {
         modKeyButton->setEnabled(true);
         keyButton->setChecked(false);
@@ -79,8 +95,7 @@ void GlobalKeyOption::keyEnd() {
             return;
         }
         this->key = tempKey;
-        dirty = true;
-        f(keyName, modKey, key);
+        isChange = true;
         detectKeyConflict();
     } else {
         keyButton->setEnabled(true);
@@ -88,39 +103,36 @@ void GlobalKeyOption::keyEnd() {
         if(tempKey == this->modKey) {
             return;
         }
-        dirty = true;
-        if(KeyManager::nativeModKeyCode((Qt::Key)tempKey) == 0) {
+        if(KeyManager::instance()->nativeModKeyCode((Qt::Key)tempKey) == 0) {
             modKeyButton->setText("");
             this->modKey = 0;
         } else {
             this->modKey = tempKey;
         }
-        f(keyName, modKey, key);
+        isChange = true;
         detectKeyConflict();
     }
 }
 
 void GlobalKeyOption::detectKeyConflict() {
+    if(key == originKey && modKey == originModKey){
+        icon->setPixmap(ok);
+        return;
+    }
     ATOM testId = GlobalAddAtomA("easycapture_test");
-    bool result = RegisterHotKey((HWND)this->winId(), testId, KeyManager::nativeModKeyCode((Qt::Key)modKey), KeyManager::nativeKeycode((Qt::Key)key));
+    bool result = RegisterHotKey((HWND)this->winId(), testId, KeyManager::instance()->nativeModKeyCode((Qt::Key)modKey), KeyManager::instance()->nativeKeycode((Qt::Key)key));
     icon->setPixmap(result ? ok : cancel);
     UnregisterHotKey((HWND)this->winId(), testId);
     GlobalDeleteAtom(testId);
 }
 
 void GlobalKeyOption::reset() {
-    key = KeyManager::getGlobalKey(index);
-    modKey = KeyManager::getGlobalModKey(index);
-    keyButton->setText(KeyManager::keyType[key]);
-    modKeyButton->setText(KeyManager::keyType[modKey]);
-}
-
-int GlobalKeyOption::getBeginIndex() {
-    return 0;
-}
-
-int GlobalKeyOption::getDefaultIndex() {
-    return index;
+    key = KeyManager::instance()->getGlobalKey(index);
+    modKey = KeyManager::instance()->getGlobalModKey(index);
+    originKey = key;
+    originModKey = modKey;
+    keyButton->setText(KeyManager::instance()->keyType[key]);
+    modKeyButton->setText(KeyManager::instance()->keyType[modKey]);
 }
 
 QString GlobalKeyOption::getName() {
@@ -128,4 +140,10 @@ QString GlobalKeyOption::getName() {
 }
 
 void GlobalKeyOption::restore() {
+}
+
+void GlobalKeyOption::onSave(){
+    if(isChange){
+        f(keyName, modKey, key);
+    }
 }

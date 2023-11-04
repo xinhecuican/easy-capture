@@ -9,15 +9,16 @@ class FileChooser : public QWidget, public TabBase {
     Q_OBJECT
 public:
     FileChooser();
+    FileChooser(QString tab_name, QString name, int index, QWidget* parent);
     FileChooser(QString tab_name, QString name, int index, std::function<void (QString)> const &f, QWidget* parent);
     QString getName() override;
     void reset() override;
-    int getBeginIndex() override;
-    int getDefaultIndex() override;
+    void onSave() override;
 private:
     void init();
     QString tab_name;
     QString name;
+    QString currentText;
     int index;
     QWidget* parent;
     QLineEdit* edit;

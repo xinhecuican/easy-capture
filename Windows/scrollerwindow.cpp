@@ -137,7 +137,7 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
                 scrollState = SCROLL_AUTO;
                 if(xHook->installKeyHook()) {
                     connect(xHook, &XGlobalHook::keyEvent, this, [=](PKBDLLHOOKSTRUCT pKeyHookStruct) {
-                        if(pKeyHookStruct->vkCode == KeyManager::nativeKeycode(Qt::Key_Escape)) {
+                        if(pKeyHookStruct->vkCode == KeyManager::instance()->nativeKeycode(Qt::Key_Escape)) {
                             while(!xHook->uninstallKeyHook() && xHook->isKeyHookRunning());
                             end_scroll = true;
                         }
@@ -148,7 +148,7 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
                 lastCaptureTime = QDateTime::currentMSecsSinceEpoch();
                 if(xHook->installKeyHook()) {
                     connect(xHook, &XGlobalHook::keyEvent, this, [=](PKBDLLHOOKSTRUCT pKeyHookStruct) {
-                        if(pKeyHookStruct->vkCode == KeyManager::nativeKeycode(Qt::Key_Escape)) {
+                        if(pKeyHookStruct->vkCode == KeyManager::instance()->nativeKeycode(Qt::Key_Escape)) {
                             while(!xHook->uninstallKeyHook() && xHook->isKeyHookRunning());
                                 dispatcher->get_all_images();//结束
                         }
@@ -242,15 +242,14 @@ void ScrollerWindow::onWindowSelect(){
 }
 
 void ScrollerWindow::loadKeyEvent(QString name){
-    KeyManager::addFunc(this, name, "scroll_scrollrect", [=](QObject* receiver, bool is_enter) {
-        ScrollerWindow* current = qobject_cast<ScrollerWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "scroll_scrollrect", [=](bool is_enter) {
         qDebug() << "scroll rect: " << is_enter;
         if(is_enter)
-            current->isScrollRect = true;
+            isScrollRect = true;
         else if(!is_enter)
-            current->isScrollRect = false;
+            isScrollRect = false;
     });
-    KeyManager::addFunc(this, name, "scroll_leave", [=](QObject* receiver, bool is_enter) {
+    KeyManager::instance()->addFunc(this, name, "scroll_leave", [=](bool is_enter) {
         if(is_enter) {
             if(scrollState == SCROLL_END){
 

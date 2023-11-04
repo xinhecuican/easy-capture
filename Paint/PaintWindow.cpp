@@ -98,29 +98,27 @@ PaintWindow::~PaintWindow() {
 void PaintWindow::loadKeyEvent(QString name) {
     //    if(!KeyManager::isContainsWindow("PaintWindow"))
     //    {
-    KeyManager::addFunc(this, name, "undo", [=](QObject* receiver, bool is_enter) {
+    KeyManager::instance()->addFunc(this, name, "undo", [=](bool is_enter) {
         if(is_enter) Recorder::instance()->back();
     });
-    KeyManager::addFunc(this, name, "redo", [=](QObject* receiver, bool is_enter) {
+    KeyManager::instance()->addFunc(this, name, "redo", [=](bool is_enter) {
         if(is_enter) Recorder::instance()->forward();
     });
-    KeyManager::addFunc(this, name, "save", [=](QObject* receiver, bool is_enter) {
-        PaintWindow* current = qobject_cast<PaintWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "save", [=](bool is_enter) {
         if(is_enter) {
             QString file_name = QFileDialog::getSaveFileName(this,"保存",
                                                              History::instance()->get_last_directory(), "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-            KeyManager::clearKeys();
+            KeyManager::instance()->clearKeys("PaintWindow");
             if(file_name != "") {
-                current->area->save(History_data::Persist, file_name);
+                area->save(History_data::Persist, file_name);
                 WindowManager::changeWindow("tray");
             }
         }
     });
-    KeyManager::addFunc(this, name, "new_capture", [=](QObject* receiver, bool is_enter) {
+    KeyManager::instance()->addFunc(this, name, "new_capture", [=](bool is_enter) {
         if(is_enter) {
-            PaintWindow* current = qobject_cast<PaintWindow*>(receiver);
             if(Config::getConfig<int>(Config::capture_mode) == (int)Config::TOTAL_CAPTURE) {
-                QTimer::singleShot(200, current, [=]() {
+                QTimer::singleShot(200, this, [=]() {
                     QPixmap map = ImageHelper::grabScreen();
                     WindowManager::changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
                     if(Config::getConfig<bool>(Config::clip_voice))
@@ -134,7 +132,7 @@ void PaintWindow::loadKeyEvent(QString name) {
             Config::setConfig(Config::capture_mode, Config::RECT_CAPTURE);
         }
     });
-    KeyManager::addFunc(this, name, "delete_shape", [=](QObject* current, bool is_enter) {
+    KeyManager::instance()->addFunc(this, name, "delete_shape", [=](bool is_enter) {
         if(is_enter) {
             //                area->delete_shape();
         }

@@ -65,11 +65,10 @@ int main(int argc, char *argv[]) {
     preLoad();
 
     MainFilter* fliter = MainFilter::instance();
-    a.installEventFilter(fliter);//捕获全局键盘事件
     a.installNativeEventFilter(fliter); // 捕获程序键盘事件
     a.setQuitOnLastWindowClosed(false);
     a.connect(&a, &QApplication::aboutToQuit, &a, [=]() {
-        KeyManager::unRegisterAll();
+        KeyManager::instance()->unRegisterAll();
         Update::instance()->onFinish();
         fliter->deleteLater();
     });
@@ -107,9 +106,7 @@ void setupDebug(){
 
 void preLoad(){
     Config::loadConfig();
-    KeyManager::load();
-    KeyManager::registerGlobalKey("awake_capture");
-    KeyManager::registerGlobalKey("fullscreen_capture");
+    KeyManager::instance()->load();
     MString::load_from_file("Data/Languages/");
     registerClasses();
 }

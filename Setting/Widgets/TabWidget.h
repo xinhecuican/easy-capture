@@ -26,23 +26,26 @@ public:
     void add_num_option(QString tab_name, int index, QString name, int min, int max,
                         std::function<void(int)> const &f);
     void add_file_option(QString tab_name, QString name, int index, std::function<void(QString)> const &f);
+    void addBoolOption(QString tab_name, QString name, int index);
+    void addComboOption(QString tab_name, QString text, QVector<QString> name, int index, bool isString=false);
+    void addKeyOption(int index, QString tab_name, QString window_name, QString key_name);
+    void addGlobalKeyOption(int index, QString tabName, QString keyName);
+    void addNumOption(QString tab_name, int index, QString name, int min, int max);
+    void addFileOption(QString tab_name, QString name, int index);
     void add_spacer(QString text = QString());
     void addText(QString text, QString objectName);
     void add_layout(QLayout* layout);
-    int getDefaultIndex(QString name);
     void reset();
     void restore();
-    bool is_dirty();
-    void set_dirty(bool dirty);
-    int getBeginIndex(QString name);
+    bool isChange();
     QString getName();
+    void onSave();
 private:
     QVector<TabBase*> widgets;
     QString widget_name;
     QVBoxLayout* layout;
     QWidget* base;
     void init();
-    bool dirty;
 };
 
 #endif // TAB_WIDGET_H

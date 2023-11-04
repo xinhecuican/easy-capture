@@ -5,6 +5,7 @@
 #include "Helper/Reflect.h"
 #include "Helper/mstring.h"
 #include "Manager/uimanager.h"
+#include "Manager/KeyManager.h"
 
 class WindowBase : public QMainWindow {
 public:
@@ -16,6 +17,7 @@ public:
      * @param WindowName 窗体类名
      */
     virtual void afterInitialize(QString WindowName) {
+        windowClassName = WindowName;
         loadKeyEvent(WindowName);
         try {
             setStyleSheet(UIManager::instance()->load(WindowName));
@@ -82,6 +84,16 @@ public:
 
     }
 
+    virtual void keyPressEvent(QKeyEvent* event) override {
+        KeyManager::instance()->keyEnter(windowClassName, event);
+        return QMainWindow::keyPressEvent(event);
+    }
+
+    virtual void keyReleaseEvent(QKeyEvent* event) override {
+        KeyManager::instance()->keyRelease(windowClassName, event);
+        return QMainWindow::keyReleaseEvent(event);
+    }
+
     //下面函数是Paint_window用的
     virtual void onPaintWindowClose() {};
 
@@ -100,6 +112,9 @@ public:
         setWindowTitle("简截");
         setWindowIcon(QIcon(":/image/avator.png"));
     }
+
+private:
+    QString windowClassName;
 
 
 

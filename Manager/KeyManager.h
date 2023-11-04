@@ -9,71 +9,84 @@
 #include "IKeyListener.h"
 #include "QAbstractNativeEventFilter"
 #include <windows.h>
-#include "Helper/common.h"
+#include "Helper/Template.h"
+#include <QKeyEvent>
 
 class KeyManager {
-public:
-
+    DECLARE_INSTANCE(KeyManager);
     KeyManager();
-    static void addFunc(QObject* receiver, QString window_name, QString obj_name, std::function<void(QObject*, bool)> const &f);
-    static void addKey(QString window_name, QString obj_name, QList<int> keys);
-    static void onKeyCountChange(bool is_enter, int key);//按键按下或松开时的处理函数
-    static void keyEnter(int key);
-    static void keyRelease(int key);
-    static bool isContainsWindow(QString window_name);
-    static void addKeyListener(IKeyListener* listener);
-    static void removeKeyListener(IKeyListener* listener);
-    static void save();
-    static void load();
-    static void reset();
-    static void updateAll();
-    static void updateGlobalKey();
-    static void onWindowChangeBegin(QString old_window, QString new_window);
-    static void onWindowChangeEnd();
-    static void onWindowClose(QString windowName);
-    static QList<int> getKeys(QString window_name, QString key_name);
-    static void setKeys(QString window_name, QString key_name, QList<int> keys);
-    static QList<QString> getWindowNames();
-    static QList<QString> getKeyNames(QString window_name);
-    static QList<QString> detectKeyConflict(QString window_name, QString key_name, QList<int> keys);
-    static void clearKeys();
+    void addFunc(QObject* receiver, QString window_name, QString obj_name, std::function<void(bool)> const &f);
+    void addKey(QString window_name, QString obj_name, QList<int> keys);
+    void keyEnter(QString name, QKeyEvent* event);
+    void keyRelease(QString name, QKeyEvent* event);
+    void addKeyListener(IKeyListener* listener);
+    void removeKeyListener(IKeyListener* listener);
+    void save();
+    void load();
+    void reset();
+    void updateAll();
+    void updateGlobalKey();
+    void onWindowChangeBegin(QString oldWindow);
+    void onWindowChangeEnd(QString newWindow);
+    void onWindowClose(QString windowName);
+    QList<int> getKeys(QString window_name, QString key_name);
+    void setKeys(QString window_name, QString key_name, QList<int> keys);
+    QList<QString> getWindowNames();
+    QList<QString> getKeyNames(QString window_name);
+    QList<QString> detectKeyConflict(QString window_name, QString key_name, QList<int> keys);
+    void clearKeys(QString name);
 
-    static quint32 nativeKeycode(Qt::Key keycode);
-    static quint32 nativeModKeyCode(Qt::Key keycode);
-    static QList<ATOM> getGlobalKeyId();
-    static QList<QString> getGlobalKeyName();
-    static QString getGlobalKeyName(int index);
-    static void addGlobalKey(QString name, int modKey, int key);
-    static void registerGlobalKey(QString name);
-    static void unRegisterGlobalKey(QString name);
-    static int getGlobalModKey(int index);
-    static int getGlobalKey(int index);
-    static bool isGloablKeyRegistered(int index);
-    static void unRegisterAll();
-    static void registerAll();
+    quint32 nativeKeycode(Qt::Key keycode);
+    quint32 nativeModKeyCode(Qt::Key keycode);
+    int qtKeyCode(quint32 keycode);
+    QList<ATOM> getGlobalKeyId();
+    QList<QString> getGlobalKeyName();
+    QString getGlobalKeyName(int index);
+    void addGlobalKey(QString name, int modKey, int key, bool init);
+    void registerGlobalKey(QString name);
+    void unRegisterGlobalKey(QString name);
+    int getGlobalModKey(int index);
+    int getGlobalKey(int index);
+    bool isGloablKeyRegistered(int index);
+    void unRegisterAll();
+    void registerAll();
+    void updateKey(QString windowName, QString keyName, QList<int> keys);
+    void updateGlobalKey(QString name, int key, int modKey);
+    bool testGlobalKey(int index);
+    bool testGlobalKey(int key, int modKey);
+private:
+    void loadDefault();
+    void onKeyCountChange(QString name, bool is_enter, int key);//按键按下或松开时的处理函数
 private:
     struct GlobalKeyItem {
         bool registered;
+        bool init;
         ATOM keyId;
         int modKey;
         int key;
         QString name;
+        GlobalKeyItem():
+            registered(false),
+            init(false),
+            modKey(0),
+            key(0)
+        {
+
+        }
     };
-    struct node {
-        std::function<void(QObject*, bool)> func;
-        QObject* receiver;
+    struct LocalKeyItem {
+        std::function<void(bool)> func;
         QList<int> keys;
-        node() {
+        LocalKeyItem() {
             func = NULL;
             keys = QList<int>();
-            receiver = NULL;
         }
-        node(std::function<void(QObject*, bool)> const &f, QList<int> &key) {
+        LocalKeyItem(std::function<void(bool)> const &f, QList<int> &key) {
             func = f;
             keys = key;
         }
 
-        bool isKeyEqual(QList<int> &key) {
+        bool isKeyEqual(const QList<int> &key) {
             if(key.size() != keys.size())
                 return false;
             for(int i=0; i<keys.size(); i++) {
@@ -91,13 +104,14 @@ private:
             return true;
         }
     };
-    struct window {
-        QHash<QString, node> func;
-        window() {
-            func = QHash<QString, node>();
+    struct KeyWindow {
+        QHash<QString, LocalKeyItem> func;
+        QList<int> currentKeys;
+        KeyWindow() {
+            func = QHash<QString, LocalKeyItem>();
         }
 
-        void insert(QString name, std::function<void(QObject*, bool)> fun, QList<int> keys) {
+        void insert(QString name, std::function<void(bool)> fun, QList<int> keys) {
             if(func.find(name) == func.end()) {
                 for(auto iter=func.begin(); iter!=func.end(); iter++) {
                     if(iter->isKeyEqual(keys)) {
@@ -105,33 +119,27 @@ private:
                         return;
                     }
                 }
-                func[name] = node(fun, keys);
+                func[name] = LocalKeyItem(fun, keys);
             } else {
                 qWarning("按键命名重复\n位置Key_manager::add_event");
             }
         }
 
-        void findAndRun(bool is_enter, int key) {
-            bool hasTrigger = false;
-            for(auto iter=func.begin(); iter!=func.end(); iter++) { //无论有键按下还是松开都会让原来的键失效
-                if(iter->isKeyEqual(availiableKey) && iter->func != NULL) {
-                    iter->func(iter->receiver, false);
-                    hasTrigger = true;
-                    break;
+        void run(int key, bool isEnter){
+            if(!isEnter){
+                for(auto iter=func.begin(); iter!=func.end(); iter++){
+                    if(iter.value().isKeyEqual(currentKeys)){
+                        iter.value().func(false);
+                    }
                 }
+                currentKeys.removeOne(key);
             }
-            if(is_enter) {
-                availiableKey.append(key);
-            } else {
-                availiableKey.removeOne(key);
-            }
-            if(hasTrigger){
-                availiableKey.clear();
-            }
-            for(auto iter=func.begin(); iter!=func.end(); iter++) {
-                if(iter->isKeyEqual(availiableKey) && iter->func != NULL) {
-                    iter->func(iter->receiver, true);
-                    break;
+            else{
+                currentKeys.append(key);
+                for(auto iter=func.begin(); iter!=func.end(); iter++){
+                    if(iter.value().isKeyEqual(currentKeys)){
+                        iter.value().func(true);
+                    }
                 }
             }
         }
@@ -140,14 +148,13 @@ private:
         bool is_begin;
         IKeyListener* listener;
     };
-
-    static QList<int> availiableKey;
-    static QHash<QString, window> allKey;
-    static QList<QString> keySettings;
-    static QSet<QString> usingWindowSet;
-    static QList<listener_data> listeners;
-    static bool isWindowChange;
-    static QList<GlobalKeyItem> globalKeys;
+    QHash<QString, KeyWindow> allKey;
+    QList<listener_data> listeners;
+    QSet<quint32> listenerKeySet;
+    QList<GlobalKeyItem> globalKeys;
+    QHash<QString, KeyWindow> defaultKeys;
+    QList<GlobalKeyItem> defaultGlobalKeys;
+    bool isLoadDefault=false;
 public:
     static QHash<int, QString> keyType;
 };

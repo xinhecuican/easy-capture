@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<key_setting version="0.7.4">
+    <window name="Setting"/>
+    <window name="ScrollerWindow">
+        <bind_key name="scroll_scrollrect">
+            <key id="16777249"/>
+        </bind_key>
+        <bind_key name="scroll_leave">
+            <key id="16777216"/>
+        </bind_key>
+    </window>
+    <window name="tray"/>
+    <window name="PaintWindow">
+        <bind_key name="undo">
+            <key id="16777249"/>
+            <key id="90"/>
+        </bind_key>
+        <bind_key name="delete_shape">
+            <key id="16777223"/>
+        </bind_key>
+        <bind_key name="redo">
+            <key id="16777249"/>
+            <key id="88"/>
+        </bind_key>
+        <bind_key name="new_capture">
+            <key id="16777249"/>
+            <key id="78"/>
+        </bind_key>
+        <bind_key name="save">
+            <key id="16777249"/>
+            <key id="83"/>
+        </bind_key>
+    </window>
+    <window name="CaptureWindow">
+        <bind_key name="capture_highlighter">
+            <key id="16777249"/>
+            <key id="53"/>
+        </bind_key>
+        <bind_key name="capture_undo">
+            <key id="16777249"/>
+            <key id="90"/>
+        </bind_key>
+        <bind_key name="capture_scrollrect">
+            <key id="16777249"/>
+        </bind_key>
+        <bind_key name="save2clip">
+            <key id="16777249"/>
+            <key id="67"/>
+        </bind_key>
+        <bind_key name="save2file">
+            <key id="16777249"/>
+            <key id="83"/>
+        </bind_key>
+        <bind_key name="capture_cursor">
+            <key id="16777249"/>
+            <key id="51"/>
+        </bind_key>
+        <bind_key name="capture_text">
+            <key id="16777249"/>
+            <key id="54"/>
+        </bind_key>
+        <bind_key name="capture_pencil">
+            <key id="16777249"/>
+            <key id="52"/>
+        </bind_key>
+        <bind_key name="capture_erase">
+            <key id="16777249"/>
+            <key id="55"/>
+        </bind_key>
+        <bind_key name="capture_rect">
+            <key id="16777249"/>
+            <key id="49"/>
+        </bind_key>
+        <bind_key name="leave">
+            <key id="16777216"/>
+        </bind_key>
+        <bind_key name="capture_mosaic">
+            <key id="16777249"/>
+            <key id="50"/>
+        </bind_key>
+        <bind_key name="capture_redo">
+            <key id="16777249"/>
+            <key id="88"/>
+        </bind_key>
+        <bind_key name="enter_capture">
+            <key id="16777220"/>
+        </bind_key>
+    </window>
+    <global_keys>
+		<global_key name="awake_capture" key="16777264" mod_key="16777249" init="1"/>
+		<global_key name="fullscreen_capture" key="16777265" mod_key="16777249" init="1"/>
+		<global_key name="capture_video_start" key="16777268" mod_key="0" init="0"/>
+		<global_key name="capture_video_pause" key="16777269" mod_key="0" init="0"/>
+		<global_key name="capture_video_stop" key="16777270" mod_key="0" init="0"/>
+    </global_keys>
+</key_setting>

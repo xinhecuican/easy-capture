@@ -136,82 +136,72 @@ void CaptureWindow::paintEvent(QPaintEvent *paint_event) {
 void CaptureWindow::loadKeyEvent(QString name) {
 //    if(!KeyManager::isContainsWindow(name))
 //    {
-    KeyManager::addFunc(this, name, "leave", [=](QObject* receiver, bool is_enter) {
+KeyManager::instance()->addFunc(this, name, "leave", [=](bool is_enter) {
         if(is_enter) {
             WindowManager::changeWindow("tray");
         }
     });
-    KeyManager::addFunc(this, name, "capture_rect", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
-        if(current->area->hasFocus() && is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            current->area->clipButtonEnter(0);
+    KeyManager::instance()->addFunc(this, name, "capture_rect", [=](bool is_enter) {
+        if(area->hasFocus() && is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
+            area->clipButtonEnter(0);
     });
-    KeyManager::addFunc(this, name, "capture_mosaic", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "capture_mosaic", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            current->area->clipButtonEnter(1);
+            area->clipButtonEnter(1);
     });
-    KeyManager::addFunc(this, name, "capture_cursor", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "capture_cursor", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            current->area->clipButtonEnter(2);
+            area->clipButtonEnter(2);
     });
-    KeyManager::addFunc(this, name, "capture_pencil", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "capture_pencil", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            current->area->clipButtonEnter(3);
+            area->clipButtonEnter(3);
     });
-    KeyManager::addFunc(this, name, "capture_highlighter", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "capture_highlighter", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            current->area->clipButtonEnter(4);
+            area->clipButtonEnter(4);
     });
-    KeyManager::addFunc(this, name, "capture_text", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "capture_text", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            current->area->clipButtonEnter(5);
+            area->clipButtonEnter(5);
     });
-    KeyManager::addFunc(this, name, "capture_erase", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "capture_erase", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            current->area->clipButtonEnter(6);
+            area->clipButtonEnter(6);
     });
-    KeyManager::addFunc(this, name, "capture_undo", [=](QObject* receiver, bool is_enter) {
+    KeyManager::instance()->addFunc(this, name, "capture_undo", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             Recorder::instance()->back();
     });
-    KeyManager::addFunc(this, name, "capture_redo", [=](QObject* receiver, bool is_enter) {
+    KeyManager::instance()->addFunc(this, name, "capture_redo", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
             Recorder::instance()->forward();
     });
-    KeyManager::addFunc(this, name, "save2file", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "save2file", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
             QString file_name = QFileDialog::getSaveFileName(this,
                                 "保存",
                                 History::instance()->get_last_directory(),
                                 "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-            KeyManager::clearKeys();
+            KeyManager::instance()->clearKeys("CaptureWindow");
             if(file_name != "") {
-                if(current->area->save(History_data::Persist, file_name))
+                if(area->save(History_data::Persist, file_name))
                     WindowManager::changeWindow("tray");
             }
         }
     });
-    KeyManager::addFunc(this, name, "save2clip", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "save2clip", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
-            if(current->area->save2Clipboard())
+            if(area->save2Clipboard())
                 WindowManager::changeWindow("tray");
         }
     });
-    KeyManager::addFunc(this, name, "enter_capture", [=](QObject* receiver, bool is_enter) {
-        CaptureWindow* current = qobject_cast<CaptureWindow*>(receiver);
+    KeyManager::instance()->addFunc(this, name, "enter_capture", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
-            current->area->sendRequestImage();
+            area->sendRequestImage();
         }
     });
-    KeyManager::addFunc(this, name, "capture_scrollrect", [=](QObject* receiver, bool is_enter) {
+    KeyManager::instance()->addFunc(this, name, "capture_scrollrect", [=](bool is_enter) {
     });
 //    }
 }
@@ -244,16 +234,16 @@ void CaptureWindow::onWindowCancel() {
     active_window_bound = QRect();
 //    Style_manager::instance()->reset();
 //    Recorder::instance()->reset();
-    KeyManager::unRegisterGlobalKey("capture_video_start");
-    KeyManager::unRegisterGlobalKey("capture_video_pause");
-    KeyManager::unRegisterGlobalKey("capture_video_stop");
+    KeyManager::instance()->unRegisterGlobalKey("capture_video_start");
+    KeyManager::instance()->unRegisterGlobalKey("capture_video_pause");
+    KeyManager::instance()->unRegisterGlobalKey("capture_video_stop");
 }
 
 void CaptureWindow::onWindowSelect() {
 //    Window_fliter::instance()->SnapshotAllWinRect();
-    KeyManager::registerGlobalKey("capture_video_start");
-    KeyManager::registerGlobalKey("capture_video_pause");
-    KeyManager::registerGlobalKey("capture_video_stop");
+    KeyManager::instance()->registerGlobalKey("capture_video_start");
+    KeyManager::instance()->registerGlobalKey("capture_video_pause");
+    KeyManager::instance()->registerGlobalKey("capture_video_stop");
     area->reset();
     area->update();
     Flow_edit_panel::instance()->reset();

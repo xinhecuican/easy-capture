@@ -7,7 +7,18 @@
 
 FileChooser::FileChooser()
 {
+}
 
+FileChooser::FileChooser(QString tab_name, QString name, int index, QWidget* parent) : QWidget(parent)
+{
+    this->tab_name = tab_name;
+    this->name = name;
+    this->index = index;
+    this->f = [=](QString result){
+        Config::setConfig(index, currentText);
+        Config::updateConfig((Config::setting)index);
+    };
+    init();
 }
 
 FileChooser::FileChooser(QString tab_name, QString name, int index, std::function<void (QString)> const &f, QWidget* parent) : QWidget(parent)
@@ -24,19 +35,10 @@ QString FileChooser::getName()
     return tab_name;
 }
 
-int FileChooser::getBeginIndex()
-{
-    return index;
-}
-
-int FileChooser::getDefaultIndex()
-{
-    return index;
-}
-
 void FileChooser::reset()
 {
     edit->setText(Config::getConfig<QString>((Config::setting)index));
+    currentText = Config::getConfig<QString>((Config::setting)index);
 }
 
 void FileChooser::init()
@@ -57,10 +59,17 @@ void FileChooser::init()
         if(file_name != "")
         {
             edit->setText(file_name + "/");
-            f(file_name + "/");
+            isChange = true;
+            currentText = file_name + "/";
         }
     });
     base_layout->addWidget(edit);
     base_layout->addWidget(file_button);
     setLayout(base_layout);
+}
+
+void FileChooser::onSave(){
+    if(isChange){
+        f(currentText);
+    }
 }

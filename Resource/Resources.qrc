@@ -113,6 +113,7 @@
         <file>Languages/Setting/chinese.xml</file>
         <file>default.json</file>
         <file>Languages/chinese.xml</file>
+        <file>keys.xml</file>
     </qresource>
     <qresource prefix="/audio">
         <file>screenshot.wav</file>
