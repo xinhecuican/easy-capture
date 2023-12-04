@@ -1,7 +1,7 @@
 #include "tray.h"
-#include "Manager/WindowManager.h"
+#include "../Manager/WindowManager.h"
 #include<QMenu>
-#include "Helper/common.h"
+#include "../Helper/common.h"
 
 Tray::Tray() {
 

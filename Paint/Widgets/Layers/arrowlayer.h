@@ -2,7 +2,7 @@
 #define ARROWLAYER_H
 #include<QGraphicsObject>
 #include "baselayer.h"
-#include "Paint/Widgets/Layers/LayerItems/expandbutton.h"
+#include "LayerItems/expandbutton.h"
 #include<QtMath>
 
 class ArrowLayer : public QGraphicsObject, public BaseLayer {

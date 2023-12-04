@@ -3,8 +3,8 @@
 #include<QLabel>
 #include<QDialogButtonBox>
 #include<QPushButton>
-#include "Helper/debug.h"
-#include "Manager/config.h"
+#include "../../Helper/debug.h"
+#include "../config.h"
 #include<QFile>
 #include<QDir>
 #include "Reply_timeout.h"

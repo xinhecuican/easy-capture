@@ -2,10 +2,10 @@
 #define WINDOW_BASE_H
 #include<QMainWindow>
 #include<QDebug>
-#include "Helper/Reflect.h"
-#include "Helper/mstring.h"
-#include "Manager/uimanager.h"
-#include "Manager/KeyManager.h"
+#include "../Helper/Reflect.h"
+#include "../Helper/mstring.h"
+#include "../Manager/uimanager.h"
+#include "../Manager/KeyManager.h"
 
 class WindowBase : public QMainWindow {
 public:

@@ -2,9 +2,9 @@
 #include "ui_ColorWidget.h"
 #include <QToolButton>
 #include <QDebug>
-#include "Paint/Widgets/style_manager.h"
+#include "../Paint/Widgets/style_manager.h"
 #include <QColorDialog>
-#include "Helper/mstring.h"
+#include "../Helper/mstring.h"
 #include <QStyleOption>
 #include <QPainter>
 
@@ -32,6 +32,7 @@ ColorWidget::ColorWidget(QWidget* parent) : QWidget(parent), ui(new Ui::ColorWid
             this->default_color.setRgb(r, g, b);
             ui->current->setStyleSheet(QString("background-color: rgba(%1,%2,%3, 1)").arg(r).arg(g).arg(b));
             Style_manager::instance()->change_color(default_color);
+            emit colorChange(default_color);
         }
     });
 }

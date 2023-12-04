@@ -1,11 +1,11 @@
 #ifndef UPDATE_H
 #define UPDATE_H
-#include "Base/Serializable.h"
+#include "../Base/Serializable.h"
 #include "Data/UpdateData.h"
 #include "Data/update_dialog.h"
 #include<QNetworkReply>
 #include<QWidget>
-#include "Helper/common.h"
+#include "../Helper/common.h"
 
 
 class Update : public QWidget, public Serializable {

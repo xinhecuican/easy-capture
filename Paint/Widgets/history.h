@@ -1,6 +1,6 @@
 #ifndef HISTORY_H
 #define HISTORY_H
-#include "Paint/Data/History_data.h"
+#include "../Data/History_data.h"
 #include<QColor>
 #include<QDomDocument>
 

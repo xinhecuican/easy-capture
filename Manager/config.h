@@ -2,8 +2,8 @@
 #define CONFIG_H
 #include<QMap>
 #include<QList>
-#include "Base/Serializable.h"
-#include "Helper/EnumReflect.h"
+#include "../Base/Serializable.h"
+#include "../Helper/EnumReflect.h"
 #include <QJsonValue>
 #include <atomic>
 #include <mutex>

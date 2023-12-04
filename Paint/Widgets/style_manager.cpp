@@ -1,5 +1,5 @@
 #include "style_manager.h"
-#include "Manager/uimanager.h"
+#include "../../Manager/uimanager.h"
 
 Style_manager* Style_manager::_instance = NULL;
 
@@ -39,7 +39,7 @@ void Style_manager::change_color(QColor color) {
 }
 
 void Style_manager::change_back_color(QColor color) {
-    now_data.back_color = color;
+    now_data.backColor = color;
     is_change = true;
 }
 
@@ -49,12 +49,12 @@ void Style_manager::change_width(double width) {
 }
 
 void Style_manager::change_cap_style(Qt::PenCapStyle style) {
-    now_data.cap_style = style;
+    now_data.capStyle = style;
     is_change = true;
 }
 
 void Style_manager::change_join_style(Qt::PenJoinStyle style) {
-    now_data.join_style = style;
+    now_data.joinStyle = style;
     is_change = true;
 }
 
@@ -63,10 +63,10 @@ void Style_manager::change_pen(PaintData data) {
         change_color(data.color);
     if(now_data.width != data.width)
         change_width(data.width);
-    if(now_data.cap_style != data.cap_style)
-        change_cap_style(data.cap_style);
-    if(now_data.join_style != data.join_style)
-        change_join_style(data.join_style);
+    if(now_data.capStyle != data.capStyle)
+        change_cap_style(data.capStyle);
+    if(now_data.joinStyle != data.joinStyle)
+        change_join_style(data.joinStyle);
 }
 
 PaintData* Style_manager::get() {

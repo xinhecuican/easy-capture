@@ -4,7 +4,7 @@
 #include<QHBoxLayout>
 #include<QMouseEvent>
 #include<QDebug>
-#include "Helper/imagehelper.h"
+#include "../Helper/imagehelper.h"
 
 Titlebar::Titlebar(QWidget* parent) : QWidget(parent)
 {

@@ -18,6 +18,8 @@ public:
     ~ColorWidget();
     void setCurrentStyle(QColor color);
     void paintEvent(QPaintEvent *event) override;
+signals:
+    void colorChange(const QColor& color);
 private slots:
     void onDefaultClick();
 

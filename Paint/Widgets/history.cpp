@@ -2,9 +2,9 @@
 #include<QFile>
 #include<QDomDocument>
 #include<QTextStream>
-#include "Helper/debug.h"
+#include "../../Helper/debug.h"
 #include<QDebug>
-#include "Manager/config.h"
+#include "../../Manager/config.h"
 #include<QDir>
 
 History::History()

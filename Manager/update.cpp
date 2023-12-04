@@ -2,15 +2,15 @@
 #include<QJsonObject>
 #include<QDateTime>
 #include<QNetworkAccessManager>
-#include "Helper/Serialize.h"
-#include "Helper/debug.h"
+#include "../Helper/Serialize.h"
+#include "../Helper/debug.h"
 #include "config.h"
 #include "Data/Reply_timeout.h"
 #include<QTextCodec>
 #include<QMessageBox>
 #include "KeyManager.h"
 #include "WindowManager.h"
-#include "Paint/Widgets/history.h"
+#include "../Paint/Widgets/history.h"
 
 Update::Update() {
     newest_data = UpdateData();

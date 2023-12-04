@@ -1,6 +1,6 @@
 #ifndef UIPARSER_H
 #define UIPARSER_H
-#include "Base/Serializable.h"
+#include "../../Base/Serializable.h"
 #include <QHash>
 
 class UIParser : public Serializable {

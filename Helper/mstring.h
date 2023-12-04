@@ -7,8 +7,8 @@ class MString
 {
 public:
     MString();
-    static void load_from_file(QString path);
-    static QString search(QString id);
+    static void load_from_file(const QString& path);
+    static QString search(const QString& id);
 private:
     static QHash<QString, QString> strings;
     static QList<QString> loading_list;

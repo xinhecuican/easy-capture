@@ -5,10 +5,10 @@
 #include<QJsonDocument>
 #include<QDomDocument>
 #include<QDebug>
-#include "Helper/Serialize.h"
-#include "Helper/mstring.h"
+#include "../Helper/Serialize.h"
+#include "../Helper/mstring.h"
 #include <string>
-#include "Helper/debug.h"
+#include "../Helper/debug.h"
 #include "update.h"
 
 DEFINE_STRING(Config);

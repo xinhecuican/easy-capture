@@ -1,10 +1,10 @@
 #include "spacer.h"
 #include<QLabel>
 #include<QFrame>
-#include "Helper/mstring.h"
+#include "../Helper/mstring.h"
 #include <QStyleOption>
 #include <QPainter>
-#include "Helper/imagehelper.h"
+#include "../Helper/imagehelper.h"
 
 Spacer::Spacer() {
 

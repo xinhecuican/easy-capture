@@ -4,7 +4,7 @@
 #include<QPushButton>
 #include<QBoxLayout>
 #include<QToolButton>
-#include "Helper/plist.h"
+#include "../Helper/plist.h"
 
 class Spacer : public QWidget {
     Q_OBJECT

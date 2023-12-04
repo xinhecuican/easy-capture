@@ -3,7 +3,7 @@
 #include<map>
 #include<iostream>
 #include<QWidget>
-#include "Base/WindowBase.h"
+#include "../Base/WindowBase.h"
 
 #include<QMutex>
 #include<QTime>

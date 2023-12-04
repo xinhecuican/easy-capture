@@ -4,12 +4,12 @@
 #include<functional>
 #include<QList>
 #include<cstdarg>
-#include "Helper/debug.h"
-#include "Helper/EnumReflect.h"
+#include "../Helper/debug.h"
+#include "../Helper/EnumReflect.h"
 #include "IKeyListener.h"
 #include "QAbstractNativeEventFilter"
 #include <windows.h>
-#include "Helper/Template.h"
+#include "../Helper/Template.h"
 #include <QKeyEvent>
 
 class KeyManager {

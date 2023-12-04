@@ -18,6 +18,23 @@ QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
 QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 
 SOURCES += \
+	GraphicsScene/Container/geolayercontainer.cpp \
+	GraphicsScene/Container/layercontainer.cpp \
+	GraphicsScene/Container/textlayercontainer.cpp \
+	GraphicsScene/Layer/arrowlayer.cpp \
+	GraphicsScene/Layer/layerbase.cpp \
+	GraphicsScene/Layer/piclayer.cpp \
+	GraphicsScene/Layer/rectlayer.cpp \
+	GraphicsScene/Layer/rootlayer.cpp \
+	GraphicsScene/Layer/textlayer.cpp \
+	GraphicsScene/Widgets/attributetoolbar.cpp \
+	GraphicsScene/Widgets/expandbutton.cpp \
+	GraphicsScene/Widgets/layertoolbar.cpp \
+	GraphicsScene/Widgets/scrollitem.cpp \
+	GraphicsScene/Widgets/textitem.cpp \
+	GraphicsScene/ilayercontrol.cpp \
+	GraphicsScene/layermanager.cpp \
+	GraphicsScene/paintarea.cpp \
     Helper/debug.cpp \
 	Helper/imagehelper.cpp \
     Helper/log.cpp \
@@ -109,6 +126,25 @@ HEADERS += \
     Base/Serializable.h \
     Base/TabBase.h \
     Base/WindowBase.h \
+	GraphicsScene/Container/geolayercontainer.h \
+	GraphicsScene/Container/layercontainer.h \
+	GraphicsScene/Container/textlayercontainer.h \
+	GraphicsScene/Layer/arrowlayer.h \
+	GraphicsScene/Layer/layerbase.h \
+	GraphicsScene/Layer/piclayer.h \
+	GraphicsScene/Layer/rectlayer.h \
+	GraphicsScene/Layer/rootlayer.h \
+	GraphicsScene/Layer/textlayer.h \
+	GraphicsScene/Widgets/FontData.h \
+	GraphicsScene/Widgets/PaintData.h \
+	GraphicsScene/Widgets/attributetoolbar.h \
+	GraphicsScene/Widgets/expandbutton.h \
+	GraphicsScene/Widgets/layertoolbar.h \
+	GraphicsScene/Widgets/scrollitem.h \
+	GraphicsScene/Widgets/textitem.h \
+	GraphicsScene/ilayercontrol.h \
+	GraphicsScene/layermanager.h \
+	GraphicsScene/paintarea.h \
     Helper/EnumReflect.h \
     Helper/GraphicsViewPatch.h \
 	Helper/PaintHelper.h \

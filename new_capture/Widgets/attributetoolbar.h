@@ -2,6 +2,7 @@
 #define ATTRIBUTETOOLBAR_H
 #include <QWidget>
 #include <QHBoxLayout>
+#include <QToolBar>
 
 class AttributeToolbar : public QWidget
 {

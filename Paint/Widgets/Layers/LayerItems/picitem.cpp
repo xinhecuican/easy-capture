@@ -16,7 +16,7 @@ void PicItem::setPix(const QPixmap &pix){
 }
 
 void PicItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    painter->drawPixmap(mask.topLeft(), mask_pix, mask);
+    painter->drawPixmap(bound.topLeft(), mask_pix, bound);
 }
 
 void PicItem::reset(){
@@ -25,6 +25,7 @@ void PicItem::reset(){
 }
 
 void PicItem::setMask(QRectF mask){
+    prepareGeometryChange();
     this->mask = mask;
 }
 

@@ -1,11 +1,11 @@
 #include "WindowManager.h"
 #include <QDebug>
-#include "Helper/debug.h"
+#include "../Helper/debug.h"
 #include "config.h"
 #include<QApplication>
 #include<QThread>
 #include "KeyManager.h"
-#include "MainFilter.h"
+#include "../MainFilter.h"
 
 QMap<QString, WindowManager::WindowData> WindowManager::windowList =
     QMap<QString, WindowManager::WindowData>();

@@ -5,8 +5,8 @@
 #include<QFile>
 #include <QDir>
 #include <QDebug>
-#include "Manager/WindowManager.h"
-#include "Manager/config.h"
+#include "../Manager/WindowManager.h"
+#include "../Manager/config.h"
 #include <QGuiApplication>
 #include <QScreen>
 

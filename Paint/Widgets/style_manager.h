@@ -1,7 +1,7 @@
 #ifndef STYLE_MANAGER_H
 #define STYLE_MANAGER_H
-#include "Helper/plist.h"
-#include "Paint/Data/paint_data.h"
+#include "../../Helper/plist.h"
+#include "../../GraphicsScene/Widgets/PaintData.h"
 #include<QVector>
 
 class Style_manager {
