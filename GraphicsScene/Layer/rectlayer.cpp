@@ -254,3 +254,11 @@ void RectLayer::getFocus(){
 void RectLayer::loseFocus(){
     hideButtons();
 }
+
+void RectLayer::setRect(const QRectF &rect){
+    setPos(rect.topLeft());
+    this->rect.setWidth(rect.width());
+    this->rect.setHeight(rect.height());
+    setBounding(this->rect);
+    update();
+}

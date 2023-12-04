@@ -5,8 +5,6 @@
 #include <QSpinBox>
 #include "../../Manager/uimanager.h"
 #include "../../Helper/math.h"
-#include "../Layer/rectlayer.h"
-#include "../Layer/arrowlayer.h"
 #include "../paintarea.h"
 #include <QLineF>
 
@@ -21,6 +19,7 @@ GeoLayerContainer::GeoLayerContainer(PaintArea* area) :
 }
 
 QWidget* GeoLayerContainer::onValid(QWidget* widgetParent){
+    area->setEnable(true);
     if(widget == NULL){
         widget = new QWidget(widgetParent);
         QHBoxLayout* layout = new QHBoxLayout();
@@ -47,7 +46,7 @@ QWidget* GeoLayerContainer::onValid(QWidget* widgetParent){
         QToolButton* arrowButton = new QToolButton(widgetParent);
         arrowButton->setObjectName("arrowButton");
         arrowButton->setIcon(ImageHelper::getIcon("paint_arrow"));
-        arrowButton->setToolTip("{D7HSBXWTLj}箭头");
+        arrowButton->setToolTip(MString::search("{D7HSBXWTLj}箭头"));
         arrowButton->setCheckable(true);
         shapeGroup->addButton(arrowButton, 1);
         ColorWidget* colorWidget = new ColorWidget(widgetParent);
@@ -81,10 +80,33 @@ QWidget* GeoLayerContainer::onValid(QWidget* widgetParent){
 
 void GeoLayerContainer::layerMousePressEvent(QGraphicsSceneMouseEvent *event){
     beginPoint = event->scenePos();
+    switch (geoType) {
+    case RECT: {
+        QRectF rect = Math::buildRect(beginPoint, beginPoint + QPointF(1, 1));
+        rectLayer = new RectLayer(rect, "rect" + QString::number(rectId), area, area->getRootLayer(), false);
+        rectLayer->setEnable(false);
+        break;
+    }
+    case ARROW: {
+        arrowLayer = new ArrowLayer(beginPoint, beginPoint + QPointF(1, 1), "arrow" + QString::number(arrowId), area, area->getRootLayer());
+        arrowLayer->setEnable(false);
+        break;
+    }
+    }
 }
 
 void GeoLayerContainer::layerMouseMoveEvent(QGraphicsSceneMouseEvent *event){
-
+    switch (geoType) {
+    case RECT: {
+        QRectF rect = Math::buildRect(beginPoint, event->scenePos());
+        rectLayer->setRect(rect);
+        break;
+    }
+    case ARROW: {
+        arrowLayer->setEndPoint(event->scenePos());
+        break;
+    }
+    }
 }
 
 void GeoLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event){
@@ -92,21 +114,26 @@ void GeoLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event){
     switch (geoType) {
     case RECT: {
         QRectF rect = Math::buildRect(beginPoint, endPoint);
-        if(rect.height() < 10 || rect.width() < 10) return;
-        RectLayer* layer = new RectLayer(rect, "rect" + QString::number(rectId), area, NULL);
+        if(rect.height() < 10 || rect.width() < 10) {
+            rectLayer->deleteLater();
+            return;
+        }
         rectId++;
-        layer->setEnable(true);
-        layer->setEnableScroll(true);
-        area->addLayer(layer);
+        rectLayer->setEnable(true);
+        rectLayer->setEnableResize(true);
+        rectLayer->setEnableScroll(true);
+        area->addLayer(rectLayer);
         break;
     }
     case ARROW: {
         QLineF line(beginPoint, endPoint);
-        if(line.length() < 10) return;
-        ArrowLayer* layer = new ArrowLayer(beginPoint, endPoint, "arrow" + QString::number(arrowId), area, NULL);
+        if(line.length() < 10) {
+            arrowLayer->deleteLater();
+            return;
+        }
         arrowId++;
-        layer->setEnable(true);
-        area->addLayer(layer);
+        arrowLayer->setEnable(true);
+        area->addLayer(arrowLayer);
         break;
     }
     }

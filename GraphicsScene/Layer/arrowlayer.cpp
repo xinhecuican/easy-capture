@@ -152,3 +152,8 @@ void ArrowLayer::setParameter(const QString &name, const QVariant &var){
 void ArrowLayer::reset(){
     manager->removeThis(this);
 }
+
+void ArrowLayer::setEndPoint(const QPointF &point) {
+    this->endPt = point;
+    setLine(beginPt, endPt);
+}

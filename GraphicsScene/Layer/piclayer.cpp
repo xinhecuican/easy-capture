@@ -62,3 +62,7 @@ void PicLayer::endSave(){
 void PicLayer::reset(){
     mask = QRectF();
 }
+
+void PicLayer::setEnable(bool enable) {
+    this->enable = enableBound && enable;
+}

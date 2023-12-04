@@ -2,6 +2,8 @@
 #define GEOLAYERCONTAINER_H
 #include "layercontainer.h"
 #include "../Widgets/PaintData.h"
+#include "../Layer/rectlayer.h"
+#include "../Layer/arrowlayer.h"
 
 class GeoLayerContainer : public LayerContainer
 {
@@ -20,6 +22,8 @@ private:
     PaintData arrowPaintData;
     int rectId;
     int arrowId;
+    RectLayer* rectLayer;
+    ArrowLayer* arrowLayer;
 };
 
 #endif // GEOLAYERCONTAINER_H

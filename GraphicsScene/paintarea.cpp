@@ -19,11 +19,11 @@ PaintArea::PaintArea(QWidget* parent) :
 }
 
 void PaintArea::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    press = true;
     for(auto& layer: layers){
         if((layer->isEnable() || layer->isErase()) && layer->contains(layer->mapFromScene(event->scenePos()))){
 //            sendEvent(layer, event);
             inLayer = true;
-            press = true;
             mouseGrabber = layer;
         }
     }
@@ -35,7 +35,7 @@ void PaintArea::mousePressEvent(QGraphicsSceneMouseEvent *event){
 
 void PaintArea::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     QGraphicsScene::mouseMoveEvent(event);
-    if(!inLayer){
+    if(!inLayer && press){
         if(container != NULL) container->layerMouseMoveEvent(event);
         return;
     }
@@ -43,12 +43,15 @@ void PaintArea::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void PaintArea::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
-    if(!inLayer){
+    if(!inLayer && press){
+        press = false;
         if(container != NULL) container->layerMouseReleaseEvent(event);
         return;
     }
+    else{
+        press = false;
+    }
 //    if(press) sendEvent(mouseGrabber, event);
-    press = false;
     inLayer = false;
     QGraphicsScene::mouseReleaseEvent(event);
 }

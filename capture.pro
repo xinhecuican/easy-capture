@@ -20,9 +20,11 @@ QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 SOURCES += \
 	GraphicsScene/Container/geolayercontainer.cpp \
 	GraphicsScene/Container/layercontainer.cpp \
+	GraphicsScene/Container/paintlayercontainer.cpp \
 	GraphicsScene/Container/textlayercontainer.cpp \
 	GraphicsScene/Layer/arrowlayer.cpp \
 	GraphicsScene/Layer/layerbase.cpp \
+	GraphicsScene/Layer/paintlayer.cpp \
 	GraphicsScene/Layer/piclayer.cpp \
 	GraphicsScene/Layer/rectlayer.cpp \
 	GraphicsScene/Layer/rootlayer.cpp \
@@ -128,9 +130,11 @@ HEADERS += \
     Base/WindowBase.h \
 	GraphicsScene/Container/geolayercontainer.h \
 	GraphicsScene/Container/layercontainer.h \
+	GraphicsScene/Container/paintlayercontainer.h \
 	GraphicsScene/Container/textlayercontainer.h \
 	GraphicsScene/Layer/arrowlayer.h \
 	GraphicsScene/Layer/layerbase.h \
+	GraphicsScene/Layer/paintlayer.h \
 	GraphicsScene/Layer/piclayer.h \
 	GraphicsScene/Layer/rectlayer.h \
 	GraphicsScene/Layer/rootlayer.h \

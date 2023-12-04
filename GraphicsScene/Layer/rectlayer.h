@@ -35,6 +35,7 @@ public:
     bool contains(const QPointF& point)const override;
     void setBoundEffect();
     void setButtonFocus(bool enable);
+    void setRect(const QRectF& rect);
 
 signals:
     void sizeChange();

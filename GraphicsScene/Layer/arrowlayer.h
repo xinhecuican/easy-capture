@@ -25,6 +25,7 @@ public:
     void setLine(const QPointF& beginPt, const QPointF& endPt);
     void getFocus() override;
     void loseFocus() override;
+    void setEndPoint(const QPointF& point);
 
 private slots:
     void posChangeFunc(ExpandButton::ButtonDirection dir, qreal x, qreal y);
