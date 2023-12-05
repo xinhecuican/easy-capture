@@ -18,11 +18,13 @@ QMAKE_CXXFLAGS_RELEASE = $$QMAKE_CFLAGS_RELEASE_WITH_DEBUGINFO
 QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
 
 SOURCES += \
+	GraphicsScene/Container/blurlayercontainer.cpp \
 	GraphicsScene/Container/geolayercontainer.cpp \
 	GraphicsScene/Container/layercontainer.cpp \
 	GraphicsScene/Container/paintlayercontainer.cpp \
 	GraphicsScene/Container/textlayercontainer.cpp \
 	GraphicsScene/Layer/arrowlayer.cpp \
+	GraphicsScene/Layer/blurlayer.cpp \
 	GraphicsScene/Layer/layerbase.cpp \
 	GraphicsScene/Layer/paintlayer.cpp \
 	GraphicsScene/Layer/piclayer.cpp \
@@ -128,11 +130,13 @@ HEADERS += \
     Base/Serializable.h \
     Base/TabBase.h \
     Base/WindowBase.h \
+	GraphicsScene/Container/blurlayercontainer.h \
 	GraphicsScene/Container/geolayercontainer.h \
 	GraphicsScene/Container/layercontainer.h \
 	GraphicsScene/Container/paintlayercontainer.h \
 	GraphicsScene/Container/textlayercontainer.h \
 	GraphicsScene/Layer/arrowlayer.h \
+	GraphicsScene/Layer/blurlayer.h \
 	GraphicsScene/Layer/layerbase.h \
 	GraphicsScene/Layer/paintlayer.h \
 	GraphicsScene/Layer/piclayer.h \
