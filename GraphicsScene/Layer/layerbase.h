@@ -16,11 +16,11 @@ public:
     QString getName()const;
     virtual const QString getHelp(){return "";};
     virtual void setErase(bool enable);
-    virtual void setEnable(bool enable);
+    virtual void setEnable(bool enable, int index=0);
     virtual void setParameter(const QString& name, const QVariant& var){};
     virtual void prepareSave();
     virtual void endSave();
-    virtual void reset()=0;
+    virtual void reset();
     virtual int getZValue() const;
     virtual void getFocus(){}
     virtual void loseFocus(){}

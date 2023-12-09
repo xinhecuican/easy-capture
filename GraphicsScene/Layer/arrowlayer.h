@@ -26,6 +26,8 @@ public:
     void getFocus() override;
     void loseFocus() override;
     void setEndPoint(const QPointF& point);
+    int getZValue() const override;
+    int type() const override;
 
 private slots:
     void posChangeFunc(ExpandButton::ButtonDirection dir, qreal x, qreal y);

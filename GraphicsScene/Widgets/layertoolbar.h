@@ -17,6 +17,8 @@ public:
     void moveTo(const QRectF& mask);
     void setBound(const QRectF& bound);
     void setContainer(LayerContainer* container);
+    void hideAll();
+    void showAll();
 
 private slots:
     void onGroupClick(int id);

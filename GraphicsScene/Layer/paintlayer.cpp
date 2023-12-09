@@ -68,7 +68,11 @@ void PaintLayer::setParameter(const QString &name, const QVariant &var) {
     }
 }
 
-void PaintLayer::setEnable(bool enable) {
+void PaintLayer::setEnable(bool enable, int index) {
+    if(index == type()){
+        this->enable = enable;
+        return;
+    }
     this->enable = false;
 }
 
@@ -152,4 +156,8 @@ QPainterPath SmoothCurveGenerator::generateSmoothCurve(QList<double> points, boo
     }
 
     return path;
+}
+
+int PaintLayer::type() const{
+    return 102405;
 }

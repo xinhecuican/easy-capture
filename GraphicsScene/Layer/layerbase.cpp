@@ -35,10 +35,16 @@ void LayerBase::setErase(bool enable){
     erase = enable;
 }
 
-void LayerBase::setEnable(bool enable){
+void LayerBase::setEnable(bool enable, int index){
     this->enable = enable;
 }
 
 int LayerBase::getZValue() const {
     return 0;
+}
+
+void LayerBase::reset() {
+    enable = false;
+    erase = false;
+    isSaving = false;
 }

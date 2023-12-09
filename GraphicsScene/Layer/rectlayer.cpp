@@ -262,3 +262,7 @@ void RectLayer::setRect(const QRectF &rect){
     setBounding(this->rect);
     update();
 }
+
+int RectLayer::type() const{
+    return 102407;
+}

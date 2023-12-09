@@ -18,9 +18,10 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
     void prepareSave() override;
     void setParameter(const QString &name, const QVariant &var) override;
-    void setEnable(bool enable) override;
+    void setEnable(bool enable, int index=0) override;
     const QString getHelp() override;
     bool contains(const QPointF& point)const override;
+    int type() const override;
 
 signals:
     void formatChange(const QFont& font, const QBrush& brush);

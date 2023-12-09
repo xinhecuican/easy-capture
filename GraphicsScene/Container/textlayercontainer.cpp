@@ -34,6 +34,7 @@ void TextLayerContainer::layerMousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 QWidget* TextLayerContainer::onValid(QWidget *widgetParent){
+    area->setEnable(true);
     if(widget == NULL){
         widget = new QWidget(widgetParent);
         QHBoxLayout* layout = new QHBoxLayout();

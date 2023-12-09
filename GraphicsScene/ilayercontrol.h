@@ -20,8 +20,10 @@ public:
     virtual void requestFocus(LayerBase* layer)=0;
     virtual void removeThis(LayerBase* layer)=0;
     virtual void modifyImage(const QPoint& pos, const QColor& color);
+    virtual void maskImage(const QImage& mask);
     virtual void setEraseEnable(bool enable)=0;
-    virtual void setEnable(bool enable)=0;
+    virtual void setEnable(bool enable, int index=0)=0;
+    virtual QRectF getClipRect()=0;
 protected:
     bool imageValid;
     QImage image;

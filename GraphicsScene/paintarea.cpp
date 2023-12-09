@@ -7,6 +7,7 @@
 #include "../Paint/Widgets/history.h"
 #include <QClipboard>
 #include <QApplication>
+#include <QDebug>
 
 PaintArea::PaintArea(QWidget* parent) :
     QGraphicsScene(parent),
@@ -14,7 +15,8 @@ PaintArea::PaintArea(QWidget* parent) :
     inLayer(false),
     press(false),
     mouseGrabber(NULL),
-    rootLayer(new RootLayer(this))
+    rootLayer(new RootLayer(this)),
+    clipLayer(NULL)
 {
 }
 
@@ -104,15 +106,22 @@ void PaintArea::setEraseEnable(bool enable){
     }
 }
 
-void PaintArea::setEnable(bool enable){
+void PaintArea::setEnable(bool enable, int index){
     for(auto iter=layers.begin(); iter!=layers.end(); iter++){
-        iter.value()->setEnable(enable);
+        iter.value()->setEnable(enable, index);
+    }
+    if(!enable){
+        changeFocusLayer(NULL);
     }
 }
 
 void PaintArea::addLayer(LayerBase *layer){
     layer->setParentItem(rootLayer);
     layer->setZValue(layer->getZValue());
+    ClipLayerBase* clipLayer = dynamic_cast<ClipLayerBase*>(layer);
+    if(clipLayer != NULL) {
+        this->clipLayer = clipLayer;
+    }
 //    addItem(layer);
     LayerManager::addLayer(layer);
 }
@@ -120,6 +129,9 @@ void PaintArea::addLayer(LayerBase *layer){
 LayerBase* PaintArea::removeLayer(const QString &name){
     LayerBase* layer = LayerManager::removeLayer(name);
     if(layer != NULL){
+        if(layer == this->clipLayer) {
+            this->clipLayer = NULL;
+        }
         removeItem(layer);
         layer->deleteLater();
     }
@@ -167,4 +179,16 @@ QGraphicsItem* PaintArea::getRootLayer(){
 
 void PaintArea::removeThis(LayerBase *layer){
     removeLayer(layer->getName());
+}
+
+QRectF PaintArea::getClipRect() {
+    if(clipLayer == NULL) {
+        qWarning() << "未设置clip layer";
+        return QRectF();
+    }
+    return clipLayer->getClipRect();
+}
+
+ClipLayerBase* PaintArea::getClipLayer(){
+    return clipLayer;
 }

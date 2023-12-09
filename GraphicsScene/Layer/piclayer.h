@@ -15,7 +15,8 @@ public:
     QPainterPath shape() const override;
     void onImageSet() override;
     void reset() override;
-    void setEnable(bool enable) override;
+    void setEnable(bool enable, int index=0) override;
+    int type() const override;
 private:
     bool enableBound;
     RectLayer* rectLayer;

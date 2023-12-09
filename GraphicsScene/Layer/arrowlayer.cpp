@@ -157,3 +157,11 @@ void ArrowLayer::setEndPoint(const QPointF &point) {
     this->endPt = point;
     setLine(beginPt, endPt);
 }
+
+int ArrowLayer::getZValue() const{
+    return 2;
+}
+
+int ArrowLayer::type() const{
+    return 102400;
+}

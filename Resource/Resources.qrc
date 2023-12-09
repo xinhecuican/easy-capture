@@ -98,6 +98,7 @@
         <file>mouse_right.svg</file>
         <file>mouse_middle.svg</file>
         <file>mouse_left.svg</file>
+        <file>blur.svg</file>
     </qresource>
     <qresource prefix="/qss/button/capture_window_button">
         <file>custom_button.qss</file>

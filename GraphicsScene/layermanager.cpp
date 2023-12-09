@@ -27,7 +27,7 @@ void LayerManager::changeFocusLayer(LayerBase* layer){
     }
     LayerBase* beforeFocusLayer = focusLayer;
     focusLayer = layer;
-    focusLayer->getFocus();
+    if(focusLayer != NULL) focusLayer->getFocus();
     if(beforeFocusLayer != NULL){
         beforeFocusLayer->loseFocus();
     }

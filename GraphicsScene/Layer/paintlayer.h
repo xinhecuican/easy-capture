@@ -19,7 +19,8 @@ public:
     void addPoint(const QPointF& point);
     void setMethod(PaintMethod method);
     void setParameter(const QString &name, const QVariant &var) override;
-    void setEnable(bool enable) override;
+    void setEnable(bool enable, int index=0) override;
+    int type() const override;
 private:
     QList<QPointF> points;
     PaintMethod method;

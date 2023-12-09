@@ -19,7 +19,7 @@ QImage ILayerControl::getImage() const{
 
 void ILayerControl::modifyImage(const QPoint &pos, const QColor& color){
     if(!modified){
-        modifiedImage = image;
+        modifiedImage = image.copy();
     }
     modified = true;
     modifiedImage.setPixel(pos, color.rgba());
@@ -27,4 +27,12 @@ void ILayerControl::modifyImage(const QPoint &pos, const QColor& color){
 
 bool ILayerControl::isImageValid(){
     return imageValid;
+}
+
+void ILayerControl::maskImage(const QImage &mask){
+    if(!modified){
+        modifiedImage = image.copy();
+    }
+    modified = true;
+    modifiedImage.setAlphaChannel(mask);
 }

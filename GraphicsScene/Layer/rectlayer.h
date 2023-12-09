@@ -36,6 +36,7 @@ public:
     void setBoundEffect();
     void setButtonFocus(bool enable);
     void setRect(const QRectF& rect);
+    int type() const override;
 
 signals:
     void sizeChange();

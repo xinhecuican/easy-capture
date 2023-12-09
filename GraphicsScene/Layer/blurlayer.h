@@ -15,7 +15,8 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     void onImageSet() override;
     void addPoint(const QPoint& point);
-    void setEnable(bool enable) override;
+    void setEnable(bool enable, int index=0) override;
+    int type() const override;
 private:
     QBitArray use;
     QRectF bound;

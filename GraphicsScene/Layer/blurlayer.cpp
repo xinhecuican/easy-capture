@@ -70,6 +70,10 @@ void BlurLayer::setParameter(const QString &name, const QVariant &var) {
     }
 }
 
-void BlurLayer::setEnable(bool enable) {
+void BlurLayer::setEnable(bool enable, int index) {
     this->enable = false;
+}
+
+int BlurLayer::type() const{
+    return 102401;
 }

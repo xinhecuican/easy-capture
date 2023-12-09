@@ -57,7 +57,7 @@ void TextLayer::setParameter(const QString &name, const QVariant &var){
     }
 }
 
-void TextLayer::setEnable(bool enable){
+void TextLayer::setEnable(bool enable, int index){
     LayerBase::setEnable(enable);
     textItem->setEnable(enable);
 }
@@ -74,4 +74,8 @@ bool TextLayer::contains(const QPointF &point) const{
         if(item->isVisible() && item->contains(item->mapFromParent(point)))return true;
     }
     return false;
+}
+
+int TextLayer::type() const{
+    return 102408;
 }

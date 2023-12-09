@@ -2,6 +2,7 @@
 #define BLURLAYERCONTAINER_H
 #include "layercontainer.h"
 #include "../Layer/blurlayer.h"
+#include "../Layer/grabcutlayer.h"
 
 class BlurLayerContainer : public LayerContainer
 {
@@ -13,6 +14,8 @@ public:
     QWidget * onValid(QWidget *widgetParent) override;
 private:
     BlurLayer* blurLayer;
+    GrabcutLayer* grabcutLayer;
+    int type;
     int windowSize;
 };
 

@@ -18,7 +18,7 @@ PaintLayerContainer::PaintLayerContainer(PaintArea* area) :
 }
 
 QWidget* PaintLayerContainer::onValid(QWidget *widgetParent) {
-    area->setEnable(false);
+    area->setEnable(false, 102405);
     if(widget == NULL){
         widget = new QWidget(widgetParent);
         QHBoxLayout* layout = new QHBoxLayout();

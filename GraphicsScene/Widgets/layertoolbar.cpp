@@ -103,3 +103,13 @@ void LayerToolBar::onGroupClick(int id){
     attributeBar->showWidget(widget);
     moveTo(mask);
 }
+
+void LayerToolBar::hideAll(){
+    hide();
+    attributeBar->hide();
+}
+
+void LayerToolBar::showAll(){
+    show();
+    attributeBar->show();
+}

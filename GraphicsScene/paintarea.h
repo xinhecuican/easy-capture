@@ -6,6 +6,7 @@
 #include <QWidget>
 #include "Container/layercontainer.h"
 #include "Layer/rootlayer.h"
+#include "Layer/cliplayerbase.h"
 
 class PaintArea : public QGraphicsScene, public ILayerControl, public LayerManager
 {
@@ -13,7 +14,7 @@ public:
     PaintArea(QWidget* parent=nullptr);
     bool save(SaveType type, const QString &path = "") override;
     void setEraseEnable(bool enable) override;
-    void setEnable(bool enable) override;
+    void setEnable(bool enable, int index=0) override;
     bool hasFocus(LayerBase *layer) override;
     void requestFocus(LayerBase *layer) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
@@ -26,12 +27,15 @@ public:
     void setImage(const QImage& image);
     void reset();
     QGraphicsItem* getRootLayer();
+    QRectF getClipRect() override;
+    ClipLayerBase* getClipLayer();
 private:
     LayerContainer* container;
     bool inLayer;
     bool press;
     QGraphicsItem* mouseGrabber;
     RootLayer* rootLayer;
+    ClipLayerBase* clipLayer;
 };
 
 #endif // PAINTAREA_H

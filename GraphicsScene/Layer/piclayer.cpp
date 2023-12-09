@@ -63,6 +63,14 @@ void PicLayer::reset(){
     mask = QRectF();
 }
 
-void PicLayer::setEnable(bool enable) {
+void PicLayer::setEnable(bool enable, int index) {
+    if(index == type()){
+        this->enable = enable;
+        return;
+    }
     this->enable = enableBound && enable;
+}
+
+int PicLayer::type() const{
+    return 102406;
 }

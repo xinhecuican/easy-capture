@@ -21,18 +21,25 @@ SOURCES += \
 	GraphicsScene/Container/blurlayercontainer.cpp \
 	GraphicsScene/Container/geolayercontainer.cpp \
 	GraphicsScene/Container/layercontainer.cpp \
+	GraphicsScene/Container/masklayercontainer.cpp \
 	GraphicsScene/Container/paintlayercontainer.cpp \
 	GraphicsScene/Container/textlayercontainer.cpp \
 	GraphicsScene/Layer/arrowlayer.cpp \
 	GraphicsScene/Layer/blurlayer.cpp \
+	GraphicsScene/Layer/grabcutlayer.cpp \
 	GraphicsScene/Layer/layerbase.cpp \
+	GraphicsScene/Layer/masklayer.cpp \
 	GraphicsScene/Layer/paintlayer.cpp \
 	GraphicsScene/Layer/piclayer.cpp \
 	GraphicsScene/Layer/rectlayer.cpp \
 	GraphicsScene/Layer/rootlayer.cpp \
 	GraphicsScene/Layer/textlayer.cpp \
 	GraphicsScene/Widgets/attributetoolbar.cpp \
+	GraphicsScene/Widgets/clipregion.cpp \
+	GraphicsScene/Widgets/colorpicker.cpp \
+	GraphicsScene/Widgets/defaulttoolbar.cpp \
 	GraphicsScene/Widgets/expandbutton.cpp \
+	GraphicsScene/Widgets/grabcuthandler.cpp \
 	GraphicsScene/Widgets/layertoolbar.cpp \
 	GraphicsScene/Widgets/scrollitem.cpp \
 	GraphicsScene/Widgets/textitem.cpp \
@@ -133,11 +140,15 @@ HEADERS += \
 	GraphicsScene/Container/blurlayercontainer.h \
 	GraphicsScene/Container/geolayercontainer.h \
 	GraphicsScene/Container/layercontainer.h \
+	GraphicsScene/Container/masklayercontainer.h \
 	GraphicsScene/Container/paintlayercontainer.h \
 	GraphicsScene/Container/textlayercontainer.h \
 	GraphicsScene/Layer/arrowlayer.h \
 	GraphicsScene/Layer/blurlayer.h \
+	GraphicsScene/Layer/cliplayerbase.h \
+	GraphicsScene/Layer/grabcutlayer.h \
 	GraphicsScene/Layer/layerbase.h \
+	GraphicsScene/Layer/masklayer.h \
 	GraphicsScene/Layer/paintlayer.h \
 	GraphicsScene/Layer/piclayer.h \
 	GraphicsScene/Layer/rectlayer.h \
@@ -146,7 +157,11 @@ HEADERS += \
 	GraphicsScene/Widgets/FontData.h \
 	GraphicsScene/Widgets/PaintData.h \
 	GraphicsScene/Widgets/attributetoolbar.h \
+	GraphicsScene/Widgets/clipregion.h \
+	GraphicsScene/Widgets/colorpicker.h \
+	GraphicsScene/Widgets/defaulttoolbar.h \
 	GraphicsScene/Widgets/expandbutton.h \
+	GraphicsScene/Widgets/grabcuthandler.h \
 	GraphicsScene/Widgets/layertoolbar.h \
 	GraphicsScene/Widgets/scrollitem.h \
 	GraphicsScene/Widgets/textitem.h \

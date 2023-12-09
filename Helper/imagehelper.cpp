@@ -58,6 +58,7 @@ cv::Mat ImageHelper::QImage2Mat(QImage const& image) {
         cv::cvtColor(mat, mat, CV_BGR2RGB);
         break;
     case QImage::Format_Indexed8:
+    case QImage::Format_Grayscale8:
         mat = cv::Mat(image.height(), image.width(), CV_8UC1, (void*)image.constBits(), image.bytesPerLine());
         break;
     }
