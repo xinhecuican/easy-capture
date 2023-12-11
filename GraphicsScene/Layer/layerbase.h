@@ -12,10 +12,8 @@ public:
     explicit LayerBase(const QString& name, ILayerControl* manager, QGraphicsItem* parent=nullptr);
     virtual ~LayerBase(){}
     bool isEnable();
-    bool isErase();
     QString getName()const;
     virtual const QString getHelp(){return "";};
-    virtual void setErase(bool enable);
     virtual void setEnable(bool enable, int index=0);
     virtual void setParameter(const QString& name, const QVariant& var){};
     virtual void prepareSave();
@@ -25,11 +23,13 @@ public:
     virtual void getFocus(){}
     virtual void loseFocus(){}
     virtual void onImageSet(){}
+    virtual QRectF getSaveRect(){return boundingRect();}
+    virtual void onDelete(const QPointF& point){}
+    virtual void startErase(){}
 
 protected:
     QString name;
     ILayerControl* manager;
-    bool erase;
     bool enable;
     bool isSaving;
 };

@@ -79,3 +79,7 @@ bool TextLayer::contains(const QPointF &point) const{
 int TextLayer::type() const{
     return 102408;
 }
+
+void TextLayer::onDelete(const QPointF &point){
+    manager->removeThis(this);
+}

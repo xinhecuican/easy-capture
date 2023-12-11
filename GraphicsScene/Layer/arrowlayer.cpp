@@ -3,9 +3,9 @@
 
 ArrowLayer::ArrowLayer(const QPointF& beginPt, const QPointF& endPt, const QString& name, ILayerControl* manager, QGraphicsItem* parent) :
     LayerBase(name, manager, parent){
-    setLine(beginPt, endPt);
     beginButton = new ExpandButton(ExpandButton::W, beginPt, this);
     endButton = new ExpandButton(ExpandButton::E, endPt, this);
+    setLine(beginPt, endPt);
     connect(beginButton, static_cast<void (ExpandButton::*)(ExpandButton::ButtonDirection, qreal, qreal)>(&ExpandButton::posChange), this, &ArrowLayer::posChangeFunc);
     connect(endButton, static_cast<void (ExpandButton::*)(ExpandButton::ButtonDirection, qreal, qreal)>(&ExpandButton::posChange), this, &ArrowLayer::posChangeFunc);
     setAcceptHoverEvents(true);
@@ -13,6 +13,7 @@ ArrowLayer::ArrowLayer(const QPointF& beginPt, const QPointF& endPt, const QStri
 }
 
 void ArrowLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);                   //设置反走样，防锯齿
     QPen pen(data.color, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
     QBrush brush(data.color, Qt::SolidPattern);
@@ -21,6 +22,7 @@ void ArrowLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     QLineF line(beginPt, endPt);
     painter->drawLine(line);
     painter->drawPolygon(arrow_points, 3);
+    painter->restore();
 }
 
 QRectF ArrowLayer::boundingRect() const {
@@ -91,6 +93,8 @@ void ArrowLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 void ArrowLayer::setLine(const QPointF& beginPt, const QPointF& endPt) {
     this->beginPt = beginPt;
     this->endPt = endPt;
+    beginButton->setPosition(beginPt);
+    endButton->setPosition(endPt);
     createArrow();
 }
 
@@ -164,4 +168,22 @@ int ArrowLayer::getZValue() const{
 
 int ArrowLayer::type() const{
     return 102400;
+}
+
+void ArrowLayer::prepareSave(){
+    LayerBase::prepareSave();
+    beginButton->hide();
+    endButton->hide();
+}
+
+bool ArrowLayer::contains(const QPointF &point) const{
+    if(QGraphicsObject::contains(point)) return true;
+    for(QGraphicsItem* item: childItems()) {
+        if(item->isVisible() && item->contains(item->mapFromParent(point)))return true;
+    }
+    return false;
+}
+
+void ArrowLayer::onDelete(const QPointF &point){
+    manager->removeThis(this);
 }

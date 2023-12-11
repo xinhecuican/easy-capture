@@ -12,12 +12,12 @@ class LayerContainer : public QObject
 {
 public:
     LayerContainer(PaintArea* area);
-    virtual ~LayerContainer(){
-    }
+    virtual ~LayerContainer(){}
     virtual void layerMouseMoveEvent(QGraphicsSceneMouseEvent *event) {}
     virtual void layerMousePressEvent(QGraphicsSceneMouseEvent* event) {}
     virtual void layerMouseReleaseEvent(QGraphicsSceneMouseEvent* event) {}
     virtual QWidget* onValid(QWidget* widgetParent)=0;
+    virtual void onInvalid(){}
 protected:
     PaintArea* area;
     QWidget* widget;

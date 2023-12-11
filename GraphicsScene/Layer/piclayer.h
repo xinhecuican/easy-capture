@@ -17,6 +17,7 @@ public:
     void reset() override;
     void setEnable(bool enable, int index=0) override;
     int type() const override;
+    QRectF getSaveRect() override;
 private:
     bool enableBound;
     RectLayer* rectLayer;

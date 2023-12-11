@@ -17,7 +17,11 @@ public:
     void addPoint(const QPoint& point);
     void setEnable(bool enable, int index=0) override;
     int type() const override;
+    QRectF getSaveRect() override;
+    void onDelete(const QPointF &point) override;
 private:
+    void deletePoint(const QPoint& point);
+
     QBitArray use;
     QRectF bound;
     int range;

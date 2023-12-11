@@ -4,7 +4,6 @@ LayerBase::LayerBase(const QString& name, ILayerControl* manager, QGraphicsItem*
     QGraphicsObject(parent),
     name(name),
     manager(manager),
-    erase(false),
     enable(false),
     isSaving(false)
 {
@@ -13,10 +12,6 @@ LayerBase::LayerBase(const QString& name, ILayerControl* manager, QGraphicsItem*
 
 bool LayerBase::isEnable(){
     return enable;
-}
-
-bool LayerBase::isErase(){
-    return erase;
 }
 
 void LayerBase::prepareSave(){
@@ -31,10 +26,6 @@ QString LayerBase::getName() const{
     return name;
 }
 
-void LayerBase::setErase(bool enable){
-    erase = enable;
-}
-
 void LayerBase::setEnable(bool enable, int index){
     this->enable = enable;
 }
@@ -45,6 +36,5 @@ int LayerBase::getZValue() const {
 
 void LayerBase::reset() {
     enable = false;
-    erase = false;
     isSaving = false;
 }

@@ -74,3 +74,10 @@ void PicLayer::setEnable(bool enable, int index) {
 int PicLayer::type() const{
     return 102406;
 }
+
+QRectF PicLayer::getSaveRect(){
+    if(enableBound){
+        return mask;
+    }
+    return QRectF();
+}

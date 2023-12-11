@@ -104,6 +104,7 @@ void PaintLayerContainer::layerMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 
 void PaintLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     paintLayer->addPoint(event->scenePos());
+    paintLayer->end();
     paintId++;
     area->addLayer(paintLayer);
 }

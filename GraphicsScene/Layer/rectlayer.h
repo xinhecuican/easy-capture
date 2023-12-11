@@ -37,6 +37,7 @@ public:
     void setButtonFocus(bool enable);
     void setRect(const QRectF& rect);
     int type() const override;
+    void onDelete(const QPointF &point) override;
 
 signals:
     void sizeChange();

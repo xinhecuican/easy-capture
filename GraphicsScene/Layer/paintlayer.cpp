@@ -1,5 +1,6 @@
 #include "paintlayer.h"
 #include <QtMath>
+#include <QGraphicsScene>
 
 PaintLayer::PaintLayer(const QString& name,
                        ILayerControl* manager,
@@ -7,10 +8,21 @@ PaintLayer::PaintLayer(const QString& name,
       LayerBase(name, manager, parent)
 {
     method = Smooth;
+    cachePix = QPixmap(manager->getImage().size());
+    cachePix.fill(Qt::transparent);
+    isEnd = false;
 }
 
 QRectF PaintLayer::boundingRect() const {
-    return path.boundingRect();
+    if(!isEnd){
+        return QRectF();
+    }
+    else{
+        QRectF bound = path.boundingRect();
+        bound.setTopLeft(bound.topLeft() - QPointF(pen.width(), pen.width()));
+        bound.setBottomRight(bound.bottomRight() + QPointF(pen.width(), pen.width()));
+        return bound;
+    }
 }
 
 QPainterPath PaintLayer::shape() const {
@@ -18,39 +30,25 @@ QPainterPath PaintLayer::shape() const {
 }
 
 void PaintLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing, true);
-    painter->drawPath(path);
-    painter->restore();
+    painter->drawPixmap(boundingRect().topLeft(), cachePix);
 }
 
 void PaintLayer::reset(){
     manager->removeThis(this);
 }
 
-void PaintLayer::mousePressEvent(QGraphicsSceneMouseEvent *event){
-
-}
-
 void PaintLayer::addPoint(const QPointF& point){
     if(points.size() > 0){
         QLineF line(point, points.last());
-        if(line.length() < 2) return;
+        if(line.length() < 3) return;
+    }
+    if(point.x() >= manager->getImage().width() ||
+        point.y() >= manager->getImage().height() ||
+        point.x() < 0 || point.y() < 0){
+        return;
     }
     points.append(point);
-    switch (method) {
-    case Smooth:
-        path = SmoothCurveGenerator::generateSmoothCurve(points);
-        break;
-    case PaintPath:
-        if(points.size() == 1){
-            path.moveTo(points[0]);
-        }
-        else{
-            path.lineTo(points.last());
-        }
-        break;
-    }
+    paintCache();
     update();
 }
 
@@ -76,8 +74,22 @@ void PaintLayer::setEnable(bool enable, int index) {
     this->enable = false;
 }
 
+void PaintLayer::paintCache(){
+    if(points.size() < 2) return;
+    QPainter cachePainter(&cachePix);
+    cachePainter.setRenderHint(QPainter::Antialiasing, true);
+    cachePainter.setPen(pen);
+    QList<QPointF> subPoints;
+    subPoints.append(points[points.size()-2]);
+    subPoints.append(points.last());
+    QList<QPointF> paintPoints = SmoothCurveGenerator::generateSmoothCurve(subPoints);
+    for(int i=1; i<paintPoints.size(); i++){
+        cachePainter.drawLine(paintPoints[i-1], paintPoints[i]);
+    }
+}
 
-QPainterPath SmoothCurveGenerator::generateSmoothCurve(QList<QPointF> points, bool closed, double tension, int numberOfSegments) {
+
+QList<QPointF> SmoothCurveGenerator::generateSmoothCurve(QList<QPointF> points, bool closed, double tension, int numberOfSegments) {
     QList<double> ps;
 
     foreach (QPointF p, points) {
@@ -87,9 +99,9 @@ QPainterPath SmoothCurveGenerator::generateSmoothCurve(QList<QPointF> points, bo
     return SmoothCurveGenerator::generateSmoothCurve(ps, closed, tension, numberOfSegments);
 }
 
-QPainterPath SmoothCurveGenerator::generateSmoothCurve(QList<double> points, bool closed, double tension, int numberOfSegments) {
+QList<QPointF> SmoothCurveGenerator::generateSmoothCurve(QList<double> points, bool closed, double tension, int numberOfSegments) {
     if(points.size() < 4){
-        return QPainterPath();
+        return QList<QPointF>();
     }
     QList<double> ps(points); // clone array so we don't change the original points
     QList<double> result; // generated smooth curve coordinates
@@ -144,20 +156,60 @@ QPainterPath SmoothCurveGenerator::generateSmoothCurve(QList<double> points, boo
         }
     }
 
-    // 使用的平滑曲线的坐标创建 QPainterPath
-    QPainterPath path;
-    path.moveTo(result[0], result[1]);
-    for (int i = 2; i < result.length() - 2; i += 2) {
-        path.lineTo(result[i+0], result[i+1]);
+    QList<QPointF> resPoints;
+    for(int i=0; i<result.length(); i+=2){
+        resPoints.append(QPointF(result[i], result[i+1]));
     }
 
-    if (closed) {
-        path.closeSubpath();
-    }
-
-    return path;
+    return resPoints;
 }
 
 int PaintLayer::type() const{
     return 102405;
+}
+
+void PaintLayer::onDelete(const QPointF &point){
+    manager->removeThis(this);
+}
+
+void PaintLayer::end(){
+    prepareGeometryChange();
+    switch (method) {
+    case Smooth:{
+        QList<QPointF> smoothPoints = SmoothCurveGenerator::generateSmoothCurve(points);
+        path = buildPath(smoothPoints);
+        break;
+    }
+    case PaintPath:{
+        if(points.size() == 1){
+            path.moveTo(points[0]);
+        }
+        else{
+            path.lineTo(points.last());
+        }
+        break;
+    }
+    }
+    isEnd = true;
+    cachePix.fill(Qt::transparent);
+    QPainter* cachePainter = new QPainter(&cachePix);
+    cachePainter->setRenderHint(QPainter::Antialiasing, true);
+    cachePainter->setPen(pen);
+    cachePainter->drawPath(path);
+    delete cachePainter;
+    cachePix = cachePix.copy(boundingRect().toRect());
+}
+
+QPainterPath PaintLayer::buildPath(QList<QPointF> points){
+    if(points.size() <= 1) return QPainterPath();
+    QPainterPath path;
+    path.moveTo(points[0]);
+    for (int i=1; i < points.length(); i++) {
+        path.lineTo(points[i]);
+    }
+    return path;
+}
+
+int PaintLayer::getZValue() const{
+    return 1;
 }

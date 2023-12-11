@@ -260,3 +260,7 @@ void MaskLayer::setEnable(bool enable, int index){
 int MaskLayer::type() const{
     return 102404;
 }
+
+QRectF MaskLayer::getSaveRect(){
+    return getClipRect();
+}

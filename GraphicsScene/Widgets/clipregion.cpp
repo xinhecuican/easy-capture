@@ -145,6 +145,10 @@ void ClipRegion::remapPoint()
             button_num++;
         }
     }
+    int buttonSize = buttons.size();
+    for(int i=button_num; i<buttonSize; i++){
+        buttons.removeAt(button_num);
+    }
     emit regionChange();
 }
 

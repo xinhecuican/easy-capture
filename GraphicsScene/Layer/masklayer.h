@@ -30,6 +30,7 @@ public:
     int getZValue() const override;
     void setEnable(bool enable, int index=0) override;
     int type() const override;
+    QRectF getSaveRect() override;
 private:
     void addRegion(const QPolygonF& polygon);
 

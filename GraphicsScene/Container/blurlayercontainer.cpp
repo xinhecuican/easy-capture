@@ -4,6 +4,7 @@
 #include "../../Helper/mstring.h"
 #include "../../Helper/imagehelper.h"
 #include <QButtonGroup>
+#include <QDebug>
 
 BlurLayerContainer::BlurLayerContainer(PaintArea* area) :
       LayerContainer(area),
@@ -71,7 +72,8 @@ void BlurLayerContainer::layerMousePressEvent(QGraphicsSceneMouseEvent *event) {
         blurLayer->addPoint(event->scenePos().toPoint());
     }
     else if(type == 1){
-        grabcutLayer->addPoint(event->scenePos(), event->button() == Qt::RightButton, false);
+        background = event->button() == Qt::RightButton;
+        grabcutLayer->addPoint(event->scenePos(), background, false);
     }
 }
 
@@ -80,7 +82,7 @@ void BlurLayerContainer::layerMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
         blurLayer->addPoint(event->scenePos().toPoint());
     }
     else if(type == 1){
-        grabcutLayer->addPoint(event->scenePos(), event->button() == Qt::RightButton, false);
+        grabcutLayer->addPoint(event->scenePos(), background, false);
     }
 }
 
@@ -89,6 +91,6 @@ void BlurLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         blurLayer->addPoint(event->scenePos().toPoint());
     }
     else if(type == 1){
-        grabcutLayer->addPoint(event->scenePos(), event->button() == Qt::RightButton, true);
+        grabcutLayer->addPoint(event->scenePos(), background, true);
     }
 }

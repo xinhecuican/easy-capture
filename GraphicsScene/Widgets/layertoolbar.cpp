@@ -10,7 +10,8 @@ LayerToolBar::LayerToolBar(PaintArea* area, QWidget* parent) :
     group(new QButtonGroup(this)),
     groupId(0),
     attributeBar(new AttributeToolbar(parent)),
-    bound(ImageHelper::getCurrentGeometry())
+    bound(ImageHelper::getCurrentGeometry()),
+    beforeId(0)
 {
     group->setExclusive(true);
     connect(group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &LayerToolBar::onGroupClick);
@@ -44,6 +45,23 @@ void LayerToolBar::addContainer(const QString &icon,
     toolButton->setToolTip(MString::search(tip));
     toolButton->setIcon(ImageHelper::getIcon(icon));
     addContainer(toolButton, container, exclude);
+}
+
+void LayerToolBar::addContainer(QToolButton* button, std::function<void()>const& f, std::function<void()>const& leavef, bool exclude){
+    if(!exclude){
+        connect(button, &QToolButton::clicked, this, f);
+    }
+    else{
+        button->setCheckable(true);
+        button->setChecked(false);
+        group->addButton(button, groupId);
+        validF[groupId] = f;
+        invalidF[groupId] = leavef;
+        groupId++;
+        containers.append(NULL);
+    }
+    addWidget(button);
+    adjustSize();
 }
 
 void LayerToolBar::moveTo(const QRectF& mask){
@@ -98,9 +116,9 @@ void LayerToolBar::setContainer(LayerContainer *container){
 }
 
 void LayerToolBar::onGroupClick(int id){
-    area->setContainer(containers[id]);
-    QWidget* widget = containers[id]->onValid(attributeBar);
-    attributeBar->showWidget(widget);
+    execInvalid(beforeId);
+    execValid(id);
+    beforeId = id;
     moveTo(mask);
 }
 
@@ -112,4 +130,34 @@ void LayerToolBar::hideAll(){
 void LayerToolBar::showAll(){
     show();
     attributeBar->show();
+}
+
+void LayerToolBar::execValid(int id){
+    if(containers[id] != NULL){
+        area->setContainer(containers[id]);
+        QWidget* widget = containers[id]->onValid(attributeBar);
+        attributeBar->showWidget(widget);
+    }
+    else{
+        auto f = validF.find(id);
+        if(f != validF.end()){
+            f.value()();
+        }
+        area->setContainer(NULL);
+        attributeBar->adjustSize();
+    }
+}
+
+void LayerToolBar::execInvalid(int id){
+    if(containers[id] != NULL){
+        area->setContainer(containers[id]);
+        containers[id]->onInvalid();
+    }
+    else{
+        auto f = invalidF.find(id);
+        if(f != invalidF.end()){
+            f.value()();
+        }
+        attributeBar->adjustSize();
+    }
 }

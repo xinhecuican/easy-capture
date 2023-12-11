@@ -28,6 +28,9 @@ public:
     void setEndPoint(const QPointF& point);
     int getZValue() const override;
     int type() const override;
+    void prepareSave() override;
+    bool contains(const QPointF& point)const override;
+    void onDelete(const QPointF &point) override;
 
 private slots:
     void posChangeFunc(ExpandButton::ButtonDirection dir, qreal x, qreal y);

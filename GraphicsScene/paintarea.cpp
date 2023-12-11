@@ -23,7 +23,7 @@ PaintArea::PaintArea(QWidget* parent) :
 void PaintArea::mousePressEvent(QGraphicsSceneMouseEvent *event){
     press = true;
     for(auto& layer: layers){
-        if((layer->isEnable() || layer->isErase()) && layer->contains(layer->mapFromScene(event->scenePos()))){
+        if((layer->isEnable()) && layer->contains(layer->mapFromScene(event->scenePos()))){
 //            sendEvent(layer, event);
             inLayer = true;
             mouseGrabber = layer;
@@ -32,10 +32,12 @@ void PaintArea::mousePressEvent(QGraphicsSceneMouseEvent *event){
     if(!inLayer){
         if(container != NULL) container->layerMousePressEvent(event);
     }
+    sendEvent(rootLayer, event);
     QGraphicsScene::mousePressEvent(event);
 }
 
 void PaintArea::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
+    sendEvent(rootLayer, event);
     QGraphicsScene::mouseMoveEvent(event);
     if(!inLayer && press){
         if(container != NULL) container->layerMouseMoveEvent(event);
@@ -48,26 +50,27 @@ void PaintArea::mouseReleaseEvent(QGraphicsSceneMouseEvent *event){
     if(!inLayer && press){
         press = false;
         if(container != NULL) container->layerMouseReleaseEvent(event);
-        return;
     }
     else{
         press = false;
     }
 //    if(press) sendEvent(mouseGrabber, event);
     inLayer = false;
+    sendEvent(rootLayer, event);
     QGraphicsScene::mouseReleaseEvent(event);
 }
 
 bool PaintArea::save(SaveType type, const QString &path){
-    if(path == "") {
+    if(path == "" && type != ClipBoard) {
         return false;
     }
     for(auto& layer: layers){
         layer->prepareSave();
     }
+    update();
     QRectF bound;
     for(auto& layer: layers){
-        bound = bound.united(layer->boundingRect());
+        bound = bound.united(layer->getSaveRect());
     }
 
     if(bound == QRectF(0, 0, 0, 0))
@@ -101,9 +104,11 @@ bool PaintArea::save(SaveType type, const QString &path){
 }
 
 void PaintArea::setEraseEnable(bool enable){
-    for(auto iter=layers.begin(); iter!=layers.end(); iter++){
-        iter.value()->setErase(enable);
+    changeFocusLayer(NULL);
+    for(auto layer : layers){
+        layer->startErase();
     }
+    rootLayer->setErase(enable);
 }
 
 void PaintArea::setEnable(bool enable, int index){

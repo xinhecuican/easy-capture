@@ -4,6 +4,8 @@
 #include "../Container/masklayercontainer.h"
 #include "../Container/paintlayercontainer.h"
 #include "../Container/textlayercontainer.h"
+#include <QFileDialog>
+#include "../../Paint/Widgets/history.h"
 
 DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(area, parent)
 {
@@ -23,6 +25,40 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
     TextLayerContainer* textLayerContainer = new TextLayerContainer(area);
     addContainer("text", "", textLayerContainer, true);
 
+    QToolButton* eraseButton = new QToolButton(this);
+    eraseButton->setIcon(ImageHelper::getIcon("eraser"));
+    eraseButton->setToolTip(MString::search("{7cwKObEhcx}擦除"));
+    addContainer(eraseButton,
+        [=](){area->setEnable(false);area->setEraseEnable(true);},
+        [=](){area->setEraseEnable(false);}, true);
+
+    addSeparator();
+
+    QToolButton* clipButton = new QToolButton(this);
+    clipButton->setIcon(ImageHelper::getIcon("clipboard"));
+    clipButton->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
+    connect(clipButton, &QToolButton::clicked, this, [=]() {
+        if(area->save(ILayerControl::ClipBoard, ""))
+            WindowManager::changeWindow("tray");
+    });
+    addWidget(clipButton);
+
+    QToolButton* saveButton = new QToolButton(this);
+    saveButton->setIcon(ImageHelper::getIcon("save"));
+    saveButton->setToolTip(MString::search("{pJqTHhEQdb}保存"));
+    connect(saveButton, &QToolButton::clicked, this, [=]() {
+        QString fileName = QFileDialog::getSaveFileName(parent,
+                                                        "保存",
+                                                        History::instance()->get_last_directory(),
+                                                        "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
+        if(fileName != "") {
+            if(area->save(ILayerControl::Persist, fileName))
+                WindowManager::changeWindow("tray");
+        }
+    });
+    addWidget(saveButton);
+
+
     ClipLayerBase* clipLayer = area->getClipLayer();
     if(clipLayer != NULL){
         connect(clipLayer, &ClipLayerBase::boundChangeBegin, this, [=](){
@@ -33,5 +69,6 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
             showAll();
         });
     }
-    hide();
+    adjustSize();
+    hideAll();
 }

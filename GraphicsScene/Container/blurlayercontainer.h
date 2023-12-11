@@ -17,6 +17,7 @@ private:
     GrabcutLayer* grabcutLayer;
     int type;
     int windowSize;
+    bool background;
 };
 
 #endif // BLURLAYERCONTAINER_H

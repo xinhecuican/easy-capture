@@ -61,7 +61,6 @@ void RectLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void RectLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    painter->setRenderHints(QPainter::SmoothPixmapTransform | QPainter::Antialiasing, true);
     paintStyle(painter);
     painter->drawRect(this->boundingRect());
 }
@@ -188,12 +187,14 @@ bool RectLayer::contains(const QPointF &point) const {
 
 void RectLayer::prepareSave(){
     LayerBase::prepareSave();
-    showButtons();
+    for (ExpandButton* button: buttons) {
+        button->hide();
+    }
+    if(scrollItem != NULL) scrollItem->hide();
 }
 
 void RectLayer::endSave(){
     LayerBase::endSave();
-    hideButtons();
 }
 
 void RectLayer::initButtons(){
@@ -265,4 +266,8 @@ void RectLayer::setRect(const QRectF &rect){
 
 int RectLayer::type() const{
     return 102407;
+}
+
+void RectLayer::onDelete(const QPointF &point){
+    manager->removeThis(this);
 }

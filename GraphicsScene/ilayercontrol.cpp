@@ -1,4 +1,7 @@
 #include "ilayercontrol.h"
+#include <QPainter>
+#include <QDebug>
+#include <QDateTime>
 
 ILayerControl::ILayerControl()
 {
@@ -22,7 +25,9 @@ void ILayerControl::modifyImage(const QPoint &pos, const QColor& color){
         modifiedImage = image.copy();
     }
     modified = true;
-    modifiedImage.setPixel(pos, color.rgba());
+    QRgb* line = (QRgb*)modifiedImage.scanLine(pos.y());
+    line[pos.x()] = color.rgb();
+//    modifiedImage.setPixel(pos, color.rgba());
 }
 
 bool ILayerControl::isImageValid(){
@@ -34,5 +39,30 @@ void ILayerControl::maskImage(const QImage &mask){
         modifiedImage = image.copy();
     }
     modified = true;
-    modifiedImage.setAlphaChannel(mask);
+    for(int i=0; i<modifiedImage.height(); i++){
+        QRgb* line = (QRgb*)modifiedImage.scanLine(i);
+        const uchar* maskLine = mask.constScanLine(i);
+        for(int k=0; k<modifiedImage.width(); k++){
+            QRgb rgb = line[k];
+            if(qAlpha(rgb) != 0){
+                line[k] = qRgba(qRed(rgb), qGreen(rgb), qBlue(rgb), maskLine[k]);
+            }
+        }
+    }
+}
+
+void ILayerControl::remaskImage(const QImage &mask){
+    if(mask.depth() > 8) return;
+    if(!modified){
+        modifiedImage = image.copy();
+    }
+    modified = true;
+    for(int i=0; i<modifiedImage.height(); i++){
+        QRgb* line = (QRgb*)modifiedImage.scanLine(i);
+        const uchar* maskLine = mask.constScanLine(i);
+        for(int k=0; k<modifiedImage.width(); k++){
+            QRgb rgb = line[k];
+            line[k] = qRgba(qRed(rgb), qGreen(rgb), qBlue(rgb), maskLine[k]);
+        }
+    }
 }

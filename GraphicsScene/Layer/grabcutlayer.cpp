@@ -3,6 +3,7 @@
 #include "../../Helper/imagehelper.h"
 #include "../../Helper/debug.h"
 #include <QTextStream>
+#include <QDateTime>
 
 GrabcutLayer::GrabcutLayer(const QString& name,
                            ILayerControl* manager,
@@ -13,7 +14,7 @@ GrabcutLayer::GrabcutLayer(const QString& name,
 {
     handler = new GrabcutHandler(this);
     connect(handler, &GrabcutHandler::finish, this, [=](QImage mask){
-        manager->maskImage(mask);
+        manager->remaskImage(mask);
         update();
     });
 }
@@ -45,8 +46,13 @@ QRectF GrabcutLayer::boundingRect() const{
 void GrabcutLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     if(enableShow){
         QPen pen;
-        pen.setColor(QColor(255, 0, 0, 128));
         pen.setWidth(5);
+        if(background) pen.setColor(QColor(0, 0, 255, 128));
+        else pen.setColor(QColor(255, 0, 0, 128));
+        painter->setPen(pen);
+        painter->drawPath(currentPath);
+
+        pen.setColor(QColor(255, 0, 0, 128));
         painter->setPen(pen);
         for(int i=0; i<foregroundPaths.size(); i++){
             painter->drawPath(foregroundPaths[i]);
@@ -56,10 +62,6 @@ void GrabcutLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         for(int i=0; i<backgroundPaths.size(); i++){
             painter->drawPath(backgroundPaths[i]);
         }
-        if(background) pen.setColor(QColor(0, 0, 255, 128));
-        else pen.setColor(QColor(255, 0, 0, 128));
-        painter->setPen(pen);
-        painter->drawPath(currentPath);
     }
 }
 
@@ -86,4 +88,48 @@ int GrabcutLayer::getZValue() const{
 
 void GrabcutLayer::setEnableShow(){
     enableShow = true;
+}
+
+QRectF GrabcutLayer::getSaveRect(){
+    return QRectF();
+}
+
+void GrabcutLayer::prepareSave(){
+    LayerBase::prepareSave();
+    enableShow = false;
+}
+
+void GrabcutLayer::deletePath(const QPointF &point){
+    auto iter = foregroundPaths.begin();
+    while(iter != foregroundPaths.end()){
+        if(iter->contains(point)){
+            iter = foregroundPaths.erase(iter);
+        }
+        else{
+            iter++;
+        }
+    }
+
+    auto iter2 = backgroundPaths.begin();
+    while(iter2 != backgroundPaths.end()){
+        if(iter2->contains(point)){
+            iter2 = backgroundPaths.erase(iter2);
+        }
+        else{
+            iter2++;
+        }
+    }
+    if(foregroundPaths.size() != 0 && backgroundPaths.size() != 0){
+        handler->start(manager->getOriginImage(), foregroundPaths, backgroundPaths);
+    }
+    update();
+}
+
+void GrabcutLayer::onDelete(const QPointF &point){
+    deletePath(point);
+}
+
+void GrabcutLayer::startErase(){
+    enableShow = true;
+    update();
 }

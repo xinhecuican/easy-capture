@@ -119,6 +119,7 @@ void GeoLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event){
             return;
         }
         rectId++;
+        rectLayer->setRect(rect);
         rectLayer->setEnable(true);
         rectLayer->setEnableResize(true);
         rectLayer->setEnableScroll(true);
@@ -132,6 +133,7 @@ void GeoLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event){
             return;
         }
         arrowId++;
+        arrowLayer->setLine(beginPoint, endPoint);
         arrowLayer->setEnable(true);
         area->addLayer(arrowLayer);
         break;

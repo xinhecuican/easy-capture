@@ -18,7 +18,12 @@ public:
     int type() const override;
     int getZValue() const override;
     void setEnableShow();
+    QRectF getSaveRect() override;
+    void prepareSave() override;
+    void onDelete(const QPointF &point) override;
+    void startErase() override;
 private:
+    void deletePath(const QPointF& point);
     QList<QPainterPath> foregroundPaths;
     QList<QPainterPath> backgroundPaths;
     QPainterPath currentPath;
