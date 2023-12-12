@@ -35,6 +35,7 @@ private:
     QPen pen;
     QPixmap cachePix;
     bool isEnd;
+    int index;
 };
 
 class SmoothCurveGenerator {

@@ -34,6 +34,8 @@ SOURCES += \
 	GraphicsScene/Layer/rectlayer.cpp \
 	GraphicsScene/Layer/rootlayer.cpp \
 	GraphicsScene/Layer/textlayer.cpp \
+	GraphicsScene/Recorder/layerrecord.cpp \
+	GraphicsScene/Recorder/recorder.cpp \
 	GraphicsScene/Widgets/attributetoolbar.cpp \
 	GraphicsScene/Widgets/clipregion.cpp \
 	GraphicsScene/Widgets/colorpicker.cpp \
@@ -154,6 +156,9 @@ HEADERS += \
 	GraphicsScene/Layer/rectlayer.h \
 	GraphicsScene/Layer/rootlayer.h \
 	GraphicsScene/Layer/textlayer.h \
+	GraphicsScene/Recorder/layerrecord.h \
+	GraphicsScene/Recorder/recordbase.h \
+	GraphicsScene/Recorder/recorder.h \
 	GraphicsScene/Widgets/FontData.h \
 	GraphicsScene/Widgets/PaintData.h \
 	GraphicsScene/Widgets/attributetoolbar.h \

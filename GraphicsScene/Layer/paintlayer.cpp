@@ -1,6 +1,7 @@
 #include "paintlayer.h"
 #include <QtMath>
 #include <QGraphicsScene>
+#include "../Recorder/layerrecord.h"
 
 PaintLayer::PaintLayer(const QString& name,
                        ILayerControl* manager,
@@ -11,6 +12,9 @@ PaintLayer::PaintLayer(const QString& name,
     cachePix = QPixmap(manager->getImage().size());
     cachePix.fill(Qt::transparent);
     isEnd = false;
+    if(name != ""){
+        index = name.mid(4).toInt();
+    }
 }
 
 QRectF PaintLayer::boundingRect() const {
@@ -169,7 +173,9 @@ int PaintLayer::type() const{
 }
 
 void PaintLayer::onDelete(const QPointF &point){
-    manager->removeThis(this);
+    hide();
+    LayerRecord* record = new LayerRecord(false, this, (type() << 4) + index);
+    manager->record(record);
 }
 
 void PaintLayer::end(){

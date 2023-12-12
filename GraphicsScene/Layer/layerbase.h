@@ -26,6 +26,7 @@ public:
     virtual QRectF getSaveRect(){return boundingRect();}
     virtual void onDelete(const QPointF& point){}
     virtual void startErase(){}
+    virtual void release(){manager->removeThis(this);}
 
 protected:
     QString name;

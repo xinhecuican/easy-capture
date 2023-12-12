@@ -16,8 +16,12 @@ PaintArea::PaintArea(QWidget* parent) :
     press(false),
     mouseGrabber(NULL),
     rootLayer(new RootLayer(this)),
-    clipLayer(NULL)
+    clipLayer(NULL),
+    recorder(new Recorder(this))
 {
+    connect(recorder, &Recorder::recordChange, this, [=](){
+        emit recordChange();
+    });
 }
 
 void PaintArea::mousePressEvent(QGraphicsSceneMouseEvent *event){
@@ -176,6 +180,7 @@ void PaintArea::reset(){
     for(LayerBase* layer : layers){
         layer->reset();
     }
+    recorder->reset();
 }
 
 QGraphicsItem* PaintArea::getRootLayer(){
@@ -196,4 +201,12 @@ QRectF PaintArea::getClipRect() {
 
 ClipLayerBase* PaintArea::getClipLayer(){
     return clipLayer;
+}
+
+void PaintArea::record(RecordBase *record){
+    recorder->record(record);
+}
+
+Recorder* PaintArea::getRecorder(){
+    return recorder;
 }

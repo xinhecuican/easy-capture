@@ -10,6 +10,7 @@
 
 class PaintArea : public QGraphicsScene, public ILayerControl, public LayerManager
 {
+    Q_OBJECT
 public:
     PaintArea(QWidget* parent=nullptr);
     bool save(SaveType type, const QString &path = "") override;
@@ -29,6 +30,11 @@ public:
     QGraphicsItem* getRootLayer();
     QRectF getClipRect() override;
     ClipLayerBase* getClipLayer();
+    void record(RecordBase *record) override;
+    Recorder* getRecorder();
+signals:
+    void recordChange();
+
 private:
     LayerContainer* container;
     bool inLayer;
@@ -36,6 +42,7 @@ private:
     QGraphicsItem* mouseGrabber;
     RootLayer* rootLayer;
     ClipLayerBase* clipLayer;
+    Recorder* recorder;
 };
 
 #endif // PAINTAREA_H

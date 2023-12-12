@@ -7,6 +7,7 @@
 #include "../../Helper/math.h"
 #include "../paintarea.h"
 #include <QLineF>
+#include "../Recorder/layerrecord.h"
 
 GeoLayerContainer::GeoLayerContainer(PaintArea* area) :
     LayerContainer(area),
@@ -89,6 +90,7 @@ void GeoLayerContainer::layerMousePressEvent(QGraphicsSceneMouseEvent *event){
     }
     case ARROW: {
         arrowLayer = new ArrowLayer(beginPoint, beginPoint + QPointF(1, 1), "arrow" + QString::number(arrowId), area, area->getRootLayer());
+        arrowLayer->setZValue(arrowLayer->getZValue());
         arrowLayer->setEnable(false);
         break;
     }
@@ -118,6 +120,8 @@ void GeoLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event){
             rectLayer->deleteLater();
             return;
         }
+        LayerRecord* record = new LayerRecord(true, rectLayer, (rectLayer->type() << 4) + rectId);
+        area->record(record);
         rectId++;
         rectLayer->setRect(rect);
         rectLayer->setEnable(true);
@@ -132,6 +136,8 @@ void GeoLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event){
             arrowLayer->deleteLater();
             return;
         }
+        LayerRecord* record = new LayerRecord(true, arrowLayer, (arrowLayer->type() << 4) + arrowId);
+        area->record(record);
         arrowId++;
         arrowLayer->setLine(beginPoint, endPoint);
         arrowLayer->setEnable(true);

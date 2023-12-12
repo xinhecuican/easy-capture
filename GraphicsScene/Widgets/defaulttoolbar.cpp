@@ -34,6 +34,34 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
 
     addSeparator();
 
+    QToolButton* undoButton = new QToolButton(this);
+    undoButton->setIcon(ImageHelper::getIcon("undo"));
+    undoButton->setToolTip(MString::search("{h5KymvIMTN}撤销"));
+    connect(undoButton, &QToolButton::clicked, this, [=]() {
+        area->getRecorder()->back();
+    });
+    addWidget(undoButton);
+
+    QToolButton* redoButton = new QToolButton(this);
+    redoButton->setToolTip(MString::search("{a7CaC7NOL5}恢复"));
+    redoButton->setIcon(ImageHelper::getIcon("redo"));
+    connect(redoButton, &QToolButton::clicked, this, [=]() {
+        area->getRecorder()->forward();
+    });
+    addWidget(redoButton);
+    connect(area, &PaintArea::recordChange, this, [=]() {
+        if(!area->getRecorder()->undoAvailiable()) {
+            undoButton->setEnabled(false);
+        } else {
+            undoButton->setEnabled(true);
+        }
+        if(!area->getRecorder()->redoAvailiable()) {
+            redoButton->setEnabled(false);
+        } else {
+            redoButton->setEnabled(true);
+        }
+    });
+
     QToolButton* clipButton = new QToolButton(this);
     clipButton->setIcon(ImageHelper::getIcon("clipboard"));
     clipButton->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));

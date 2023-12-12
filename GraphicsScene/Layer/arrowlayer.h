@@ -48,6 +48,7 @@ private:
     ExpandButton* endButton;
     QCursor outCursor;
     PaintData data;
+    int index;
     const float ExtRefArrowLenght = 10;//箭头末端大小的长度，
     const float ExtRefArrowDegrees = M_PI / 6;//箭头末端顶角的一半
 };

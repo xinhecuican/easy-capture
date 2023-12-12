@@ -7,6 +7,7 @@
 #include "../../Helper/math.h"
 #include "../paintarea.h"
 #include <QLineF>
+#include "../Recorder/layerrecord.h"
 
 PaintLayerContainer::PaintLayerContainer(PaintArea* area) :
       LayerContainer(area),
@@ -105,6 +106,8 @@ void PaintLayerContainer::layerMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 void PaintLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     paintLayer->addPoint(event->scenePos());
     paintLayer->end();
+    LayerRecord* record = new LayerRecord(true, paintLayer, (paintLayer->type() << 4) + paintId);
+    area->record(record);
     paintId++;
     area->addLayer(paintLayer);
 }

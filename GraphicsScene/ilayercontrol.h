@@ -1,6 +1,7 @@
 #ifndef ILAYERCONTROL_H
 #define ILAYERCONTROL_H
 #include <QImage>
+#include "Recorder/recorder.h"
 
 class LayerBase;
 /**
@@ -25,6 +26,7 @@ public:
     virtual void setEraseEnable(bool enable)=0;
     virtual void setEnable(bool enable, int index=0)=0;
     virtual QRectF getClipRect()=0;
+    virtual void record(RecordBase* record)=0;
 protected:
     bool imageValid;
     QImage image;

@@ -1,5 +1,6 @@
 #include "arrowlayer.h"
 #include "../../Manager/uimanager.h"
+#include "../Recorder/layerrecord.h"
 
 ArrowLayer::ArrowLayer(const QPointF& beginPt, const QPointF& endPt, const QString& name, ILayerControl* manager, QGraphicsItem* parent) :
     LayerBase(name, manager, parent){
@@ -10,6 +11,9 @@ ArrowLayer::ArrowLayer(const QPointF& beginPt, const QPointF& endPt, const QStri
     connect(endButton, static_cast<void (ExpandButton::*)(ExpandButton::ButtonDirection, qreal, qreal)>(&ExpandButton::posChange), this, &ArrowLayer::posChangeFunc);
     setAcceptHoverEvents(true);
     data = UIManager::instance()->getArrowData();
+    if(name != ""){
+        index = name.mid(5).toInt();
+    }
 }
 
 void ArrowLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -185,5 +189,7 @@ bool ArrowLayer::contains(const QPointF &point) const{
 }
 
 void ArrowLayer::onDelete(const QPointF &point){
-    manager->removeThis(this);
+    hide();
+    LayerRecord* record = new LayerRecord(false, this, (type() << 4) + index);
+    manager->record(record);
 }

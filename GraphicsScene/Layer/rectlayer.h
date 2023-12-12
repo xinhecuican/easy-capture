@@ -59,6 +59,7 @@ private:
     PaintData paintData;
     QPointF beginPoint;
     QCursor outCursor;
+    int index;
 };
 
 #endif // RECTLAYER_H

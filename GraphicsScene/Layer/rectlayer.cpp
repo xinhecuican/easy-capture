@@ -1,5 +1,6 @@
 #include "rectlayer.h"
 #include <QDebug>
+#include "../Recorder/layerrecord.h"
 
 RectLayer::RectLayer(
     const QRectF& rect,
@@ -21,6 +22,9 @@ RectLayer::RectLayer(
     setPos(rect.topLeft());
     this->rect = QRectF(QPointF(0, 0), QSize(rect.width(), rect.height()));
     setBounding(this->rect);
+    if(name != ""){
+        index = name.mid(4).toInt();
+    }
 }
 
 void RectLayer::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
@@ -269,5 +273,8 @@ int RectLayer::type() const{
 }
 
 void RectLayer::onDelete(const QPointF &point){
-    manager->removeThis(this);
+    hide();
+    update();
+    LayerRecord* record = new LayerRecord(false, this, (type() << 4) + index);
+    manager->record(record);
 }
