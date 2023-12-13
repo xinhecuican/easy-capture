@@ -32,6 +32,9 @@ public:
     ClipLayerBase* getClipLayer();
     void record(RecordBase *record) override;
     Recorder* getRecorder();
+    QImage getSaveImage();
+    QRectF getSaveRect();
+
 signals:
     void recordChange();
 

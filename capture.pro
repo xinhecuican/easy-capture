@@ -24,6 +24,7 @@ SOURCES += \
 	GraphicsScene/Container/masklayercontainer.cpp \
 	GraphicsScene/Container/paintlayercontainer.cpp \
 	GraphicsScene/Container/textlayercontainer.cpp \
+	GraphicsScene/Container/videolayercontainer.cpp \
 	GraphicsScene/Layer/arrowlayer.cpp \
 	GraphicsScene/Layer/blurlayer.cpp \
 	GraphicsScene/Layer/grabcutlayer.cpp \
@@ -145,6 +146,7 @@ HEADERS += \
 	GraphicsScene/Container/masklayercontainer.h \
 	GraphicsScene/Container/paintlayercontainer.h \
 	GraphicsScene/Container/textlayercontainer.h \
+	GraphicsScene/Container/videolayercontainer.h \
 	GraphicsScene/Layer/arrowlayer.h \
 	GraphicsScene/Layer/blurlayer.h \
 	GraphicsScene/Layer/cliplayerbase.h \

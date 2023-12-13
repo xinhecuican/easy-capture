@@ -107,6 +107,44 @@ bool PaintArea::save(SaveType type, const QString &path){
     return true;
 }
 
+QImage PaintArea::getSaveImage(){
+    for(auto& layer: layers){
+        layer->prepareSave();
+    }
+    update();
+    QRectF bound;
+    for(auto& layer: layers){
+        bound = bound.united(layer->getSaveRect());
+    }
+
+    if(bound == QRectF(0, 0, 0, 0))
+        return QImage();
+
+    cv::Mat ans(bound.height(), bound.width(), CV_8UC4);
+    for(int i=0; i<bound.height(); i+=32700) {
+        int height = bound.height() - i > 32700 ? 32700 : bound.height() - i;
+        QRect temp_rect(bound.left(), bound.top()+i, bound.width(), height);
+        QImage image(bound.width(), height, QImage::Format_ARGB32);
+        //        image.fill(Qt::transparent);
+        QPainter painter(&image);
+        render(&painter, QRectF(QPointF(0, 0), image.size()), temp_rect);
+        cv::Mat temp_mat = ImageHelper::QImage2Mat(image);
+        temp_mat.copyTo(ans(cv::Rect(0, i, bound.width(), height)));
+    }
+    for(auto& layer: layers){
+        layer->endSave();
+    }
+    return ImageHelper::Mat2QImage(ans);
+}
+
+QRectF PaintArea::getSaveRect(){
+    QRectF bound;
+    for(auto& layer: layers){
+        bound = bound.united(layer->getSaveRect());
+    }
+    return bound;
+}
+
 void PaintArea::setEraseEnable(bool enable){
     changeFocusLayer(NULL);
     for(auto layer : layers){

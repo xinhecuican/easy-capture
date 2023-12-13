@@ -6,9 +6,10 @@
 #include "../Container/textlayercontainer.h"
 #include <QFileDialog>
 #include "../../Paint/Widgets/history.h"
+#include <QProcess>
 
 DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(area, parent)
-{
+{   
     GeoLayerContainer* geoLayerContainer = new GeoLayerContainer(area);
     addContainer("shape", "", geoLayerContainer, true);
     BlurLayerContainer* blurLayerContainer = new BlurLayerContainer(area);
@@ -62,6 +63,17 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
         }
     });
 
+    QToolButton* ocrButton = new QToolButton(this);
+    ocrButton->setIcon(ImageHelper::getIcon("ocr"));
+    ocrButton->setToolTip(MString::search("{SvJhCjRGF0}提取文字"));
+    connect(ocrButton, &QToolButton::clicked, this, [=]() {
+        if(area->save(ILayerControl::Temp, "ocr/1.png")) {
+            WindowManager::changeWindow("tray");
+            ocrProcess.start();
+        }
+    });
+    addWidget(ocrButton);
+
     QToolButton* clipButton = new QToolButton(this);
     clipButton->setIcon(ImageHelper::getIcon("clipboard"));
     clipButton->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
@@ -86,6 +98,30 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
     });
     addWidget(saveButton);
 
+    QToolButton* pinButton = new QToolButton(this);
+    pinButton->setToolTip(MString::search("{BNzMH1dcwW}钉住"));
+    pinButton->setIcon(ImageHelper::getIcon("pin"));
+    connect(pinButton, &QToolButton::clicked, this, [=](){
+        QImage image = area->getSaveImage();
+        WindowManager::changeWindow("PinWindow", QPixmap::fromImage(image), area->getSaveRect().toRect());
+    });
+    addWidget(pinButton);
+
+    QToolButton* okButton = new QToolButton(this);
+    okButton->setIcon(ImageHelper::getIcon("ok"));
+    connect(okButton, &QToolButton::clicked, this, [=]() {
+        QImage image = area->getSaveImage();
+        QRect bound = area->getSaveRect().toRect();
+        bound.moveTo(0, 0);
+        WindowManager::changeWindow("PaintWindow", QPixmap::fromImage(image), bound);
+    });
+
+    QToolButton* cancelButton = new QToolButton(this);
+    cancelButton->setIcon(ImageHelper::getIcon("cancel"));
+    connect(cancelButton, &QToolButton::clicked, this, [=]() {
+        WindowManager::changeWindow("tray");
+    });
+
 
     ClipLayerBase* clipLayer = area->getClipLayer();
     if(clipLayer != NULL){
@@ -99,4 +135,47 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
     }
     adjustSize();
     hideAll();
+}
+
+void DefaultToolbar::initOcr() {
+    const QString queryCPUNumberOfCores = "wmic cpu get NumberOfCores";
+    QProcess queryCPU;
+    QPair<int, int> pairResult;
+    queryCPU.start(queryCPUNumberOfCores);
+    queryCPU.waitForFinished();
+    QString result = QString::fromLocal8Bit(queryCPU.readAllStandardOutput());
+    QStringList list = queryCPUNumberOfCores.split(" ");
+    result = result.remove(list.last(), Qt::CaseInsensitive);
+    result = result.replace("\r", "");
+    result = result.replace("\n", "");
+    result = result.simplified();
+    pairResult.first = result.toInt();
+    int numCore = pairResult.first;
+    QStringList args;
+    QDir dir("ocr/models");
+    QDir dir2("ocr");
+    args << "--models" << "models/"
+         << "--det" << "ch_PP-OCRv3_det_infer.onnx"
+         << "--cls" << "ch_ppocr_mobile_v2.0_cls_infer.onnx"
+         << "--rec" << "ch_PP-OCRv3_rec_infer.onnx"
+         << "--keys" << "ppocr_keys_v1.txt"
+         << "--image" << "1.png"
+         << "--numThread" << QString::number(numCore)
+         << "--padding" << "50"
+         << "--maxSideLen" << "1024"
+         << "--boxScoreThresh" << "0.5"
+         << "--boxThresh" << "0.3"
+         << "--unClipRatio" << "1.6"
+         << "--doAngle" << "1"
+         << "--mostAngle" << "1";
+    ocrProcess.setProgram(dir2.absolutePath() + "/RapidOcrOnnx.exe");
+    ocrProcess.setArguments(args);
+    ocrProcess.setWorkingDirectory(dir2.absolutePath());
+    connect(&ocrProcess, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, [=](int exitCode, QProcess::ExitStatus exitStatus) {
+        if(exitStatus == QProcess::NormalExit) {
+            showOcrResultProcess.startDetached();
+        }
+    });
+    showOcrResultProcess.setProgram("OcrViewer.exe");
+    showOcrResultProcess.setWorkingDirectory(QDir::currentPath());
 }

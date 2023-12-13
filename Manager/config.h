@@ -31,7 +31,8 @@ public:
               show_update_box,
               ui_theme_name,
               receive_beta,
-              show_guidance
+              show_guidance,
+              video_save_path
              );
 
     /**
