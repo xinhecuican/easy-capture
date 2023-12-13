@@ -1,8 +1,14 @@
 #ifndef HISTORY_H
 #define HISTORY_H
-#include "../Data/History_data.h"
 #include<QColor>
 #include<QDomDocument>
+#include "../GraphicsScene/ilayercontrol.h"
+
+struct HistoryData{
+    ILayerControl::SaveType type;
+    qint64 time;
+    QString file_name;
+};
 
 class History
 {
@@ -10,13 +16,13 @@ public:
     History();
     ~History();
     static History* instance();
-    void log(History_data::save_type type, QString file_name);
+    void log(ILayerControl::SaveType type, QString file_name);
     void log_color(QColor color);
     void remove_color(QColor color);
     void load(QString file_name);
     QString get_last_directory();
     int get_history_num();
-    History_data get(int i);
+    HistoryData get(int i);
     bool is_change;
     void update();
     QList<QColor> get_color();
@@ -24,7 +30,7 @@ public:
     QString getVideoSavePath();
 private:
     static History* _instance;
-    QList<History_data> data;
+    QList<HistoryData> data;
     void load_info();
     void init();
     int history_num;

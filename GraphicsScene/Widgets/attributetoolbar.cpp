@@ -8,6 +8,8 @@ AttributeToolbar::AttributeToolbar(QWidget* parent) : QWidget(parent) {
     layout->setSpacing(3);
     layout->setContentsMargins(3, 2, 3, 2);
     setLayout(layout);
+    setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setWindowFlag(Qt::WindowSystemMenuHint, false);
 }
 
 void AttributeToolbar::addWidget(QWidget *widget) {

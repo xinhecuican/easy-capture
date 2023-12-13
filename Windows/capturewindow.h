@@ -9,15 +9,15 @@
 #include<QTimer>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include "new_capture/Widgets/Scroll_handler/scroll_dispatcher.h"
-#include "opencv2/core/core.hpp"
+#include <opencv2/core/core.hpp>
 #include<QPointer>
 #include <QHBoxLayout>
 #include <QGraphicsView>
-#include "Paint/Widgets/PaintArea.h"
-#include "Helper/EnumReflect.h"
-#include "Style_widget/bubbletipswidget.h"
-#include "Widgets/VideoHandler/videocapture.h"
+#include "../GraphicsScene/paintarea.h"
+#include "../Helper/EnumReflect.h"
+#include "../Style_widget/bubbletipswidget.h"
+#include "Widgets/videocapture.h"
+#include "../GraphicsScene/Widgets/defaulttoolbar.h"
 
 //namespace Ui {
 //class CaptureWindow;
@@ -42,7 +42,7 @@ public:
     void stopCaptureVideo() override;
 
 private:
-//    Ui::CaptureWindow *ui;
+    //    Ui::CaptureWindow *ui;
     QWidget* centralWidget;
     bool button_click;
     QPainterPath free_paint_path;
@@ -59,13 +59,13 @@ private:
     QPoint end_point;
     bool begin_waiting;
     //bool combine_image(QImage image);
-    Scroll_dispatcher* dispatcher;
     bool is_finish;
     QGraphicsView* view;
     PaintArea* area;
     VideoCaptureHandler* videoCapture;
     BubbleTipsWidget* tips;
     bool isVideoCapture;
+    DefaultToolbar* defaultToolbar;
 };
 
 #endif // CAPTURE_WINDOW_H

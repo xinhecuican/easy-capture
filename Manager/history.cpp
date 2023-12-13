@@ -2,14 +2,15 @@
 #include<QFile>
 #include<QDomDocument>
 #include<QTextStream>
-#include "../../Helper/debug.h"
+#include "Helper/debug.h"
 #include<QDebug>
-#include "../../Manager/config.h"
+#include "Manager/config.h"
 #include<QDir>
+#include <QDateTime>
 
 History::History()
 {
-    data = QList<History_data>();
+    data = QList<HistoryData>();
     history_num = 0;
     last_directory = "C:/";
     is_change = true;
@@ -33,7 +34,7 @@ History* History::instance()
     return _instance;
 }
 
-void History::log(History_data::save_type type, QString file_name)
+void History::log(ILayerControl::SaveType type, QString file_name)
 {
     is_change = true;
     QFile file("Data/history.xml");
@@ -46,16 +47,16 @@ void History::log(History_data::save_type type, QString file_name)
             return;
         }
         qint64 time = QDateTime::currentDateTime().currentSecsSinceEpoch();
-        History_data temp_data;
+        HistoryData temp_data;
         temp_data.type = type;
         temp_data.time = time;
         temp_data.file_name = file_name;
         data.append(temp_data);
         init();
-        if(type == History_data::Persist)
+        if(type == ILayerControl::Persist)
         {
-//            int index = file_name.lastIndexOf('/');
-//            last_directory = file_name.mid(0, index+1);
+            //            int index = file_name.lastIndexOf('/');
+            //            last_directory = file_name.mid(0, index+1);
             last_directory = file_name;
             QDomNodeList list = doc.elementsByTagName("history");
             list.at(0).toElement().setAttribute("directory", last_directory);
@@ -91,15 +92,15 @@ void History::log(History_data::save_type type, QString file_name)
         element.appendChild(element2);
         element.appendChild(element3);
         history.appendChild(element);
-        History_data temp_data;
+        HistoryData temp_data;
         temp_data.type = type;
         temp_data.time = time;
         temp_data.file_name = file_name;
         data.append(temp_data);
-        if(type == History_data::Persist)
+        if(type == ILayerControl::Persist)
         {
-//            int index = file_name.lastIndexOf('/');
-//            last_directory = file_name.mid(0, index+1);
+            //            int index = file_name.lastIndexOf('/');
+            //            last_directory = file_name.mid(0, index+1);
             last_directory = file_name;
             history.setAttribute("directory", last_directory);
         }
@@ -108,7 +109,7 @@ void History::log(History_data::save_type type, QString file_name)
         {
             history.setAttribute("history_num", ++history_num);
         }
-        else if(History::instance()->data[0].type == History_data::Editable)
+        else if(History::instance()->data[0].type == ILayerControl::Temp)
         {
             QString file_name = History::instance()->data[0].file_name;
             if(file_name.contains("Data/Temp"))
@@ -291,9 +292,9 @@ void History::load_info()
                                     time = element2.attribute("sum").toLongLong();
                                 }
                             }
-                            History_data history_data;
+                            HistoryData history_data;
                             history_data.time = time;
-                            history_data.type = (History_data::save_type)type;
+                            history_data.type = (ILayerControl::SaveType)type;
                             history_data.file_name = file_name;
                             data.append(history_data);
                         }
@@ -382,7 +383,7 @@ int History::get_history_num()
     return history_num;
 }
 
-History_data History::get(int i)
+HistoryData History::get(int i)
 {
     return data[i];
 }
@@ -428,9 +429,9 @@ void History::update()
                         time = element2.attribute("sum").toLongLong();
                     }
                 }
-                History_data history_data;
+                HistoryData history_data;
                 history_data.time = time;
-                history_data.type = (History_data::save_type)type;
+                history_data.type = (ILayerControl::SaveType)type;
                 history_data.file_name = file_name;
                 data.append(history_data);
             }

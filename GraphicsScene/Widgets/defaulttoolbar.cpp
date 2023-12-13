@@ -5,7 +5,7 @@
 #include "../Container/paintlayercontainer.h"
 #include "../Container/textlayercontainer.h"
 #include <QFileDialog>
-#include "../../Paint/Widgets/history.h"
+#include "../../Manager/history.h"
 #include <QProcess>
 
 DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(area, parent)
@@ -115,12 +115,14 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
         bound.moveTo(0, 0);
         WindowManager::changeWindow("PaintWindow", QPixmap::fromImage(image), bound);
     });
+    addWidget(okButton);
 
     QToolButton* cancelButton = new QToolButton(this);
     cancelButton->setIcon(ImageHelper::getIcon("cancel"));
     connect(cancelButton, &QToolButton::clicked, this, [=]() {
         WindowManager::changeWindow("tray");
     });
+    addWidget(cancelButton);
 
 
     ClipLayerBase* clipLayer = area->getClipLayer();
@@ -133,6 +135,7 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
             showAll();
         });
     }
+
     adjustSize();
     hideAll();
 }

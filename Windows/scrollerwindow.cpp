@@ -1,14 +1,14 @@
 #include "scrollerwindow.h"
-#include "Helper/imagehelper.h"
+#include "../Helper/imagehelper.h"
 #include <QPainter>
 #include <QWindow>
-#include "Manager/WindowManager.h"
+#include "../Manager/WindowManager.h"
 #include "hook.h"
-#include "new_capture/window_fliter.h"
-#include "Helper/math.h"
+#include "windowfilter.h"
+#include "../Helper/math.h"
 #include <QMouseEvent>
-#include "Manager/KeyManager.h"
-#include "Manager/config.h"
+#include "../Manager/KeyManager.h"
+#include "../Manager/config.h"
 ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
     scrollState(IDLE),
     beforeState(IDLE),

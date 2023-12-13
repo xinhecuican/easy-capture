@@ -21,7 +21,7 @@ public:
     void hideAll();
     void showAll();
 
-private slots:
+public slots:
     void onGroupClick(int id);
 
 private:

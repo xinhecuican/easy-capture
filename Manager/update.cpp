@@ -10,7 +10,7 @@
 #include<QMessageBox>
 #include "KeyManager.h"
 #include "WindowManager.h"
-#include "../Paint/Widgets/history.h"
+#include "../Manager/history.h"
 
 Update::Update() {
     newest_data = UpdateData();

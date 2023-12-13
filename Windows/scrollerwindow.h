@@ -1,9 +1,9 @@
 #ifndef ScrollerWindow_H
 #define ScrollerWindow_H
-#include "Base/WindowBase.h"
-#include "Style_widget/bubbletipswidget.h"
-#include "new_capture/Widgets/Scroll_handler/scroll_dispatcher.h"
-#include "Style_widget/fadelabel.h"
+#include "../Base/WindowBase.h"
+#include "../Style_widget/bubbletipswidget.h"
+#include "ScrollHandler/scroll_dispatcher.h"
+#include "../Style_widget/fadelabel.h"
 
 class ScrollerWindow : public WindowBase
 {

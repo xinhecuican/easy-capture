@@ -1,32 +1,23 @@
 #include "Setting/setting.h"
-#include "new_capture/CaptureWindow.h"
+#include "Windows/capturewindow.h"
 #include "Manager/WindowManager.h"
 
 #include <QApplication>
 #include<QTextCodec>
 #include "Manager/config.h"
 #include "Manager/KeyManager.h"
-#include "Paint/PaintWindow.h"
+#include "Windows/paintwindow.h"
 #include "JlCompress.h"
 #include "Manager/update.h"
 #include "Style_widget/tray.h"
 #include <windows.h>
 #include "MainFilter.h"
-#include "Paint/Widgets/history.h"
+#include "Manager/history.h"
 #include<dbghelp.h>
 #include "Helper/debug.h"
-#include "Paint/Widgets/Layers/rect_layer.h"
-#include "Paint/Widgets/Layers/text_layer.h"
-#include "Paint/Widgets/Layers/picture_layer.h"
-#include "Paint/Widgets/Layers/paintlayer.h"
-#include "Paint/Widgets/Layers/shapelayer.h"
-#include "Paint/Widgets/Layers/blurlayer.h"
-#include "Paint/Widgets/Layers/arrowlayer.h"
-#include "new_capture/Widgets/cliplayer.h"
 #include "Helper/log.h"
 #include<QPair>
 #include "Manager/uimanager.h"
-#include "Paint/Widgets/Panels/flow_edit_panel.h"
 #include "Windows/scrollerwindow.h"
 #include "Windows/pinwindow.h"
 #ifndef QT_DEBUG
@@ -72,7 +63,6 @@ int main(int argc, char *argv[]) {
         Update::instance()->onFinish();
         fliter->deleteLater();
     });
-    Flow_edit_panel::instance();// 初始化时间过长，提前初始化一次
     qInfo() << "程序启动";
     int ans = a.exec();
     return ans;
@@ -86,14 +76,6 @@ void registerClasses() {
     Reflect::registerClass<PaintWindow>();
     Reflect::registerClass<ScrollerWindow>();
     Reflect::registerClass<PinWindow>();
-    Reflect::registerClass<RectLayer>();
-    Reflect::registerClass<Text_layer>();
-    Reflect::registerClass<Picture_layer>();
-    Reflect::registerClass< PaintLayer>();
-    Reflect::registerClass<ShapeLayer>();
-    Reflect::registerClass<BlurLayer>();
-    Reflect::registerClass<ArrowLayer>();
-    Reflect::registerClass<ClipRegion>();
 }
 
 void setupDebug(){

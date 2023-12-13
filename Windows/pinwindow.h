@@ -1,6 +1,6 @@
 #ifndef PINWINDOW_H
 #define PINWINDOW_H
-#include "Base/WindowBase.h"
+#include "../Base/WindowBase.h"
 #include "Widgets/pinwidget.h"
 
 class PinWindow : public WindowBase

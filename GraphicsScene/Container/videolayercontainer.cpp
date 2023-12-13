@@ -9,6 +9,8 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include "../../Manager/config.h"
+#include <mmeapi.h>
+#pragma comment(lib, "Winmm.lib")
 
 VideoLayerContainer::VideoLayerContainer(PaintArea* area) : LayerContainer(area)
 {

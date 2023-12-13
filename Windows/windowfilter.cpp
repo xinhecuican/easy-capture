@@ -1,4 +1,4 @@
-#include "window_fliter.h"
+#include "windowfilter.h"
 
 HWND Window_fliter::m_hWndTarget = NULL;
 QVector<CSCWinInfo*> Window_fliter::m_arSnapshot = QVector<CSCWinInfo*>();

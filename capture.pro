@@ -63,37 +63,9 @@ SOURCES += \
     Manager/KeyManager.cpp \
     Manager/WindowManager.cpp \
     Manager/config.cpp \
+	Manager/history.cpp \
     Manager/uimanager.cpp \
     Manager/update.cpp \
-	Paint/Data/fontdata.cpp \
-    Paint/Data/scroll_button.cpp \
-    Paint/Data/stretch_button.cpp \
-    Paint/PaintWindow.cpp \
-    Paint/Widgets/Layer_list/list_item.cpp \
-    Paint/Widgets/Layer_list/list_widget.cpp \
-    Paint/Widgets/Layers/LayerItems/expandbutton.cpp \
-    Paint/Widgets/Layers/LayerItems/paintitem.cpp \
-	Paint/Widgets/Layers/LayerItems/picitem.cpp \
-    Paint/Widgets/Layers/LayerItems/scrollitem.cpp \
-    Paint/Widgets/Layers/arrowlayer.cpp \
-    Paint/Widgets/Layers/blurlayer.cpp \
-	Paint/Widgets/Layers/paintlayer.cpp \
-    Paint/Widgets/Layers/picture_layer.cpp \
-    Paint/Widgets/Layers/rect_layer.cpp \
-    Paint/Widgets/Layers/shapelayer.cpp \
-    Paint/Widgets/Layers/text_layer.cpp \
-    Paint/Widgets/PaintArea.cpp \
-    Paint/Widgets/Panels/close_dialog.cpp \
-    Paint/Widgets/Panels/color_selector.cpp \
-    Paint/Widgets/Panels/flow_edit_panel.cpp \
-    Paint/Widgets/Panels/paint_setting_panel.cpp \
-    Paint/Widgets/Recorder_element/paint_record.cpp \
-    Paint/Widgets/Recorder_element/paintdeleterecord.cpp \
-    Paint/Widgets/Recorder_element/resize_record.cpp \
-    Paint/Widgets/Recorder_element/shaperecord.cpp \
-    Paint/Widgets/history.cpp \
-    Paint/Widgets/recorder.cpp \
-    Paint/Widgets/style_manager.cpp \
 	Setting/Widgets/BoolOption.cpp \
 	Setting/Widgets/ComboOption.cpp \
 	Setting/Widgets/GlobalKeyOption.cpp \
@@ -114,25 +86,18 @@ SOURCES += \
     Tests/configtest.cpp \
     Tests/testwidget.cpp \
 	Windows/Widgets/pinwidget.cpp \
+	Windows/Widgets/videocapture.cpp \
+	Windows/capturewindow.cpp \
+	Windows/paintwindow.cpp \
 	Windows/pinwindow.cpp \
 	Windows/scrollerwindow.cpp \
+	Windows/windowfilter.cpp \
     main.cpp \
-    new_capture/CaptureWindow.cpp \
-    new_capture/Widgets/Scroll_handler/Scroll_handle_global.cpp \
-    new_capture/Widgets/Scroll_handler/dispatcher_worker.cpp \
-    new_capture/Widgets/Scroll_handler/scroll_dispatcher.cpp \
-    new_capture/Widgets/Scroll_handler/scroll_handle.cpp \
-    new_capture/Widgets/Scroll_handler/scroll_worker.cpp \
-    new_capture/Widgets/VideoHandler/videocapture.cpp \
-    new_capture/Widgets/attributetoolbar.cpp \
-	new_capture/Widgets/capturetip.cpp \
-    new_capture/Widgets/cliplayer.cpp \
-    new_capture/Widgets/clipregion.cpp \
-	new_capture/Widgets/colorpicker.cpp \
-    new_capture/Widgets/masklayer.cpp \
-    new_capture/Widgets/mosicsample.cpp \
-    new_capture/Widgets/videotoolbar.cpp \
-    new_capture/Window_fliter.cpp
+	Windows/ScrollHandler/Scroll_handle_global.cpp \
+	Windows/ScrollHandler/dispatcher_worker.cpp \
+	Windows/ScrollHandler/scroll_dispatcher.cpp \
+	Windows/ScrollHandler/scroll_handle.cpp \
+	Windows/ScrollHandler/scroll_worker.cpp
 
 HEADERS += \
     Base/MPool.h \
@@ -199,42 +164,9 @@ HEADERS += \
     Manager/KeyManager.h \
     Manager/WindowManager.h \
     Manager/config.h \
+	Manager/history.h \
 	Manager/uimanager.h \
     Manager/update.h \
-    Paint/Data/Common.h \
-    Paint/Data/History_data.h \
-    Paint/Data/Ilayer.h \
-	Paint/Data/fontdata.h \
-	Paint/Data/paint_data.h \
-    Paint/Data/scroll_button.h \
-    Paint/Data/stretch_button.h \
-    Paint/PaintWindow.h \
-    Paint/Widgets/Layer_list/list_item.h \
-    Paint/Widgets/Layer_list/list_widget.h \
-    Paint/Widgets/Layers/LayerItems/expandbutton.h \
-    Paint/Widgets/Layers/LayerItems/paintitem.h \
-	Paint/Widgets/Layers/LayerItems/picitem.h \
-    Paint/Widgets/Layers/LayerItems/scrollitem.h \
-    Paint/Widgets/Layers/arrowlayer.h \
-    Paint/Widgets/Layers/baselayer.h \
-    Paint/Widgets/Layers/blurlayer.h \
-	Paint/Widgets/Layers/paintlayer.h \
-    Paint/Widgets/Layers/picture_layer.h \
-    Paint/Widgets/Layers/rect_layer.h \
-    Paint/Widgets/Layers/shapelayer.h \
-    Paint/Widgets/Layers/text_layer.h \
-    Paint/Widgets/Panels/close_dialog.h \
-    Paint/Widgets/Panels/color_selector.h \
-    Paint/Widgets/Panels/flow_edit_panel.h \
-    Paint/Widgets/Panels/paint_setting_panel.h \
-    Paint/Widgets/Recorder_element/paint_record.h \
-    Paint/Widgets/Recorder_element/paintdeleterecord.h \
-    Paint/Widgets/Recorder_element/resize_record.h \
-    Paint/Widgets/Recorder_element/shaperecord.h \
-    Paint/Widgets/history.h \
-	Paint/Widgets/PaintArea.h \
-    Paint/Widgets/recorder.h \
-    Paint/Widgets/style_manager.h \
 	Setting/Widgets/BoolOption.h \
 	Setting/Widgets/ComboOption.h \
 	Setting/Widgets/GlobalKeyOption.h \
@@ -256,24 +188,17 @@ HEADERS += \
     Tests/configtest.h \
     Tests/testwidget.h \
 	Windows/Widgets/pinwidget.h \
+	Windows/Widgets/videocapture.h \
+	Windows/capturewindow.h \
+	Windows/paintwindow.h \
 	Windows/pinwindow.h \
 	Windows/scrollerwindow.h \
-    new_capture/CaptureWindow.h \
-    new_capture/Widgets/Scroll_handler/Scroll_handler_global.h \
-    new_capture/Widgets/Scroll_handler/dispatcher_worker.h \
-    new_capture/Widgets/Scroll_handler/scroll_dispatcher.h \
-    new_capture/Widgets/Scroll_handler/scroll_handle.h \
-    new_capture/Widgets/Scroll_handler/scroll_worker.h \
-    new_capture/Widgets/VideoHandler/videocapture.h \
-    new_capture/Widgets/attributetoolbar.h \
-	new_capture/Widgets/capturetip.h \
-    new_capture/Widgets/cliplayer.h \
-    new_capture/Widgets/clipregion.h \
-	new_capture/Widgets/colorpicker.h \
-    new_capture/Widgets/masklayer.h \
-    new_capture/Widgets/mosicsample.h \
-    new_capture/Widgets/videotoolbar.h \
-    new_capture/window_fliter.h
+	Windows/windowfilter.h \
+	Windows/ScrollHandler/Scroll_handler_global.h \
+	Windows/ScrollHandler/dispatcher_worker.h \
+	Windows/ScrollHandler/scroll_dispatcher.h \
+	Windows/ScrollHandler/scroll_handle.h \
+	Windows/ScrollHandler/scroll_worker.h
 
 FORMS += \
 	Setting/setting.ui \

@@ -2,7 +2,6 @@
 #include "ui_ColorWidget.h"
 #include <QToolButton>
 #include <QDebug>
-#include "../Paint/Widgets/style_manager.h"
 #include <QColorDialog>
 #include "../Helper/mstring.h"
 #include <QStyleOption>
@@ -31,7 +30,6 @@ ColorWidget::ColorWidget(QWidget* parent) : QWidget(parent), ui(new Ui::ColorWid
             color.getRgb(&r,&g,&b);
             this->default_color.setRgb(r, g, b);
             ui->current->setStyleSheet(QString("background-color: rgba(%1,%2,%3, 1)").arg(r).arg(g).arg(b));
-            Style_manager::instance()->change_color(default_color);
             emit colorChange(default_color);
         }
     });
@@ -46,7 +44,7 @@ void ColorWidget::setCurrentStyle(QColor color) {
     default_color = color;
     default_color.getRgb(&r,&g,&b, &a);
     ui->current->setStyleSheet(QString("background-color: rgba(%1,%2,%3, 1)").arg(r).arg(g).arg(b));
-    Style_manager::instance()->change_color(color);
+    emit colorChange(default_color);
 }
 
 void ColorWidget::onDefaultClick() {
@@ -59,7 +57,7 @@ void ColorWidget::onDefaultClick() {
         b = ex.capturedTexts().at(3).toInt();
         default_color.setRgb(r, g, b);
         ui->current->setStyleSheet(QString("background-color: rgba(%1,%2,%3, 1)").arg(r).arg(g).arg(b));
-        Style_manager::instance()->change_color(default_color);
+        emit colorChange(default_color);
     }
 }
 

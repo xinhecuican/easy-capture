@@ -15,6 +15,9 @@ LayerToolBar::LayerToolBar(PaintArea* area, QWidget* parent) :
 {
     group->setExclusive(true);
     connect(group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &LayerToolBar::onGroupClick);
+    setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setWindowFlag(Qt::WindowSystemMenuHint, false);
+    setMovable(false);
 }
 
 void LayerToolBar::addContainer(QToolButton* button, LayerContainer* container, bool exclude){

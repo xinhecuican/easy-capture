@@ -4,7 +4,7 @@
 #include "opencv2/opencv.hpp"
 #include <QPainter>
 #include "../Helper/imagehelper.h"
-#include "../Paint/Widgets/history.h"
+#include "../Manager/history.h"
 #include <QClipboard>
 #include <QApplication>
 #include <QDebug>
@@ -97,9 +97,7 @@ bool PaintArea::save(SaveType type, const QString &path){
     }
     else{
         cv::imwrite(path.toLocal8Bit().toStdString(), ans);
-        History_data::save_type saveType = History_data::Editable;
-        if(type == Persist) saveType = History_data::Persist;
-        History::instance()->log(saveType, path);
+        History::instance()->log(type, path);
     }
     for(auto& layer: layers){
         layer->endSave();
