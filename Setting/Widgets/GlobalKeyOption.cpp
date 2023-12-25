@@ -146,4 +146,5 @@ void GlobalKeyOption::onSave(){
     if(isChange){
         f(keyName, modKey, key);
     }
+    KeyManager::instance()->removeKeyListener(this);
 }

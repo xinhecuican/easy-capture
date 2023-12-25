@@ -103,4 +103,5 @@ void KeyOption::onSave(){
     if(isChange){
         f(window_name, key_name, keys);
     }
+    KeyManager::instance()->removeKeyListener(this);
 }
