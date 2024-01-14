@@ -4,6 +4,8 @@
 #include "../Widgets/PaintData.h"
 #include "../Layer/rectlayer.h"
 #include "../Layer/arrowlayer.h"
+#include "../../Style_widget/colorwidget.h"
+#include <QSpinBox>
 
 class GeoLayerContainer : public LayerContainer
 {
@@ -15,6 +17,9 @@ public:
     void layerMouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void layerMousePressEvent(QGraphicsSceneMouseEvent* event) override;
     void layerMouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
+
+private:
+    void applyData(PaintData data);
 private:
     QPointF beginPoint;
     int geoType;
@@ -24,6 +29,8 @@ private:
     int arrowId;
     RectLayer* rectLayer;
     ArrowLayer* arrowLayer;
+    ColorWidget* colorWidget;
+    QSpinBox* widthButton;
 };
 
 #endif // GEOLAYERCONTAINER_H

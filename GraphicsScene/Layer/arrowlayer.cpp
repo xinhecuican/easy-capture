@@ -3,7 +3,8 @@
 #include "../Recorder/layerrecord.h"
 
 ArrowLayer::ArrowLayer(const QPointF& beginPt, const QPointF& endPt, const QString& name, ILayerControl* manager, QGraphicsItem* parent) :
-    LayerBase(name, manager, parent){
+      LayerBase(name, manager, parent),
+      press(false){
     beginButton = new ExpandButton(ExpandButton::W, beginPt, this);
     endButton = new ExpandButton(ExpandButton::E, endPt, this);
     setLine(beginPt, endPt);
@@ -74,12 +75,15 @@ void ArrowLayer::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
 }
 
 void ArrowLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    point = event->scenePos();
-    manager->requestFocus(this);
+    if(enable){
+        point = event->scenePos();
+        manager->requestFocus(this);
+        press = true;
+    }
 }
 
 void ArrowLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
-    if(enable) {
+    if(enable && press) {
         QPointF delta_point = event->scenePos() - point;
         point = event->scenePos();
         moveBy(delta_point.x(), delta_point.y());
@@ -87,11 +91,12 @@ void ArrowLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void ArrowLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    if(enable) {
+    if(enable && press) {
         QPointF delta_point = event->scenePos() - point;
         point = event->scenePos();
         moveBy(delta_point.x(), delta_point.y());
     }
+    press = false;
 }
 
 void ArrowLayer::setLine(const QPointF& beginPt, const QPointF& endPt) {
@@ -157,6 +162,9 @@ void ArrowLayer::setParameter(const QString &name, const QVariant &var){
 
 }
 
+void ArrowLayer::setStyle(const PaintData &data){
+    this->data = data;
+}
 void ArrowLayer::reset(){
     manager->removeThis(this);
 }

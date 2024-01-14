@@ -17,7 +17,6 @@ LayerToolBar::LayerToolBar(PaintArea* area, QWidget* parent) :
     connect(group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked), this, &LayerToolBar::onGroupClick);
     setWindowFlags(windowFlags() | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
     setWindowFlag(Qt::WindowSystemMenuHint, false);
-    setMovable(false);
 }
 
 void LayerToolBar::addContainer(QToolButton* button, LayerContainer* container, bool exclude){
@@ -37,7 +36,6 @@ void LayerToolBar::addContainer(QToolButton* button, LayerContainer* container, 
         containers.append(container);
     }
     addWidget(button);
-    adjustSize();
 }
 
 void LayerToolBar::addContainer(const QString &icon,
@@ -64,7 +62,6 @@ void LayerToolBar::addContainer(QToolButton* button, std::function<void()>const&
         containers.append(NULL);
     }
     addWidget(button);
-    adjustSize();
 }
 
 void LayerToolBar::moveTo(const QRectF& mask){
@@ -123,6 +120,11 @@ void LayerToolBar::onGroupClick(int id){
     execValid(id);
     beforeId = id;
     moveTo(mask);
+}
+
+void LayerToolBar::simulateClick(int id){
+    group->button(id)->setChecked(true);
+    onGroupClick(id);
 }
 
 void LayerToolBar::hideAll(){

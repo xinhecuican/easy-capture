@@ -4,12 +4,7 @@
 #include <QGridLayout>
 #include <QRegExp>
 #include <QToolButton>
-
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class ColorWidget;
-}
-QT_END_NAMESPACE
+#include <QGridLayout>
 
 class ColorWidget : public QWidget {
     Q_OBJECT
@@ -24,9 +19,13 @@ private slots:
     void onDefaultClick();
 
 private:
+    void addDefaultButton(QColor color, int x, int y);
+
+private:
     QRegExp ex;
     QColor default_color;
-    Ui::ColorWidget* ui;
+    QGridLayout* layout;
+    QToolButton* current;
 };
 
 #endif // COLORWIDGET_H

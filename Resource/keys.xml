@@ -32,10 +32,6 @@
         </bind_key>
     </window>
     <window name="CaptureWindow">
-        <bind_key name="capture_highlighter">
-            <key id="16777249"/>
-            <key id="53"/>
-        </bind_key>
         <bind_key name="capture_undo">
             <key id="16777249"/>
             <key id="90"/>
@@ -52,30 +48,24 @@
             <key id="83"/>
         </bind_key>
         <bind_key name="capture_cursor">
-            <key id="16777249"/>
             <key id="51"/>
         </bind_key>
         <bind_key name="capture_text">
-            <key id="16777249"/>
-            <key id="54"/>
+			<key id="53"/>
         </bind_key>
         <bind_key name="capture_pencil">
-            <key id="16777249"/>
             <key id="52"/>
         </bind_key>
         <bind_key name="capture_erase">
-            <key id="16777249"/>
-            <key id="55"/>
+			<key id="54"/>
         </bind_key>
         <bind_key name="capture_rect">
-            <key id="16777249"/>
             <key id="49"/>
         </bind_key>
         <bind_key name="leave">
             <key id="16777216"/>
         </bind_key>
         <bind_key name="capture_mosaic">
-            <key id="16777249"/>
             <key id="50"/>
         </bind_key>
         <bind_key name="capture_redo">

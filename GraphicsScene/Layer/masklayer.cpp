@@ -15,6 +15,8 @@ MaskLayer::MaskLayer(const QString& name,
     borderData.width = 2;
     colorPicker = new ColorPicker(manager, this);
     colorPicker->hide();
+    pen.setColor(borderData.color);
+    pen.setWidth(borderData.width);
 }
 
 QRectF MaskLayer::boundingRect() const {
@@ -99,9 +101,6 @@ void MaskLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 void MaskLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if(!isSaving) {
         painter->fillRect(bound, QColor(0, 0, 0, 1));
-        QPen pen;
-        pen.setColor(borderData.color);
-        pen.setWidth(borderData.width);
         painter->setPen(pen);
 
         QPainterPath origin;
@@ -179,7 +178,6 @@ void MaskLayer::prepareSave() {
 }
 
 void MaskLayer::endSave() {
-    clearRegion();
     ClipLayerBase::endSave();
 }
 
@@ -236,6 +234,7 @@ void MaskLayer::reset() {
     beginClip = false;
     clearRegion();
     freeCapturePath.clear();
+    ClipLayerBase::reset();
 }
 
 int MaskLayer::getZValue() const {

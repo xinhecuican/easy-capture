@@ -40,6 +40,7 @@ private:
     QList<ClipRegion*> free_regions;
     QRectF bound;
     QPainterPath freeCapturePath;
+    QPen pen;
     QPointF beginPoint;
     QPointF endPoint;
     bool isDrag;

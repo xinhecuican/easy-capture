@@ -23,10 +23,7 @@ QWidget* BlurLayerContainer::onValid(QWidget *widgetParent) {
     if(type == 1){
         grabcutLayer->setEnableShow();
     }
-    if(widget == NULL) {
-        widget = new QWidget(widgetParent);
-        QHBoxLayout* layout = new QHBoxLayout();
-
+    if(!initWidget(widgetParent)){
         QButtonGroup* group = new QButtonGroup(widgetParent);
         group->setExclusive(true);
         connect(group, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
@@ -39,12 +36,14 @@ QWidget* BlurLayerContainer::onValid(QWidget *widgetParent) {
         QToolButton* mosaicButton = new QToolButton(widgetParent);
         mosaicButton->setToolTip(MString::search("{capture_mosaic}马赛克"));
         mosaicButton->setIcon(ImageHelper::getIcon("blur"));
+        mosaicButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         mosaicButton->setCheckable(true);
         mosaicButton->setChecked(true);
         group->addButton(mosaicButton, 0);
         QToolButton* grabcutButton = new QToolButton(widgetParent);
         grabcutButton->setToolTip(MString::search("{QbgMYc4u4H}透明"));
         grabcutButton->setIcon(ImageHelper::getIcon("mosaic"));
+        grabcutButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         grabcutButton->setCheckable(true);
         group->addButton(grabcutButton, 1);
 
@@ -58,10 +57,9 @@ QWidget* BlurLayerContainer::onValid(QWidget *widgetParent) {
         connect(mosaicSize, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [=](int value) {
             windowSize =  value;
         });
-        layout->addWidget(mosaicButton);
-        layout->addWidget(grabcutButton);
-        layout->addWidget(mosaicSize);
-        widget->setLayout(layout);
+        addWidget(mosaicButton);
+        addWidget(grabcutButton);
+        addWidget(mosaicSize);
     }
     return widget;
 }

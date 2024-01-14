@@ -11,7 +11,7 @@
 #include<QMenuBar>
 #include<QGraphicsView>
 #include <QTimer>
-#include "../GraphicsScene/Widgets/defaulttoolbar.h"
+#include "../GraphicsScene/Widgets/painttoolbar.h"
 
 //namespace Ui {
 //class PaintWindow;
@@ -42,10 +42,10 @@ public:
 private:
     //    Ui::PaintWindow *ui;
     QWidget* centralWidget;
-    DefaultToolbar* toolbar;
+    PaintToolbar* toolbar;
     PaintArea* area;
     QGraphicsView* paint_panel;
-    QHBoxLayout* layout;
+    QVBoxLayout* layout;
     QMenuBar* menuBar;
 };
 

@@ -8,6 +8,7 @@ class MaskLayerContainer : public LayerContainer
 public:
     MaskLayerContainer(PaintArea* area);
     QWidget * onValid(QWidget *widgetParent) override;
+    int regionCount();
 private:
     MaskLayer* maskLayer;
 };

@@ -14,10 +14,12 @@ PaintArea::PaintArea(QWidget* parent) :
     container(NULL),
     inLayer(false),
     press(false),
+    _save(false),
     mouseGrabber(NULL),
     rootLayer(new RootLayer(this)),
     clipLayer(NULL),
-    recorder(new Recorder(this))
+    recorder(new Recorder(this)),
+    registered(false)
 {
     connect(recorder, &Recorder::recordChange, this, [=](){
         emit recordChange();
@@ -25,7 +27,11 @@ PaintArea::PaintArea(QWidget* parent) :
 }
 
 void PaintArea::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    if(registered){
+        if(f(event->button())) return;
+    }
     press = true;
+
     for(auto& layer: layers){
         if((layer->isEnable()) && layer->contains(layer->mapFromScene(event->scenePos()))){
 //            sendEvent(layer, event);
@@ -85,7 +91,7 @@ bool PaintArea::save(SaveType type, const QString &path){
         int height = bound.height() - i > 32700 ? 32700 : bound.height() - i;
         QRect temp_rect(bound.left(), bound.top()+i, bound.width(), height);
         QImage image(bound.width(), height, QImage::Format_ARGB32);
-        //        image.fill(Qt::transparent);
+        image.fill(Qt::transparent);
         QPainter painter(&image);
         render(&painter, QRectF(QPointF(0, 0), image.size()), temp_rect);
         cv::Mat temp_mat = ImageHelper::QImage2Mat(image);
@@ -102,6 +108,7 @@ bool PaintArea::save(SaveType type, const QString &path){
     for(auto& layer: layers){
         layer->endSave();
     }
+    _save = true;
     return true;
 }
 
@@ -164,7 +171,7 @@ void PaintArea::addLayer(LayerBase *layer){
     layer->setParentItem(rootLayer);
     layer->setZValue(layer->getZValue());
     ClipLayerBase* clipLayer = dynamic_cast<ClipLayerBase*>(layer);
-    if(clipLayer != NULL) {
+    if(clipLayer != NULL && this->clipLayer == NULL) {
         this->clipLayer = clipLayer;
     }
 //    addItem(layer);
@@ -210,10 +217,11 @@ void PaintArea::reset(){
     this->modifiedImage = QImage();
     this->modified = false;
     imageValid = false;
-    this->container = NULL;
     inLayer = false;
+    _save = false;
     focusLayer = NULL;
-    for(LayerBase* layer : layers){
+    auto layerBak = layers;
+    for(LayerBase* layer : layerBak){
         layer->reset();
     }
     recorder->reset();
@@ -245,4 +253,13 @@ void PaintArea::record(RecordBase *record){
 
 Recorder* PaintArea::getRecorder(){
     return recorder;
+}
+
+bool PaintArea::isSave(){
+    return _save;
+}
+
+void PaintArea::registerMousePressHook(const std::function<bool (Qt::MouseButton)> &f){
+    registered = true;
+    this->f = f;
 }

@@ -1,14 +1,71 @@
-#include "defaulttoolbar.h"
+#include "painttoolbar.h"
 #include "../Container/blurlayercontainer.h"
 #include "../Container/geolayercontainer.h"
-#include "../Container/paintlayercontainer.h"
 #include "../Container/textlayercontainer.h"
-#include <QFileDialog>
+#include "../Layer/piclayer.h"
+#include "../../Helper/imagehelper.h"
+#include "../../Manager/WindowManager.h"
 #include "../../Manager/history.h"
-#include <QProcess>
+#include <QFileDialog>
+#include "../../Manager/config.h"
+#include "../../Helper/common.h"
+#include <QMenu>
 
-DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(area, parent)
+PaintToolbar::PaintToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(area, parent)
 {
+    PicLayer* picLayer = new PicLayer("pic", area, true, NULL);
+    PaintData data;
+    data.width = 1;
+    data.color = QColor(66, 165, 220);
+    picLayer->setStyle(data);
+    area->addLayer(picLayer);
+
+    QToolButton* new_button = new QToolButton(this);
+    connect(new_button, &QToolButton::clicked, this, [=]() {
+        if(Config::getConfig<int>(Config::capture_mode) == Config::TOTAL_CAPTURE) {
+            WindowManager::instance()->changeWindow("tray");
+            QTimer::singleShot(200, this, [=]() {
+                QPixmap map = ImageHelper::grabScreen();
+                WindowManager::instance()->changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
+            });
+            return;
+        } else {
+            changeWindowHelper();
+        }
+    });
+    new_button->setText(MString::search("{cR3jOHb9Qw}新建"));
+    new_button->setIcon(ImageHelper::getIcon("capture"));
+    new_button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    addWidget(new_button);
+
+    QToolButton* modeButton = new QToolButton(this);
+    modeButton->setText(MString::search(MString::search("{7yUWnx82jI}模式")));
+    modeButton->setIcon(ImageHelper::getIcon("mode"));
+    modeButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    modeButton->setPopupMode(QToolButton::InstantPopup);
+    QMenu* modeMenu = new QMenu(this);
+    modeMenu->addAction(MString::search("{OBwjJUhTkh}矩形窗口"));
+    modeMenu->addAction(MString::search("{FHFzLMcLYa}全屏"));
+    modeMenu->addAction(MString::search("{fnGapBU4vo}自由截图"));
+    modeMenu->addAction(MString::search("{ETY295cnab}滚动截屏"));
+    QList<QAction*> actions = modeMenu->actions();
+    for(int i=0; i<actions.size(); i++) {
+        actions[i]->setCheckable(true);
+        actions[i]->setData(QVariant(i));
+    }
+    actions[Config::getConfig<int>(Config::capture_mode)]->setChecked(true);
+    connect(modeMenu, &QMenu::triggered, this, [=](QAction* action) {
+        QVariant index_var = action->data();
+        int index = index_var.toInt();
+        for(int i=0; i<actions.size(); i++) {
+            actions[i]->setChecked(false);
+        }
+        action->setChecked(true);
+        Config::setConfig(Config::capture_mode, index);
+    });
+    modeButton->setMenu(modeMenu);
+    addWidget(modeButton);
+
     GeoLayerContainer* geoLayerContainer = new GeoLayerContainer(area);
     addContainer("shape", "", geoLayerContainer, true);
     BlurLayerContainer* blurLayerContainer = new BlurLayerContainer(area);
@@ -16,14 +73,15 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
     QToolButton* cursorButton = new QToolButton(this);
     cursorButton->setIcon(ImageHelper::getIcon("cursor"));
     cursorButton->setToolTip(MString::search("{l4yTU9QXUd}指针"));
-    cursorButton->setCursor(QCursor(QPixmap(":/image/cursor.png"), 0, 0));
-    maskLayerContainer = new MaskLayerContainer(area);
-    addContainer(cursorButton, maskLayerContainer, true);
-    setContainer(maskLayerContainer);
-    PaintLayerContainer* paintLayerContainer = new PaintLayerContainer(area);
+    addContainer(cursorButton,
+        [=](){picLayer->setEnable(true, picLayer->type());attributeBar->removeAll();},
+        [=](){picLayer->setEnable(false, picLayer->type());}, true);
+    paintLayerContainer = new PaintLayerContainer(area);
     addContainer("pencil", "", paintLayerContainer, true);
     TextLayerContainer* textLayerContainer = new TextLayerContainer(area);
     addContainer("text", "", textLayerContainer, true);
+    setContainer(paintLayerContainer);
+    picLayer->setEnable(false, picLayer->type());
 
     QToolButton* eraseButton = new QToolButton(this);
     eraseButton->setIcon(ImageHelper::getIcon("eraser"));
@@ -77,8 +135,7 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
     clipButton->setIcon(ImageHelper::getIcon("clipboard"));
     clipButton->setToolTip(MString::search("{ntbJbEqxwF}复制到剪切板"));
     connect(clipButton, &QToolButton::clicked, this, [=]() {
-        if(area->save(ILayerControl::ClipBoard, ""))
-            WindowManager::instance()->changeWindow("tray");
+        area->save(ILayerControl::ClipBoard, "");
     });
     addWidget(clipButton);
 
@@ -106,23 +163,6 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
     });
     addWidget(pinButton);
 
-    QToolButton* okButton = new QToolButton(this);
-    okButton->setIcon(ImageHelper::getIcon("ok"));
-    connect(okButton, &QToolButton::clicked, this, [=]() {
-        QImage image = area->getSaveImage();
-        QRect bound = area->getSaveRect().toRect();
-        bound.moveTo(0, 0);
-        WindowManager::instance()->changeWindow("PaintWindow", QPixmap::fromImage(image), bound);
-    });
-    addWidget(okButton);
-
-    QToolButton* cancelButton = new QToolButton(this);
-    cancelButton->setIcon(ImageHelper::getIcon("cancel"));
-    connect(cancelButton, &QToolButton::clicked, this, [=]() {
-        WindowManager::instance()->changeWindow("tray");
-    });
-    addWidget(cancelButton);
-
 
     ClipLayerBase* clipLayer = area->getClipLayer();
     if(clipLayer != NULL){
@@ -134,49 +174,11 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
             showAll();
         });
     }
-    area->registerMousePressHook([=](Qt::MouseButton button){
-        if(button == Qt::RightButton) {
-            if(maskLayerContainer->regionCount() == 0) {
-                WindowManager::instance()->changeWindow("tray");
-            } else {
-                area->reset();
-            }
-            return true;
-        } else if(button == Qt::MidButton) {
-            switch (Config::getConfig<int>(Config::middle_button_type)) {
-            case 0:{
-                QImage image = area->getSaveImage();
-                QRect bound = area->getSaveRect().toRect();
-                bound.moveTo(0, 0);
-                WindowManager::instance()->changeWindow("PaintWindow", QPixmap::fromImage(image), bound);
-                break;
-            }
-            case 1:{
-                if(area->save(ILayerControl::ClipBoard, ""))
-                    WindowManager::instance()->changeWindow("tray");
-                break;
-            }
-            case 2:{
-                QString fileName = QFileDialog::getSaveFileName(parent,
-                                                                "保存",
-                                                                History::instance()->get_last_directory(),
-                                                                "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
-                if(fileName != "") {
-                    if(area->save(ILayerControl::Persist, fileName))
-                        WindowManager::instance()->changeWindow("tray");
-                }
-                break;
-            }
-            }
-            return true;
-        }
-        return false;
-    });
     initOcr();
     hideAll();
 }
 
-void DefaultToolbar::initOcr() {
+void PaintToolbar::initOcr() {
     const QString queryCPUNumberOfCores = "wmic cpu get NumberOfCores";
     QProcess queryCPU;
     QPair<int, int> pairResult;
@@ -219,11 +221,10 @@ void DefaultToolbar::initOcr() {
     showOcrResultProcess.setWorkingDirectory(QDir::currentPath());
 }
 
-QWidget* DefaultToolbar::getAttributeBar(){
+QWidget* PaintToolbar::getAttributeBar(){
     return attributeBar;
 }
 
-void DefaultToolbar::reset(){
-    setContainer(maskLayerContainer);
-    hideAll();
+void PaintToolbar::reset(){
+    setContainer(paintLayerContainer);
 }

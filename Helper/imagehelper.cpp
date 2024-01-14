@@ -168,6 +168,7 @@ QIcon ImageHelper::getIcon(QString name, int pt_w, int pt_h){
 QPixmap ImageHelper::getPixmap(QString name, int pt_w, int pt_h){
     QSvgRenderer render;
     render.load(":/image/" + name + ".svg");
+
     QPixmap pix(pt2px(pt_w), pt2px(pt_h));
     pix.fill(Qt::transparent);
     QPainter painter(&pix);

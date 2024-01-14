@@ -11,7 +11,8 @@ RectLayer::RectLayer(
     LayerBase(name, manager, parent),
     scrollItem(NULL),
     enableScroll(false),
-    buttonFocus(false)
+    buttonFocus(false),
+    press(false)
 {
     this->enableResize = enableResize;
     paintData.color = QColor(161, 47, 47);
@@ -43,12 +44,15 @@ void RectLayer::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
 }
 
 void RectLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    beginPoint = event->scenePos();
-    if(manager != NULL) manager->requestFocus(this);
+    if(enable) {
+        press = true;
+        beginPoint = event->scenePos();
+        if(manager != NULL) manager->requestFocus(this);
+    }
 }
 
 void RectLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
-    if(enable) {
+    if(enable && press) {
         QPointF delta = event->scenePos() - beginPoint;
         beginPoint = event->scenePos();
         moveBy(delta.x(), delta.y());
@@ -57,11 +61,12 @@ void RectLayer::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void RectLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    if(enable) {
+    if(enable && press) {
         QPointF delta = event->scenePos() - beginPoint;
         moveBy(delta.x(), delta.y());
         emit move(delta.x(), delta.y());
     }
+    press = false;
 }
 
 void RectLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -277,4 +282,8 @@ void RectLayer::onDelete(const QPointF &point){
     update();
     LayerRecord* record = new LayerRecord(false, this, (type() << 4) + index);
     manager->record(record);
+}
+
+QRectF RectLayer::getSaveRect(){
+    return QRectF(pos(), rect.size());
 }

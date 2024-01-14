@@ -18,6 +18,10 @@ public:
     virtual void layerMouseReleaseEvent(QGraphicsSceneMouseEvent* event) {}
     virtual QWidget* onValid(QWidget* widgetParent)=0;
     virtual void onInvalid(){}
+
+protected:
+    bool initWidget(QWidget* parent);
+    void addWidget(QWidget* widget);
 protected:
     PaintArea* area;
     QWidget* widget;

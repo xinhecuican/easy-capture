@@ -34,6 +34,8 @@ public:
     Recorder* getRecorder();
     QImage getSaveImage();
     QRectF getSaveRect();
+    bool isSave();
+    void registerMousePressHook(std::function<bool(Qt::MouseButton)>const& f);
 
 signals:
     void recordChange();
@@ -42,10 +44,13 @@ private:
     LayerContainer* container;
     bool inLayer;
     bool press;
+    bool _save;
     QGraphicsItem* mouseGrabber;
     RootLayer* rootLayer;
     ClipLayerBase* clipLayer;
     Recorder* recorder;
+    std::function<bool(Qt::MouseButton)> f;
+    bool registered;
 };
 
 #endif // PAINTAREA_H

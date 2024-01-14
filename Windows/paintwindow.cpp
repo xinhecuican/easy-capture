@@ -32,48 +32,54 @@ PaintWindow::PaintWindow(QWidget *parent) :
 {
     //    ui->setupUi(this);
     centralWidget = new QWidget(this);
+    centralWidget->setObjectName("centralWidget");
     setCentralWidget(centralWidget);
-    addToolBar(Qt::TopToolBarArea, toolbar);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    Titlebar* title_bar = new Titlebar(this);
-    installEventFilter(title_bar);
-    FramelessHelper* helper = new FramelessHelper(this);
-    helper->activateOn(this);
-    helper->setWidgetResizable(true);
-    helper->setWidgetMovable(true);
-    helper->setTitleHeight(30);
-    helper->setRubberBandOnResize(true);
-    setWindowFlags (Qt::FramelessWindowHint);
+//    Titlebar* title_bar = new Titlebar(this);
+//    installEventFilter(title_bar);
+//    FramelessHelper* helper = new FramelessHelper(this);
+//    helper->activateOn(this);
+//    helper->setWidgetResizable(true);
+//    helper->setWidgetMovable(true);
+//    helper->setTitleHeight(30);
+//    helper->setRubberBandOnResize(true);
+//    setWindowFlags (Qt::FramelessWindowHint);
     setWindowTitle("简截");
     setWindowIcon(QIcon(":/image/avator.png"));
     //    connect(title_bar, &Titlebar::minimize, this, [=]() {
-    //        WindowManager::changeWindow("tray");
+    //        WindowManager::instance()->changeWindow("tray");
     //    });
     menuBar = new QMenuBar(this);
     QWidget* menu_widget = new QWidget(this);
     QVBoxLayout* menu_layout = new QVBoxLayout();
     menu_layout->setMargin(0);
-    menu_layout->addWidget(title_bar);
+//    menu_layout->addWidget(title_bar);
     menu_layout->addWidget(menuBar);
     menu_widget->setLayout(menu_layout);
     menu_widget->setStyleSheet("background-color: rgb(255, 255, 255)");
     setMenuWidget(menu_widget);
 
-    layout = new QHBoxLayout(centralWidget);
+    layout = new QVBoxLayout(centralWidget);
 
     this->area = new PaintArea(this);
-    toolbar = new DefaultToolbar(area, this);
+    toolbar = new PaintToolbar(area, this);
+    toolbar->showAll();
+    addToolBar(Qt::TopToolBarArea, toolbar);
 
     paint_panel = new QGraphicsView(this->area, this);
     paint_panel->setFrameShape(QFrame::NoFrame);
+    paint_panel->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     paint_panel->setBackgroundRole(QPalette::Light);
     paint_panel->setAlignment(Qt::AlignCenter);
     paint_panel->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     paint_panel->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     //paint_panel->setWidgetResizable(true);
     paint_panel->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-
-    layout->addWidget(paint_panel);
+    QHBoxLayout* toolbarLayout = new QHBoxLayout();
+    toolbarLayout->addWidget(toolbar->getAttributeBar());
+    toolbarLayout->addStretch(1);
+    layout->addLayout(toolbarLayout);
+    layout->addWidget(paint_panel, 1);
     centralWidget->setLayout(layout);
     set_menubar();
     addToolBarBreak();
@@ -100,7 +106,7 @@ void PaintWindow::loadKeyEvent(QString name) {
             KeyManager::instance()->clearKeys("PaintWindow");
             if(file_name != "") {
                 area->save(ILayerControl::Persist, file_name);
-                WindowManager::changeWindow("tray");
+                WindowManager::instance()->changeWindow("tray");
             }
         }
     });
@@ -109,7 +115,7 @@ void PaintWindow::loadKeyEvent(QString name) {
             if(Config::getConfig<int>(Config::capture_mode) == (int)Config::TOTAL_CAPTURE) {
                 QTimer::singleShot(200, this, [=]() {
                     QPixmap map = ImageHelper::grabScreen();
-                    WindowManager::changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
+                    WindowManager::instance()->changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
                     if(Config::getConfig<bool>(Config::clip_voice))
                         QSound::play(":/audio/screenshot.wav");
                 });
@@ -159,7 +165,7 @@ void PaintWindow::set_menubar() {
                                                          "图片(*.bmp *.jpg *.jpeg *.png);;所有文件(*)");
         if(file_name != "") {
             area->save(ILayerControl::Persist, file_name);
-            WindowManager::changeWindow("tray");
+            WindowManager::instance()->changeWindow("tray");
         }
     });
     QAction* history_action = new QAction(MString::search("{Mo0LoFqQqT}历史"), menuBar);
@@ -208,6 +214,7 @@ void PaintWindow::receiveData(QVariant data1, QVariant data2){
     }
     reset();
     area->setImage(pix.toImage());
+    area->setSceneRect(-rect.width()/2, -rect.height()/2, rect.width()*2, rect.height()*2);
     paint_panel->update();
     if(Config::getConfig<bool>(Config::auto_copy_to_clipboard)) {
         QClipboard *clip=QApplication::clipboard();
@@ -221,12 +228,12 @@ void PaintWindow::receiveData(QVariant data1, QVariant data2){
         || currentHeight >= (double)geometry.height()) {
         showMaximized();
     } else {
-        resize(currentWidth, currentHeight);//设置主窗口大小，否则窗口大小不会变化
         //左上角移动到指定位置，截图越大越向(0, 0)点接近
         move(geometry.x() + (geometry.width()-currentWidth)/2, geometry.y() + (geometry.height() - currentHeight) / 2);
+        resize(currentWidth, currentHeight);//设置主窗口大小，否则窗口大小不会变化
     }
-    paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
-    paint_panel->horizontalScrollBar()->setValue(rect.width() / 2);
+//    paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
+//    paint_panel->horizontalScrollBar()->setValue(rect.width() / 2);
 }
 
 void PaintWindow::closeEvent(QCloseEvent *event) {
@@ -235,16 +242,16 @@ void PaintWindow::closeEvent(QCloseEvent *event) {
     //    {
     //        Close_dialog* close_dialog = new Close_dialog(area, this);
     //        connect(close_dialog, &Close_dialog::hide_paint, this, [=](){
-    //            WindowManager::changeWindow("MainWindow");
-    //            WindowManager::hideNow();
+    //            WindowManager::instance()->changeWindow("MainWindow");
+    //            WindowManager::instance()->hideNow();
     //        });
     //        close_dialog->show();
     //    }
     if(Config::getConfig<bool>(Config::hide_to_tray)) {
-        WindowManager::changeWindow("tray");
+        WindowManager::instance()->changeWindow("tray");
 
     } else {
-        WindowManager::close();
+        WindowManager::instance()->close();
     }
 }
 
@@ -259,7 +266,7 @@ void PaintWindow::reset() {
         dir.mkpath(path);
     }
     path += "main.png";
-    area->save(ILayerControl::Temp, path);
+    if(!area->isSave() && area->isImageValid()) area->save(ILayerControl::Temp, path);
     area->reset();
 }
 

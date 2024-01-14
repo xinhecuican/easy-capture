@@ -31,6 +31,7 @@ public:
     void prepareSave() override;
     bool contains(const QPointF& point)const override;
     void onDelete(const QPointF &point) override;
+    void setStyle(const PaintData& data);
 
 private slots:
     void posChangeFunc(ExpandButton::ButtonDirection dir, qreal x, qreal y);
@@ -49,6 +50,7 @@ private:
     QCursor outCursor;
     PaintData data;
     int index;
+    bool press;
     const float ExtRefArrowLenght = 10;//箭头末端大小的长度，
     const float ExtRefArrowDegrees = M_PI / 6;//箭头末端顶角的一半
 };

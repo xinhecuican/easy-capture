@@ -79,7 +79,10 @@ int GrabcutLayer::type() const{
 }
 
 void GrabcutLayer::reset(){
-
+    enableShow = false;
+    foregroundPaths.clear();
+    backgroundPaths.clear();
+    LayerBase::reset();
 }
 
 int GrabcutLayer::getZValue() const{

@@ -38,6 +38,7 @@ public:
     void setRect(const QRectF& rect);
     int type() const override;
     void onDelete(const QPointF &point) override;
+    QRectF getSaveRect() override;
 
 signals:
     void sizeChange();
@@ -60,6 +61,7 @@ private:
     QPointF beginPoint;
     QCursor outCursor;
     int index;
+    bool press;
 };
 
 #endif // RECTLAYER_H

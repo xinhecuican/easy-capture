@@ -21,43 +21,33 @@ GeoLayerContainer::GeoLayerContainer(PaintArea* area) :
 
 QWidget* GeoLayerContainer::onValid(QWidget* widgetParent){
     area->setEnable(true);
-    if(widget == NULL){
-        widget = new QWidget(widgetParent);
-        QHBoxLayout* layout = new QHBoxLayout();
+    if(!initWidget(widgetParent)){
         QButtonGroup* shapeGroup = new QButtonGroup(widgetParent);
         shapeGroup->setExclusive(true);
-        connect(shapeGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
-                this, [=](int id) {
-                    switch(id) {
-                    case 0: geoType = RECT; break;
-                    case 1: geoType = ARROW; break;
-                    default:
-                        geoType = id;
-                        qWarning() << "未知形状";
-                        break;
-                    }
-        });
+
         QToolButton* rectButton = new QToolButton(widgetParent);
         rectButton->setObjectName("rectButton");
         rectButton->setToolTip("矩形");
         rectButton->setIcon(ImageHelper::getIcon("rect"));
+        rectButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         rectButton->setCheckable(true);
         rectButton->setChecked(true);
         shapeGroup->addButton(rectButton, 0);
         QToolButton* arrowButton = new QToolButton(widgetParent);
         arrowButton->setObjectName("arrowButton");
         arrowButton->setIcon(ImageHelper::getIcon("paint_arrow"));
+        arrowButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         arrowButton->setToolTip(MString::search("{D7HSBXWTLj}箭头"));
         arrowButton->setCheckable(true);
         shapeGroup->addButton(arrowButton, 1);
-        ColorWidget* colorWidget = new ColorWidget(widgetParent);
+        colorWidget = new ColorWidget(widgetParent);
         connect(colorWidget, &ColorWidget::colorChange, this, [=](const QColor& color){
             switch(geoType){
             case RECT: rectPaintData.color = color; break;
             case ARROW: arrowPaintData.color = color; break;
             }
         });
-        QSpinBox* widthButton = new QSpinBox(widgetParent);
+        widthButton = new QSpinBox(widgetParent);
         widthButton->setRange(1, 50);
         widthButton->setValue(3);
         widthButton->setAccelerated(true);
@@ -69,12 +59,22 @@ QWidget* GeoLayerContainer::onValid(QWidget* widgetParent){
             case ARROW: arrowPaintData.width = value; break;
             }
         });
-
-        layout->addWidget(rectButton);
-        layout->addWidget(arrowButton);
-        layout->addWidget(colorWidget);
-        layout->addWidget(widthButton);
-        widget->setLayout(layout);
+        connect(shapeGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
+                this, [=](int id) {
+                    switch(id) {
+                    case 0: geoType = RECT; applyData(rectPaintData);break;
+                    case 1: geoType = ARROW; applyData(arrowPaintData);break;
+                    default:
+                        geoType = id;
+                        qWarning() << "未知形状";
+                        break;
+                    }
+        });
+        applyData(rectPaintData);
+        addWidget(rectButton);
+        addWidget(arrowButton);
+        addWidget(colorWidget);
+        addWidget(widthButton);
     }
     return widget;
 }
@@ -85,11 +85,13 @@ void GeoLayerContainer::layerMousePressEvent(QGraphicsSceneMouseEvent *event){
     case RECT: {
         QRectF rect = Math::buildRect(beginPoint, beginPoint + QPointF(1, 1));
         rectLayer = new RectLayer(rect, "rect" + QString::number(rectId), area, area->getRootLayer(), false);
+        rectLayer->setStyle(rectPaintData);
         rectLayer->setEnable(false);
         break;
     }
     case ARROW: {
         arrowLayer = new ArrowLayer(beginPoint, beginPoint + QPointF(1, 1), "arrow" + QString::number(arrowId), area, area->getRootLayer());
+        arrowLayer->setStyle(arrowPaintData);
         arrowLayer->setZValue(arrowLayer->getZValue());
         arrowLayer->setEnable(false);
         break;
@@ -145,4 +147,9 @@ void GeoLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event){
         break;
     }
     }
+}
+
+void GeoLayerContainer::applyData(PaintData data){
+    colorWidget->setCurrentStyle(data.color);
+    widthButton->setValue(data.width);
 }

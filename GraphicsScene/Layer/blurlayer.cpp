@@ -79,6 +79,7 @@ void BlurLayer::deletePoint(const QPoint &point){
 
 void BlurLayer::reset() {
     use.resize(0);
+    LayerBase::reset();
 }
 
 void BlurLayer::setParameter(const QString &name, const QVariant &var) {

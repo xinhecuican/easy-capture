@@ -20,16 +20,14 @@ PaintLayerContainer::PaintLayerContainer(PaintArea* area) :
 
 QWidget* PaintLayerContainer::onValid(QWidget *widgetParent) {
     area->setEnable(false, 102405);
-    if(widget == NULL){
-        widget = new QWidget(widgetParent);
-        QHBoxLayout* layout = new QHBoxLayout();
+    if(!initWidget(widgetParent)){
         QButtonGroup* shapeGroup = new QButtonGroup(widgetParent);
         shapeGroup->setExclusive(true);
         connect(shapeGroup, static_cast<void (QButtonGroup::*)(int)>(&QButtonGroup::buttonClicked),
                 this, [=](int id) {
                     switch(id) {
-                    case 0: type = Pencil; break;
-                    case 1: type = Highlighter; break;
+                    case 0: type = Pencil; applyData(pencilData);break;
+                    case 1: type = Highlighter; applyData(highlighterData);break;
                     default:
                         type = id;
                         qWarning() << "未知形状";
@@ -40,23 +38,25 @@ QWidget* PaintLayerContainer::onValid(QWidget *widgetParent) {
         pencilButton->setObjectName("pencilButton");
         pencilButton->setToolTip("笔");
         pencilButton->setIcon(ImageHelper::getIcon("pencil"));
+        pencilButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         pencilButton->setCheckable(true);
         pencilButton->setChecked(true);
         shapeGroup->addButton(pencilButton, 0);
         QToolButton* highlighterButton = new QToolButton(widgetParent);
         highlighterButton->setObjectName("highlighterButton");
         highlighterButton->setIcon(ImageHelper::getIcon("highlighter"));
+        highlighterButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         highlighterButton->setToolTip(MString::search("{j54u1kWtCx}荧光笔"));
         highlighterButton->setCheckable(true);
         shapeGroup->addButton(highlighterButton, 1);
-        ColorWidget* colorWidget = new ColorWidget(widgetParent);
+        colorWidget = new ColorWidget(widgetParent);
         connect(colorWidget, &ColorWidget::colorChange, this, [=](const QColor& color){
             switch(type){
             case Pencil: pencilData.color = color; break;
             case Highlighter: highlighterData.color = color; break;
             }
         });
-        QSpinBox* widthButton = new QSpinBox(widgetParent);
+        widthButton = new QSpinBox(widgetParent);
         widthButton->setRange(1, 50);
         widthButton->setValue(3);
         widthButton->setAccelerated(true);
@@ -68,12 +68,11 @@ QWidget* PaintLayerContainer::onValid(QWidget *widgetParent) {
             case Highlighter: highlighterData.width = value; break;
             }
         });
-
-        layout->addWidget(pencilButton);
-        layout->addWidget(highlighterButton);
-        layout->addWidget(colorWidget);
-        layout->addWidget(widthButton);
-        widget->setLayout(layout);
+        applyData(pencilData);
+        addWidget(pencilButton);
+        addWidget(highlighterButton);
+        addWidget(colorWidget);
+        addWidget(widthButton);
     }
     return widget;
 }
@@ -97,7 +96,7 @@ void PaintLayerContainer::layerMousePressEvent(QGraphicsSceneMouseEvent *event) 
 
 void PaintLayerContainer::layerMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
-    if(currentTime - beforeTime > 30) {
+    if(currentTime - beforeTime > 20) {
         beforeTime = currentTime;
         paintLayer->addPoint(event->scenePos());
     }
@@ -110,4 +109,9 @@ void PaintLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event
     area->record(record);
     paintId++;
     area->addLayer(paintLayer);
+}
+
+void PaintLayerContainer::applyData(PaintData data){
+    colorWidget->setCurrentStyle(data.color);
+    widthButton->setValue(data.width);
 }

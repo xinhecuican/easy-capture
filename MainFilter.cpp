@@ -60,7 +60,7 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
                     changeWindowHelper();
                     break;
                 case 1:
-                    WindowManager::changeWindow("tray");
+                    WindowManager::instance()->changeWindow("tray");
                     QTimer::singleShot(200, this, [=]() {
                         QPixmap map = ImageHelper::grabScreen();
                         QString save_path = Config::getConfig<QString>(Config::total_capture_save_path);
@@ -77,18 +77,18 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
                     });
                     break;
                 case 2:
-                    if(WindowManager::getNowWindow() == "CaptureWindow") {
-                        WindowManager::getWindow("CaptureWindow")->startCaptureVideo();
+                    if(WindowManager::instance()->getNowWindow() == "CaptureWindow") {
+                        WindowManager::instance()->getWindow("CaptureWindow")->startCaptureVideo();
                     }
                     break;
                 case 3:
-                    if(WindowManager::getNowWindow() == "CaptureWindow") {
-                        WindowManager::getWindow("CaptureWindow")->pauseCaptureVideo();
+                    if(WindowManager::instance()->getNowWindow() == "CaptureWindow") {
+                        WindowManager::instance()->getWindow("CaptureWindow")->pauseCaptureVideo();
                     }
                     break;
                 case 4:
-                    if(WindowManager::getNowWindow() == "CaptureWindow") {
-                        WindowManager::getWindow("CaptureWindow")->stopCaptureVideo();
+                    if(WindowManager::instance()->getNowWindow() == "CaptureWindow") {
+                        WindowManager::instance()->getWindow("CaptureWindow")->stopCaptureVideo();
                     }
                     break;
 
@@ -101,7 +101,7 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
 }
 
 void MainFilter::windowMnaagerThread() {
-    WindowManager::controlWindowClose();
+    WindowManager::instance()->controlWindowClose();
 }
 
 void MainFilter::stopTimer() {
@@ -122,13 +122,13 @@ void MainFilter::setTrayContextMenu() {
     QAction* close = new QAction(this);
     close->setText(MString::search("{FuBCvgW4BE}关闭"));
     connect(close, &QAction::triggered, this, [=]() {
-        WindowManager::close();
+        WindowManager::instance()->close();
     });
 
     QAction* setting = new QAction(this);
     setting->setText(MString::search("{De720dAaY1}设置"));
     connect(setting, &QAction::triggered, this, [=]() {
-        WindowManager::changeWindow("Setting");
+        WindowManager::instance()->changeWindow("Setting");
     });
 
     QAction* update = new QAction(this);
@@ -169,14 +169,14 @@ void MainFilter::setTrayContextMenu() {
         int index = index_var.toInt();
         Config::setConfig(Config::capture_mode, index);
         if(index == (int)Config::RECT_CAPTURE || index == (int)Config::FREE_CAPTURE)
-            WindowManager::changeWindow("CaptureWindow");
+            WindowManager::instance()->changeWindow("CaptureWindow");
         else if(index == (int)Config::SCROLL_CAPTURE)
-            WindowManager::changeWindow("ScrollerWindow");
+            WindowManager::instance()->changeWindow("ScrollerWindow");
         else if(index == Config::TOTAL_CAPTURE) {
-            WindowManager::changeWindow("tray");
+            WindowManager::instance()->changeWindow("tray");
             QTimer::singleShot(200, this, [=]() {
                 QPixmap map = ImageHelper::grabScreen();
-                WindowManager::changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
+                WindowManager::instance()->changeWindow("PaintWindow", map, ImageHelper::getCurrentScreen()->geometry());
                 if(Config::getConfig<bool>(Config::clip_voice))
                     QSound::play(":/audio/screenshot.wav");
             });

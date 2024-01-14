@@ -11,22 +11,19 @@ MaskLayerContainer::MaskLayerContainer(PaintArea* area) : LayerContainer(area)
 QWidget* MaskLayerContainer::onValid(QWidget *widgetParent) {
     area->setEnable(false, maskLayer->type());
     maskLayer->setEnable(true, maskLayer->type());
-    if(widget == NULL){
-        widget = new QWidget(widgetParent);
-        QHBoxLayout* layout = new QHBoxLayout();
-
+    if(!initWidget(widgetParent)){
         QButtonGroup* modeGroup = new QButtonGroup(widgetParent);
         modeGroup->setExclusive(true);
 
         QToolButton* rectCapture = new QToolButton(widgetParent);
         rectCapture->setIcon(ImageHelper::getIcon("rect"));
+        rectCapture->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         rectCapture->setToolTip(MString::search("{OBwjJUhTkh}矩形窗口"));
         rectCapture->setChecked(true);
         rectCapture->setCheckable(true);
-        rectCapture->setIconSize(QSize(36, 36));
         QToolButton* freeCapture = new QToolButton(widgetParent);
         freeCapture->setIcon(ImageHelper::getIcon("painterpath"));
-        freeCapture->setIconSize(QSize(36, 36));
+        freeCapture->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         freeCapture->setCheckable(true);
         modeGroup->addButton(rectCapture, 0);
         modeGroup->addButton(freeCapture, 1);
@@ -38,9 +35,12 @@ QWidget* MaskLayerContainer::onValid(QWidget *widgetParent) {
                         Config::setConfig(Config::capture_mode, Config::FREE_CAPTURE);
                     }
                 });
-        layout->addWidget(rectCapture);
-        layout->addWidget(freeCapture);
-        widget->setLayout(layout);
+        addWidget(rectCapture);
+        addWidget(freeCapture);
     }
     return widget;
+}
+
+int MaskLayerContainer::regionCount(){
+    return maskLayer->getRegionCount();
 }

@@ -203,7 +203,7 @@ void Update::on_update() {
             if(ans == QMessageBox::Yes) {
                 qInfo() << "正在更新";
                 if(QProcess::startDetached("Upgrate.exe"))//开启更新程序
-                    WindowManager::close();
+                    WindowManager::instance()->close();
                 else
                     qWarning("更新程序未启动");
                 onFinish();
@@ -213,7 +213,7 @@ void Update::on_update() {
             QStringList args;
             args << "terminal";
             if(QProcess::startDetached("Upgrate.exe", args))//开启更新程序
-                WindowManager::close();
+                WindowManager::instance()->close();
             else
                 qWarning("更新程序未启动");
             onFinish();

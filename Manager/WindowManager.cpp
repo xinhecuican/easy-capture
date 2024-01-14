@@ -7,12 +7,13 @@
 #include "KeyManager.h"
 #include "../MainFilter.h"
 
-QMap<QString, WindowManager::WindowData> WindowManager::windowList =
-    QMap<QString, WindowManager::WindowData>();
-QString WindowManager::activeWindow = "tray";
-QString WindowManager::previousWindow = NULL;
-
-WindowManager::WindowManager() {}
+WindowManager::WindowManager()
+    : activeWindow("tray"),
+      previousWindow("")
+{
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &WindowManager::controlWindowClose);
+}
 
 //延时删除，加快窗口间的切换速度
 void WindowManager::controlWindowClose() {
@@ -38,7 +39,7 @@ void WindowManager::controlWindowClose() {
         temp_list[i]->deleteLater();
     }
     if(windowList.size() == 0) {
-        MainFilter::instance()->stopTimer();
+        timer->stop();
     }
 }
 
@@ -82,8 +83,9 @@ void WindowManager::changeWindow(QString name, QVariant data1, QVariant data2) {
         }
         KeyManager::instance()->onWindowChangeEnd(name);
     }
-    if(!MainFilter::instance()->isTimerRun()) {
-        MainFilter::instance()->startTimer();
+    if(!timer->isActive()) {
+        int time = Config::getConfig<int>(Config::clear_interval);
+        timer->start(time * 1000);
     }
 }
 

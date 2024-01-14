@@ -44,6 +44,7 @@ SOURCES += \
 	GraphicsScene/Widgets/expandbutton.cpp \
 	GraphicsScene/Widgets/grabcuthandler.cpp \
 	GraphicsScene/Widgets/layertoolbar.cpp \
+	GraphicsScene/Widgets/painttoolbar.cpp \
 	GraphicsScene/Widgets/scrollitem.cpp \
 	GraphicsScene/Widgets/textitem.cpp \
 	GraphicsScene/ilayercontrol.cpp \
@@ -135,6 +136,7 @@ HEADERS += \
 	GraphicsScene/Widgets/expandbutton.h \
 	GraphicsScene/Widgets/grabcuthandler.h \
 	GraphicsScene/Widgets/layertoolbar.h \
+	GraphicsScene/Widgets/painttoolbar.h \
 	GraphicsScene/Widgets/scrollitem.h \
 	GraphicsScene/Widgets/textitem.h \
 	GraphicsScene/ilayercontrol.h \
@@ -148,6 +150,7 @@ HEADERS += \
 	Helper/Template.h \
     Helper/common.h \
     Helper/debug.h \
+	Helper/global.h \
 	Helper/imagehelper.h \
     Helper/log.h \
     Helper/math.h \
@@ -202,7 +205,6 @@ HEADERS += \
 
 FORMS += \
 	Setting/setting.ui \
-    Style_widget/ColorWidget.ui \
     Style_widget/bubbletipswidget.ui \
     Tests/testwidget.ui
 

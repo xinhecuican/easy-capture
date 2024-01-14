@@ -22,6 +22,7 @@
 #include "Helper/math.h"
 #include <QGuiApplication>
 #include <QGraphicsProxyWidget>
+#include "../GraphicsScene/Layer/piclayer.h"
 //#include "Widgets/capturetip.h"
 
 bool CaptureWindow::end_scroll = false;
@@ -46,18 +47,21 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_DeleteOnClose);
     setAttribute(Qt::WA_OpaquePaintEvent );
+    setIconSize(QSize(pt2px(DEFAULT_ICON_SIZE), pt2px(DEFAULT_ICON_SIZE)));
     //    showFullScreen();
     this->setMouseTracking(true);
     centralWidget->setMouseTracking(true);
 #ifdef QT_NO_DEBUG
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+ //   setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
 
     //    ui->centralwidget->setGeometry(QGuiApplication::primaryScreen()->geometry());
     setGeometry(ImageHelper::getCurrentScreen()->geometry());
     view = new QGraphicsView(this);
     area = new PaintArea(view);
-    defaultToolbar = new DefaultToolbar(area, this);
+    defaultToolbar = new DefaultToolbar(area, view);
+    PicLayer* picLayer = new PicLayer("pic", area, false, NULL);
+    area->addLayer(picLayer);
 
     view->setScene(area);
     view->setStyleSheet(".QGraphicsView{background: transparent;border:0px;}");
@@ -135,36 +139,32 @@ void CaptureWindow::loadKeyEvent(QString name) {
     //    {
     KeyManager::instance()->addFunc(this, name, "leave", [=](bool is_enter) {
         if(is_enter) {
-            WindowManager::changeWindow("tray");
+            WindowManager::instance()->changeWindow("tray");
         }
     });
     KeyManager::instance()->addFunc(this, name, "capture_rect", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            defaultToolbar->onGroupClick(0);
+            defaultToolbar->simulateClick(0);
     });
     KeyManager::instance()->addFunc(this, name, "capture_mosaic", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            defaultToolbar->onGroupClick(1);
+            defaultToolbar->simulateClick(1);
     });
     KeyManager::instance()->addFunc(this, name, "capture_cursor", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            defaultToolbar->onGroupClick(2);
+            defaultToolbar->simulateClick(2);
     });
     KeyManager::instance()->addFunc(this, name, "capture_pencil", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            defaultToolbar->onGroupClick(3);
-    });
-    KeyManager::instance()->addFunc(this, name, "capture_highlighter", [=](bool is_enter) {
-        if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            defaultToolbar->onGroupClick(4);
+            defaultToolbar->simulateClick(3);
     });
     KeyManager::instance()->addFunc(this, name, "capture_text", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            defaultToolbar->onGroupClick(5);
+            defaultToolbar->simulateClick(4);
     });
     KeyManager::instance()->addFunc(this, name, "capture_erase", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
-            defaultToolbar->onGroupClick(6);
+            defaultToolbar->simulateClick(5);
     });
     KeyManager::instance()->addFunc(this, name, "capture_undo", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE))
@@ -183,14 +183,14 @@ void CaptureWindow::loadKeyEvent(QString name) {
             KeyManager::instance()->clearKeys("CaptureWindow");
             if(file_name != "") {
                 if(area->save(ILayerControl::Persist, file_name))
-                    WindowManager::changeWindow("tray");
+                    WindowManager::instance()->changeWindow("tray");
             }
         }
     });
     KeyManager::instance()->addFunc(this, name, "save2clip", [=](bool is_enter) {
         if(is_enter && !(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE)) {
             if(area->save(ILayerControl::ClipBoard))
-                WindowManager::changeWindow("tray");
+                WindowManager::instance()->changeWindow("tray");
         }
     });
     KeyManager::instance()->addFunc(this, name, "enter_capture", [=](bool is_enter) {
@@ -198,7 +198,7 @@ void CaptureWindow::loadKeyEvent(QString name) {
             QImage image = area->getSaveImage();
             QRect bound = area->getSaveRect().toRect();
             bound.moveTo(0, 0);
-            WindowManager::changeWindow("PaintWindow", QPixmap::fromImage(image), bound);
+            WindowManager::instance()->changeWindow("PaintWindow", QPixmap::fromImage(image), bound);
         }
     });
     KeyManager::instance()->addFunc(this, name, "capture_scrollrect", [=](bool is_enter) {
@@ -246,6 +246,7 @@ void CaptureWindow::onWindowSelect() {
     KeyManager::instance()->registerGlobalKey("capture_video_stop");
     area->reset();
     area->update();
+    defaultToolbar->reset();
     setGeometry(ImageHelper::getCurrentGeometry());
     view->show();
     QPixmap p = ImageHelper::grabScreen();
@@ -276,7 +277,7 @@ void CaptureWindow::stopCaptureVideo() {
     if(!(Config::getConfig<int>(Config::capture_mode) == Config::SCROLL_CAPTURE) && videoCapture->isValid() && isVideoCapture) {
         isVideoCapture = false;
         videoCapture->stopCapture();
-        WindowManager::changeWindow("tray");
+        WindowManager::instance()->changeWindow("tray");
         view->show();
     }
 }

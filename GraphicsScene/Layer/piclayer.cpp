@@ -2,7 +2,7 @@
 #include <QDebug>
 
 PicLayer::PicLayer(const QString& name, ILayerControl* manager, bool enableBound, QGraphicsItem* parent) :
-    LayerBase(name, manager, parent),
+    ClipLayerBase(name, manager, parent),
     enableBound(enableBound)
 {
     if(enableBound){
@@ -66,9 +66,10 @@ void PicLayer::reset(){
 void PicLayer::setEnable(bool enable, int index) {
     if(index == type()){
         this->enable = enable;
+        rectLayer->setEnable(enable);
         return;
     }
-    this->enable = enableBound && enable;
+//    this->enable = enableBound && enable;
 }
 
 int PicLayer::type() const{
@@ -80,4 +81,16 @@ QRectF PicLayer::getSaveRect(){
         return mask;
     }
     return QRectF();
+}
+
+QRectF PicLayer::getClipRect(){
+    return boundingRect();
+}
+
+QPainterPath PicLayer::getClipPath(){
+    return shape();
+}
+
+void PicLayer::setStyle(const PaintData &data){
+    rectLayer->setStyle(data);
 }

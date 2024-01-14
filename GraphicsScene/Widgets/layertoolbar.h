@@ -20,6 +20,7 @@ public:
     void setContainer(LayerContainer* container);
     void hideAll();
     void showAll();
+    void simulateClick(int id);
 
 public slots:
     void onGroupClick(int id);
@@ -28,7 +29,7 @@ private:
     void execValid(int id);
     void execInvalid(int id);
 
-private:
+protected:
     PaintArea* area;
     QButtonGroup* group;
     int groupId;

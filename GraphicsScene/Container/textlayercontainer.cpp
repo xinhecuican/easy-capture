@@ -35,12 +35,10 @@ void TextLayerContainer::layerMousePressEvent(QGraphicsSceneMouseEvent *event){
 
 QWidget* TextLayerContainer::onValid(QWidget *widgetParent){
     area->setEnable(true);
-    if(widget == NULL){
-        widget = new QWidget(widgetParent);
-        QHBoxLayout* layout = new QHBoxLayout();
-
+    if(!initWidget(widgetParent)){
         QToolButton* brushButton = new QToolButton(widgetParent);
         brushButton->setIcon(ImageHelper::getIcon("brush"));
+        brushButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         brushButton->setToolTip(MString::search("{hULcO1ELot}格式刷"));
         connect(brushButton, &QToolButton::clicked, this, [=](){
             LayerBase* focusLayer = area->getFocusLayer();
@@ -50,6 +48,7 @@ QWidget* TextLayerContainer::onValid(QWidget *widgetParent){
         });
 
         colorSelectButton = new QToolButton(widgetParent);
+        colorSelectButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         int r = 0, g = 0, b = 0;
         data.color.getRgb(&r,&g,&b);
         colorSelectButton->setStyleSheet(QString("background-color: rgb(%1,%2,%3)").arg(r).arg(g).arg(b));
@@ -122,6 +121,7 @@ QWidget* TextLayerContainer::onValid(QWidget *widgetParent){
         });
         boldButton = new QToolButton(widgetParent);
         boldButton->setIcon(ImageHelper::getIcon("bold", 48, 48));
+        boldButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         boldButton->setCheckable(true);
         connect(boldButton, &QToolButton::clicked, this, [=]() {
             if(data.font.bold()) {
@@ -138,6 +138,7 @@ QWidget* TextLayerContainer::onValid(QWidget *widgetParent){
         });
         italicButton = new QToolButton(widgetParent);
         italicButton->setIcon(ImageHelper::getIcon("italic", 48, 48));
+        italicButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         italicButton->setCheckable(true);
         connect(italicButton, &QToolButton::clicked, this, [=]() {
             if(data.font.italic()) {
@@ -154,6 +155,7 @@ QWidget* TextLayerContainer::onValid(QWidget *widgetParent){
         });
         underlineButton = new QToolButton(widgetParent);
         underlineButton->setIcon(ImageHelper::getIcon("underline", 48, 48));
+        underlineButton->setIconSize(QSize(DEFAULT_ICON_SIZE, DEFAULT_ICON_SIZE));
         underlineButton->setCheckable(true);
         connect(underlineButton, &QToolButton::clicked, this, [=]() {
             if(data.font.underline()) {
@@ -168,19 +170,14 @@ QWidget* TextLayerContainer::onValid(QWidget *widgetParent){
                 focusLayer->setParameter("font", data.font);
             }
         });
-        colorSelectButton->setFixedSize(fontBox->height(), fontBox->height());
-        boldButton->setFixedSize(fontBox->height(), fontBox->height());
-        italicButton->setFixedSize(fontBox->height(), fontBox->height());
-        underlineButton->setFixedSize(fontBox->height(), fontBox->height());
 
-        layout->addWidget(brushButton);
-        layout->addWidget(colorSelectButton);
-        layout->addWidget(fontBox);
-        layout->addWidget(widthBox);
-        layout->addWidget(boldButton);
-        layout->addWidget(italicButton);
-        layout->addWidget(underlineButton);
-        widget->setLayout(layout);
+        addWidget(brushButton);
+        addWidget(colorSelectButton);
+        addWidget(fontBox);
+        addWidget(widthBox);
+        addWidget(boldButton);
+        addWidget(italicButton);
+        addWidget(underlineButton);
     }
     return widget;
 }

@@ -1,9 +1,9 @@
 #ifndef PICLAYER_H
 #define PICLAYER_H
-#include "layerbase.h"
+#include "cliplayerbase.h"
 #include "rectlayer.h"
 
-class PicLayer : public LayerBase
+class PicLayer : public ClipLayerBase
 {
 public:
     PicLayer(const QString& name, ILayerControl* manager, bool enableBound=true, QGraphicsItem* parent=nullptr);
@@ -17,7 +17,10 @@ public:
     void reset() override;
     void setEnable(bool enable, int index=0) override;
     int type() const override;
+    void setStyle(const PaintData& data);
     QRectF getSaveRect() override;
+    QRectF getClipRect()override;
+    QPainterPath getClipPath()override;
 private:
     bool enableBound;
     RectLayer* rectLayer;

@@ -18,10 +18,7 @@ VideoLayerContainer::VideoLayerContainer(PaintArea* area) : LayerContainer(area)
 }
 
 QWidget* VideoLayerContainer::onValid(QWidget *widgetParent){
-    if(widget == NULL){
-        widget = new QWidget(widgetParent);
-        QHBoxLayout* layout = new QHBoxLayout();
-
+    if(!initWidget(widgetParent)){
         QRadioButton* enableAudioButton = new QRadioButton(widgetParent);
         enableAudioButton->setText(MString::search("{rh0LYgOmDD}录制声音"));
         enableAudioButton->setChecked(true);
@@ -104,15 +101,14 @@ QWidget* VideoLayerContainer::onValid(QWidget *widgetParent){
         helpButton->setIcon(ImageHelper::getIcon("help"));
         helpButton->setToolTip(MString::search("{SHLK0bd4wt}开始录屏: F5\n暂停/恢复录屏: F6\n结束录屏: F7"));
 
-        layout->addWidget(enableAudioButton);
-        layout->addWidget(deviceSelector);
-        layout->addWidget(fpsLabel);
-        layout->addWidget(fpsSelector);
-        layout->addWidget(pathChooseButton);
-        layout->addWidget(fileNameEdit);
-        layout->addWidget(suffixSelector);
-        layout->addWidget(helpButton);
-        widget->setLayout(layout);
+        addWidget(enableAudioButton);
+        addWidget(deviceSelector);
+        addWidget(fpsLabel);
+        addWidget(fpsSelector);
+        addWidget(pathChooseButton);
+        addWidget(fileNameEdit);
+        addWidget(suffixSelector);
+        addWidget(helpButton);
     }
     return widget;
 }
