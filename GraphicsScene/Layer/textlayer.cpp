@@ -83,3 +83,7 @@ int TextLayer::type() const{
 void TextLayer::onDelete(const QPointF &point){
     manager->removeThis(this);
 }
+
+int TextLayer::getZValue() const{
+    return 2;
+}

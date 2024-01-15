@@ -29,6 +29,7 @@ SOURCES += \
 	GraphicsScene/Layer/blurlayer.cpp \
 	GraphicsScene/Layer/grabcutlayer.cpp \
 	GraphicsScene/Layer/layerbase.cpp \
+	GraphicsScene/Layer/maskcolorlayer.cpp \
 	GraphicsScene/Layer/masklayer.cpp \
 	GraphicsScene/Layer/paintlayer.cpp \
 	GraphicsScene/Layer/piclayer.cpp \
@@ -118,6 +119,7 @@ HEADERS += \
 	GraphicsScene/Layer/cliplayerbase.h \
 	GraphicsScene/Layer/grabcutlayer.h \
 	GraphicsScene/Layer/layerbase.h \
+	GraphicsScene/Layer/maskcolorlayer.h \
 	GraphicsScene/Layer/masklayer.h \
 	GraphicsScene/Layer/paintlayer.h \
 	GraphicsScene/Layer/piclayer.h \

@@ -91,4 +91,5 @@ void preLoad(){
     KeyManager::instance()->load();
     MString::load_from_file("Data/Languages/");
     registerClasses();
+    QFont().defaultFamily(); // 提前加载字体文件，大约需要200-300ms
 }

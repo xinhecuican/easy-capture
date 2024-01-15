@@ -134,12 +134,22 @@ DefaultToolbar::DefaultToolbar(PaintArea* area, QWidget* parent) : LayerToolBar(
             showAll();
         });
     }
-    area->registerMousePressHook([=](Qt::MouseButton button){
+    area->installMouseFilter([=](Qt::MouseButton button){
+        if(getCurrentGroupContainer() == blurLayerContainer && blurLayerContainer->getCurrentType() == 1 && button != Qt::MiddleButton){
+            return false;
+        }
         if(button == Qt::RightButton) {
             if(maskLayerContainer->regionCount() == 0) {
                 WindowManager::instance()->changeWindow("tray");
             } else {
-                area->reset();
+                if(area != NULL){
+                    area->reset(false);
+                }
+                for(auto container : containers){
+                    if(container != NULL) container->reset();
+                }
+                setContainer(maskLayerContainer);
+                hideAll();
             }
             return true;
         } else if(button == Qt::MidButton) {
@@ -224,6 +234,7 @@ QWidget* DefaultToolbar::getAttributeBar(){
 }
 
 void DefaultToolbar::reset(){
+    LayerToolBar::reset();
     setContainer(maskLayerContainer);
     hideAll();
 }

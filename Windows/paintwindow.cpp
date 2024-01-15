@@ -267,7 +267,7 @@ void PaintWindow::reset() {
     }
     path += "main.png";
     if(!area->isSave() && area->isImageValid()) area->save(ILayerControl::Temp, path);
-    area->reset();
+    toolbar->reset();
 }
 
 void PaintWindow::onWindowCancel() {

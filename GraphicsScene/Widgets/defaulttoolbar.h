@@ -9,7 +9,7 @@ class DefaultToolbar : public LayerToolBar
 public:
     DefaultToolbar(PaintArea* area, QWidget* parent=nullptr);
     QWidget* getAttributeBar();
-    void reset();
+    void reset() override;
 private:
     void initOcr();
     bool mousePressHook(Qt::MouseButton button);

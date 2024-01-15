@@ -23,6 +23,7 @@ public:
     bool contains(const QPointF& point)const override;
     int type() const override;
     void onDelete(const QPointF &point) override;
+    int getZValue() const override;
 signals:
     void formatChange(const QFont& font, const QBrush& brush);
 

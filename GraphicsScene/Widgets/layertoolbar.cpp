@@ -166,3 +166,19 @@ void LayerToolBar::execInvalid(int id){
         attributeBar->adjustSize();
     }
 }
+
+LayerContainer* LayerToolBar::getCurrentGroupContainer(){
+    if(containers.size() == 0){
+        return NULL;
+    }
+    return containers[group->checkedId()];
+}
+
+void LayerToolBar::reset(){
+    if(area != NULL){
+        area->reset();
+    }
+    for(auto container : containers){
+        if(container != NULL) container->reset();
+    }
+}

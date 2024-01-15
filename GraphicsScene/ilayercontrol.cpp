@@ -66,3 +66,23 @@ void ILayerControl::remaskImage(const QImage &mask){
         }
     }
 }
+
+void ILayerControl::maskColor(const QColor &color){
+    if(!modified){
+        modifiedImage = image.copy();
+    }
+    modified = true;
+    for(int i=0; i<modifiedImage.height(); i++){
+        QRgb* line = (QRgb*)modifiedImage.scanLine(i);
+        for(int k=0; k<modifiedImage.width(); k++){
+            QRgb rgb = line[k];
+            if(rgb == color.rgb()){
+                line[k] = qRgba(qRed(rgb), qGreen(rgb), qBlue(rgb), 0);
+            }
+        }
+    }
+}
+
+void ILayerControl::resetImage(){
+    modified = false;
+}

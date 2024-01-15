@@ -21,6 +21,8 @@ public:
     void hideAll();
     void showAll();
     void simulateClick(int id);
+    LayerContainer* getCurrentGroupContainer();
+    virtual void reset();
 
 public slots:
     void onGroupClick(int id);

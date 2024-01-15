@@ -96,10 +96,10 @@ void PaintLayerContainer::layerMousePressEvent(QGraphicsSceneMouseEvent *event) 
 
 void PaintLayerContainer::layerMouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
-    if(currentTime - beforeTime > 20) {
-        beforeTime = currentTime;
+//    if(currentTime - beforeTime > 20) {
+//        beforeTime = currentTime;
         paintLayer->addPoint(event->scenePos());
-    }
+//    }
 }
 
 void PaintLayerContainer::layerMouseReleaseEvent(QGraphicsSceneMouseEvent *event) {

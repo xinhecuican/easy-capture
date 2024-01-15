@@ -26,7 +26,7 @@ public:
     void removeThis(LayerBase *layer) override;
     void setContainer(LayerContainer* container);
     void setImage(const QImage& image);
-    void reset();
+    void reset(bool newImage=true);
     QGraphicsItem* getRootLayer();
     QRectF getClipRect() override;
     ClipLayerBase* getClipLayer();
@@ -35,7 +35,9 @@ public:
     QImage getSaveImage();
     QRectF getSaveRect();
     bool isSave();
-    void registerMousePressHook(std::function<bool(Qt::MouseButton)>const& f);
+    void installMouseFilter(std::function<bool(Qt::MouseButton)>const& f);
+    void registerMousePressHook(std::function<void(QPointF)>const& f);
+    void registerMouseMoveHook(std::function<void(QPointF)>const& f);
 
 signals:
     void recordChange();
@@ -50,7 +52,9 @@ private:
     ClipLayerBase* clipLayer;
     Recorder* recorder;
     std::function<bool(Qt::MouseButton)> f;
-    bool registered;
+    QList<std::function<void(QPointF)>> pressFuncs;
+    QList<std::function<void(QPointF)>> moveFuncs;
+    bool installed;
 };
 
 #endif // PAINTAREA_H

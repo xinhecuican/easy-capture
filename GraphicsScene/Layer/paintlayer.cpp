@@ -44,7 +44,7 @@ void PaintLayer::reset(){
 void PaintLayer::addPoint(const QPointF& point){
     if(points.size() > 0){
         QLineF line(point, points.last());
-        if(line.length() < 2) return;
+        if(line.length() < 3) return;
     }
     if(point.x() >= manager->getImage().width() ||
         point.y() >= manager->getImage().height() ||

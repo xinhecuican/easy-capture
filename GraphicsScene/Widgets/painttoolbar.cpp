@@ -226,5 +226,6 @@ QWidget* PaintToolbar::getAttributeBar(){
 }
 
 void PaintToolbar::reset(){
+    LayerToolBar::reset();
     setContainer(paintLayerContainer);
 }

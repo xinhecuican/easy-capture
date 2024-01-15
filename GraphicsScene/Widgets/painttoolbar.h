@@ -9,7 +9,7 @@ class PaintToolbar : public LayerToolBar
 public:
     PaintToolbar(PaintArea* area, QWidget* parent=nullptr);
     QWidget* getAttributeBar();
-    void reset();
+    void reset() override;
 private:
     void initOcr();
 private:

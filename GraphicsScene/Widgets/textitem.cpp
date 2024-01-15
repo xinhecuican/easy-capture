@@ -140,6 +140,7 @@ void TextItem::getFocus(){
 
 void TextItem::loseFocus(){
     forceFocus = false;
+    clearFocus();
     boundHide();
     update();
 }

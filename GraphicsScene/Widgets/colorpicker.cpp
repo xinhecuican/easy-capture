@@ -29,6 +29,7 @@ void ColorPicker::setPosition(QPointF point){
     }
     bound.setHeight(pixelHeightPX+20);
     bound.setWidth(pixelWidthPX);
+    update();
 }
 
 QRectF ColorPicker::boundingRect() const{
@@ -49,6 +50,7 @@ QPainterPath ColorPicker::shape() const{
 }
 
 void ColorPicker::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    if(!manager->isImageValid()) return;
     QImage image = manager->getImage();
     QImage image1 = QImage(pixelWidthPX, pixelHeightPX,QImage::Format_RGB32);
     for(int i=0; i<pixelWidthPX/5; i++) {
@@ -57,20 +59,20 @@ void ColorPicker::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
                 for(int m=k*5; m<k*5+5; m++) {
                     int x = i+point.x()-pixelWidthPX/10 < 0 ? 0 : i+point.x()+pixelWidthPX/10>=image.width() ? image.width()-1 : i+point.x() - pixelWidthPX/10;
                     int y = k+point.y()-pixelHeightPX/10 < 0 ? 0 : k+point.y()+pixelHeightPX/10>=image.height() ? image.height()-1 : k+point.y()-pixelHeightPX/10;
-                    image1.setPixel(j, m, image.pixel(x, y));
+                    QRgb* line = (QRgb*)image1.scanLine(m);
+                    line[j] = ((QRgb*)image.constScanLine(y))[x];
+//                    image1.setPixel(j, m, image.pixel(x, y));
                 }
             }
         }
     }
-    QImage image2 = QImage(20, 20, QImage::Format_RGB32);
     QRgb rgb = image.pixel(point.x(), point.y());
-    image2.fill(rgb);
     painter->drawImage(bound.left(), bound.top(), image1);
-    painter->drawImage(bound.left(), bound.top()+pixelHeightPX, image2);
+    painter->fillRect(bound.left(), bound.top()+pixelHeightPX, 20, 20, QColor(rgb));
     QRect textBound(bound.left()+20, bound.top()+pixelHeightPX, pixelWidthPX-20, 20);
     painter->fillRect(textBound, QColor(255, 255, 255));
     painter->drawText(textBound, Qt::AlignCenter,  "("+QString::number(qRed(rgb)) + "," + QString::number(qGreen(rgb)) + "," + QString::number(qBlue(rgb)) + ")");
-    PaintHelper::paintShadow(painter, bound, shadowWidth, QColor(50, 50, 50, 120));
+//    PaintHelper::paintShadow(painter, bound, shadowWidth, QColor(50, 50, 50, 120));
     painter->setCompositionMode(QPainter::RasterOp_SourceOrNotDestination);
     double middlex = (double)(pixelWidthPX) / 2.0;
     double middley = (double)(pixelHeightPX) / 2.0;

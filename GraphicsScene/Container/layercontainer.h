@@ -18,6 +18,7 @@ public:
     virtual void layerMouseReleaseEvent(QGraphicsSceneMouseEvent* event) {}
     virtual QWidget* onValid(QWidget* widgetParent)=0;
     virtual void onInvalid(){}
+    virtual void reset(){}
 
 protected:
     bool initWidget(QWidget* parent);

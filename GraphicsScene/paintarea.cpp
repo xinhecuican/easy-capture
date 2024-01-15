@@ -19,7 +19,7 @@ PaintArea::PaintArea(QWidget* parent) :
     rootLayer(new RootLayer(this)),
     clipLayer(NULL),
     recorder(new Recorder(this)),
-    registered(false)
+    installed(false)
 {
     connect(recorder, &Recorder::recordChange, this, [=](){
         emit recordChange();
@@ -27,10 +27,19 @@ PaintArea::PaintArea(QWidget* parent) :
 }
 
 void PaintArea::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    if(registered){
+    if(installed){
         if(f(event->button())) return;
     }
+    for(auto pressFunc : pressFuncs){
+        pressFunc(event->scenePos());
+    }
+
     press = true;
+    if(event->button() == Qt::BackButton) {
+        recorder->back();
+    } else if(event->button() == Qt::ForwardButton) {
+        recorder->forward();
+    }
 
     for(auto& layer: layers){
         if((layer->isEnable()) && layer->contains(layer->mapFromScene(event->scenePos()))){
@@ -47,8 +56,13 @@ void PaintArea::mousePressEvent(QGraphicsSceneMouseEvent *event){
 }
 
 void PaintArea::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
-    sendEvent(rootLayer, event);
-    QGraphicsScene::mouseMoveEvent(event);
+    for(auto moveFunc : moveFuncs){
+        moveFunc(event->scenePos());
+    }
+    if(press){
+        sendEvent(rootLayer, event);
+        QGraphicsScene::mouseMoveEvent(event);
+    }
     if(!inLayer && press){
         if(container != NULL) container->layerMouseMoveEvent(event);
         return;
@@ -212,11 +226,13 @@ void PaintArea::setImage(const QImage& image){
     update();
 }
 
-void PaintArea::reset(){
-    this->image = QImage();
+void PaintArea::reset(bool newImage){
+    if(newImage){
+        this->image = QImage();
+        imageValid = false;
+    }
     this->modifiedImage = QImage();
     this->modified = false;
-    imageValid = false;
     inLayer = false;
     _save = false;
     focusLayer = NULL;
@@ -259,7 +275,15 @@ bool PaintArea::isSave(){
     return _save;
 }
 
-void PaintArea::registerMousePressHook(const std::function<bool (Qt::MouseButton)> &f){
-    registered = true;
+void PaintArea::installMouseFilter(const std::function<bool (Qt::MouseButton)> &f){
+    installed = true;
     this->f = f;
+}
+
+void PaintArea::registerMousePressHook(const std::function<void (QPointF)> &f){
+    pressFuncs.append(f);
+}
+
+void PaintArea::registerMouseMoveHook(const std::function<void (QPointF)> &f){
+    moveFuncs.append(f);
 }

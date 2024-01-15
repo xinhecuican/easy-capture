@@ -4,6 +4,7 @@
 #include "../../Helper/debug.h"
 #include <QTextStream>
 #include <QDateTime>
+#include <QKeyEvent>
 
 GrabcutLayer::GrabcutLayer(const QString& name,
                            ILayerControl* manager,
@@ -12,6 +13,7 @@ GrabcutLayer::GrabcutLayer(const QString& name,
       background(true),
       enableShow(false)
 {
+    setFlags(QGraphicsItem::ItemIsFocusable);
     handler = new GrabcutHandler(this);
     connect(handler, &GrabcutHandler::finish, this, [=](QImage mask){
         manager->remaskImage(mask);

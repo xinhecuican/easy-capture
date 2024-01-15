@@ -64,6 +64,8 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     area->addLayer(picLayer);
 
     view->setScene(area);
+    view->setMouseTracking(true);
+    view->viewport()->setMouseTracking(true);
     view->setStyleSheet(".QGraphicsView{background: transparent;border:0px;}");
     view->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     //    view->viewport()->installEventFilter(new GraphicsViewPatch(view));
@@ -244,8 +246,6 @@ void CaptureWindow::onWindowSelect() {
     KeyManager::instance()->registerGlobalKey("capture_video_start");
     KeyManager::instance()->registerGlobalKey("capture_video_pause");
     KeyManager::instance()->registerGlobalKey("capture_video_stop");
-    area->reset();
-    area->update();
     defaultToolbar->reset();
     setGeometry(ImageHelper::getCurrentGeometry());
     view->show();
