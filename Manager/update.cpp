@@ -48,12 +48,13 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-QString Update::version = "0.7.5";
+QString Update::version = "0.8.0";
 UpdateData Update::now_version = UpdateData(Update::version,
                                             "http://121.37.81.150:8200/easycapture/update/" + Update::version + ".zip", "",
-                                 "1. 重构KeyManager\n"
-                                 "2. 修复更改快捷键时崩溃的bug\n"
-                                 "3. 修复快捷键不生效的bug");
+                                            "1. 重构GraphicsScene\n"
+                                            "2. 使用高斯模糊作为马赛克,添加grabcut\n"
+                                            "3. 移除录屏\n"
+                                            "4. 优化样式");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;

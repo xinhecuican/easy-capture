@@ -52,7 +52,7 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     this->setMouseTracking(true);
     centralWidget->setMouseTracking(true);
 #ifdef QT_NO_DEBUG
- //   setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
 
     //    ui->centralwidget->setGeometry(QGuiApplication::primaryScreen()->geometry());
