@@ -1,12 +1,12 @@
 #include "uimanager.h"
 #include <QFile>
 #include <QDebug>
-#include "Helper/common.h"
+#include "../Helper/common.h"
 #include "config.h"
-#include "Helper/mstring.h"
+#include "../Helper/mstring.h"
 #include <QJsonArray>
-#include "Manager/Data/uiparser.h"
-#include "Manager/Data/uiglobalparser.h"
+#include "Data/uiparser.h"
+#include "Data/uiglobalparser.h"
 
 UIManager* UIManager::_instance = nullptr;
 

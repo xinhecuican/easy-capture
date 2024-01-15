@@ -2,7 +2,7 @@
 #include "ui_bubbletipswidget.h"
 #include <QPainter>
 #include <QHideEvent>
-#include "Helper/mstring.h"
+#include "../Helper/mstring.h"
 
 BubbleTipsWidget::BubbleTipsWidget(QWidget *parent)
     : QWidget(parent)

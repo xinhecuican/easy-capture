@@ -3,7 +3,7 @@
 #include<QPoint>
 #include<QRect>
 #include<cmath>
-#include "Helper/common.h"
+#include "common.h"
 using namespace std;
 
 class Math {

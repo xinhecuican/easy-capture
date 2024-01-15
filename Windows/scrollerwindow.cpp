@@ -1,14 +1,14 @@
 #include "scrollerwindow.h"
-#include "Helper/imagehelper.h"
+#include "../Helper/imagehelper.h"
 #include <QPainter>
 #include <QWindow>
-#include "Manager/WindowManager.h"
+#include "../Manager/WindowManager.h"
 #include "hook.h"
-#include "new_capture/window_fliter.h"
-#include "Helper/math.h"
+#include "windowfilter.h"
+#include "../Helper/math.h"
 #include <QMouseEvent>
-#include "Manager/KeyManager.h"
-#include "Manager/config.h"
+#include "../Manager/KeyManager.h"
+#include "../Manager/config.h"
 ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
     scrollState(IDLE),
     beforeState(IDLE),
@@ -50,14 +50,15 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
     connect(timer, &QTimer::timeout, this, [=]() {
         if(!xHook->isMouseHookRunning() || xHook->uninstallMouseHook()) {
             timer->stop();
-            WindowManager::closeWindow("ScrollerWindow");
+            WindowManager::instance()->closeWindow("ScrollerWindow");
         }
     });
 
     connect(dispatcher, &Scroll_dispatcher::finish, this, [=](QImage image) {
         QPixmap pixmap;
         pixmap.convertFromImage(image);
-        WindowManager::changeWindow("PaintWindow", pixmap, QRect(0, 0, image.width(), image.height()));
+        if(image.width() > 10 && image.height() > 10)
+            WindowManager::instance()->changeWindow("PaintWindow", pixmap, QRect(0, 0, image.width(), image.height()));
         timer->start(50);
 
     });
@@ -189,7 +190,7 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
             bubbleTipsWidget->setFix(false);
             scrollState = IDLE;
         } else {
-            WindowManager::popWindow();
+            WindowManager::instance()->popWindow();
             timer->start(50);
         }
     }
@@ -261,7 +262,7 @@ void ScrollerWindow::loadKeyEvent(QString name){
             } else if(scrollState == SCROLLRECT_SETTED) {
                 scrollState = IDLE;
             } else {
-                WindowManager::changeWindow("tray");
+                WindowManager::instance()->changeWindow("tray");
             }
         }
     });

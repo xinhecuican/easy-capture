@@ -289,7 +289,7 @@ void Setting::aboutTab() {
 }
 
 void Setting::closeEvent(QCloseEvent *event) {
-    WindowManager::checkWindow();
+    WindowManager::instance()->checkWindow();
     event->accept();
 }
 

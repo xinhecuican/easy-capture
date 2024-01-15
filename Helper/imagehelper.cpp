@@ -58,6 +58,7 @@ cv::Mat ImageHelper::QImage2Mat(QImage const& image) {
         cv::cvtColor(mat, mat, CV_BGR2RGB);
         break;
     case QImage::Format_Indexed8:
+    case QImage::Format_Grayscale8:
         mat = cv::Mat(image.height(), image.width(), CV_8UC1, (void*)image.constBits(), image.bytesPerLine());
         break;
     }
@@ -167,6 +168,7 @@ QIcon ImageHelper::getIcon(QString name, int pt_w, int pt_h){
 QPixmap ImageHelper::getPixmap(QString name, int pt_w, int pt_h){
     QSvgRenderer render;
     render.load(":/image/" + name + ".svg");
+
     QPixmap pix(pt2px(pt_w), pt2px(pt_h));
     pix.fill(Qt::transparent);
     QPainter painter(&pix);

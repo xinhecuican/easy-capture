@@ -2,8 +2,8 @@
 #define CONFIG_H
 #include<QMap>
 #include<QList>
-#include "Base/Serializable.h"
-#include "Helper/EnumReflect.h"
+#include "../Base/Serializable.h"
+#include "../Helper/EnumReflect.h"
 #include <QJsonValue>
 #include <atomic>
 #include <mutex>
@@ -31,7 +31,8 @@ public:
               show_update_box,
               ui_theme_name,
               receive_beta,
-              show_guidance
+              show_guidance,
+              video_save_path
              );
 
     /**

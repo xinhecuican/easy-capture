@@ -1,7 +1,7 @@
 #ifndef SERIALIZE_H
 #define SERIALIZE_H
 #include<QString>
-#include<Base/Serializable.h>
+#include "../Base/Serializable.h"
 #include<QDir>
 #include<QJsonObject>
 #include<QJsonDocument>

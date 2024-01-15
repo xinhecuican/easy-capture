@@ -35,10 +35,10 @@ void PinWindow::receiveData(QVariant data1, QVariant data2){
         pinWidgets.removeOne(pinWidget);
         pinWidget->deleteLater();
         if(pinWidgets.size() == 0){
-            if(WindowManager::getNowWindow() == "PinWindow"){
-                WindowManager::changeWindow("tray");
+            if(WindowManager::instance()->getNowWindow() == "PinWindow"){
+                WindowManager::instance()->changeWindow("tray");
             }
-            WindowManager::closeWindow("PinWindow");
+            WindowManager::instance()->closeWindow("PinWindow");
         }
     });
     connect(pinWidget, &PinWidget::closeAll, this, [=](){
@@ -46,10 +46,10 @@ void PinWindow::receiveData(QVariant data1, QVariant data2){
             widget->deleteLater();
         }
         pinWidgets.clear();
-        if(WindowManager::getNowWindow() == "PinWindow"){
-            WindowManager::changeWindow("tray");
+        if(WindowManager::instance()->getNowWindow() == "PinWindow"){
+            WindowManager::instance()->changeWindow("tray");
         }
-        WindowManager::closeWindow("PinWindow");
+        WindowManager::instance()->closeWindow("PinWindow");
     });
     pinWidget->show();
     pinWidgets.append(pinWidget);

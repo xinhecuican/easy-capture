@@ -1,14 +1,14 @@
 #include "KeyManager.h"
 #include<QDebug>
 #include "WindowManager.h"
-#include "Helper/debug.h"
+#include "../Helper/debug.h"
 #include<QDomDocument>
 #include<QFile>
 #include<QKeyEvent>
 #include "update.h"
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#include "MainFilter.h"
+#include "../MainFilter.h"
 #include "hook.h"
 #include <QKeyEvent>
 

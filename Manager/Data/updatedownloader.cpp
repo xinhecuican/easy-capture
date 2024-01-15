@@ -1,8 +1,8 @@
 #include "updatedownloader.h"
 #include <QDebug>
-#include "Helper/debug.h"
+#include "../../Helper/debug.h"
 #include <QDir>
-#include "Manager/config.h"
+#include "../../Manager/config.h"
 #include "JlCompress.h"
 
 

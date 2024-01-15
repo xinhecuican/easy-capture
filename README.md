@@ -11,7 +11,6 @@
 * windows环境
 * qt 5.14.2 64位
 * opencv 4.5.1 with contrib
-* ffmpeg 5.1
 * quazip0.7.3
 * zlib
 * qbreakpad
@@ -50,16 +49,12 @@
 
 * 透明
 
-	目前仅可以做到对某一个色素透明，对于渐变和拍屏无效。并且由于文字都是由不同种类像素组成因此无法做到选取文字（正好下学期有图像处理，看看通过反锯齿可以直接把文字的范围弄出来）。
+	单一颜色透明或者使用grabcut处理渐变
 	
 * ocr
 
   使用[RapidOCR](https://github.com/RapidAI/RapidOCR)引擎进行识别![](https://xinhecuican.tech/images/简截9.png)
 
-* 录屏
-
-  录屏基于[NanaRecorder](https://github.com/onlyet/NanaRecorder)改进而来
-  
 * 贴图
 
   ![](https://xinhecuican.tech/images/简截10.png)

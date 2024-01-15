@@ -22,14 +22,10 @@ QToolBar::separator {
 }
 
 .ColorWidget QToolButton{
-	margin: 1px;
-	border-radius: 3px;
+	border-radius: 2px;
     border: 1px solid #CDCDCD;
 }
 
-QToolButton#rectButton, QToolButton#arrowButton{
-	min-width: 42px;
-}
 
 
 QToolButton {
@@ -93,7 +89,7 @@ QSpinBox::up-button {
 	margin-right: 2px;
 	min-width: 30px;
 	max-width: 30px;
-	min-height: 20px;
+	min-height: 10px;
 }
 
 QSpinBox::up-button:hover {
@@ -114,7 +110,7 @@ QSpinBox::down-button {
 	margin-right: 2px;
 	min-width: 30px;
 	max-width: 30px;
-	min-height: 20px;
+	min-height: 10px;
 }
 
 QSpinBox::down-button:hover {

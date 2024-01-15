@@ -27,15 +27,15 @@ void UIGlobalParser::deserialized(QJsonObject *json) {
         }
         var = parse(COLOR, "background_color", &pencilObject, success);
         if(success) {
-            pencilData.back_color = var.value<QColor>();
+            pencilData.backColor = var.value<QColor>();
         }
         var = parse(CAP_STYLE, "cap_style", &pencilObject, success);
         if(success) {
-            pencilData.cap_style = var.value<Qt::PenCapStyle>();
+            pencilData.capStyle = var.value<Qt::PenCapStyle>();
         }
         var = parse(JOIN_STYLE, "join_style", &pencilObject, success);
         if(success) {
-            pencilData.join_style = var.value<Qt::PenJoinStyle>();
+            pencilData.joinStyle = var.value<Qt::PenJoinStyle>();
         }
     }
 
@@ -52,15 +52,15 @@ void UIGlobalParser::deserialized(QJsonObject *json) {
         }
         var = parse(COLOR, "background_color", &highlighterObject, success);
         if(success) {
-            highlighterData.back_color = var.value<QColor>();
+            highlighterData.backColor = var.value<QColor>();
         }
         var = parse(CAP_STYLE, "cap_style", &highlighterObject, success);
         if(success) {
-            highlighterData.cap_style = var.value<Qt::PenCapStyle>();
+            highlighterData.capStyle = var.value<Qt::PenCapStyle>();
         }
         var = parse(JOIN_STYLE, "join_style", &highlighterObject, success);
         if(success) {
-            highlighterData.join_style = var.value<Qt::PenJoinStyle>();
+            highlighterData.joinStyle = var.value<Qt::PenJoinStyle>();
         }
     }
 

@@ -1,9 +1,9 @@
 #ifndef UIGLOBALPARSER_H
 #define UIGLOBALPARSER_H
-#include "Base/Serializable.h"
-#include "Paint/Data/paint_data.h"
+#include "../../Base/Serializable.h"
+#include "../../GraphicsScene/Widgets/PaintData.h"
 #include <QVariantList>
-#include "Paint/Data/fontdata.h"
+#include "../../GraphicsScene/Widgets/FontData.h"
 
 /**
  * @brief 主题global.json的解析类

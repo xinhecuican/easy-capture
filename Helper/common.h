@@ -5,8 +5,8 @@
 #include<QFile>
 #include <QDir>
 #include <QDebug>
-#include "Manager/WindowManager.h"
-#include "Manager/config.h"
+#include "../Manager/WindowManager.h"
+#include "../Manager/config.h"
 #include <QGuiApplication>
 #include <QScreen>
 
@@ -37,10 +37,10 @@ static void createDirWithFile(QString filePath) {
 
 static void changeWindowHelper(){
     if(Config::getConfig<int>(Config::capture_mode) == (int)Config::SCROLL_CAPTURE){
-        WindowManager::changeWindow("ScrollerWindow");
+        WindowManager::instance()->changeWindow("ScrollerWindow");
     }
     else{
-        WindowManager::changeWindow("CaptureWindow");
+        WindowManager::instance()->changeWindow("CaptureWindow");
     }
 }
 

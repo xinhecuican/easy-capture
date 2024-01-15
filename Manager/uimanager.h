@@ -1,8 +1,8 @@
 #ifndef UIMANAGER_H
 #define UIMANAGER_H
 #include <QString>
-#include "Helper/Serialize.h"
-#include "Manager/Data/uiglobalparser.h"
+#include "../Helper/Serialize.h"
+#include "Data/uiglobalparser.h"
 
 class UIManager : Serializable {
 public:

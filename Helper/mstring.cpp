@@ -1,6 +1,6 @@
 #include "mstring.h"
 #include<QFile>
-#include "Manager/config.h"
+#include "../Manager/config.h"
 #include<QDomDocument>
 #include "debug.h"
 
@@ -14,7 +14,7 @@ QList<QString> MString::loading_list = QList<QString>();
 /*
  * xml格式可以直接看:/Languages/Config/chinese.xml
  */
-void MString::load_from_file(QString path) {
+void MString::load_from_file(const QString& path) {
     strings.clear();
     QString language;
     int index = Config::getConfig<int>(Config::language);
@@ -66,7 +66,8 @@ void MString::load_from_file(QString path) {
  * 可以不加括号，但是不能只写一半括号
  * string的id不能重复，建议通过https://www.random.org/strings/等随机字符串生成网站获得
  */
-QString MString::search(QString id) {
+QString MString::search(const QString& id) {
+    if(id == "") return id;
     QString id_name = "";
     int end_index = 0;
     if(id[0] == "{") {

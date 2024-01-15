@@ -58,3 +58,26 @@ void Debug::endTimer() {
 qint64 Debug::getTime() {
     return QDateTime::currentMSecsSinceEpoch();
 }
+
+QString Debug::backtrace()
+{
+    HANDLE process = GetCurrentProcess();
+    SymInitialize(process, NULL, TRUE);
+
+    void *stack[100];
+    WORD frames = CaptureStackBackTrace(0, 100, stack, NULL);
+
+    SYMBOL_INFO *symbol = (SYMBOL_INFO *)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
+    symbol->MaxNameLen = 255;
+    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+    QString result;
+    for (int i = 0; i < frames; i++) {
+        SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+        result += symbol->Name;
+        result += '\n';
+    }
+
+    free(symbol);
+    return result;
+}

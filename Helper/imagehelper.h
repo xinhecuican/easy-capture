@@ -7,6 +7,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include<windows.h>
 #include <QScreen>
+#include "global.h"
+
 class ImageHelper {
 public:
     static QImage Mat2QImage(cv::Mat const& src);
@@ -21,8 +23,8 @@ public:
     static QPixmap grabScreen(int index, WId wid);
     static QPixmap grabScreen(int x, int y, int width, int height);
     static QPixmap grabScreen(int index, int x, int y, int width, int height);
-    static QIcon getIcon(QString name, int pt_w=24, int pt_h=24);
-    static QPixmap getPixmap(QString name, int pt_w=24, int pt_h=24);
+    static QIcon getIcon(QString name, int pt_w=DEFAULT_ICON_SIZE, int pt_h=DEFAULT_ICON_SIZE);
+    static QPixmap getPixmap(QString name, int pt_w=DEFAULT_ICON_SIZE, int pt_h=DEFAULT_ICON_SIZE);
 };
 
 #endif // IMAGE_HELPER_H
