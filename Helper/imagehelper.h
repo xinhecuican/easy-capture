@@ -8,6 +8,7 @@
 #include<windows.h>
 #include <QScreen>
 #include "global.h"
+#include "dxgimanager.h"
 
 class ImageHelper {
 public:

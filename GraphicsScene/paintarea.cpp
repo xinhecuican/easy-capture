@@ -59,10 +59,10 @@ void PaintArea::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
     for(auto moveFunc : moveFuncs){
         moveFunc(event->scenePos());
     }
-    if(press){
+//    if(press){
         sendEvent(rootLayer, event);
         QGraphicsScene::mouseMoveEvent(event);
-    }
+//    }
     if(!inLayer && press){
         if(container != NULL) container->layerMouseMoveEvent(event);
         return;

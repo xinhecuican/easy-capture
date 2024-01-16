@@ -534,7 +534,7 @@ void Scroll_worker::initMask(int cols, int rows, cv::Mat image)
         int shift = 1;
         for(int i=0; i<deprecateCount; i++){
             int idx = shift + activeLines[currentIdx].index;
-            if(idx < rows){
+            if(idx < rows && idx >= 0){
                 for(int k=0; k<cols; k++){
                     maskImage.ptr<uchar>(idx)[k] = 255;
                 }

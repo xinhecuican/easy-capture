@@ -1,5 +1,7 @@
 #ifndef TEMPLATE_H
 #define TEMPLATE_H
+#include <QMutex>
+
 #define DECLARE_INSTANCE(Class) \
 Q_DISABLE_COPY(Class) \
 public: \

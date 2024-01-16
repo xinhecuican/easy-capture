@@ -70,8 +70,11 @@ void RectLayer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void RectLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing, true);                   //设置反走样，防锯齿
     paintStyle(painter);
     painter->drawRect(this->boundingRect());
+    painter->restore();
 }
 
 void RectLayer::setEnableResize(bool enable){

@@ -60,8 +60,7 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
                     changeWindowHelper();
                     break;
                 case 1:
-                    WindowManager::instance()->changeWindow("tray");
-                    QTimer::singleShot(200, this, [=]() {
+                    if(WindowManager::instance()->getNowWindow() == "tray"){
                         QPixmap map = ImageHelper::grabScreen();
                         QString save_path = Config::getConfig<QString>(Config::total_capture_save_path);
                         QString dir_path = save_path.mid(0, save_path.lastIndexOf("/")+1);
@@ -74,7 +73,24 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
                         map.save(save_path + file_name);
                         if(Config::getConfig<bool>(Config::clip_voice))
                             QSound::play(":/audio/screenshot.wav");
-                    });
+                    }
+                    else{
+                        WindowManager::instance()->changeWindow("tray");
+                        QTimer::singleShot(200, this, [=]() {
+                            QPixmap map = ImageHelper::grabScreen();
+                            QString save_path = Config::getConfig<QString>(Config::total_capture_save_path);
+                            QString dir_path = save_path.mid(0, save_path.lastIndexOf("/")+1);
+                            QDir base_dir = QDir(dir_path);
+                            if(!base_dir.exists()) {
+                                QDir dir;
+                                dir.mkpath(dir_path);
+                            }
+                            QString file_name = QDateTime::currentDateTime().toString("dd_mm_yyyy_hh_mm_ss") + ".png";
+                            map.save(save_path + file_name);
+                            if(Config::getConfig<bool>(Config::clip_voice))
+                                QSound::play(":/audio/screenshot.wav");
+                        });
+                    }
                     break;
                 case 2:
                     if(WindowManager::instance()->getNowWindow() == "CaptureWindow") {

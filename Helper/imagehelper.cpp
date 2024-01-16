@@ -107,13 +107,33 @@ bool ImageHelper::is_equal(const cv::Mat &data1, const cv::Mat &data2) {
 }
 
 QPixmap ImageHelper::grabScreen() {
+#if defined(Q_OS_WIN) && defined (_WIN32_WINNT_WIN10)
+    bool success = false;
+    QPixmap pix = DxgiManager::instance()->grabScreen(&success);
+    if(!success){
+        QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
+        return screen->grabWindow(0);
+    }
+    return pix;
+#else
     QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
     return screen->grabWindow(0);
+#endif
 }
 
 QPixmap ImageHelper::grabScreen(int index) {
+#if defined (Q_OS_WIN) && defined (_WIN32_WINNT_WIN10)
+    bool success = false;
+    QPixmap pix =  DxgiManager::instance()->grabScreen(index, &success);
+    if(!success){
+        QList<QScreen*> screens = QGuiApplication::screens();
+        return screens.at(index)->grabWindow(0);
+    }
+    return pix;
+#else
     QList<QScreen*> screens = QGuiApplication::screens();
     return screens.at(index)->grabWindow(0);
+#endif
 }
 
 QScreen* ImageHelper::getCurrentScreen() {
@@ -121,13 +141,33 @@ QScreen* ImageHelper::getCurrentScreen() {
 }
 
 QPixmap ImageHelper::grabScreen(int x, int y, int width, int height) {
+#if defined (Q_OS_WIN) && defined (_WIN32_WINNT_WIN10)
+    bool success = false;
+    QPixmap pix = DxgiManager::instance()->grabScreen(&success);
+    if(!success){
+        QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
+        return screen->grabWindow(0, x, y, width, height);
+    }
+    return pix.copy(x, y, width, height);
+#else
     QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
     return screen->grabWindow(0, x, y, width, height);
+#endif
 }
 
 QPixmap ImageHelper::grabScreen(int index, int x, int y, int width, int height) {
+#if defined (Q_OS_WIN) && defined (_WIN32_WINNT_WIN10)
+    bool success = false;
+    QPixmap pix = DxgiManager::instance()->grabScreen(index, &success);
+    if(!success){
+        QScreen* screen = QGuiApplication::screens().at(index);
+        return screen->grabWindow(0, x, y, width, height);
+    }
+    return pix.copy(x, y, width, height);
+#else
     QScreen* screen = QGuiApplication::screens().at(index);
     return screen->grabWindow(0, x, y, width, height);
+#endif
 }
 
 QPixmap ImageHelper::grabScreen(int index, WId wid) {

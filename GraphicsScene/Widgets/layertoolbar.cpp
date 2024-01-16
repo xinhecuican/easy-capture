@@ -181,4 +181,5 @@ void LayerToolBar::reset(){
     for(auto container : containers){
         if(container != NULL) container->reset();
     }
+    bound = ImageHelper::getCurrentGeometry();
 }

@@ -52,6 +52,7 @@ SOURCES += \
 	GraphicsScene/layermanager.cpp \
 	GraphicsScene/paintarea.cpp \
     Helper/debug.cpp \
+	Helper/dxgimanager.cpp \
 	Helper/imagehelper.cpp \
     Helper/log.cpp \
     Helper/math.cpp \
@@ -152,6 +153,7 @@ HEADERS += \
 	Helper/Template.h \
     Helper/common.h \
     Helper/debug.h \
+	Helper/dxgimanager.h \
 	Helper/global.h \
 	Helper/imagehelper.h \
     Helper/log.h \
@@ -257,7 +259,7 @@ DEPENDPATH += $$PWD/lib/quazip/include
 
 LIBS += -lGdi32 -loleacc -lDbgHelp
 LIBS += \
-    -ldwmapi -lOle32 -lksuser -lUser32
+	-ldwmapi -lOle32 -lksuser -lUser32 -lD3D11 -lDXGI
 
 RC_FILE = logo.rc
 
