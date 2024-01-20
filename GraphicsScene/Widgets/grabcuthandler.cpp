@@ -58,7 +58,6 @@ GrabcutWorker::GrabcutWorker(QObject* parent) : QObject(parent){
 }
 
 void GrabcutWorker::work(QImage image, QList<QPainterPath> fgd, QList<QPainterPath> bgd){
-    image.save("D:/Temp/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
     cv::Mat inputMat = ImageHelper::QImage2Mat(image);
     cv::cvtColor(inputMat, inputMat, cv::COLOR_RGBA2RGB);
 
@@ -66,7 +65,7 @@ void GrabcutWorker::work(QImage image, QList<QPainterPath> fgd, QList<QPainterPa
     maskMat.setTo(cv::Scalar::all(cv::GC_PR_BGD));
 
     cv::Mat borderMat;
-    cv::Canny(inputMat, borderMat, 50, 150);
+    cv::Canny(inputMat, borderMat, 40, 150);
     maskMat.setTo(cv::GC_PR_FGD, borderMat);
 
     for(int i=0; i<bgd.size(); i++){
@@ -95,7 +94,7 @@ void GrabcutWorker::work(QImage image, QList<QPainterPath> fgd, QList<QPainterPa
 
     cv::Mat bgdModel, fgdModel;
     Debug::beginTimer("grabcut");
-    cv::grabCut(inputMat, maskMat, cv::Rect(), bgdModel, fgdModel, 1, cv::GC_INIT_WITH_MASK);
+    cv::grabCut(inputMat, maskMat, cv::Rect(), bgdModel, fgdModel, 2, cv::GC_INIT_WITH_MASK);
     Debug::endTimer();
     cv::Mat result, binMask;
     maskMat = maskMat & 1;
