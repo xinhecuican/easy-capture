@@ -48,8 +48,7 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.8.0# With the PROJECT_LOGO tag one can specify a logo or an icon that is included
-# in the documentation. The maximum height of the logo should not exceed 55
+PROJECT_NUMBER = 0.8.1# in the documentation. The maximum height of the logo should not exceed 55
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
@@ -2802,6 +2801,29 @@ DOT_CLEANUP            = YES
 # The default value is: YES.
 
 DOT_CLEANUP            = YES
+
+
+ YES
+
+
+
+
+
+
+
+
+
+
+ YES
+
+
+
+
+
+
+
+
+T_CLEANUP            = YES
 
 
  YES

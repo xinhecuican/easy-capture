@@ -23,6 +23,7 @@
 #include <QGuiApplication>
 #include <QGraphicsProxyWidget>
 #include "../GraphicsScene/Layer/piclayer.h"
+#include "../GraphicsScene/Layer/backgroundlayer.h"
 //#include "Widgets/capturetip.h"
 
 bool CaptureWindow::end_scroll = false;
@@ -60,6 +61,8 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     view = new QGraphicsView(this);
     area = new PaintArea(view);
     defaultToolbar = new DefaultToolbar(area, view);
+    BackgroundLayer* backgroundLayer = new BackgroundLayer("background", area, NULL);
+    area->addLayer(backgroundLayer);
     PicLayer* picLayer = new PicLayer("pic", area, false, NULL);
     area->addLayer(picLayer);
 

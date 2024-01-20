@@ -34,6 +34,9 @@ QPainterPath PicLayer::shape() const{
 
 void PicLayer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     if(manager->isImageValid()){
+        if(!isSaving && !enableBound){
+            painter->setCompositionMode(QPainter::CompositionMode_DestinationOut);
+        }
         painter->drawImage(mask.topLeft(), manager->getImage(), mask);
     }
 }
@@ -51,12 +54,14 @@ void PicLayer::prepareSave(){
     if(enableBound){
         rectLayer->hide();
     }
+    LayerBase::prepareSave();
 }
 
 void PicLayer::endSave(){
     if(enableBound){
         rectLayer->show();
     }
+    LayerBase::endSave();
 }
 
 void PicLayer::reset(){
