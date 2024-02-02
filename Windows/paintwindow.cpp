@@ -232,6 +232,7 @@ void PaintWindow::receiveData(QVariant data1, QVariant data2){
         move(geometry.x() + (geometry.width()-currentWidth)/2, geometry.y() + (geometry.height() - currentHeight) / 2);
         resize(currentWidth, currentHeight);//设置主窗口大小，否则窗口大小不会变化
     }
+    paint_panel->updateGeometry();
 //    paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
 //    paint_panel->horizontalScrollBar()->setValue(rect.width() / 2);
 }

@@ -24,9 +24,9 @@
 #include <QBreakpadHandler.h>
 #include <QBreakpadHttpUploader.h>
 #endif
-//#ifdef QT_DEBUG
-//#pragma comment(lib, "C:/usr/software/Visual_Leak_Detector/lib/Win64/vld.lib")
-//#include "vld.h"
+//#pragma comment(lib,"E:/libs/Visual_Leak_Detector/lib/Win64/vld.lib")
+//#ifdef _DEBUG
+//#include "E:/libs/Visual_Leak_Detector/include/vld.h"
 //#endif
 
 void registerClasses();

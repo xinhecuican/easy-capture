@@ -144,11 +144,12 @@ QPixmap ImageHelper::grabScreen(int x, int y, int width, int height) {
 #if defined (Q_OS_WIN) && defined (_WIN32_WINNT_WIN10)
     bool success = false;
     QPixmap pix = DxgiManager::instance()->grabScreen(&success);
+    QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
     if(!success){
-        QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
-        return screen->grabWindow(0, x, y, width, height);
+        pix = screen->grabWindow(0, x-screen->geometry().x(), y-screen->geometry().y(), width, height);
+        return pix;
     }
-    return pix.copy(x, y, width, height);
+    return pix.copy(x-screen->geometry().x(), y-screen->geometry().y(), width, height);
 #else
     QScreen* screen = QGuiApplication::screenAt(QCursor::pos());
     return screen->grabWindow(0, x, y, width, height);
@@ -159,11 +160,14 @@ QPixmap ImageHelper::grabScreen(int index, int x, int y, int width, int height) 
 #if defined (Q_OS_WIN) && defined (_WIN32_WINNT_WIN10)
     bool success = false;
     QPixmap pix = DxgiManager::instance()->grabScreen(index, &success);
+    QScreen* screen = QGuiApplication::screens().at(index);
     if(!success){
-        QScreen* screen = QGuiApplication::screens().at(index);
-        return screen->grabWindow(0, x, y, width, height);
+        pix = screen->grabWindow(0, x-screen->geometry().x(), y-screen->geometry().y(), width, height);
+        pix.save("D:/Temp/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
+        return pix;
     }
-    return pix.copy(x, y, width, height);
+    pix = pix.copy(x-screen->geometry().x(), y-screen->geometry().y(), width, height);
+    return pix;
 #else
     QScreen* screen = QGuiApplication::screens().at(index);
     return screen->grabWindow(0, x, y, width, height);

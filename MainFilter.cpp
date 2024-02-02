@@ -57,6 +57,7 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
             if(pMsg->wParam == keyIds[i]) {
                 switch(i) {
                 case 0:
+                    Config::setConfig(Config::capture_mode, Config::RECT_CAPTURE);
                     changeWindowHelper();
                     break;
                 case 1:
@@ -93,16 +94,20 @@ bool MainFilter::nativeEventFilter(const QByteArray &eventType, void *message, l
                     }
                     break;
                 case 2:
+                    Config::setConfig(Config::capture_mode, Config::SCROLL_CAPTURE);
+                    changeWindowHelper();
+                    break;
+                case 3:
                     if(WindowManager::instance()->getNowWindow() == "CaptureWindow") {
                         WindowManager::instance()->getWindow("CaptureWindow")->startCaptureVideo();
                     }
                     break;
-                case 3:
+                case 4:
                     if(WindowManager::instance()->getNowWindow() == "CaptureWindow") {
                         WindowManager::instance()->getWindow("CaptureWindow")->pauseCaptureVideo();
                     }
                     break;
-                case 4:
+                case 5:
                     if(WindowManager::instance()->getNowWindow() == "CaptureWindow") {
                         WindowManager::instance()->getWindow("CaptureWindow")->stopCaptureVideo();
                     }

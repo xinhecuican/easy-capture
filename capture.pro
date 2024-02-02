@@ -284,9 +284,13 @@ msvc {
     QMAKE_CXXFLAGS += /utf-8
 }
 
-DEPENDPATH += -L$$PWD/lib/vld/include
-INCLUDEPATH += -L$$PWD/lib/vld/include
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/vld/lib/Win64 -lvld
+#win32{
+#    CONFIG(debug, debug|release) {
+#    INCLUDEPATH += E:/libs/Visual_Leak_Detector/include
+#    DEPENDPATH += E:/libs/Visual_Leak_Detector/include
+#    LIBS += -LE:/libs/Visual_Leak_Detector/lib/Win64 -lvld
+#    }
+#}
 
 DISTFILES += \
 	Resource/toolbar.qss

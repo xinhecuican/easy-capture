@@ -27,7 +27,10 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
     setMouseTracking(true);
-    screenGeometry = ImageHelper::getCurrentScreen()->geometry();
+    for(int i=0; i<QGuiApplication::screens().size(); i++){
+        screenGeometry = screenGeometry.united(QGuiApplication::screens().at(i)->geometry());
+    }
+//    screenGeometry = ImageHelper::getCurrentScreen()->geometry();
     setGeometry(screenGeometry);
 
     bubbleTipsWidget = new BubbleTipsWidget(this);

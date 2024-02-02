@@ -79,6 +79,7 @@
     <global_keys>
 		<global_key name="awake_capture" key="16777264" mod_key="16777249" init="1"/>
 		<global_key name="fullscreen_capture" key="16777265" mod_key="16777249" init="1"/>
+                <global_key name="global_scroll_capture" key="16777266" mod_key="16777249" init="1"/>
 		<global_key name="capture_video_start" key="16777268" mod_key="0" init="0"/>
 		<global_key name="capture_video_pause" key="16777269" mod_key="0" init="0"/>
 		<global_key name="capture_video_stop" key="16777270" mod_key="0" init="0"/>

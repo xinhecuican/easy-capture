@@ -48,8 +48,7 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.8.2# pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
-# the logo to the output directory.
+PROJECT_NUMBER = 0.8.3# the logo to the output directory.
 
 PROJECT_LOGO           =
 
@@ -2837,6 +2836,31 @@ T_CLEANUP            = YES
 
 
  YES
+
+
+
+
+
+
+
+
+LEANUP            = YES
+
+
+ YES
+
+
+
+
+
+
+
+
+
+
+ YES
+
+
 
 
 
