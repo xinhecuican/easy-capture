@@ -187,12 +187,7 @@ void PaintLayer::end(){
         break;
     }
     case PaintPath:{
-        if(points.size() == 1){
-            path.moveTo(points[0]);
-        }
-        else{
-            path.lineTo(points.last());
-        }
+        path = buildPath(points);
         break;
     }
     }

@@ -63,7 +63,7 @@ CaptureWindow::CaptureWindow(QWidget *parent) :
     defaultToolbar = new DefaultToolbar(area, view);
     BackgroundLayer* backgroundLayer = new BackgroundLayer("background", area, NULL);
     area->addLayer(backgroundLayer);
-    PicLayer* picLayer = new PicLayer("pic", area, false, NULL);
+    PicLayer* picLayer = new PicLayer("pic", area, false, area->getRootLayer());
     area->addLayer(picLayer);
 
     view->setScene(area);

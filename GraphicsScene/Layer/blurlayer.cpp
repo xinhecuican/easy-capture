@@ -50,6 +50,7 @@ void BlurLayer::addPoint(const QPoint &point) {
             int pos = i * image.height() + k;
             if(!use[pos]) {
                 use.setBit(pos);
+                qDebug() << 1;
                 manager->modifyImage(QPoint(i, k), maskImage.pixel(i-leftTop.x(),k-leftTop.y()));
             }
         }

@@ -47,7 +47,7 @@ void MaskLayer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         }
     }
     for(int i=0; i<free_regions.size(); i++) {
-        if(free_regions[i]->contain(regions[i]->mapFromParent(beginPoint))) {
+        if(free_regions[i]->contain(free_regions[i]->mapFromParent(beginPoint))) {
             isDrag = true;
             break;
         }

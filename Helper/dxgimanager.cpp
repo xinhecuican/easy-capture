@@ -183,10 +183,14 @@ bool DxgiManager::init(int initIndex)
         qWarning() << "Failed to Get IDXGIAdapter ErrorCode = " + QString::number(uint(hr), 16);
         return false;
     }
-
     IDXGIOutput6 *dxgiOutput6 = nullptr;
-    hr = dxgiOutput->QueryInterface(__uuidof(IDXGIOutput6), reinterpret_cast<void**>(&dxgiOutput6));
-    dxgiOutput->Release();
+    try {
+      hr = dxgiOutput->QueryInterface(__uuidof(IDXGIOutput6), reinterpret_cast<void**>(&dxgiOutput6));
+      dxgiOutput->Release();
+    } catch (...) {
+      qWarning() << "Failed to QueryInterface IDXGIOutput6 ErrorCode = " + QString::number(uint(hr), 16);
+      return false;
+    }
     if (FAILED(hr)) {
         qWarning() << "Failed to QueryInterface IDXGIOutput6 ErrorCode = " + QString::number(uint(hr), 16);
         return false;

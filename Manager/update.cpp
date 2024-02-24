@@ -48,10 +48,10 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-QString Update::version = "0.8.4";
+QString Update::version = "0.8.5";
 UpdateData Update::now_version = UpdateData(Update::version,
                                             "http://121.37.81.150:8200/easycapture/update/" + Update::version + ".zip", "",
-                                            "1. 修复多屏幕滚动截屏的问题");
+                                            "1. 修复bug");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;
