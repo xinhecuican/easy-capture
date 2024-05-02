@@ -115,6 +115,10 @@ void PinWidget::initMenu(){
             image.save(file_name);
         }
     });
+    QAction* edit = new QAction(MString::search("{ipqhyXNnFQ}编辑"), this);
+    connect(edit, &QAction::triggered, this, [=](){
+        emit editNow(image, bound);
+    });
     QAction* close = new QAction(MString::search("{FuBCvgW4BE}关闭"), this);
     connect(close, &QAction::triggered, this, [=](){
         emit closeNow();
@@ -125,6 +129,7 @@ void PinWidget::initMenu(){
     });
     menu->addAction(copy);
     menu->addAction(save);
+    menu->addAction(edit);
     menu->addAction(close);
     menu->addAction(closeAllAction);
 }

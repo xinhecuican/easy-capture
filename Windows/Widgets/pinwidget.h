@@ -23,6 +23,7 @@ public:
 signals:
     void closeNow();
     void closeAll();
+    void editNow(QImage image, QRect bound);
 private:
     void initMenu();
     QImage image;

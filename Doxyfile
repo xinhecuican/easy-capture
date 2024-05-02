@@ -48,8 +48,7 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.8.5PROJECT_LOGO           =
-
+PROJECT_NUMBER = 0.8.6
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
 # entered, it will be relative to the location where doxygen was started. If
@@ -2768,4 +2767,4 @@ GENERATE_LEGEND        = YES
 # files.
 # The default value is: YES.
 
-DOT_CLEANUP            = YESES
+DOT_CLEANUP            = YESESCLEANUP            = YESES

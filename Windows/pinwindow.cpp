@@ -51,6 +51,16 @@ void PinWindow::receiveData(QVariant data1, QVariant data2){
         }
         WindowManager::instance()->closeWindow("PinWindow");
     });
+    connect(pinWidget, &PinWidget::editNow, this, [=](QImage image, QRect bound){
+        bound.moveTo(0, 0);
+
+        WindowManager::instance()->changeWindow("PaintWindow", QPixmap::fromImage(image), bound);
+        pinWidgets.removeOne(pinWidget);
+        pinWidget->deleteLater();
+        if(pinWidgets.size() == 0){
+            WindowManager::instance()->closeWindow("PinWindow");
+        }
+    });
     pinWidget->show();
     pinWidgets.append(pinWidget);
 }

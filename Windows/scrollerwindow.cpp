@@ -62,8 +62,10 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
         pixmap.convertFromImage(image);
         if(image.width() > 10 && image.height() > 10)
             WindowManager::instance()->changeWindow("PaintWindow", pixmap, QRect(0, 0, image.width(), image.height()));
-        timer->start(50);
-
+        else  WindowManager::instance()->changeWindow("tray");
+        if(!xHook->isMouseHookRunning() || xHook->uninstallMouseHook()) {
+            WindowManager::instance()->closeWindow("ScrollerWindow");
+        }
     });
 
     scrollTimer = new QTimer(this);

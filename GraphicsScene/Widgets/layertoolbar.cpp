@@ -84,14 +84,14 @@ void LayerToolBar::moveTo(const QRectF& mask){
     int attributeBarWidth = attributeBar->width();
     int attributeBarHeight = attributeBar->height();
     int maxWidth = group->checkedButton()->pos().x() + attributeBarWidth > bar_width ? group->checkedButton()->pos().x() + attributeBarWidth : bar_width;
-    if(left + maxWidth > bound.right()) {
-        left = bound.right() - maxWidth;
+    if(left + maxWidth > bound.width()) {
+        left = bound.width() - maxWidth;
     }
     if(left < 0) {
         left = 0;
     }
-    if(top + bar_height + attributeBarHeight > bound.bottom()) {
-        top = bound.bottom() - bar_height - attributeBarHeight;
+    if(top + bar_height + attributeBarHeight > bound.height()) {
+        top = bound.height() - bar_height - attributeBarHeight;
     }
     if(top < 0) {
         top = 0;
