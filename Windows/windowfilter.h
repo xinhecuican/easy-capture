@@ -148,7 +148,15 @@ protected:
 
     static BOOL CALLBACK EnumWindowsRealTimeProc(HWND hwnd, LPARAM lParam)
     {
-        if(!PtInWinRect(hwnd, QPoint((lParam & 0xffff), (lParam >> 16)))) return TRUE;
+        int x = lParam & 0xffff;
+        if((x & 0x8000) != 0){
+            x = x | 0xffff0000;
+        }
+        int y = (lParam >> 16) & 0xffff;
+        if((y & 0x8000) != 0){
+            y = y | 0xffff0000;
+        }
+        if(!PtInWinRect(hwnd, QPoint(x, y))) return TRUE;
 
         if(ShouldWinBeFiltered(hwnd))  return TRUE;
 

@@ -43,5 +43,7 @@ private:
     QImage preImage;
     qint64 lastCaptureTime;
     FadeLabel* intervalLabel;
+    int detectInterval = 30;
+    qint64 lastMoveTime = 0;
 };
 #endif // ScrollerWindow_H

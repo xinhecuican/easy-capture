@@ -31,6 +31,7 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
         screenGeometry = screenGeometry.united(QGuiApplication::screens().at(i)->geometry());
     }
 //    screenGeometry = ImageHelper::getCurrentScreen()->geometry();
+    qDebug() << screenGeometry;
     setGeometry(screenGeometry);
 
     bubbleTipsWidget = new BubbleTipsWidget(this);
@@ -70,10 +71,10 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
 
     scrollTimer = new QTimer(this);
     connect(scrollTimer, &QTimer::timeout, this, [=]() {
-        QScreen * screen = ImageHelper::getCurrentScreen();
         QPixmap pix;
-        pix = ImageHelper::grabScreen(ScrollerWindowIndex, activeWindowBound.x(), activeWindowBound.y(),
-                                          activeWindowBound.width(), activeWindowBound.height());
+        pix = ImageHelper::grabScreen(ScrollerWindowIndex, activeWindowBound.x() + screenGeometry.x(),
+                                      activeWindowBound.y() + screenGeometry.y(),
+                                      activeWindowBound.width(), activeWindowBound.height());
         INPUT inputs[1] = {};
         ZeroMemory(inputs, sizeof(inputs));
         inputs[0].type = INPUT_MOUSE;
@@ -87,6 +88,10 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
 
         bool success = false;
         cv::Mat mat1 = ImageHelper::QImage2Mat(preImage);
+        if(pix.width() != activeWindowBound.width() ||
+                pix.height() != activeWindowBound.height()){
+            success = false;
+        }
         if(mat1.cols != 0) {
             cv::Mat mat2 = ImageHelper::QImage2Mat(image);
             if(!ImageHelper::is_equal(mat1, mat2))success = true;
@@ -111,7 +116,7 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
 void ScrollerWindow::paintEvent(QPaintEvent* event){
     QPainter painter(this);
     if(scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END)
-        painter.fillRect(screenGeometry, QColor(0, 0, 0, 1));
+        painter.fillRect(QRect(0, 0, screenGeometry.width(), screenGeometry.height()), QColor(0, 0, 0, 1));
 
     QPen pen;
     pen.setColor(QColor(255, 0, 0));
@@ -204,31 +209,36 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
 void ScrollerWindow::mouseMoveEvent(QMouseEvent *event){
     currentPoint = event->pos();
     if(scrollState == IDLE){
-        POINT point;
-        POINT point2;
-        point2.x = 0;
-        point2.y = 0;
-        GetCursorPos(&point);
-        RECT rect2;
-        HWND hwnd = Window_fliter::instance()->GetHWNDByPoint(QPoint(point.x, point.y));
-        GetClientRect(hwnd, &rect2);
-        ClientToScreen(hwnd, &point2);
-        ScreenToClient(hwnd, &point);
+        qint64 currentMoveTime = QDateTime::currentMSecsSinceEpoch();
+        if(currentMoveTime - lastMoveTime > detectInterval){
+            lastMoveTime = currentMoveTime;
+            POINT point;
+            POINT point2;
+            point2.x = 0;
+            point2.y = 0;
+            GetCursorPos(&point);
+            RECT rect2;
+            HWND hwnd = Window_fliter::instance()->GetHWNDByPoint(QPoint(point.x, point.y));
+            GetClientRect(hwnd, &rect2);
+            ClientToScreen(hwnd, &point2);
+            ScreenToClient(hwnd, &point);
 
-        if(point.x < 0 || point.y < 0 || point.x > rect2.right || point.y > rect2.bottom) {
-            int title_width = GetSystemMetrics(SM_CYCAPTION);
-            point2.y -=  title_width;
-            rect2.bottom += title_width;
+            if(point.x < 0 || point.y < 0 || point.x > rect2.right || point.y > rect2.bottom) {
+                int title_width = GetSystemMetrics(SM_CYCAPTION);
+                point2.y -=  title_width;
+                rect2.bottom += title_width;
+            }
+            activeWindowBound = QRect(QPoint(point2.x - screenGeometry.x(), point2.y - screenGeometry.y()),
+                                      QSize(rect2.right, rect2.bottom));
+            update();
         }
-        activeWindowBound = QRect(QPoint(point2.x, point2.y), QSize(rect2.right, rect2.bottom));
-        update();
     }
     else if(scrollState == SCROLLRECT_SETTING){
         activeWindowBound = Math::buildRect(beginPoint, currentPoint).toRect();
         update();
     }
     if(scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END){
-        bubbleTipsWidget->move(currentPoint);
+        bubbleTipsWidget->move(currentPoint + screenGeometry.topLeft());
     }
 }
 

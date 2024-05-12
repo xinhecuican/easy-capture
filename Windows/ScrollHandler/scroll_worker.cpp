@@ -24,6 +24,10 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
     cv::Mat img1 = ImageHelper::QImage2Mat(image1);
     cv::Mat img2 = ImageHelper::QImage2Mat(image2);
     cv::Mat temp_img1 = img1(cv::Rect(0, image1.height()-img_height, image1.width(), img_height));
+    if(img2.cols < img_height){
+        qWarning() << "image height unalign";
+        return;
+    }
     cv::Mat temp_img2 = img2(cv::Rect(0, 0, image2.width(), img_height));
     cv::Mat scroll_image1, scroll_image2;
     cv::rotate(temp_img1, scroll_image1, cv::ROTATE_90_COUNTERCLOCKWISE);
