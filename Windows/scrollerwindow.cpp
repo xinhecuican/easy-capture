@@ -70,6 +70,10 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
     });
 
     scrollTimer = new QTimer(this);
+    scrollEndTimes = Config::instance()->getConfig<int>(Config::scroll_end_times);
+    preImage.resize(scrollEndTimes+1);
+    scrollEndDetectBegin = false;
+    scrollTimes = 0;
     connect(scrollTimer, &QTimer::timeout, this, [=]() {
         QPixmap pix;
         pix = ImageHelper::grabScreen(ScrollerWindowIndex, activeWindowBound.x() + screenGeometry.x(),
@@ -85,17 +89,22 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
         inputs[0].mi.time = 0;
         SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
         QImage image = pix.toImage();
-
         bool success = false;
-        cv::Mat mat1 = ImageHelper::QImage2Mat(preImage);
         if(pix.width() != activeWindowBound.width() ||
                 pix.height() != activeWindowBound.height()){
             success = false;
         }
-        if(mat1.cols != 0) {
-            cv::Mat mat2 = ImageHelper::QImage2Mat(image);
-            if(!ImageHelper::is_equal(mat1, mat2))success = true;
-        } else {
+        if (scrollEndDetectBegin) {
+            int lastIdx = (scrollTimes + 1) >= scrollEndTimes ? 0 : scrollTimes + 1;
+            cv::Mat mat1 = ImageHelper::QImage2Mat(preImage[lastIdx]);
+            if(mat1.cols != 0) {
+                cv::Mat mat2 = ImageHelper::QImage2Mat(image);
+                if(!ImageHelper::is_equal(mat1, mat2))success = true;
+            } else {
+                success = true;
+            }
+        }
+        else {
             success = true;
         }
         if(!success || end_scroll) {
@@ -105,7 +114,13 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
             update();
             return;
         }
-        preImage = image;
+        preImage[scrollTimes] = image;
+        scrollTimes++;
+        if (scrollTimes >= scrollEndTimes) {
+
+            scrollTimes = 0;
+            scrollEndDetectBegin = true;
+        }
 
         //combine_image(pix.toImage());
 //            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
@@ -137,13 +152,15 @@ void ScrollerWindow::paintEvent(QPaintEvent* event){
 
 void ScrollerWindow::mousePressEvent(QMouseEvent *event){
     beginPoint = event->pos();
-    if((event->button() == Qt::LeftButton || event->button() == Qt::MidButton) && scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END){
+    if((event->button() == Qt::LeftButton || event->button() == Qt::MidButton) &&
+            scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END){
         // 手动设置滚动截屏区域
         if((scrollState == IDLE || scrollState == SCROLLRECT_SETTED) && isScrollRect) {
             scrollState = SCROLLRECT_SETTING;
         } else {
             bubbleTipsWidget->hide();
             beforeState = scrollState;
+            ScrollerWindowIndex = ImageHelper::getCurrentIndex();
             if(event->button() == Qt::LeftButton) {
                 scrollState = SCROLL_AUTO;
                 if(xHook->installKeyHook()) {
@@ -154,6 +171,12 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
                         }
                     });
                 }
+                update();
+                POINT point;
+                GetCursorPos(&point);
+                scroll_hwnd = WindowFromPoint(point);
+                int time = Config::getConfig<int>(Config::capture_interval);
+                scrollTimer->start(time);
             } else {
                 scrollState = SCROLL_MANUAL;
                 lastCaptureTime = QDateTime::currentMSecsSinceEpoch();
@@ -175,8 +198,10 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
                             qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
                             if(currentTime - lastCaptureTime > time) {
                                 lastCaptureTime = currentTime;
-                                QPixmap pix = ImageHelper::grabScreen(activeWindowBound.x(), activeWindowBound.y(),
-                                                                      activeWindowBound.width(), activeWindowBound.height());
+                                QPixmap pix;
+                                pix = ImageHelper::grabScreen(ScrollerWindowIndex, activeWindowBound.x() + screenGeometry.x(),
+                                                              activeWindowBound.y() + screenGeometry.y(),
+                                                              activeWindowBound.width(), activeWindowBound.height());
                                 QImage image = pix.toImage();
                                 dispatcher->start(image);
                             }
@@ -186,13 +211,6 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
                 update();
                 return;
             }
-            update();
-            POINT point;
-            GetCursorPos(&point);
-            scroll_hwnd = WindowFromPoint(point);
-            ScrollerWindowIndex = ImageHelper::getCurrentIndex();
-            int time = Config::getConfig<int>(Config::capture_interval);
-            scrollTimer->start(time);
         }
     }
     else if(event->button() == Qt::RightButton && scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END){

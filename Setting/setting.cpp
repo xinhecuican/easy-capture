@@ -236,6 +236,7 @@ void Setting::capture_settings() {
                      << MString::search("{ePbIenISyt}保存到文件");
     addComboOption(capture_setting, "capture_button_type", "{PnHYo4i9Gu}鼠标中键作用", button_type_name, Config::middle_button_type);
     addNumOption(capture_setting, "capture_interval", Config::capture_interval, "{FcOnYo1uUa}滚动时间间隔", 50, 500);
+    addNumOption(capture_setting, "scroll_end_times", Config::scroll_end_times, "{dOF2HHjdUt}滚动结束检测间隔", 1, 20);
     addFileOption(capture_setting, "global_capture_file", "{HBqaqm8LIK}全屏保存位置", Config::total_capture_save_path);
 }
 

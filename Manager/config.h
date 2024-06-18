@@ -32,7 +32,8 @@ public:
               ui_theme_name,
               receive_beta,
               show_guidance,
-              video_save_path
+              video_save_path,
+              scroll_end_times /// 滚动截屏结束检测间隔
              );
 
     /**

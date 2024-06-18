@@ -22,5 +22,6 @@
 	"ui_theme_name": "default",
 	"receive_beta": false,
 	"show_guidance": false,
-	"video_save_path": ""
+        "video_save_path": "",
+        "scroll_end_times": 1
 }

@@ -163,7 +163,6 @@ QPixmap ImageHelper::grabScreen(int index, int x, int y, int width, int height) 
     QScreen* screen = QGuiApplication::screens().at(index);
     if(!success){
         pix = screen->grabWindow(0, x-screen->geometry().x(), y-screen->geometry().y(), width, height);
-        pix.save("D:/Temp/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
         return pix;
     }
     pix = pix.copy(x-screen->geometry().x(), y-screen->geometry().y(), width, height);

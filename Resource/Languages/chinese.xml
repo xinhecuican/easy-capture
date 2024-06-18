@@ -112,7 +112,7 @@
     <string id="nmqfWFejoz" text="选择保存目录"/>
     <string id="SHLK0bd4wt" text="开始录屏: F5\n暂停/恢复录屏: F6\n结束录屏: F7"/>
     <string id="sI4UKVCDun" text="按鼠标中键手动滚动"/>
-	<string id="akRpWUEmtc" text="默认"/>
+    <string id="akRpWUEmtc" text="默认"/>
     <string id="H1WPwLFDwO" text="确认"/>
     <string id="4Rmr42SpQK" text="重置"/>
     <string id="ms01jwOir5" text="关于"/>
@@ -135,4 +135,5 @@
     <string id="6IqemrYceD" text="右键选择要删除的颜色"/>
     <string id="global_scroll_capture" text="滚动截屏"/>
     <string id="ipqhyXNnFQ" text="编辑"/>
+    <string id="dOF2HHjdUt" text="滚动结束检测间隔"/>
 </strings>

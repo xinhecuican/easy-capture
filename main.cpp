@@ -38,6 +38,7 @@ void preLoad();
 QTEST_MAIN(ConfigTest);
 #else
 int main(int argc, char *argv[]) {
+    // TODO: keylistener bug
     QApplication a(argc, argv);
     // 设置PWD
     QString applicationDirPathStr = QCoreApplication::applicationDirPath();

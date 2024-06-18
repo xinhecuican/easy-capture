@@ -40,7 +40,10 @@ private:
     QPoint beginPoint;
     QPoint endPoint;
     QPoint currentPoint;
-    QImage preImage;
+    QVector<QImage> preImage;
+    bool scrollEndDetectBegin;
+    int scrollTimes;
+    int scrollEndTimes;
     qint64 lastCaptureTime;
     FadeLabel* intervalLabel;
     int detectInterval = 30;
