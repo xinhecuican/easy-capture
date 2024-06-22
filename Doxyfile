@@ -48,8 +48,7 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.8.8# into which the generated documentation will be written. If a relative path is
-# entered, it will be relative to the location where doxygen was started. If
+PROJECT_NUMBER = 0.8.9# entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
 OUTPUT_DIRECTORY       = ./doc
@@ -2766,5 +2765,7 @@ GENERATE_LEGEND        = YES
 # The default value is: YES.
 
 DOT_CLEANUP            = YESESCLEANUP            = YESESESlt value is: YES.
+
+DOT_CLEANUP            = YESESCLEANUP            = YESESESESlt value is: YES.
 
 DOT_CLEANUP            = YESESCLEANUP            = YESESES

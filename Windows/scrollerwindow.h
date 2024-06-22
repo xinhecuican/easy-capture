@@ -11,6 +11,7 @@ class ScrollerWindow : public WindowBase
 
 public:
     Q_INVOKABLE explicit ScrollerWindow(QWidget *parent = nullptr);
+    ~ScrollerWindow();
     void paintEvent(QPaintEvent*) override;
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
@@ -30,7 +31,6 @@ private:
     ScrollState scrollState;
     ScrollState beforeState;
     Scroll_dispatcher* dispatcher;
-    QTimer* timer;
     QTimer* scrollTimer;
     QRect scrollBound;
     QRect activeWindowBound;

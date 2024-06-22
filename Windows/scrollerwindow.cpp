@@ -50,23 +50,12 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
     bubbleTipsWidget->setFix(false);
     bubbleTipsWidget->show();
 
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [=]() {
-        if(!xHook->isMouseHookRunning() || xHook->uninstallMouseHook()) {
-            timer->stop();
-            WindowManager::instance()->closeWindow("ScrollerWindow");
-        }
-    });
-
     connect(dispatcher, &Scroll_dispatcher::finish, this, [=](QImage image) {
         QPixmap pixmap;
         pixmap.convertFromImage(image);
         if(image.width() > 10 && image.height() > 10)
-            WindowManager::instance()->changeWindow("PaintWindow", pixmap, QRect(0, 0, image.width(), image.height()));
-        else  WindowManager::instance()->changeWindow("tray");
-        if(!xHook->isMouseHookRunning() || xHook->uninstallMouseHook()) {
-            WindowManager::instance()->closeWindow("ScrollerWindow");
-        }
+            WindowManager::instance()->changeWindow("PaintWindow", pixmap, QRect(0, 0, image.width(), image.height()), true);
+        else  WindowManager::instance()->changeWindow("tray", QVariant(), QVariant(), true);
     });
 
     scrollTimer = new QTimer(this);
@@ -126,6 +115,15 @@ ScrollerWindow::ScrollerWindow(QWidget* parent) : WindowBase(parent),
 //            image.save("F:/dinfo/" + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".png");
         dispatcher->start(image);
     });
+}
+
+ScrollerWindow::~ScrollerWindow() {
+    if(xHook->isMouseHookRunning()) {
+        xHook->uninstallMouseHook();
+    }
+    if(xHook->isKeyHookRunning()) {
+        xHook->uninstallKeyHook();
+    }
 }
 
 void ScrollerWindow::paintEvent(QPaintEvent* event){
@@ -218,8 +216,7 @@ void ScrollerWindow::mousePressEvent(QMouseEvent *event){
             bubbleTipsWidget->setFix(false);
             scrollState = IDLE;
         } else {
-            WindowManager::instance()->popWindow();
-            timer->start(50);
+            WindowManager::instance()->changeWindow("tray",QVariant(), QVariant(), true);
         }
     }
 }
@@ -295,7 +292,7 @@ void ScrollerWindow::loadKeyEvent(QString name){
             } else if(scrollState == SCROLLRECT_SETTED) {
                 scrollState = IDLE;
             } else {
-                WindowManager::instance()->changeWindow("tray");
+                WindowManager::instance()->changeWindow("tray", QVariant(), QVariant(), true);
             }
         }
     });

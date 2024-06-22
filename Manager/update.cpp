@@ -48,10 +48,11 @@ Update::~Update() {
 }
 
 Update* Update::_instance = NULL;
-QString Update::version = "0.8.8";
+QString Update::version = "0.8.9";
 UpdateData Update::now_version = UpdateData(Update::version,
                                             "http://121.37.81.150:8200/easycapture/update/" + Update::version + ".zip", "",
-                                            "1. 添加滚动结束检测间隔选项");
+                                            "1. 修复绘图窗口缩放不正确的bug\n"
+                                            "2. changeWindow添加关闭窗口选项");
 
 void Update::serialized(QJsonObject *json) { //append增添版本时用
     QJsonObject child;

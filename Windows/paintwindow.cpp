@@ -215,7 +215,6 @@ void PaintWindow::receiveData(QVariant data1, QVariant data2){
     reset();
     area->setImage(pix.toImage());
     area->setSceneRect(-rect.width()/2, -rect.height()/2, rect.width()*2, rect.height()*2);
-    paint_panel->update();
     if(Config::getConfig<bool>(Config::auto_copy_to_clipboard)) {
         QClipboard *clip=QApplication::clipboard();
         clip->setPixmap(pix);
@@ -226,12 +225,14 @@ void PaintWindow::receiveData(QVariant data1, QVariant data2){
     int currentHeight = rect.height() + 140;
     if(currentWidth >= (double)geometry.width()
         || currentHeight >= (double)geometry.height()) {
+        showNormal();
         showMaximized();
     } else {
         //左上角移动到指定位置，截图越大越向(0, 0)点接近
         move(geometry.x() + (geometry.width()-currentWidth)/2, geometry.y() + (geometry.height() - currentHeight) / 2);
         resize(currentWidth, currentHeight);//设置主窗口大小，否则窗口大小不会变化
     }
+    paint_panel->update();
     paint_panel->updateGeometry();
 //    paint_panel->verticalScrollBar()->setValue(rect.height() / 2);
 //    paint_panel->horizontalScrollBar()->setValue(rect.width() / 2);

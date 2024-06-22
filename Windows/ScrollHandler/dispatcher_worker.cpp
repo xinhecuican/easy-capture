@@ -149,7 +149,6 @@ void Dispatcher_worker::handle_result(Scroll_handle* t, int begin, int end, QIma
 
 void Dispatcher_worker::receive_data(QImage image, int begin, int end)
 {
-    qDebug() << image;
     combine_data data;
     data.image = image;
     data.begin = begin;
