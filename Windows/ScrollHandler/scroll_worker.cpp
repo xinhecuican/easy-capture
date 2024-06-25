@@ -23,22 +23,27 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
 {
     cv::Mat img1 = ImageHelper::QImage2Mat(image1);
     cv::Mat img2 = ImageHelper::QImage2Mat(image2);
-    cv::Mat temp_img1 = img1(cv::Rect(0, image1.height()-img_height, image1.width(), img_height));
-    if(img2.cols < img_height){
+
+    int combineHeight = img2.rows < img_height ? img2.rows : img_height;
+    if(combineHeight <= 0){
+        emit work_finish(image1);
         qWarning() << "image height unalign";
         return;
     }
-    cv::Mat temp_img2 = img2(cv::Rect(0, 0, image2.width(), img_height));
+
+    cv::Mat temp_img1 = img1(cv::Rect(0, image1.height()-combineHeight, image1.width(), combineHeight));
+    cv::Mat temp_img2 = img2(cv::Rect(0, 0, image2.width(), combineHeight));
     cv::Mat scroll_image1, scroll_image2;
     cv::rotate(temp_img1, scroll_image1, cv::ROTATE_90_COUNTERCLOCKWISE);
     cv::rotate(temp_img2, scroll_image2, cv::ROTATE_90_COUNTERCLOCKWISE);
     if (temp_img1.empty() || temp_img2.empty())
     {
         qDebug() << "Read image failed, please check again!" << endl;
+        emit work_finish(image1);
         return ;
     }
     cv::Mat image;
-    if(SURF(scroll_image1, scroll_image2, image, img_height) == -1)
+    if(SURF(scroll_image1, scroll_image2, image, combineHeight) == -1)
     {
         int height = Scroll_handler_global::instance()->delta_width;
         cv::cvtColor(scroll_image1, scroll_image1, cv::COLOR_RGBA2RGB);
@@ -54,8 +59,8 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
         }
         else
         {
-            image = cv::Mat(scroll_image1.rows, scroll_image1.cols + scroll_image2.cols - img_height/2, CV_8UC3);
-            scroll_image2.copyTo(image(cv::Rect(scroll_image1.cols - img_height/2, 0,
+            image = cv::Mat(scroll_image1.rows, scroll_image1.cols + scroll_image2.cols - combineHeight/2, CV_8UC3);
+            scroll_image2.copyTo(image(cv::Rect(scroll_image1.cols - combineHeight/2, 0,
                                                 scroll_image2.cols, scroll_image2.rows)));
             scroll_image1.copyTo(image(cv::Rect(0, 0, scroll_image1.cols, scroll_image1.rows)));
         }
@@ -67,19 +72,19 @@ void Scroll_worker::begin_work(QImage image1, QImage image2, int img_height)
 //    ans_image = QImage(image1.width(),
 //                       image1.height()+image2.height() - 2 * img_height + temp_image.height(),
 //                       QImage::Format_ARGB32_Premultiplied);
-    cv::Mat ans_image1 = cv::Mat(image1.height()+image2.height() - 2 * img_height + image.rows,
+    cv::Mat ans_image1 = cv::Mat(image1.height()+image2.height() - 2 * combineHeight + image.rows,
                                 image1.width(),
                                 CV_8UC3);
-    if(img1.rows - img_height  != 0)
+    if(img1.rows - combineHeight  != 0)
     {
-        img1(cv::Rect(0, 0, img1.cols, img1.rows-img_height))
-            .copyTo(ans_image1(cv::Rect(0, 0, img1.cols, img1.rows-img_height)));
+        img1(cv::Rect(0, 0, img1.cols, img1.rows-combineHeight))
+            .copyTo(ans_image1(cv::Rect(0, 0, img1.cols, img1.rows-combineHeight)));
     }
-    image.copyTo(ans_image1(cv::Rect(0, img1.rows-img_height, image.cols, image.rows)));
-    if(img2.rows - img_height != 0)
+    image.copyTo(ans_image1(cv::Rect(0, img1.rows-combineHeight, image.cols, image.rows)));
+    if(img2.rows - combineHeight != 0)
     {
-        img2(cv::Rect(0, img_height, img2.cols, img2.rows-img_height))
-            .copyTo(ans_image1(cv::Rect(0, img1.rows+image.rows - img_height, img2.cols, img2.rows-img_height)));
+        img2(cv::Rect(0, combineHeight, img2.cols, img2.rows-combineHeight))
+            .copyTo(ans_image1(cv::Rect(0, img1.rows+image.rows - combineHeight, img2.cols, img2.rows-combineHeight)));
     }
     // QImage高上限为32700，因此长图需要通过Mat进行转换
     QImage ans_image = ImageHelper::Mat2QImage(ans_image1);
@@ -189,7 +194,7 @@ void Scroll_worker::CalcCorners(const cv::Mat& H, const cv::Mat src)
 
 bool Scroll_worker::first_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans)
 {
-    cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create(60);
+    cv::Ptr<cv::FastFeatureDetector> detector = cv::FastFeatureDetector::create(50);
     // Detect the keypoints
     std::vector<cv::KeyPoint> keyPointR, keyPointL;
     cv::Mat imageDescR, imageDescL;
@@ -198,7 +203,7 @@ bool Scroll_worker::first_match(cv::Mat grayL, cv::Mat grayR, cv::Mat& ans)
     detector->detect(grayR, keyPointR, maskImage);
     //cv::Ptr<cv::xfeatures2d::BriefDescriptorExtractor> Descriptor =
     //        cv::xfeatures2d::BriefDescriptorExtractor::create(32);
-    cv::Ptr<cv::ORB> Descriptor = cv::ORB::create();
+    cv::Ptr<cv::ORB> Descriptor = cv::ORB::create(1000, 2);
     Descriptor->compute(grayL, keyPointL, imageDescL); //找出图一的关键点描述符 SiftDescriptorExtractor
     Descriptor->compute(grayR, keyPointR, imageDescR); //找出图二的关键点描述符 SiftDescriptorExtractor
     if (imageDescL.cols == 0 || imageDescR.cols == 0)
