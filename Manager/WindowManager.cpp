@@ -85,6 +85,8 @@ void WindowManager::changeWindow(QString name, QVariant data1, QVariant data2, b
             windowList[activeWindow].time = QDateTime::currentDateTime().currentSecsSinceEpoch();
             windowList[activeWindow].window->onWindowSelect();
             windowList[name].window->show();
+            windowList[name].window->activateWindow();
+            windowList[name].window->raise();
             windowList[activeWindow].window->receiveData(data1, data2);
         }
         KeyManager::instance()->onWindowChangeEnd(name);

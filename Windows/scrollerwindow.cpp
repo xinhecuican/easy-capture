@@ -128,8 +128,9 @@ ScrollerWindow::~ScrollerWindow() {
 
 void ScrollerWindow::paintEvent(QPaintEvent* event){
     QPainter painter(this);
-    if(scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END)
+    if(scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END) {
         painter.fillRect(QRect(0, 0, screenGeometry.width(), screenGeometry.height()), QColor(0, 0, 0, 1));
+    }
 
     QPen pen;
     pen.setColor(QColor(255, 0, 0));
@@ -150,6 +151,7 @@ void ScrollerWindow::paintEvent(QPaintEvent* event){
 
 void ScrollerWindow::mousePressEvent(QMouseEvent *event){
     beginPoint = event->pos();
+    qDebug() << beginPoint << scrollState;
     if((event->button() == Qt::LeftButton || event->button() == Qt::MidButton) &&
             scrollState != SCROLL_AUTO && scrollState != SCROLL_MANUAL && scrollState != SCROLL_END){
         // 手动设置滚动截屏区域
