@@ -1,0 +1,194 @@
+#centralWidget{
+	background-color: rgba(255, 255, 255, 0.7);
+}
+
+.QToolBar{
+	background-color: rgba(255, 255, 255, 1);
+}
+
+/*.QToolBar QToolButton{
+	font-size:20px;
+}*/
+/* QToolBar
+{
+	border: none;
+	padding: 1px;
+}
+QToolBar::separator {
+    width: 2px;
+    background-color: #298dff;
+} */
+
+.AttributeToolbar{
+	background-color: rgba(255, 255, 255, 1);
+	border-radius: 5px;
+}
+
+
+.ColorWidget QToolButton{
+	border-radius: 2px;
+    border: 1px solid #CDCDCD;
+}
+
+
+
+QToolButton {
+	background-color: rgba(0, 0, 0, 3);
+	border: 1px solid rgba(0, 0, 0, 13);
+	border-radius: 7px;
+	color: rgb(0, 0, 0);
+}
+
+QToolButton:hover {
+	background-color: rgba(0, 0, 0, 7);
+	border: 1px solid rgba(0, 0, 0, 13);
+}
+
+QToolButton::pressed {
+	color: rgba(0, 0, 0, 200);
+}
+
+QToolButton::checked{
+	background-color: rgba(0, 0, 0, 13);
+	border-bottom: 2px solid rgba(0, 0, 0, 100);
+}
+
+QToolButton::disabled {
+	color: rgba(0, 0, 0, 110);
+	background-color: rgba(0, 0, 0, 13);
+	border: 1px solid rgba(0, 0, 0, 5);
+}
+
+
+QSpinBox {
+	background-color: rgba(0, 0, 0, 7);
+	border: 1px solid rgba(0, 0, 0, 13);
+	border-radius: 5px;
+	padding-left: 10px;
+	min-height: 20px;
+	max-height: 40px;
+	min-width: 30px;
+	border-bottom: 1px solid rgba(0, 0, 0, 100);
+}
+
+QSpinBox:hover {
+	background-color: rgba(0, 0, 0, 13);
+	border: 1px solid rgba(0, 0, 0, 13);
+	border-bottom: 1px solid rgba(0, 0, 0, 100);
+}
+
+QSpinBox::focus {
+	background-color: rgba(0, 0, 0, 5);
+	border: 1px solid rgba(0, 0, 0, 10);
+	color: rgba(0, 0, 0, 200);
+	border-bottom: 2px solid rgba(0, 0, 0, 100);
+}
+
+QSpinBox::up-button {
+	image: url(":/image/SpinBoxUp.png");
+	background-color: rgba(0, 0, 0, 0);
+	border: 1px solid rgba(0, 0, 0, 0);
+	border-radius: 4px;
+	margin-top: 1px;
+	margin-bottom: 1px;
+	margin-right: 2px;
+	min-width: 30px;
+	max-width: 30px;
+	min-height: 10px;
+}
+
+QSpinBox::up-button:hover {
+	background-color: rgba(0, 0, 0, 10);
+}
+
+QSpinBox::up-button:pressed {
+	background-color: rgba(0, 0, 0, 5);
+}
+
+QSpinBox::down-button {
+	image: url(":/image/SpinBoxDown.png");
+	background-color: rgba(0, 0, 0, 0);
+	border: 1px solid rgba(0, 0, 0, 0);
+	border-radius: 4px;
+	margin-top: 1px;
+	margin-bottom: 1px;
+	margin-right: 2px;
+	min-width: 30px;
+	max-width: 30px;
+	min-height: 10px;
+}
+
+QSpinBox::down-button:hover {
+	background-color: rgba(0, 0, 0, 10);
+}
+
+QSpinBox::down-button:pressed {
+	background-color: rgba(0, 0, 0, 5);
+}
+
+QSpinBox::drop-down {
+	background-color: transparent;
+    width: 50px;
+}
+
+QSpinBox:disabled {
+	color: rgba(0, 0, 0, 110);
+	background-color: rgba(0, 0, 0, 13);
+	border: 1px solid rgba(0, 0, 0, 5);
+}
+
+QSpinBox::up-button:disabled {
+	image: url(":/image/SpinBoxUpDisabled.png");
+}
+
+QSpinBox::down-button:disabled {
+	image: url(":/image/SpinBoxDownDisabled.png");
+}
+
+
+QSlider:horizontal {
+	min-width: 100px;
+	min-height: 30px;
+}
+
+QSlider::groove:horizontal {
+    height: 5px; 
+    background-color: rgba(0, 0, 0, 100);
+	border-radius: 2px;
+}
+
+QSlider::handle:horizontal {
+    background-color: #298DFF;
+    border: 6px solid #dbdbdb;
+    width: 13px;
+	min-height: 15px;
+    margin: -10px 0;
+    border-radius: 12px
+}
+
+QSlider::handle:horizontal:hover {
+    background-color: #298DFF;
+    border: 4px solid #dbdbdb;
+    width: 17px;
+	min-height: 15px;
+    margin: -10px 0;
+    border-radius: 12px
+}
+
+QSlider::handle:horizontal:pressed {
+    background-color: #298DFF;
+    border: 7px solid #dbdbdb;
+    width: 11px;
+	min-height: 15px;
+    margin: -10px 0;
+    border-radius: 12px
+}
+
+QSlider::groove:horizontal:disabled {
+    background-color: rgba(0, 0, 0, 75);
+}
+
+QSlider::handle:horizontal:disabled {
+    background-color: #808080;
+    border: 6px solid #cccccc;
+}

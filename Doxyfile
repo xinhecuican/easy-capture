@@ -48,8 +48,7 @@ PROJECT_NAME           = "简截"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER = 0.8.9# entered, it will be relative to the location where doxygen was started. If
-# left blank the current directory will be used.
+PROJECT_NUMBER = 0.8.10
 
 OUTPUT_DIRECTORY       = ./doc
 
