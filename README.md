@@ -82,7 +82,3 @@
 | 滚动截图 | Ctrl | 选择截图区域 |
 
 还有许多快捷键可以在**设置-快捷键**中查看
-
-如果你觉得本软件对你有帮助，可以请作者喝一杯咖啡 ^_^
-
-<img src="https://image.xinhecuican.tech/img/%E8%B5%9E%E8%B5%8F%E7%A0%81.png" alt="赞赏码" style="zoom:50%;" />
